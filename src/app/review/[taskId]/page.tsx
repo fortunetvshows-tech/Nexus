@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
+import Link from 'next/link'
 import { usePiAuth } from '@/hooks/use-pi-auth'
 
 interface Worker {
@@ -34,10 +35,13 @@ export default function ReviewTaskPage({
 }) {
   const taskId = params.taskId
   const { user, authenticate, isSdkReady } = usePiAuth()
+  const hasAutoAuthenticated = useRef(false)
 
   // Auto-authenticate when SDK is ready and user is not yet logged in
+  // Only fire once to prevent repeated auth calls
   useEffect(() => {
-    if (isSdkReady && !user) {
+    if (isSdkReady && !user && !hasAutoAuthenticated.current) {
+      hasAutoAuthenticated.current = true
       authenticate()
     }
   }, [isSdkReady, user, authenticate])

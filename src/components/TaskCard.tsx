@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 interface TaskCardProps {
   task: {
     id:              string
@@ -227,28 +229,39 @@ export function TaskCard({
         </div>
 
         {/* Claim button / link */}
-        <a
-          href={isEligible ? `/task/${task.id}` : undefined}
-          onClick={(e) => !isEligible && e.preventDefault()}
-          style={{
-            padding:       '0.5rem 1.25rem',
-            background:    isEligible
-                             ? 'linear-gradient(135deg, #7B3FE4, #A855F7)'
-                             : '#374151',
-            color:         'white',
-            border:        'none',
-            borderRadius:  '8px',
-            fontSize:      '0.875rem',
-            fontWeight:    '500',
-            cursor:        isEligible ? 'pointer' : 'not-allowed',
-            opacity:       isEligible ? 1 : 0.6,
-            whiteSpace:    'nowrap',
-            textDecoration: 'none',
-            display:       'inline-block',
-          }}
-        >
-          {isEligible ? 'Claim Slot' : `Need ${task.minReputationReq} rep`}
-        </a>
+        {isEligible ? (
+          <Link
+            href={`/task/${task.id}`}
+            style={{
+              padding:        '0.5rem 1.25rem',
+              background:     'linear-gradient(135deg, #7B3FE4, #A855F7)',
+              color:          'white',
+              borderRadius:   '8px',
+              fontSize:       '0.875rem',
+              fontWeight:     '500',
+              cursor:         'pointer',
+              whiteSpace:     'nowrap',
+              textDecoration: 'none',
+              display:        'inline-block',
+            }}
+          >
+            Claim Slot
+          </Link>
+        ) : (
+          <span style={{
+            padding:      '0.5rem 1.25rem',
+            background:   '#374151',
+            color:        'white',
+            borderRadius: '8px',
+            fontSize:     '0.875rem',
+            fontWeight:   '500',
+            whiteSpace:   'nowrap',
+            display:      'inline-block',
+            opacity:      0.6,
+          }}>
+            Need {task.minReputationReq} rep
+          </span>
+        )}
       </div>
     </div>
   )

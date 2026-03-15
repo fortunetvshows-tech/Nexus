@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { usePiAuth }        from '@/hooks/use-pi-auth'
 import { useTaskCreation, CATEGORIES, PROOF_TYPES, INITIAL_FORM }
   from '@/hooks/use-task-creation'
@@ -614,7 +615,7 @@ export default function EmployerPage() {
             </div>
 
             <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <a
+              <Link
                 href={`/review/${taskId}`}
                 style={{
                   flex:           1,
@@ -630,8 +631,8 @@ export default function EmployerPage() {
                 }}
               >
                 Review submissions →
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/feed"
                 style={{
                   flex:           1,
@@ -647,7 +648,7 @@ export default function EmployerPage() {
                 }}
               >
                 View feed
-              </a>
+              </Link>
               <button
                 onClick={reset}
                 style={{

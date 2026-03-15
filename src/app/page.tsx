@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { usePiAuth } from '@/hooks/use-pi-auth'
 
 export default function HomePage() {
@@ -238,7 +239,7 @@ export default function HomePage() {
             marginBottom: '1.5rem',
           }}>
             {/* Find Work Card */}
-            <a href="/feed" style={{
+            <Link href="/feed" style={{
               background: '#111827',
               border: '1px solid #1f2937',
               borderRadius: '12px',
@@ -280,10 +281,10 @@ export default function HomePage() {
               }}>
                 Browse tasks, earn Pi
               </p>
-            </a>
+            </Link>
 
             {/* Post Task Card */}
-            <a href="/employer" style={{
+            <Link href="/employer" style={{
               background: 'linear-gradient(135deg, rgba(123, 63, 228, 0.1), rgba(168, 85, 247, 0.1))',
               border: '1px solid #7B3FE4',
               borderRadius: '12px',
@@ -325,7 +326,7 @@ export default function HomePage() {
               }}>
                 Hire workers, lock escrow
               </p>
-            </a>
+            </Link>
           </div>
 
           <button

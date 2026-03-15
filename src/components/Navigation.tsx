@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { usePiAuth } from '@/hooks/use-pi-auth'
 
 interface NavigationProps {
@@ -33,7 +34,7 @@ export function Navigation({ currentPage }: NavigationProps) {
     }}>
 
       {/* Brand */}
-      <a href="/" style={{
+      <Link href="/" style={{
         fontSize:            '1.2rem',
         fontWeight:          '700',
         background:          'linear-gradient(135deg, #7B3FE4, #A855F7)',
@@ -42,12 +43,12 @@ export function Navigation({ currentPage }: NavigationProps) {
         textDecoration:      'none',
       }}>
         Nexus
-      </a>
+      </Link>
 
       {/* Nav links */}
       <div style={{ display: 'flex', gap: '0.25rem' }}>
         {navItems.map(item => (
-          <a
+          <Link
             key={item.key}
             href={item.href}
             style={{
@@ -66,7 +67,7 @@ export function Navigation({ currentPage }: NavigationProps) {
             }}
           >
             {item.label}
-          </a>
+          </Link>
         ))}
       </div>
 
