@@ -155,6 +155,7 @@ describe('POST /api/auth', () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,
       json: () => Promise.resolve({ error: 'invalid_token' }),
+      text: () => Promise.resolve('invalid_token'),
     })
 
     const req = new NextRequest('http://localhost/api/auth', {
