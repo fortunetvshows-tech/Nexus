@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 
 interface NexusUser {
   id: string
@@ -16,6 +16,7 @@ interface AuthState {
   user: NexusUser | null
   isLoading: boolean
   error: string | null
+  isSdkReady: boolean
 }
 
 export function usePiAuth() {
@@ -23,32 +24,62 @@ export function usePiAuth() {
     user: null,
     isLoading: false,
     error: null,
+    isSdkReady: false,
   })
+
+  // Check for Pi SDK availability after mount
+  // window.Pi is injected by the Pi Browser environment
+  // It may not be available immediately on mount
+  useEffect(() => {
+    const checkSdk = () => {
+      if (typeof window !== 'undefined' && window.Pi) {
+        setState(prev => ({ ...prev, isSdkReady: true }))
+        return true
+      }
+      return false
+    }
+
+    // Check immediately
+    if (checkSdk()) return
+
+    // Poll every 200ms for up to 5 seconds
+    // Pi SDK may load slightly after component mount
+    let attempts = 0
+    const interval = setInterval(() => {
+      attempts++
+      if (checkSdk() || attempts >= 25) {
+        clearInterval(interval)
+      }
+    }, 200)
+
+    return () => clearInterval(interval)
+  }, [])
 
   const authenticate = useCallback(async () => {
     setState(prev => ({ ...prev, isLoading: true, error: null }))
 
     try {
+      // Verify we are in a browser environment
+      if (typeof window === 'undefined') {
+        throw new Error('Authentication must run in the browser')
+      }
+
       // Verify Pi SDK is loaded
-      if (typeof window === 'undefined' || !window.Pi) {
+      if (!window.Pi) {
         throw new Error(
-          'Pi SDK not available. Open this app in Pi Browser.'
+          'Pi SDK not available. Please open this app in Pi Browser.'
         )
       }
 
-      // Phase 1: Get accessToken from Pi SDK (client-side)
-      // These values are untrusted until server verification
+      // Phase 1: Client-side Pi authentication
       const auth = await window.Pi.authenticate(
         ['username', 'payments'],
         (incompletePayment) => {
-          // Handle any incomplete payments from previous sessions
-          // Full implementation in TB-003 when payments are wired
-          console.warn('[Nexus:Auth] Incomplete payment found:', incompletePayment)
+          console.warn('[Nexus] Incomplete payment found:', incompletePayment)
         }
       )
 
-      // Phase 2: Send to server for verification
-      // Server calls Pi /me API to verify before touching database
+      // Phase 2: Server-side verification
       const response = await fetch('/api/auth', {
         method: 'POST',
         headers: {
@@ -71,6 +102,7 @@ export function usePiAuth() {
         user: data.user,
         isLoading: false,
         error: null,
+        isSdkReady: true,
       })
 
       return data.user
@@ -78,7 +110,7 @@ export function usePiAuth() {
     } catch (err) {
       const message = err instanceof Error
         ? err.message
-        : 'Authentication failed'
+        : 'Authentication failed. Please try again.'
 
       setState(prev => ({
         ...prev,
@@ -91,13 +123,22 @@ export function usePiAuth() {
   }, [])
 
   const clearAuth = useCallback(() => {
-    setState({ user: null, isLoading: false, error: null })
+    setState(prev => ({
+      ...prev,
+      user: null,
+      error: null,
+    }))
   }, [])
 
   return {
-    user:         state.user,
-    isLoading:    state.isLoading,
-    error:        state.error,
+    user:            state.user,
+    isLoading:       state.isLoading,
+    error:           state.error,
+    isSdkReady:      state.isSdkReady,
+    authenticate,
+    clearAuth,
+    isAuthenticated: state.user !== null,
+  }
     authenticate,
     clearAuth,
     isAuthenticated: state.user !== null,

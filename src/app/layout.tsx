@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import Script from 'next/script'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -17,14 +16,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Pi Network SDK — must load before any Pi.authenticate() calls */}
-        <Script
-          src="https://sdk.minepi.com/pi-sdk.js"
-          strategy="beforeInteractive"
+        {/* Pi Network SDK — loads synchronously before page renders */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src="https://sdk.minepi.com/pi-sdk.js" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                Pi.init({ version: "2.0", sandbox: ${isSandbox} });
+                console.log('[Nexus] Pi SDK initialized. Sandbox: ${isSandbox}');
+              } catch(e) {
+                console.warn('[Nexus] Pi SDK init failed:', e.message);
+              }
+            `,
+          }}
         />
-        <Script id="pi-sdk-init" strategy="beforeInteractive">
-          {`Pi.init({ version: "2.0", sandbox: ${isSandbox} })`}
-        </Script>
       </head>
       <body>
         {children}
