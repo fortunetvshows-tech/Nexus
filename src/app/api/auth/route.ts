@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
         clientUid:   uid,
         serverUid:   piUser.uid,
         timestamp:   new Date().toISOString(),
-        ipAddress:   req.ip ?? req.headers.get('x-forwarded-for') ?? 'unknown',
+        ipAddress:   req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? 'unknown',
       },
     })
 
