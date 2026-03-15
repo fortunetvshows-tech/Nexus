@@ -21,7 +21,6 @@ interface TaskCardProps {
       reputationLevel: string
     }
   }
-  onClaim?: (taskId: string) => void
   workerReputation?: number
 }
 
@@ -39,7 +38,6 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 export function TaskCard({
   task,
-  onClaim,
   workerReputation = 0,
 }: TaskCardProps) {
 
@@ -228,29 +226,29 @@ export function TaskCard({
           </span>
         </div>
 
-        {/* Claim button */}
-        {onClaim && (
-          <button
-            onClick={() => onClaim(task.id)}
-            disabled={!isEligible}
-            style={{
-              padding:       '0.5rem 1.25rem',
-              background:    isEligible
-                               ? 'linear-gradient(135deg, #7B3FE4, #A855F7)'
-                               : '#374151',
-              color:         'white',
-              border:        'none',
-              borderRadius:  '8px',
-              fontSize:      '0.875rem',
-              fontWeight:    '500',
-              cursor:        isEligible ? 'pointer' : 'not-allowed',
-              opacity:       isEligible ? 1 : 0.6,
-              whiteSpace:    'nowrap',
-            }}
-          >
-            {isEligible ? 'Claim Slot' : `Need ${task.minReputationReq} rep`}
-          </button>
-        )}
+        {/* Claim button / link */}
+        <a
+          href={isEligible ? `/task/${task.id}` : undefined}
+          onClick={(e) => !isEligible && e.preventDefault()}
+          style={{
+            padding:       '0.5rem 1.25rem',
+            background:    isEligible
+                             ? 'linear-gradient(135deg, #7B3FE4, #A855F7)'
+                             : '#374151',
+            color:         'white',
+            border:        'none',
+            borderRadius:  '8px',
+            fontSize:      '0.875rem',
+            fontWeight:    '500',
+            cursor:        isEligible ? 'pointer' : 'not-allowed',
+            opacity:       isEligible ? 1 : 0.6,
+            whiteSpace:    'nowrap',
+            textDecoration: 'none',
+            display:       'inline-block',
+          }}
+        >
+          {isEligible ? 'Claim Slot' : `Need ${task.minReputationReq} rep`}
+        </a>
       </div>
     </div>
   )

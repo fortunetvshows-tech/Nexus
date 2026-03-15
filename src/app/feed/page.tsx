@@ -203,11 +203,6 @@ export default function FeedPage() {
               key={task.id}
               task={task}
               workerReputation={user.reputationScore}
-              onClaim={(taskId) => {
-                // TB-005 will implement slot reservation
-                // alert() is blocked in Pi Browser WebView — use state instead
-                setClaimedTaskId(taskId)
-              }}
             />
           ))}
         </div>

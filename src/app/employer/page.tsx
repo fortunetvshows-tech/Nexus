@@ -615,6 +615,23 @@ export default function EmployerPage() {
 
             <div style={{ display: 'flex', gap: '0.75rem' }}>
               <a
+                href={`/review/${taskId}`}
+                style={{
+                  flex:           1,
+                  display:        'block',
+                  padding:        '0.875rem',
+                  background:     'linear-gradient(135deg, #7B3FE4, #A855F7)',
+                  color:          'white',
+                  textDecoration: 'none',
+                  fontSize:       '0.9rem',
+                  fontWeight:     '600',
+                  textAlign:      'center',
+                  borderRadius:   '10px',
+                }}
+              >
+                Review submissions →
+              </a>
+              <a
                 href="/feed"
                 style={{
                   flex:           1,
@@ -636,7 +653,7 @@ export default function EmployerPage() {
                 style={{
                   flex:         1,
                   padding:      '0.875rem',
-                  background:   'linear-gradient(135deg, #7B3FE4, #A855F7)',
+                  background:   '#374151',
                   color:        'white',
                   border:       'none',
                   borderRadius: '10px',
