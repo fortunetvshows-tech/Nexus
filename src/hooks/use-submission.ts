@@ -19,7 +19,7 @@ interface SubmitState {
   submitError: string | null
 }
 
-export function useSubmission(taskId: string) {
+export function useSubmission(taskId: string, piUid: string = '') {
   const [slotState, setSlotState] = useState<SlotState>({
     isClaimed: false,
     isClaiming: false,
@@ -45,7 +45,7 @@ export function useSubmission(taskId: string) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-pi-uid': localStorage.getItem('piUid') || '',
+          'x-pi-uid': piUid || '',
         },
       })
 
@@ -93,7 +93,7 @@ export function useSubmission(taskId: string) {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-pi-uid': localStorage.getItem('piUid') || '',
+            'x-pi-uid': piUid || '',
           },
           body: JSON.stringify({
             proofContent,

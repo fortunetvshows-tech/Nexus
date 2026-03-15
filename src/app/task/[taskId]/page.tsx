@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { usePiAuth } from '@/hooks/use-pi-auth'
 import { useSubmission } from '@/hooks/use-submission'
 
 interface Task {
@@ -31,6 +32,13 @@ export default function TaskDetailPage({
   params: { taskId: string }
 }) {
   const taskId = params.taskId
+  const { user } = usePiAuth()
+
+  // Diagnostic — remove after fix confirmed
+  useEffect(() => {
+    console.log('[Nexus:TaskDetail] user state:', user?.piUsername ?? 'null')
+  }, [user])
+
   const [task, setTask] = useState<Task | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -45,17 +53,21 @@ export default function TaskDetailPage({
     agreedReward,
     claimSlot,
     submitProof,
-  } = useSubmission(taskId)
+  } = useSubmission(taskId, user?.piUid || '')
 
   const [proofContent, setProofContent] = useState('')
   const [secondsLeft, setSecondsLeft] = useState(0)
 
   useEffect(() => {
     if (!taskId) return
+    if (!user?.piUid) return
 
+    setLoading(true)
     const fetchTask = async () => {
       try {
-        const res = await fetch(`/api/tasks/${taskId}`)
+        const res = await fetch(`/api/tasks/${taskId}`, {
+          headers: { 'x-pi-uid': user.piUid }
+        })
         if (!res.ok) throw new Error('Failed to load task')
         const data = await res.json()
         setTask(data)
@@ -68,7 +80,7 @@ export default function TaskDetailPage({
     }
 
     fetchTask()
-  }, [taskId])
+  }, [taskId, user?.piUid])
 
   // Countdown timer
   useEffect(() => {

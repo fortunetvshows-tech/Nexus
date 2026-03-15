@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { usePiAuth } from '@/hooks/use-pi-auth'
 
 interface Worker {
   id: string
@@ -32,6 +33,7 @@ export default function ReviewTaskPage({
   params: { taskId: string }
 }) {
   const taskId = params.taskId
+  const { user } = usePiAuth()
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -41,15 +43,13 @@ export default function ReviewTaskPage({
 
   useEffect(() => {
     if (!taskId) return
+    if (!user?.piUid) return
 
     const fetchSubmissions = async () => {
       try {
-        const piUid = localStorage.getItem('piUid')
-        if (!piUid) throw new Error('Not authenticated')
-
         const res = await fetch(`/api/tasks/${taskId}/submissions`, {
           headers: {
-            'x-pi-uid': piUid,
+            'x-pi-uid': user.piUid,
           },
         })
 
@@ -65,21 +65,20 @@ export default function ReviewTaskPage({
     }
 
     fetchSubmissions()
-  }, [taskId])
+  }, [taskId, user?.piUid])
 
   const handleApprove = async (submissionId: string) => {
     setActionInProgress(submissionId)
     setMessage(null)
 
     try {
-      const piUid = localStorage.getItem('piUid')
-      if (!piUid) throw new Error('Not authenticated')
+      if (!user?.piUid) throw new Error('Not authenticated')
 
       const res = await fetch('/api/submissions/approve', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-pi-uid': piUid,
+          'x-pi-uid': user.piUid,
         },
         body: JSON.stringify({
           submissionId,
@@ -115,14 +114,13 @@ export default function ReviewTaskPage({
     setMessage(null)
 
     try {
-      const piUid = localStorage.getItem('piUid')
-      if (!piUid) throw new Error('Not authenticated')
+      if (!user?.piUid) throw new Error('Not authenticated')
 
       const res = await fetch('/api/submissions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-pi-uid': piUid,
+          'x-pi-uid': user.piUid,
         },
         body: JSON.stringify({
           submissionId,
