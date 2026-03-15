@@ -32,7 +32,14 @@ export default function TaskDetailPage({
   params: { taskId: string }
 }) {
   const taskId = params.taskId
-  const { user } = usePiAuth()
+  const { user, authenticate, isSdkReady } = usePiAuth()
+
+  // Auto-authenticate when SDK is ready and user is not yet logged in
+  useEffect(() => {
+    if (isSdkReady && !user) {
+      authenticate()
+    }
+  }, [isSdkReady, user, authenticate])
 
   // Diagnostic — remove after fix confirmed
   useEffect(() => {

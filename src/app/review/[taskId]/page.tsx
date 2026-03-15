@@ -33,7 +33,15 @@ export default function ReviewTaskPage({
   params: { taskId: string }
 }) {
   const taskId = params.taskId
-  const { user } = usePiAuth()
+  const { user, authenticate, isSdkReady } = usePiAuth()
+
+  // Auto-authenticate when SDK is ready and user is not yet logged in
+  useEffect(() => {
+    if (isSdkReady && !user) {
+      authenticate()
+    }
+  }, [isSdkReady, user, authenticate])
+
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

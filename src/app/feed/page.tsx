@@ -198,13 +198,16 @@ export default function FeedPage() {
           flexDirection: 'column',
           gap:           '1rem',
         }}>
-          {tasks.map(task => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              workerReputation={user.reputationScore}
-            />
-          ))}
+          {tasks.map(task => {
+            console.log('[Nexus:Feed] task.id:', task.id, 'title:', task.title)
+            return (
+              <TaskCard
+                key={task.id}
+                task={task}
+                workerReputation={user.reputationScore}
+              />
+            )
+          })}
         </div>
 
         {/* Load more */}
