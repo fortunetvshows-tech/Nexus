@@ -139,8 +139,4 @@ export function usePiAuth() {
     clearAuth,
     isAuthenticated: state.user !== null,
   }
-    authenticate,
-    clearAuth,
-    isAuthenticated: state.user !== null,
-  }
 }
