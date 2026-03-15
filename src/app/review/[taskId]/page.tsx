@@ -40,6 +40,8 @@ export default function ReviewTaskPage({
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
   useEffect(() => {
+    if (!taskId) return
+
     const fetchSubmissions = async () => {
       try {
         const piUid = localStorage.getItem('piUid')

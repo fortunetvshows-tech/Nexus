@@ -51,6 +51,8 @@ export default function TaskDetailPage({
   const [secondsLeft, setSecondsLeft] = useState(0)
 
   useEffect(() => {
+    if (!taskId) return
+
     const fetchTask = async () => {
       try {
         const res = await fetch(`/api/tasks/${taskId}`)
