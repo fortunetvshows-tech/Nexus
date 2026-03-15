@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, use } from 'react'
 import Link from 'next/link'
 import { usePiAuth } from '@/hooks/use-pi-auth'
 import { useSubmission } from '@/hooks/use-submission'
@@ -30,9 +30,10 @@ interface Task {
 export default function TaskDetailPage({
   params,
 }: {
-  params: { taskId: string }
+  params: Promise<{ taskId: string }>
 }) {
-  const taskId = params.taskId
+  const resolvedParams = use(params)
+  const taskId = resolvedParams?.taskId
   const { user, authenticate, isSdkReady } = usePiAuth()
   const hasAutoAuthenticated = useRef(false)
 
@@ -45,10 +46,10 @@ export default function TaskDetailPage({
     }
   }, [isSdkReady, user, authenticate])
 
-  // Diagnostic — remove after fix confirmed
+  // Temporary diagnostic — remove after fix confirmed
   useEffect(() => {
-    console.log('[Nexus:TaskDetail] user state:', user?.piUsername ?? 'null')
-  }, [user])
+    console.log('[Nexus:TaskDetail] taskId:', taskId, 'user:', user?.piUsername)
+  }, [taskId, user])
 
   const [task, setTask] = useState<Task | null>(null)
   const [loading, setLoading] = useState(true)
@@ -70,27 +71,30 @@ export default function TaskDetailPage({
   const [secondsLeft, setSecondsLeft] = useState(0)
 
   useEffect(() => {
-    if (!taskId) return
+    if (!taskId || taskId === 'undefined') return
     if (!user?.piUid) return
 
+    console.log('[Nexus:TaskDetail] Fetching task:', taskId)
     setLoading(true)
-    const fetchTask = async () => {
-      try {
-        const res = await fetch(`/api/tasks/${taskId}`, {
-          headers: { 'x-pi-uid': user.piUid }
-        })
-        if (!res.ok) throw new Error('Failed to load task')
-        const data = await res.json()
-        setTask(data)
-      } catch (err) {
-        setError('Could not load task')
-        console.error(err)
-      } finally {
-        setLoading(false)
-      }
-    }
 
-    fetchTask()
+    fetch(`/api/tasks/${taskId}`, {
+      headers: { 'x-pi-uid': user.piUid },
+    })
+      .then(r => {
+        console.log('[Nexus:TaskDetail] Fetch status:', r.status)
+        return r.json()
+      })
+      .then(d => {
+        console.log('[Nexus:TaskDetail] Fetch result:', d)
+        if (d.task) {
+          setTask(d.task)
+        }
+        setLoading(false)
+      })
+      .catch(err => {
+        console.error('[Nexus:TaskDetail] Fetch error:', err)
+        setLoading(false)
+      })
   }, [taskId, user?.piUid])
 
   // Countdown timer
