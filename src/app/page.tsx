@@ -117,116 +117,215 @@ export default function HomePage() {
 
       ) : (
 
-        <div style={{
-          background: '#111827',
-          border: '1px solid #1f2937',
-          borderRadius: '16px',
-          padding: '2rem',
-          maxWidth: '400px',
-          width: '100%',
-          textAlign: 'center',
-        }}>
+        <div style={{ maxWidth: '600px', width: '100%' }}>
+          {/* User Card */}
           <div style={{
-            width: '60px',
-            height: '60px',
-            background: 'linear-gradient(135deg, #7B3FE4, #A855F7)',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto 1rem',
-            fontSize: '1.5rem',
-            fontWeight: '700',
+            background: '#111827',
+            border: '1px solid #1f2937',
+            borderRadius: '16px',
+            padding: '2rem',
+            marginBottom: '2rem',
+            textAlign: 'center',
           }}>
-            {user?.piUsername?.charAt(0).toUpperCase()}
-          </div>
+            <div style={{
+              width: '60px',
+              height: '60px',
+              background: 'linear-gradient(135deg, #7B3FE4, #A855F7)',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 1rem',
+              fontSize: '1.5rem',
+              fontWeight: '700',
+            }}>
+              {user?.piUsername?.charAt(0).toUpperCase()}
+            </div>
 
-          <h2 style={{ margin: '0 0 0.25rem', fontSize: '1.3rem' }}>
-            {user?.piUsername}
-          </h2>
+            <h2 style={{ margin: '0 0 0.25rem', fontSize: '1.3rem' }}>
+              {user?.piUsername}
+            </h2>
 
-          <p style={{
-            color: '#9ca3af',
-            fontSize: '0.85rem',
-            margin: '0 0 1.5rem',
-          }}>
-            {user?.reputationLevel} · KYC Level {user?.kycLevel}
-          </p>
-
-          <div style={{
-            background: '#0f172a',
-            borderRadius: '8px',
-            padding: '1rem',
-            textAlign: 'left',
-            marginBottom: '1.5rem',
-          }}>
             <p style={{
-              color: '#6b7280',
-              fontSize: '0.75rem',
-              margin: '0 0 0.5rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
+              color: '#9ca3af',
+              fontSize: '0.85rem',
+              margin: '0 0 1.5rem',
             }}>
-              Your Pi UID
+              {user?.reputationLevel} · KYC Level {user?.kycLevel}
             </p>
-            <code style={{
-              color: '#a78bfa',
-              fontSize: '0.75rem',
-              wordBreak: 'break-all',
+
+            <div style={{
+              background: '#0f172a',
+              borderRadius: '8px',
+              padding: '1rem',
+              textAlign: 'left',
+              marginBottom: '1.5rem',
             }}>
-              {user?.piUid}
-            </code>
+              <p style={{
+                color: '#6b7280',
+                fontSize: '0.75rem',
+                margin: '0 0 0.5rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+              }}>
+                Your Pi UID
+              </p>
+              <code style={{
+                color: '#a78bfa',
+                fontSize: '0.75rem',
+                wordBreak: 'break-all',
+              }}>
+                {user?.piUid}
+              </code>
+            </div>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '0.75rem',
+            }}>
+              <div style={{
+                background: '#1f2937',
+                borderRadius: '8px',
+                padding: '0.75rem',
+              }}>
+                <p style={{
+                  color: '#6b7280',
+                  fontSize: '0.7rem',
+                  margin: '0 0 0.25rem',
+                }}>
+                  Reputation
+                </p>
+                <p style={{
+                  color: '#ffffff',
+                  fontSize: '1.2rem',
+                  fontWeight: '600',
+                  margin: '0',
+                }}>
+                  {user?.reputationScore}
+                </p>
+              </div>
+              <div style={{
+                background: '#1f2937',
+                borderRadius: '8px',
+                padding: '0.75rem',
+              }}>
+                <p style={{
+                  color: '#6b7280',
+                  fontSize: '0.7rem',
+                  margin: '0 0 0.25rem',
+                }}>
+                  Role
+                </p>
+                <p style={{
+                  color: '#ffffff',
+                  fontSize: '1.2rem',
+                  fontWeight: '600',
+                  margin: '0',
+                  textTransform: 'capitalize',
+                }}>
+                  {user?.userRole}
+                </p>
+              </div>
+            </div>
           </div>
 
+          {/* Action Cards */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
-            gap: '0.75rem',
+            gap: '1rem',
             marginBottom: '1.5rem',
           }}>
-            <div style={{
-              background: '#1f2937',
-              borderRadius: '8px',
-              padding: '0.75rem',
-            }}>
+            {/* Find Work Card */}
+            <a href="/feed" style={{
+              background: '#111827',
+              border: '1px solid #1f2937',
+              borderRadius: '12px',
+              padding: '1.5rem',
+              textDecoration: 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              textAlign: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = '#374151'
+              e.currentTarget.style.background = '#1f2937'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = '#1f2937'
+              e.currentTarget.style.background = '#111827'
+            }}
+            >
+              <div style={{
+                fontSize: '2rem',
+                marginBottom: '0.75rem',
+              }}>
+                🔍
+              </div>
+              <h3 style={{
+                margin: '0 0 0.3rem',
+                fontSize: '1rem',
+                fontWeight: '600',
+              }}>
+                Find Work
+              </h3>
               <p style={{
                 color: '#6b7280',
-                fontSize: '0.7rem',
-                margin: '0 0 0.25rem',
-              }}>
-                Reputation
-              </p>
-              <p style={{
-                color: '#ffffff',
-                fontSize: '1.2rem',
-                fontWeight: '600',
+                fontSize: '0.8rem',
                 margin: '0',
               }}>
-                {user?.reputationScore}
+                Browse tasks, earn Pi
               </p>
-            </div>
-            <div style={{
-              background: '#1f2937',
-              borderRadius: '8px',
-              padding: '0.75rem',
-            }}>
-              <p style={{
-                color: '#6b7280',
-                fontSize: '0.7rem',
-                margin: '0 0 0.25rem',
+            </a>
+
+            {/* Post Task Card */}
+            <a href="/employer" style={{
+              background: 'linear-gradient(135deg, rgba(123, 63, 228, 0.1), rgba(168, 85, 247, 0.1))',
+              border: '1px solid #7B3FE4',
+              borderRadius: '12px',
+              padding: '1.5rem',
+              textDecoration: 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              textAlign: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = '#A855F7'
+              e.currentTarget.style.background = 'linear-gradient(135deg, rgba(123, 63, 228, 0.2), rgba(168, 85, 247, 0.2))'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = '#7B3FE4'
+              e.currentTarget.style.background = 'linear-gradient(135deg, rgba(123, 63, 228, 0.1), rgba(168, 85, 247, 0.1))'
+            }}
+            >
+              <div style={{
+                fontSize: '2rem',
+                marginBottom: '0.75rem',
               }}>
-                Role
-              </p>
-              <p style={{
-                color: '#ffffff',
-                fontSize: '1.2rem',
+                +
+              </div>
+              <h3 style={{
+                margin: '0 0 0.3rem',
+                fontSize: '1rem',
                 fontWeight: '600',
-                margin: '0',
-                textTransform: 'capitalize',
               }}>
-                {user?.userRole}
+                Post Task
+              </h3>
+              <p style={{
+                color: '#9ca3af',
+                fontSize: '0.8rem',
+                margin: '0',
+              }}>
+                Hire workers, lock escrow
               </p>
-            </div>
+            </a>
           </div>
 
           <button
