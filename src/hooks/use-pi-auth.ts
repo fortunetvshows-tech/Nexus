@@ -19,13 +19,38 @@ interface AuthState {
   isSdkReady: boolean
 }
 
+const SESSION_KEY = 'nexus_user'
+
+function saveUserToSession(user: NexusUser) {
+  try {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(user))
+  } catch { /* ignore */ }
+}
+
+function getUserFromSession(): NexusUser | null {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
+function clearUserFromSession() {
+  try {
+    sessionStorage.removeItem(SESSION_KEY)
+  } catch { /* ignore */ }
+}
+
 export function usePiAuth() {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    isLoading: false,
-    error: null,
+  const [state, setState] = useState<AuthState>(() => ({
+    // Restore user from sessionStorage on hook initialization
+    // This means navigating to any page has user immediately
+    user:       getUserFromSession(),
+    isLoading:  false,
+    error:      null,
     isSdkReady: false,
-  })
+  }))
 
   // Check for Pi SDK availability after mount
   // window.Pi is injected by the Pi Browser environment
@@ -98,10 +123,13 @@ export function usePiAuth() {
         throw new Error(data.message || 'Authentication failed')
       }
 
+      // Save to sessionStorage so all pages have user immediately
+      saveUserToSession(data.user)
+
       setState({
-        user: data.user,
-        isLoading: false,
-        error: null,
+        user:       data.user,
+        isLoading:  false,
+        error:      null,
         isSdkReady: true,
       })
 
@@ -123,9 +151,10 @@ export function usePiAuth() {
   }, [])
 
   const clearAuth = useCallback(() => {
+    clearUserFromSession()
     setState(prev => ({
       ...prev,
-      user: null,
+      user:  null,
       error: null,
     }))
   }, [])
