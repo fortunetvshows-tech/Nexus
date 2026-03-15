@@ -55,3 +55,6 @@ out/
 
 # Vercel
 .vercel
+# Manifest files — internal documents, not project files
+*_MANIFEST.md
+MANIFEST*.md
