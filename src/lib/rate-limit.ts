@@ -101,8 +101,8 @@ export async function checkRateLimit(
   // piUid comes from the Pi Network SDK header set at authentication
   const identifier =
     limiterKey === 'auth'
-      ? (req.ip ??
-         req.headers.get('x-forwarded-for') ??
+      ? (req.headers.get('x-forwarded-for') ??
+         req.headers.get('x-real-ip') ??
          'anonymous-ip')
       : (req.headers.get('x-pi-uid') ??
          'anonymous-user')
