@@ -2,6 +2,19 @@ import { checkRateLimit } from '@/lib/rate-limit'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { NextRequest, NextResponse } from 'next/server'
 
+// Log environment variable status on cold start
+// This appears in Vercel function logs and confirms
+// which variables are missing
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+  console.error('[Nexus:Auth] MISSING: NEXT_PUBLIC_SUPABASE_URL')
+}
+if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  console.error('[Nexus:Auth] MISSING: SUPABASE_SERVICE_ROLE_KEY')
+}
+if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  console.error('[Nexus:Auth] MISSING: NEXT_PUBLIC_SUPABASE_ANON_KEY')
+}
+
 const PI_API_BASE = 'https://api.minepi.com'
 
 interface PiMeResponse {
@@ -19,6 +32,17 @@ interface PiMeResponse {
 interface AuthRequestBody {
   accessToken: string
   uid: string
+}
+
+type UserRow = {
+  id: string
+  piUid: string
+  piUsername: string
+  userRole: string
+  reputationScore: number
+  reputationLevel: string
+  kycLevel: number
+  accountStatus: string
 }
 
 export async function POST(req: NextRequest) {
@@ -163,8 +187,8 @@ export async function POST(req: NextRequest) {
       // Non-fatal — proceed to upsert
     }
 
-    // Upsert user record
-    const { data: user, error: upsertError } = await supabaseAdmin
+    // Upsert user record with explicit type assertion
+    const upsertResult = await supabaseAdmin
       .from('User')
       .upsert(
         {
@@ -183,11 +207,16 @@ export async function POST(req: NextRequest) {
       )
       .single()
 
-    if (upsertError) {
+    const { data: user, error: upsertError } = upsertResult as {
+      data: UserRow | null
+      error: any
+    }
+
+    if (upsertError || !user) {
       console.error('[Nexus:Auth] User upsert failed:', {
-        code:    upsertError.code,
-        message: upsertError.message,
-        details: upsertError.details,
+        code:    upsertError?.code || 'UNKNOWN',
+        message: upsertError?.message || 'No data returned',
+        details: upsertError?.details,
       })
       return NextResponse.json(
         {
