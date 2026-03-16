@@ -1,4 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { selectArbitrators } from '@/lib/services/arbitration-service'
 
 export type DisputeResult = {
   success:     boolean
@@ -67,6 +68,14 @@ export async function fileDispute(
 
   // Immediately run Tier 1 resolution
   const tier1Result = await runTier1Resolution(result.disputeId!)
+
+  // If escalated to Tier 2, select arbitrators immediately
+  if (tier1Result.resolution === 'ESCALATE_TO_TIER2' && result.disputeId) {
+    const arbResult = await selectArbitrators(result.disputeId)
+    if (!arbResult.success && arbResult.code !== 'NO_ELIGIBLE_ARBITRATORS') {
+      console.error('[Nexus:DisputeService] Failed to select arbitrators:', arbResult.error)
+    }
+  }
 
   return {
     success:    true,

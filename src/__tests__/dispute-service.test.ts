@@ -57,6 +57,15 @@ describe('fileDispute', () => {
         },
         error: null,
       })
+      // Mock select_arbitrators RPC (called when escalating to tier2)
+      .mockResolvedValueOnce({
+        data: {
+          success:         true,
+          arbitratorCount: 3,
+          arbitrators:     ['arb-1', 'arb-2', 'arb-3'],
+        },
+        error: null,
+      })
 
     const result = await fileDispute(
       'submission-uuid-001',
