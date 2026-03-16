@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePiAuth } from '@/hooks/use-pi-auth'
+import { NotificationBell } from '@/components/NotificationBell'
 
 interface NavigationProps {
   currentPage: 'home' | 'feed' | 'employer' | 'dashboard' | 'arbitrate'
@@ -87,6 +88,7 @@ export function Navigation({ currentPage }: NavigationProps) {
           alignItems: 'center',
           gap:        '0.75rem',
         }}>
+          <NotificationBell piUid={user?.piUid} />
           <span style={{
             fontSize: '0.85rem',
             color:    '#9ca3af',
