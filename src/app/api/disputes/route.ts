@@ -106,7 +106,7 @@ export async function GET(req: NextRequest) {
       .from('Dispute')
       .select(`
         id, status, tier,
-        workerReason, tier1Checks,
+        workerReason, tier1Result,
         resolution, filedAt, tier1ResolvedAt
       `)
       .eq('submissionId', submissionId)

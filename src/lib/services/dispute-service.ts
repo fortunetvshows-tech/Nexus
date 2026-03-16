@@ -129,7 +129,7 @@ export async function getDisputeForSubmission(
       status,
       tier,
       workerReason,
-      tier1Checks,
+      tier1Result,
       resolution,
       filedAt,
       tier1ResolvedAt
