@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/expire-slots",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/auto-approve",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/update-streaks",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}

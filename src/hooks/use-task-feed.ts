@@ -60,8 +60,6 @@ export function useTaskFeed(piUid: string | null) {
 
         const data = await res.json()
 
-        console.log('[Nexus:Feed] API response tasks:', data.tasks?.map((t: Task) => ({ id: t.id, title: t.title })))
-
         if (!res.ok) {
           throw new Error(data.message ?? 'Failed to load tasks')
         }
