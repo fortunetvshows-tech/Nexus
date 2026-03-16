@@ -191,12 +191,12 @@ export default function TaskDetailPage({
         padding:  '80px 1rem 4rem',
       }}>
 
-        <Link href="/feed" style={{
+        <Link href="/dashboard" style={{
           color: '#6b7280', fontSize: '0.875rem',
           textDecoration: 'none', display: 'inline-block',
           marginBottom: '1.5rem',
         }}>
-          ← Back to feed
+          ← Back to dashboard
         </Link>
 
         {/* Task header */}
@@ -496,13 +496,13 @@ export default function TaskDetailPage({
                 {agreedReward ?? task.piReward}π
               </div>
             </div>
-            <Link href="/feed" style={{
+            <Link href="/dashboard" style={{
               display: 'block', padding: '0.875rem',
               background: 'transparent', border: '1px solid #374151',
               borderRadius: '10px', color: '#9ca3af',
               textDecoration: 'none', fontSize: '0.9rem',
             }}>
-              Browse more tasks
+              Back to dashboard
             </Link>
           </div>
         )}

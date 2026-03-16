@@ -4,17 +4,26 @@ import Link from 'next/link'
 import { usePiAuth } from '@/hooks/use-pi-auth'
 
 interface NavigationProps {
-  currentPage: 'home' | 'feed' | 'employer'
+  currentPage: 'home' | 'feed' | 'employer' | 'dashboard' | 'arbitrate'
 }
 
 export function Navigation({ currentPage }: NavigationProps) {
   const { user, clearAuth } = usePiAuth()
 
   const navItems = [
-    { href: '/',         label: 'Home',      key: 'home'     },
-    { href: '/feed',     label: 'Find Work', key: 'feed'     },
-    { href: '/employer', label: 'Post Task', key: 'employer' },
+    { href: '/dashboard', label: 'Dashboard', key: 'dashboard' },
+    { href: '/feed',      label: 'Find Work', key: 'feed'      },
+    { href: '/employer',  label: 'Post Task', key: 'employer'  },
   ]
+
+  // Add Arbitrate link for Sovereign users only
+  if (user?.reputationLevel === 'Sovereign') {
+    navItems.push({
+      href:  '/arbitrate',
+      label: '⚖️ Arbitrate',
+      key:   'arbitrate',
+    })
+  }
 
   return (
     <nav style={{
@@ -34,7 +43,7 @@ export function Navigation({ currentPage }: NavigationProps) {
     }}>
 
       {/* Brand */}
-      <Link href="/" style={{
+      <Link href="/dashboard" style={{
         fontSize:            '1.2rem',
         fontWeight:          '700',
         background:          'linear-gradient(135deg, #7B3FE4, #A855F7)',
@@ -54,7 +63,7 @@ export function Navigation({ currentPage }: NavigationProps) {
             style={{
               padding:          '0.4rem 0.9rem',
               borderRadius:     '8px',
-              fontSize:         '0.9rem',
+              fontSize:         '0.875rem',
               textDecoration:   'none',
               color:            currentPage === item.key
                                   ? '#ffffff'
