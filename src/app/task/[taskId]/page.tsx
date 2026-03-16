@@ -2,28 +2,31 @@
 
 import { useEffect, useState, useRef, use } from 'react'
 import Link from 'next/link'
-import { usePiAuth } from '@/hooks/use-pi-auth'
+import { usePiAuth }    from '@/hooks/use-pi-auth'
 import { useSubmission } from '@/hooks/use-submission'
+import { Navigation }   from '@/components/Navigation'
 
 interface Task {
-  id: string
-  title: string
-  description: string
-  categoryId: string
-  reward: number
-  maxWorks: number
-  reservedCount: number
-  completedCount: number
-  status: string
-  qualityRatingMin: number
-  createdAt: string
+  id:               string
+  title:            string
+  description:      string
+  instructions:     string
+  category:         string
+  proofType:        string
+  piReward:         number
+  slotsAvailable:   number
+  slotsRemaining:   number
+  timeEstimateMin:  number
+  deadline:         string
+  minReputationReq: number
+  minBadgeLevel:    string
+  taskStatus:       string
+  tags:             string[]
+  isFeatured:       boolean
   employer: {
-    id: string
-    piUsername: string
-    displayName: string
+    piUsername:      string
     reputationScore: number
-    level: number
-    profileImageUrl?: string
+    reputationLevel: string
   }
 }
 
@@ -32,13 +35,11 @@ export default function TaskDetailPage({
 }: {
   params: Promise<{ taskId: string }>
 }) {
-  const resolvedParams = use(params)
-  const taskId = resolvedParams?.taskId
+  const resolvedParams         = use(params)
+  const taskId                 = resolvedParams?.taskId
   const { user, authenticate, isSdkReady } = usePiAuth()
-  const hasAutoAuthenticated = useRef(false)
+  const hasAutoAuthenticated   = useRef(false)
 
-  // Auto-authenticate when SDK is ready and user is not yet logged in
-  // Only fire once to prevent repeated auth calls
   useEffect(() => {
     if (isSdkReady && !user && !hasAutoAuthenticated.current) {
       hasAutoAuthenticated.current = true
@@ -46,14 +47,9 @@ export default function TaskDetailPage({
     }
   }, [isSdkReady, user, authenticate])
 
-  // Temporary diagnostic — remove after fix confirmed
-  useEffect(() => {
-    console.log('[Nexus:TaskDetail] taskId:', taskId, 'user:', user?.piUsername)
-  }, [taskId, user])
-
-  const [task, setTask] = useState<Task | null>(null)
+  const [task,    setTask]    = useState<Task | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [timeLeft, setTimeLeft] = useState<string>('')
 
   const {
     isClaimed,
@@ -63,415 +59,436 @@ export default function TaskDetailPage({
     isSubmitting,
     submitError,
     agreedReward,
+    timeoutAt,
     claimSlot,
     submitProof,
-  } = useSubmission(taskId, user?.piUid || '')
+  } = useSubmission(taskId ?? '', user?.piUid ?? '')
 
   const [proofContent, setProofContent] = useState('')
-  const [secondsLeft, setSecondsLeft] = useState(0)
 
+  // Fetch task
   useEffect(() => {
     if (!taskId || taskId === 'undefined') return
     if (!user?.piUid) return
 
-    console.log('[Nexus:TaskDetail] Fetching task:', taskId)
     setLoading(true)
 
     fetch(`/api/tasks/${taskId}`, {
       headers: { 'x-pi-uid': user.piUid },
     })
-      .then(r => {
-        console.log('[Nexus:TaskDetail] Fetch status:', r.status)
-        return r.json()
-      })
+      .then(r => r.json())
       .then(d => {
-        console.log('[Nexus:TaskDetail] Fetch result:', d)
-        if (d.task) {
-          setTask(d.task)
-        }
+        if (d.task) setTask(d.task)
         setLoading(false)
       })
-      .catch(err => {
-        console.error('[Nexus:TaskDetail] Fetch error:', err)
-        setLoading(false)
-      })
+      .catch(() => setLoading(false))
   }, [taskId, user?.piUid])
 
   // Countdown timer
   useEffect(() => {
-    if (!isClaimed) return
+    if (!timeoutAt) return
 
-    const interval = setInterval(() => {
-      setSecondsLeft(prev => (prev > 0 ? prev - 1 : 0))
-    }, 1000)
+    const update = () => {
+      const ms = new Date(timeoutAt).getTime() - Date.now()
+      if (ms <= 0) { setTimeLeft('Expired'); return }
+      const m  = Math.floor(ms / 60000)
+      const s  = Math.floor((ms % 60000) / 1000)
+      setTimeLeft(`${m}m ${s}s remaining`)
+    }
 
+    update()
+    const interval = setInterval(update, 1000)
     return () => clearInterval(interval)
-  }, [isClaimed])
+  }, [timeoutAt])
 
-  const handleClaimClick = async () => {
-    const success = await claimSlot()
-    if (success) {
-      setSecondsLeft(300) // 5 minutes
-    }
-  }
-
-  const handleSubmitClick = async () => {
-    if (!proofContent.trim()) {
-      return
-    }
-    await submitProof(proofContent)
+  if (!user) {
+    return (
+      <div style={{
+        minHeight: '100vh', background: '#0f0f0f',
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'center', color: '#9ca3af',
+        fontFamily: 'system-ui, sans-serif',
+      }}>
+        Connecting to Pi Network...
+      </div>
+    )
   }
 
   if (loading) {
     return (
-      <div style={styles.container}>
-        <div style={styles.center}>Loading task...</div>
-      </div>
-    )
-  }
-
-  if (error || !task) {
-    return (
-      <div style={styles.container}>
-        <div style={{ ...styles.center, color: '#ef4444' }}>
-          {error || 'Task not found'}
+      <div style={{
+        minHeight: '100vh', background: '#0f0f0f',
+        fontFamily: 'system-ui, sans-serif',
+      }}>
+        <Navigation currentPage="feed" />
+        <div style={{
+          maxWidth: '680px', margin: '0 auto',
+          padding: '80px 1rem 2rem',
+        }}>
+          <div style={{
+            background: '#111827', borderRadius: '16px',
+            height: '400px', border: '1px solid #1f2937',
+          }} />
         </div>
       </div>
     )
   }
 
-  const slotAvailable = task.reservedCount < task.maxWorks
-  const canClaim = !isClaimed && slotAvailable
+  if (!task) {
+    return (
+      <div style={{
+        minHeight: '100vh', background: '#0f0f0f',
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'center', color: '#9ca3af',
+        fontFamily: 'system-ui, sans-serif',
+      }}>
+        Task not found
+      </div>
+    )
+  }
+
+  const canClaim = task.slotsRemaining > 0 &&
+                   user.reputationScore >= task.minReputationReq
+
+  const deadlineLabel = (() => {
+    const ms = new Date(task.deadline).getTime() - Date.now()
+    if (ms <= 0) return 'Expired'
+    const h  = Math.round(ms / 3600000)
+    return h < 24 ? `${h}h left` : `${Math.round(h / 24)}d left`
+  })()
 
   return (
-    <div style={styles.container}>
-      {/* Header */}
-      <div style={styles.header}>
-        <h1 style={styles.title}>{task.title}</h1>
-        <p style={styles.category}>Category: {task.categoryId}</p>
-      </div>
+    <div style={{
+      minHeight:  '100vh',
+      background: '#0f0f0f',
+      fontFamily: 'system-ui, sans-serif',
+      color:      '#ffffff',
+    }}>
+      <Navigation currentPage="feed" />
 
-      {/* Task Details Grid */}
-      <div style={styles.detailsGrid}>
-        <div style={styles.detailCard}>
-          <div style={styles.detailLabel}>Reward</div>
-          <div style={styles.detailValue}>{task.reward} Pi</div>
-        </div>
-        <div style={styles.detailCard}>
-          <div style={styles.detailLabel}>Available Slots</div>
-          <div style={styles.detailValue}>
-            {task.maxWorks - task.reservedCount}/{task.maxWorks}
-          </div>
-        </div>
-        <div style={styles.detailCard}>
-          <div style={styles.detailLabel}>Min Quality</div>
-          <div style={styles.detailValue}>{task.qualityRatingMin} stars</div>
-        </div>
-        <div style={styles.detailCard}>
-          <div style={styles.detailLabel}>Completed</div>
-          <div style={styles.detailValue}>{task.completedCount}</div>
-        </div>
-      </div>
+      <main style={{
+        maxWidth: '680px',
+        margin:   '0 auto',
+        padding:  '80px 1rem 4rem',
+      }}>
 
-      {/* Description */}
-      <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>Description</h2>
-        <p style={styles.description}>{task.description}</p>
-      </div>
+        <Link href="/feed" style={{
+          color: '#6b7280', fontSize: '0.875rem',
+          textDecoration: 'none', display: 'inline-block',
+          marginBottom: '1.5rem',
+        }}>
+          ← Back to feed
+        </Link>
 
-      {/* Employer Info */}
-      <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>Posted by</h2>
-        <div style={styles.employerCard}>
-          <div>
-            <div style={styles.employerName}>{task.employer.displayName}</div>
-            <div style={styles.employerUsername}>@{task.employer.piUsername}</div>
-            <div style={styles.employerRep}>
-              Reputation: {task.employer.reputationScore} (Level {task.employer.level})
+        {/* Task header */}
+        <div style={{
+          background: '#111827', border: '1px solid #1f2937',
+          borderRadius: '16px', padding: '1.5rem',
+          marginBottom: '1rem',
+        }}>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between',
+            alignItems: 'flex-start', marginBottom: '1rem',
+          }}>
+            <div style={{ flex: 1, marginRight: '1rem' }}>
+              <div style={{
+                fontSize: '0.75rem', color: '#6b7280',
+                textTransform: 'uppercase', letterSpacing: '0.05em',
+                marginBottom: '0.4rem',
+              }}>
+                {task.category}
+              </div>
+              <h1 style={{
+                margin: '0', fontSize: '1.3rem',
+                fontWeight: '700', lineHeight: '1.4',
+              }}>
+                {task.title}
+              </h1>
+            </div>
+            <div style={{
+              fontSize: '2rem', fontWeight: '800',
+              background: 'linear-gradient(135deg, #7B3FE4, #A855F7)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              flexShrink: 0,
+            }}>
+              {task.piReward}π
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Claim Section */}
-      {!isClaimed && !isSubmitted && (
-        <div style={styles.section}>
-          {canClaim && (
-            <button
-              onClick={handleClaimClick}
-              disabled={isClaiming}
-              style={{
-                ...styles.button,
-                ...(isClaiming ? styles.buttonDisabled : styles.buttonPrimary),
-              }}
-            >
-              {isClaiming ? 'Claiming...' : 'Claim Task Slot'}
-            </button>
-          )}
-          {!canClaim && (
-            <div style={styles.unavailable}>
-              No slots available for this task
-            </div>
-          )}
-          {claimError && (
-            <div style={styles.error}>{claimError}</div>
-          )}
-        </div>
-      )}
+          {/* Stats */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '0.75rem',
+            padding: '1rem 0',
+            borderTop: '1px solid #1f2937',
+            borderBottom: '1px solid #1f2937',
+            margin: '1rem 0',
+          }}>
+            {[
+              { label: 'Slots left',  value: `${task.slotsRemaining}/${task.slotsAvailable}` },
+              { label: 'Est. time',   value: `~${task.timeEstimateMin}min` },
+              { label: 'Deadline',    value: deadlineLabel },
+            ].map(s => (
+              <div key={s.label} style={{ textAlign: 'center' }}>
+                <div style={{
+                  fontSize: '0.75rem', color: '#6b7280',
+                  marginBottom: '0.25rem',
+                }}>
+                  {s.label}
+                </div>
+                <div style={{
+                  fontSize: '0.9rem', fontWeight: '600',
+                  color: '#e5e7eb',
+                }}>
+                  {s.value}
+                </div>
+              </div>
+            ))}
+          </div>
 
-      {/* Submission Section */}
-      {isClaimed && !isSubmitted && (
-        <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>
-            Submit Your Work
-            {secondsLeft > 0 && (
-              <span style={styles.timer}>
-                {Math.floor(secondsLeft / 60)}:{(secondsLeft % 60).toString().padStart(2, '0')}
-              </span>
-            )}
-          </h2>
-          <p style={styles.instructions}>
-            You have the next 5 minutes to submit your proof. After that, the slot will be released
-            back to the pool.
-          </p>
-          <textarea
-            value={proofContent}
-            onChange={(e) => setProofContent(e.target.value)}
-            placeholder="Paste your work or explanation here..."
-            style={styles.textarea}
-          />
-          <button
-            onClick={handleSubmitClick}
-            disabled={isSubmitting || !proofContent.trim()}
-            style={{
-              ...styles.button,
-              ...(isSubmitting || !proofContent.trim()
-                ? styles.buttonDisabled
-                : styles.buttonPrimary),
-            }}
-          >
-            {isSubmitting ? 'Submitting...' : 'Submit Proof'}
-          </button>
-          {submitError && (
-            <div style={styles.error}>{submitError}</div>
-          )}
-        </div>
-      )}
-
-      {/* Success Section */}
-      {isSubmitted && (
-        <div style={styles.section}>
-          <div style={styles.successCard}>
-            <h2 style={styles.successTitle}>✓ Submission Received</h2>
-            <p style={styles.successText}>
-              Your work has been submitted successfully! The employer will review it and approve or
-              request changes.
+          {/* Description */}
+          <div style={{ marginBottom: '1rem' }}>
+            <h3 style={{
+              margin: '0 0 0.5rem', fontSize: '0.8rem',
+              fontWeight: '500', color: '#6b7280',
+              textTransform: 'uppercase', letterSpacing: '0.05em',
+            }}>
+              Description
+            </h3>
+            <p style={{
+              margin: '0', fontSize: '0.9rem',
+              color: '#d1d5db', lineHeight: '1.6',
+            }}>
+              {task.description}
             </p>
-            {agreedReward && (
-              <div style={styles.rewardConfirm}>
-                <div style={styles.rewardLabel}>Potential Reward:</div>
-                <div style={styles.rewardAmount}>{agreedReward} Pi</div>
+          </div>
+
+          {/* Instructions */}
+          <div>
+            <h3 style={{
+              margin: '0 0 0.5rem', fontSize: '0.8rem',
+              fontWeight: '500', color: '#a78bfa',
+              textTransform: 'uppercase', letterSpacing: '0.05em',
+            }}>
+              Instructions
+            </h3>
+            <p style={{
+              margin: '0', fontSize: '0.9rem',
+              color: '#d1d5db', lineHeight: '1.6',
+              whiteSpace: 'pre-wrap',
+            }}>
+              {task.instructions}
+            </p>
+          </div>
+
+          {/* Employer */}
+          <div style={{
+            marginTop: '1rem', paddingTop: '1rem',
+            borderTop: '1px solid #1f2937',
+            fontSize: '0.8rem', color: '#6b7280',
+          }}>
+            Posted by{' '}
+            <span style={{ color: '#9ca3af', fontWeight: '500' }}>
+              {task.employer?.piUsername}
+            </span>
+            {' · '}
+            <span style={{ color: '#7B3FE4' }}>
+              {task.employer?.reputationLevel}
+            </span>
+          </div>
+        </div>
+
+        {/* Claim section */}
+        {!isClaimed && !isSubmitted && (
+          <div style={{
+            background: '#111827', border: '1px solid #1f2937',
+            borderRadius: '16px', padding: '1.5rem',
+          }}>
+            {claimError && (
+              <div style={{
+                padding: '0.875rem', background: '#450a0a',
+                border: '1px solid #dc2626', borderRadius: '8px',
+                color: '#fca5a5', fontSize: '0.875rem',
+                marginBottom: '1rem',
+              }}>
+                {claimError}
               </div>
             )}
+
             <button
-              onClick={() => window.location.href = '/'}
-              style={{ ...styles.button, ...styles.buttonSecondary }}
+              onClick={() => claimSlot(taskId ?? '')}
+              disabled={isClaiming || !canClaim}
+              style={{
+                width: '100%', padding: '1rem',
+                background: !canClaim
+                  ? '#374151'
+                  : 'linear-gradient(135deg, #7B3FE4, #A855F7)',
+                color: 'white', border: 'none',
+                borderRadius: '12px', fontSize: '1rem',
+                fontWeight: '600',
+                cursor: isClaiming || !canClaim ? 'not-allowed' : 'pointer',
+              }}
             >
-              Back to Feed
+              {isClaiming
+                ? 'Claiming...'
+                : !canClaim
+                ? task.slotsRemaining === 0
+                  ? 'No slots remaining'
+                  : `Need ${task.minReputationReq} reputation`
+                : `Claim slot — earn ${task.piReward}π`}
+            </button>
+
+            <p style={{
+              margin: '0.75rem 0 0', fontSize: '0.8rem',
+              color: '#6b7280', textAlign: 'center',
+            }}>
+              You have {task.timeEstimateMin} minutes to complete after claiming
+            </p>
+          </div>
+        )}
+
+        {/* Submission form */}
+        {isClaimed && !isSubmitted && (
+          <div style={{
+            background: '#111827', border: '1px solid #7B3FE4',
+            borderRadius: '16px', padding: '1.5rem',
+          }}>
+            <div style={{
+              display: 'flex', justifyContent: 'space-between',
+              alignItems: 'center', marginBottom: '1.25rem',
+              padding: '0.75rem 1rem', background: '#0f172a',
+              borderRadius: '8px',
+            }}>
+              <span style={{
+                fontSize: '0.85rem', color: '#9ca3af', fontWeight: '500',
+              }}>
+                Slot claimed ✓
+              </span>
+              <span style={{
+                fontSize: '0.85rem', fontWeight: '600',
+                color: timeLeft === 'Expired' ? '#ef4444' : '#a78bfa',
+              }}>
+                ⏱ {timeLeft || 'Loading...'}
+              </span>
+            </div>
+
+            <h3 style={{
+              margin: '0 0 0.75rem', fontSize: '0.95rem',
+              fontWeight: '600', color: '#ffffff',
+            }}>
+              Submit your proof
+            </h3>
+
+            <textarea
+              value={proofContent}
+              onChange={e => setProofContent(e.target.value)}
+              placeholder={task.instructions}
+              rows={6}
+              style={{
+                width: '100%', padding: '0.875rem',
+                background: '#1f2937', border: '1px solid #374151',
+                borderRadius: '8px', color: '#ffffff',
+                fontSize: '0.9rem', resize: 'vertical',
+                outline: 'none', boxSizing: 'border-box',
+                lineHeight: '1.6', marginBottom: '1rem',
+              }}
+            />
+
+            {submitError && (
+              <div style={{
+                padding: '0.875rem', background: '#450a0a',
+                border: '1px solid #dc2626', borderRadius: '8px',
+                color: '#fca5a5', fontSize: '0.875rem',
+                marginBottom: '1rem',
+              }}>
+                {submitError}
+              </div>
+            )}
+
+            <button
+              onClick={() =>
+                submitProof(proofContent, '', task.proofType)
+              }
+              disabled={isSubmitting || proofContent.trim().length < 10}
+              style={{
+                width: '100%', padding: '1rem',
+                background: proofContent.trim().length < 10
+                  ? '#374151'
+                  : 'linear-gradient(135deg, #7B3FE4, #A855F7)',
+                color: 'white', border: 'none',
+                borderRadius: '12px', fontSize: '1rem',
+                fontWeight: '600',
+                cursor: isSubmitting || proofContent.trim().length < 10
+                  ? 'not-allowed'
+                  : 'pointer',
+              }}
+            >
+              {isSubmitting
+                ? 'Submitting...'
+                : `Submit proof — earn ${task.piReward}π`}
             </button>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Success state */}
+        {isSubmitted && (
+          <div style={{
+            background: '#111827', border: '1px solid #16a34a',
+            borderRadius: '16px', padding: '1.5rem',
+            textAlign: 'center',
+          }}>
+            <div style={{
+              width: '60px', height: '60px', borderRadius: '50%',
+              background: '#14532d', border: '2px solid #16a34a',
+              margin: '0 auto 1rem', display: 'flex',
+              alignItems: 'center', justifyContent: 'center',
+              fontSize: '1.5rem',
+            }}>
+              ✓
+            </div>
+            <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.1rem' }}>
+              Proof submitted!
+            </h3>
+            <p style={{
+              color: '#9ca3af', fontSize: '0.875rem',
+              margin: '0 0 1.25rem',
+            }}>
+              Waiting for employer review.
+              Auto-approved in 72 hours if not reviewed.
+            </p>
+            <div style={{
+              background: '#0f172a', borderRadius: '8px',
+              padding: '0.875rem', marginBottom: '1.25rem',
+            }}>
+              <div style={{
+                fontSize: '0.75rem', color: '#6b7280',
+                marginBottom: '0.25rem',
+              }}>
+                Potential earnings
+              </div>
+              <div style={{
+                fontSize: '1.5rem', fontWeight: '700',
+                background: 'linear-gradient(135deg, #7B3FE4, #A855F7)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>
+                {agreedReward ?? task.piReward}π
+              </div>
+            </div>
+            <Link href="/feed" style={{
+              display: 'block', padding: '0.875rem',
+              background: 'transparent', border: '1px solid #374151',
+              borderRadius: '10px', color: '#9ca3af',
+              textDecoration: 'none', fontSize: '0.9rem',
+            }}>
+              Browse more tasks
+            </Link>
+          </div>
+        )}
+
+      </main>
     </div>
   )
-}
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    maxWidth: '900px',
-    margin: '0 auto',
-    padding: '32px 20px',
-    color: '#ffffff',
-  },
-  header: {
-    marginBottom: '40px',
-    borderBottom: '1px solid #374151',
-    paddingBottom: '24px',
-  },
-  title: {
-    fontSize: '32px',
-    fontWeight: '700',
-    margin: '0 0 12px 0',
-    color: '#ffffff',
-  },
-  category: {
-    fontSize: '14px',
-    color: '#9ca3af',
-    margin: '0',
-  },
-  detailsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '16px',
-    marginBottom: '40px',
-  },
-  detailCard: {
-    backgroundColor: '#111827',
-    padding: '16px',
-    borderRadius: '8px',
-    border: '1px solid #374151',
-  },
-  detailLabel: {
-    fontSize: '12px',
-    textTransform: 'uppercase',
-    color: '#9ca3af',
-    marginBottom: '8px',
-  },
-  detailValue: {
-    fontSize: '20px',
-    fontWeight: '600',
-    color: '#7B3FE4',
-  },
-  section: {
-    marginBottom: '32px',
-  },
-  sectionTitle: {
-    fontSize: '18px',
-    fontWeight: '600',
-    margin: '0 0 16px 0',
-    color: '#ffffff',
-  },
-  description: {
-    fontSize: '14px',
-    lineHeight: '1.6',
-    color: '#d1d5db',
-    margin: '0',
-  },
-  employerCard: {
-    backgroundColor: '#111827',
-    padding: '20px',
-    borderRadius: '8px',
-    border: '1px solid #374151',
-  },
-  employerName: {
-    fontSize: '16px',
-    fontWeight: '600',
-    color: '#ffffff',
-    marginBottom: '4px',
-  },
-  employerUsername: {
-    fontSize: '13px',
-    color: '#9ca3af',
-    marginBottom: '8px',
-  },
-  employerRep: {
-    fontSize: '13px',
-    color: '#7B3FE4',
-  },
-  button: {
-    width: '100%',
-    padding: '12px 16px',
-    borderRadius: '6px',
-    border: 'none',
-    fontSize: '14px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    marginTop: '12px',
-  },
-  buttonPrimary: {
-    backgroundColor: '#7B3FE4',
-    color: '#ffffff',
-  },
-  buttonSecondary: {
-    backgroundColor: '#374151',
-    color: '#ffffff',
-  },
-  buttonDisabled: {
-    backgroundColor: '#4b5563',
-    color: '#9ca3af',
-    cursor: 'not-allowed',
-  },
-  textarea: {
-    width: '100%',
-    minHeight: '200px',
-    padding: '12px',
-    backgroundColor: '#111827',
-    border: '1px solid #374151',
-    borderRadius: '6px',
-    color: '#ffffff',
-    fontSize: '14px',
-    fontFamily: 'monospace',
-    resize: 'vertical',
-    marginTop: '12px',
-    marginBottom: '12px',
-  },
-  instructions: {
-    fontSize: '13px',
-    color: '#9ca3af',
-    marginBottom: '12px',
-    margin: '0 0 12px 0',
-  },
-  timer: {
-    fontSize: '14px',
-    color: '#ef4444',
-    marginLeft: '12px',
-    fontWeight: '600',
-  },
-  error: {
-    marginTop: '12px',
-    padding: '12px',
-    backgroundColor: '#7f1d1d',
-    borderLeft: '4px solid #ef4444',
-    color: '#fca5a5',
-    fontSize: '13px',
-    borderRadius: '4px',
-  },
-  unavailable: {
-    padding: '16px',
-    backgroundColor: '#7f1d1d',
-    color: '#fca5a5',
-    borderRadius: '6px',
-    textAlign: 'center',
-    fontSize: '14px',
-  },
-  center: {
-    textAlign: 'center',
-    padding: '40px 20px',
-    fontSize: '16px',
-  },
-  successCard: {
-    backgroundColor: '#064e3b',
-    padding: '32px',
-    borderRadius: '8px',
-    border: '1px solid #10b981',
-    textAlign: 'center',
-  },
-  successTitle: {
-    fontSize: '24px',
-    fontWeight: '700',
-    color: '#10b981',
-    margin: '0 0 12px 0',
-  },
-  successText: {
-    fontSize: '14px',
-    color: '#d1d5db',
-    margin: '0 0 24px 0',
-  },
-  rewardConfirm: {
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-    padding: '16px',
-    borderRadius: '6px',
-    marginBottom: '20px',
-  },
-  rewardLabel: {
-    fontSize: '12px',
-    textTransform: 'uppercase',
-    color: '#9ca3af',
-    marginBottom: '4px',
-  },
-  rewardAmount: {
-    fontSize: '24px',
-    fontWeight: '700',
-    color: '#10b981',
-  },
 }
