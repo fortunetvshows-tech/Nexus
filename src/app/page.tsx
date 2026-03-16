@@ -362,7 +362,7 @@ export default function HomePage() {
           </div>
 
           {/* My Submissions */}
-          {(subLoading || submissions.length > 0) && (
+          {isAuthenticated && (
             <div style={{ marginTop: '1.5rem' }}>
               <h2 style={{
                 margin:        '0 0 1rem',
@@ -384,12 +384,26 @@ export default function HomePage() {
                 }} />
               )}
 
+              {!subLoading && submissions.length === 0 && (
+                <div style={{
+                  padding:      '1.5rem',
+                  background:   '#111827',
+                  borderRadius: '12px',
+                  border:       '1px solid #1f2937',
+                  textAlign:    'center',
+                  fontSize:     '0.875rem',
+                  color:        '#6b7280',
+                }}>
+                  No submissions yet. Find tasks to get started.
+                </div>
+              )}
+
               <div style={{
                 display:       'flex',
                 flexDirection: 'column',
                 gap:           '0.75rem',
               }}>
-                {submissions.map(sub => {
+                {!subLoading && submissions.map(sub => {
                   const statusColor =
                     sub.status === 'APPROVED'  ? '#16a34a'
                     : sub.status === 'REJECTED'  ? '#dc2626'
