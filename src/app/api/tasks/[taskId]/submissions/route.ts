@@ -16,12 +16,19 @@ export async function GET(
       )
     }
 
-    // Verify requester is task employer
+    // Verify requester is the task employer
     const { data: task } = await supabaseAdmin
       .from('Task')
       .select('employerId')
       .eq('id', taskId)
       .single()
+
+    if (!task) {
+      return NextResponse.json(
+        { error: 'TASK_NOT_FOUND' },
+        { status: 404 }
+      )
+    }
 
     const { data: employer } = await supabaseAdmin
       .from('User')
@@ -29,52 +36,54 @@ export async function GET(
       .eq('piUid', piUid)
       .single()
 
-    if (!task || !employer || task.employerId !== employer.id) {
+    if (!employer || employer.id !== task.employerId) {
       return NextResponse.json(
-        { error: 'FORBIDDEN' },
+        { error: 'UNAUTHORIZED' },
         { status: 403 }
       )
     }
 
-    // Fetch submissions with worker details
     const { data: submissions, error } = await supabaseAdmin
       .from('Submission')
       .select(`
         id,
-        taskId,
-        workerId,
+        status,
         proofContent,
         proofFileUrl,
         submissionType,
-        status,
-        employerQualityRating,
-        approvedAt,
-        createdAt,
-        worker:User!Submission_workerId_fkey (
+        agreedReward,
+        qualityRating,
+        rejectionReason,
+        autoApproved,
+        autoApproveAt,
+        submittedAt,
+        reviewedAt,
+        worker:workerId (
           id,
           piUsername,
-          displayName,
           reputationScore,
-          level,
-          KYCStatus,
-          profileImageUrl
+          reputationLevel,
+          kycLevel
         )
       `)
       .eq('taskId', taskId)
-      .order('createdAt', { ascending: false })
+      .order('submittedAt', { ascending: false })
 
     if (error) {
       console.error('[Nexus:GetSubmissionsRoute] Error:', error)
       return NextResponse.json(
-        { error: 'INTERNAL_ERROR' },
+        { error: 'FETCH_FAILED' },
         { status: 500 }
       )
     }
 
-    return NextResponse.json(submissions || [], { status: 200 })
+    return NextResponse.json(
+      { success: true, submissions: submissions ?? [] },
+      { status: 200 }
+    )
 
   } catch (err) {
-    console.error('[Nexus:GetSubmissionsRoute] Error:', err)
+    console.error('[Nexus:GetSubmissionsRoute] Unhandled error:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR' },
       { status: 500 }
