@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePiAuth }    from '@/hooks/use-pi-auth'
 import { useSubmission } from '@/hooks/use-submission'
 import { Navigation }   from '@/components/Navigation'
+import { DisputeSection } from '@/components/DisputeSection'
 
 interface Task {
   id:               string
@@ -65,6 +66,8 @@ export default function TaskDetailPage({
   } = useSubmission(taskId ?? '', user?.piUid ?? '')
 
   const [proofContent, setProofContent] = useState('')
+  const [submissionStatus, setSubmissionStatus] = useState<string | null>(null)
+  const [submissionId, setSubmissionId]         = useState<string | null>(null)
 
   // Fetch task
   useEffect(() => {
@@ -78,7 +81,23 @@ export default function TaskDetailPage({
     })
       .then(r => r.json())
       .then(d => {
-        if (d.task) setTask(d.task)
+        if (d.task) {
+          setTask(d.task)
+          // Check if worker has existing submission
+          if (taskId && user?.piUid) {
+            fetch(`/api/tasks/${taskId}/my-submission`, {
+              headers: { 'x-pi-uid': user.piUid },
+            })
+              .then(r => r.json())
+              .then(s => {
+                if (s.submission) {
+                  setSubmissionStatus(s.submission.status)
+                  setSubmissionId(s.submission.id)
+                }
+              })
+              .catch(() => {})
+          }
+        }
         setLoading(false)
       })
       .catch(() => setLoading(false))
@@ -486,6 +505,14 @@ export default function TaskDetailPage({
               Browse more tasks
             </Link>
           </div>
+        )}
+
+        {/* Rejected submission — dispute option */}
+        {submissionStatus === 'REJECTED' && submissionId && (
+          <DisputeSection
+            submissionId={submissionId}
+            piUid={user?.piUid ?? ''}
+          />
         )}
 
       </main>
