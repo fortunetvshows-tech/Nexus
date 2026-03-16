@@ -6,6 +6,7 @@ import { usePiAuth }    from '@/hooks/use-pi-auth'
 import { useSubmission } from '@/hooks/use-submission'
 import { Navigation }   from '@/components/Navigation'
 import { DisputeSection } from '@/components/DisputeSection'
+import { FeeBreakdown } from '@/components/FeeBreakdown'
 
 interface Task {
   id:               string
@@ -318,6 +319,16 @@ export default function TaskDetailPage({
             </span>
           </div>
         </div>
+
+        {/* Fee breakdown */}
+        {task?.piReward && (
+          <div style={{ marginBottom: '1rem' }}>
+            <FeeBreakdown
+              rewardPi={task.piReward}
+              showFor="worker"
+            />
+          </div>
+        )}
 
         {/* Claim section */}
         {!isClaimed && !isSubmitted && (

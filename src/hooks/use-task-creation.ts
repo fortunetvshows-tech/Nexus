@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { usePiPayment } from '@/hooks/use-pi-payment'
+import { PLATFORM_CONFIG } from '@/lib/config/platform'
 
 export interface TaskFormData {
   title:          string
@@ -108,6 +109,12 @@ export function useTaskCreation(piUid: string | null) {
       return 'Proof type is required'
     if (!form.piReward || parseFloat(form.piReward) <= 0)
       return 'Pi reward must be greater than 0'
+    const rewardValidation = PLATFORM_CONFIG.isValidReward(
+      parseFloat(form.piReward)
+    )
+    if (!rewardValidation.valid) {
+      return rewardValidation.reason ?? 'Invalid reward amount'
+    }
     if (!form.slotsAvailable || parseInt(form.slotsAvailable) < 1)
       return 'Must have at least 1 slot'
     if (!form.timeEstimateMin || parseInt(form.timeEstimateMin) < 1)

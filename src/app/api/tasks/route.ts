@@ -5,6 +5,7 @@ import {
   approvePiPayment,
   completePiPayment,
 } from '@/lib/services/pi-payment-service'
+import { PLATFORM_CONFIG }      from '@/lib/config/platform'
 import { NextRequest, NextResponse } from 'next/server'
 
 // Validation constants matching Master Architecture Document
@@ -178,11 +179,22 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    if (typeof piReward !== 'number' || piReward <= 0 || piReward > 10000) {
+    if (typeof piReward !== 'number' || piReward <= 0) {
       return NextResponse.json(
         {
           error:   'VALIDATION_ERROR',
-          message: 'Pi reward must be a positive number up to 10000',
+          message: 'Pi reward must be a positive number',
+        },
+        { status: 400 }
+      )
+    }
+
+    const rewardValidation = PLATFORM_CONFIG.isValidReward(piReward)
+    if (!rewardValidation.valid) {
+      return NextResponse.json(
+        {
+          error:   'VALIDATION_ERROR',
+          message: rewardValidation.reason,
         },
         { status: 400 }
       )

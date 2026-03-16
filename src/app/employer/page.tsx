@@ -6,6 +6,7 @@ import { usePiAuth }        from '@/hooks/use-pi-auth'
 import { useTaskCreation, CATEGORIES, PROOF_TYPES, INITIAL_FORM }
   from '@/hooks/use-task-creation'
 import { Navigation }       from '@/components/Navigation'
+import { FeeBreakdown }     from '@/components/FeeBreakdown'
 
 const inputStyle = {
   width:        '100%',
@@ -427,6 +428,17 @@ export default function EmployerPage() {
                   }}>
                     {totalCost()}π
                   </div>
+                </div>
+              )}
+
+              {/* Fee breakdown */}
+              {form.piReward && parseFloat(form.piReward) > 0 && (
+                <div style={{ marginTop: '1.25rem' }}>
+                  <FeeBreakdown
+                    rewardPi={parseFloat(form.piReward)}
+                    slots={parseInt(form.slotsAvailable) || 1}
+                    showFor="employer"
+                  />
                 </div>
               )}
             </div>
