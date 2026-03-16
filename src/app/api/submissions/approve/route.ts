@@ -72,7 +72,7 @@ export async function POST(
 
     const result = await approveSubmission(
       submissionId,
-      submission.workerId,
+      employer.id,
       qualityRating || 5
     )
 
