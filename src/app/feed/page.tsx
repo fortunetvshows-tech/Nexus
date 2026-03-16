@@ -199,7 +199,6 @@ export default function FeedPage() {
           gap:           '1rem',
         }}>
           {tasks.map(task => {
-            console.log('[Nexus:Feed] task.id:', task.id, 'title:', task.title)
             return (
               <TaskCard
                 key={task.id}
