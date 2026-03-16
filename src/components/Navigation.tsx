@@ -5,16 +5,17 @@ import { usePiAuth } from '@/hooks/use-pi-auth'
 import { NotificationBell } from '@/components/NotificationBell'
 
 interface NavigationProps {
-  currentPage: 'home' | 'feed' | 'employer' | 'dashboard' | 'arbitrate'
+  currentPage: 'home' | 'feed' | 'employer' | 'dashboard' | 'arbitrate' | 'analytics'
 }
 
 export function Navigation({ currentPage }: NavigationProps) {
   const { user, clearAuth } = usePiAuth()
 
   const navItems = [
-    { href: '/dashboard', label: 'Dashboard', key: 'dashboard' },
-    { href: '/feed',      label: 'Find Work', key: 'feed'      },
-    { href: '/employer',  label: 'Post Task', key: 'employer'  },
+    { href: '/dashboard',  label: 'Dashboard', key: 'dashboard'  },
+    { href: '/feed',       label: 'Find Work', key: 'feed'       },
+    { href: '/employer',   label: 'Post Task', key: 'employer'   },
+    { href: '/analytics',  label: 'Analytics', key: 'analytics'  },
   ]
 
   // Add Arbitrate link for Sovereign users only
