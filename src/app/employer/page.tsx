@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePiAuth }        from '@/hooks/use-pi-auth'
 import { useTaskCreation, CATEGORIES, PROOF_TYPES, INITIAL_FORM }
@@ -48,6 +49,34 @@ export default function EmployerPage() {
     backToForm,
     reset,
   } = useTaskCreation(user?.piUid ?? null)
+
+  const [myTasks, setMyTasks]       = useState<Array<{
+    id:             string
+    title:          string
+    category:       string
+    piReward:       number
+    slotsAvailable: number
+    slotsRemaining: number
+    taskStatus:     string
+    createdAt:      string
+  }>>([])
+  const [tasksLoading, setTasksLoading] = useState(false)
+
+  // Fetch employer's posted tasks when authenticated
+  useEffect(() => {
+    if (!user?.piUid) return
+
+    setTasksLoading(true)
+    fetch('/api/employer/tasks', {
+      headers: { 'x-pi-uid': user.piUid },
+    })
+      .then(r => r.json())
+      .then(d => {
+        if (d.tasks) setMyTasks(d.tasks)
+        setTasksLoading(false)
+      })
+      .catch(() => setTasksLoading(false))
+  }, [user?.piUid])
 
   if (!user) {
     return (
@@ -98,6 +127,78 @@ export default function EmployerPage() {
         margin:   '0 auto',
         padding:  '80px 1rem 4rem',
       }}>
+
+        {/* My Posted Tasks — shown when on form step or after success */}
+        {(step === 'form' || step === 'success') && myTasks.length > 0 && (
+          <div style={{
+            marginBottom: '2rem',
+          }}>
+            <h2 style={{
+              margin:     '0 0 1rem',
+              fontSize:   '1rem',
+              fontWeight: '600',
+              color:      '#9ca3af',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}>
+              My Posted Tasks
+            </h2>
+            <div style={{
+              display:       'flex',
+              flexDirection: 'column',
+              gap:           '0.75rem',
+            }}>
+              {myTasks.map(task => (
+                <div key={task.id} style={{
+                  background:   '#111827',
+                  border:       '1px solid #1f2937',
+                  borderRadius: '12px',
+                  padding:      '1rem 1.25rem',
+                  display:      'flex',
+                  justifyContent: 'space-between',
+                  alignItems:   'center',
+                }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{
+                      fontWeight: '600',
+                      fontSize:   '0.9rem',
+                      color:      '#ffffff',
+                      marginBottom: '0.25rem',
+                    }}>
+                      {task.title}
+                    </div>
+                    <div style={{
+                      fontSize: '0.78rem',
+                      color:    '#6b7280',
+                    }}>
+                      {task.category}
+                      {' · '}
+                      {task.piReward}π per slot
+                      {' · '}
+                      {task.slotsRemaining}/{task.slotsAvailable} slots left
+                    </div>
+                  </div>
+                  <Link
+                    href={`/review/${task.id}`}
+                    style={{
+                      padding:        '0.5rem 1rem',
+                      background:     'linear-gradient(135deg, #7B3FE4, #A855F7)',
+                      color:          'white',
+                      borderRadius:   '8px',
+                      fontSize:       '0.8rem',
+                      fontWeight:     '500',
+                      textDecoration: 'none',
+                      whiteSpace:     'nowrap',
+                      marginLeft:     '1rem',
+                    }}
+                  >
+                    Review →
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Step: Form */}
         {step === 'form' && (
