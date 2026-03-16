@@ -1,44 +1,41 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, use } from 'react'
 import Link from 'next/link'
-import { usePiAuth } from '@/hooks/use-pi-auth'
-
-interface Worker {
-  id: string
-  piUsername: string
-  displayName: string
-  reputationScore: number
-  level: number
-  KYCStatus: string
-  profileImageUrl?: string
-}
+import { usePiAuth }  from '@/hooks/use-pi-auth'
+import { Navigation } from '@/components/Navigation'
 
 interface Submission {
-  id: string
-  taskId: string
-  workerId: string
-  proofContent: string
-  proofFileUrl?: string
-  submissionType: string
-  status: string
-  employerQualityRating?: number
-  approvedAt?: string
-  createdAt: string
-  worker: Worker
+  id:              string
+  status:          string
+  proofContent:    string
+  proofFileUrl?:   string
+  submissionType:  string
+  agreedReward:    number
+  qualityRating?:  number
+  rejectionReason?: string
+  autoApproveAt:   string
+  submittedAt:     string
+  reviewedAt?:     string
+  worker: {
+    id:              string
+    piUsername:      string
+    reputationScore: number
+    reputationLevel: string
+    kycLevel:        number
+  }
 }
 
-export default function ReviewTaskPage({
+export default function ReviewPage({
   params,
 }: {
-  params: { taskId: string }
+  params: Promise<{ taskId: string }>
 }) {
-  const taskId = params.taskId
+  const resolvedParams  = use(params)
+  const taskId          = resolvedParams?.taskId
   const { user, authenticate, isSdkReady } = usePiAuth()
   const hasAutoAuthenticated = useRef(false)
 
-  // Auto-authenticate when SDK is ready and user is not yet logged in
-  // Only fire once to prevent repeated auth calls
   useEffect(() => {
     if (isSdkReady && !user && !hasAutoAuthenticated.current) {
       hasAutoAuthenticated.current = true
@@ -46,428 +43,375 @@ export default function ReviewTaskPage({
     }
   }, [isSdkReady, user, authenticate])
 
-  const [submissions, setSubmissions] = useState<Submission[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [rating, setRating] = useState<Record<string, number>>({})
-  const [actionInProgress, setActionInProgress] = useState<string | null>(null)
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [submissions,  setSubmissions]  = useState<Submission[]>([])
+  const [isLoading,    setIsLoading]    = useState(true)
+  const [taskTitle,    setTaskTitle]    = useState('')
+  const [processing,   setProcessing]   = useState<string | null>(null)
+  const [rating,       setRating]       = useState<Record<string, number>>({})
+  const [rejectReason, setRejectReason] = useState<Record<string, string>>({})
+  const [feedback,     setFeedback]     = useState<Record<string, {
+    type: 'success' | 'error'
+    message: string
+  }>>({})
 
   useEffect(() => {
     if (!taskId) return
     if (!user?.piUid) return
 
-    const fetchSubmissions = async () => {
-      try {
-        const res = await fetch(`/api/tasks/${taskId}/submissions`, {
-          headers: {
-            'x-pi-uid': user.piUid,
-          },
-        })
-
-        if (!res.ok) throw new Error('Failed to load submissions')
-        const data = await res.json()
-        setSubmissions(data || [])
-      } catch (err) {
-        setError('Could not load submissions')
-        console.error(err)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchSubmissions()
+    Promise.all([
+      fetch(`/api/tasks/${taskId}`, {
+        headers: { 'x-pi-uid': user.piUid },
+      }).then(r => r.json()),
+      fetch(`/api/tasks/${taskId}/submissions`, {
+        headers: { 'x-pi-uid': user.piUid },
+      }).then(r => r.json()),
+    ]).then(([taskData, subData]) => {
+      if (taskData.task) setTaskTitle(taskData.task.title)
+      if (subData.submissions) setSubmissions(subData.submissions)
+      setIsLoading(false)
+    }).catch(() => setIsLoading(false))
   }, [taskId, user?.piUid])
 
   const handleApprove = async (submissionId: string) => {
-    setActionInProgress(submissionId)
-    setMessage(null)
+    if (!user?.piUid) return
+    setProcessing(submissionId)
 
     try {
-      if (!user?.piUid) throw new Error('Not authenticated')
-
       const res = await fetch('/api/submissions/approve', {
-        method: 'POST',
+        method:  'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-pi-uid': user.piUid,
+          'x-pi-uid':     user.piUid,
         },
         body: JSON.stringify({
           submissionId,
-          qualityRating: rating[submissionId] || 5,
+          qualityRating: rating[submissionId] ?? 5,
         }),
       })
 
       const data = await res.json()
+      if (!res.ok) throw new Error(data.message ?? data.error ?? 'Approval failed')
 
-      if (!res.ok) throw new Error(data.error || 'Approval failed')
-
-      setMessage({ type: 'success', text: 'Submission approved! Pi released to worker.' })
       setSubmissions(prev =>
         prev.map(s =>
-          s.id === submissionId
-            ? {
-                ...s,
-                status: 'approved',
-                employerQualityRating: rating[submissionId] || 5,
-              }
-            : s
+          s.id === submissionId ? { ...s, status: 'APPROVED' } : s
         )
       )
+      setFeedback(prev => ({
+        ...prev,
+        [submissionId]: {
+          type:    'success',
+          message: `Approved — ${data.workerPayout?.toFixed(4) ?? ''}π released to worker`,
+        },
+      }))
+
     } catch (err) {
-      setMessage({ type: 'error', text: (err as Error).message })
+      setFeedback(prev => ({
+        ...prev,
+        [submissionId]: {
+          type:    'error',
+          message: err instanceof Error ? err.message : 'Failed',
+        },
+      }))
     } finally {
-      setActionInProgress(null)
+      setProcessing(null)
     }
   }
 
   const handleReject = async (submissionId: string) => {
-    setActionInProgress(submissionId)
-    setMessage(null)
+    if (!user?.piUid) return
+    const reason = rejectReason[submissionId]
+    if (!reason || reason.trim().length < 10) {
+      setFeedback(prev => ({
+        ...prev,
+        [submissionId]: {
+          type:    'error',
+          message: 'Rejection reason must be at least 10 characters',
+        },
+      }))
+      return
+    }
+
+    setProcessing(submissionId)
 
     try {
-      if (!user?.piUid) throw new Error('Not authenticated')
-
       const res = await fetch('/api/submissions', {
-        method: 'POST',
+        method:  'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-pi-uid': user.piUid,
+          'x-pi-uid':     user.piUid,
         },
         body: JSON.stringify({
           submissionId,
-          rejectReason: 'Quality below threshold',
+          rejectionReason: reason,
         }),
       })
 
       const data = await res.json()
+      if (!res.ok) throw new Error(data.message ?? data.error ?? 'Rejection failed')
 
-      if (!res.ok) throw new Error(data.error || 'Rejection failed')
-
-      setMessage({ type: 'success', text: 'Submission rejected. Slot returned to availability.' })
       setSubmissions(prev =>
         prev.map(s =>
-          s.id === submissionId ? { ...s, status: 'rejected' } : s
+          s.id === submissionId ? { ...s, status: 'REJECTED' } : s
         )
       )
+      setFeedback(prev => ({
+        ...prev,
+        [submissionId]: {
+          type:    'success',
+          message: 'Submission rejected. Slot returned to pool.',
+        },
+      }))
+
     } catch (err) {
-      setMessage({ type: 'error', text: (err as Error).message })
+      setFeedback(prev => ({
+        ...prev,
+        [submissionId]: {
+          type:    'error',
+          message: err instanceof Error ? err.message : 'Failed',
+        },
+      }))
     } finally {
-      setActionInProgress(null)
+      setProcessing(null)
     }
   }
 
-  if (loading) {
+  if (!user) {
     return (
-      <div style={styles.container}>
-        <div style={styles.center}>Loading submissions...</div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div style={styles.container}>
-        <div style={{ ...styles.center, color: '#ef4444' }}>{error}</div>
-      </div>
-    )
-  }
-
-  if (submissions.length === 0) {
-    return (
-      <div style={styles.container}>
-        <h1 style={styles.pageTitle}>Review Submissions</h1>
-        <div style={styles.empty}>
-          <div style={styles.emptyIcon}>∅</div>
-          <p>No submissions yet</p>
-        </div>
+      <div style={{
+        minHeight: '100vh', background: '#0f0f0f',
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'center', color: '#9ca3af',
+        fontFamily: 'system-ui, sans-serif',
+      }}>
+        Connecting to Pi Network...
       </div>
     )
   }
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.pageTitle}>Review Submissions</h1>
+    <div style={{
+      minHeight:  '100vh',
+      background: '#0f0f0f',
+      fontFamily: 'system-ui, sans-serif',
+      color:      '#ffffff',
+    }}>
+      <Navigation currentPage="employer" />
 
-      {message && (
-        <div style={{
-          ...styles.message,
-          ...(message.type === 'success' ? styles.messageSuccess : styles.messageError),
+      <main style={{
+        maxWidth: '680px',
+        margin:   '0 auto',
+        padding:  '80px 1rem 4rem',
+      }}>
+
+        <Link href="/employer" style={{
+          color: '#6b7280', fontSize: '0.875rem',
+          textDecoration: 'none', display: 'inline-block',
+          marginBottom: '1.5rem',
         }}>
-          {message.text}
-        </div>
-      )}
+          ← Back
+        </Link>
 
-      <div style={styles.submissionsContainer}>
-        {submissions.map(submission => (
-          <div key={submission.id} style={styles.submissionCard}>
-            {/* Worker Header */}
-            <div style={styles.workerHeader}>
-              <div>
-                <div style={styles.workerName}>{submission.worker.displayName}</div>
-                <div style={styles.workerUsername}>@{submission.worker.piUsername}</div>
-                <div style={styles.workerStats}>
-                  Rep: {submission.worker.reputationScore} • Level {submission.worker.level} •{' '}
-                  KYC: {submission.worker.KYCStatus}
+        <h1 style={{
+          margin: '0 0 0.5rem', fontSize: '1.4rem', fontWeight: '700',
+        }}>
+          Review Submissions
+        </h1>
+        <p style={{ margin: '0 0 2rem', color: '#6b7280', fontSize: '0.875rem' }}>
+          {taskTitle}
+        </p>
+
+        {isLoading && (
+          <div style={{
+            background: '#111827', borderRadius: '12px',
+            height: '200px', border: '1px solid #1f2937',
+          }} />
+        )}
+
+        {!isLoading && submissions.length === 0 && (
+          <div style={{
+            textAlign: 'center', padding: '4rem 2rem',
+            background: '#111827', borderRadius: '16px',
+            border: '1px solid #1f2937',
+          }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📭</div>
+            <h3 style={{ margin: '0 0 0.5rem' }}>No submissions yet</h3>
+            <p style={{ color: '#6b7280', margin: '0', fontSize: '0.875rem' }}>
+              Workers are working on your task. Check back soon.
+            </p>
+          </div>
+        )}
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {submissions.map(sub => (
+            <div key={sub.id} style={{
+              background: '#111827',
+              border: `1px solid ${
+                sub.status === 'APPROVED' ? '#16a34a'
+                : sub.status === 'REJECTED' ? '#dc2626'
+                : '#1f2937'
+              }`,
+              borderRadius: '16px',
+              padding: '1.25rem',
+            }}>
+
+              {/* Worker info */}
+              <div style={{
+                display: 'flex', justifyContent: 'space-between',
+                alignItems: 'center', marginBottom: '1rem',
+              }}>
+                <div>
+                  <div style={{ fontWeight: '600', fontSize: '0.95rem' }}>
+                    {sub.worker?.piUsername}
+                  </div>
+                  <div style={{
+                    fontSize: '0.78rem', color: '#6b7280', marginTop: '0.2rem',
+                  }}>
+                    Rep {sub.worker?.reputationScore}
+                    {' · '}{sub.worker?.reputationLevel}
+                    {' · '}KYC {sub.worker?.kycLevel}
+                  </div>
+                </div>
+                <div style={{
+                  padding: '0.3rem 0.75rem', borderRadius: '9999px',
+                  fontSize: '0.75rem', fontWeight: '500',
+                  background: sub.status === 'APPROVED' ? '#14532d'
+                    : sub.status === 'REJECTED' ? '#450a0a'
+                    : '#1f2937',
+                  color: sub.status === 'APPROVED' ? '#86efac'
+                    : sub.status === 'REJECTED' ? '#fca5a5'
+                    : '#9ca3af',
+                }}>
+                  {sub.status}
                 </div>
               </div>
+
+              {/* Proof */}
               <div style={{
-                ...styles.statusBadge,
-                ...(submission.status === 'approved'
-                  ? styles.statusApproved
-                  : submission.status === 'rejected'
-                    ? styles.statusRejected
-                    : styles.statusPending),
+                background: '#0f172a', borderRadius: '8px',
+                padding: '1rem', marginBottom: '1rem',
+                fontSize: '0.875rem', color: '#d1d5db',
+                lineHeight: '1.6', whiteSpace: 'pre-wrap',
+                maxHeight: '200px', overflowY: 'auto',
               }}>
-                {submission.status.toUpperCase()}
+                {sub.proofContent || 'No text content'}
               </div>
-            </div>
 
-            {/* Proof Content */}
-            <div style={styles.proofSection}>
-              <div style={styles.proofLabel}>Proof Submitted:</div>
-              <div style={styles.proofContent}>{submission.proofContent}</div>
-            </div>
+              {/* Reward */}
+              <div style={{
+                fontSize: '0.8rem', color: '#6b7280', marginBottom: '1rem',
+              }}>
+                Reward:{' '}
+                <span style={{ color: '#a78bfa', fontWeight: '600' }}>
+                  {sub.agreedReward}π
+                </span>
+                {' '}({(sub.agreedReward * 0.95).toFixed(4)}π after 5% fee)
+              </div>
 
-            {/* Rating */}
-            <div style={styles.ratingSection}>
-              <div style={styles.ratingLabel}>Quality Rating:</div>
-              <div style={styles.ratingStars}>
-                {[1, 2, 3, 4, 5].map(star => (
+              {/* Feedback */}
+              {feedback[sub.id] && (
+                <div style={{
+                  padding: '0.75rem', borderRadius: '8px',
+                  fontSize: '0.85rem', marginBottom: '1rem',
+                  background: feedback[sub.id].type === 'success'
+                    ? '#14532d' : '#450a0a',
+                  color: feedback[sub.id].type === 'success'
+                    ? '#86efac' : '#fca5a5',
+                }}>
+                  {feedback[sub.id].message}
+                </div>
+              )}
+
+              {/* Review controls */}
+              {sub.status === 'SUBMITTED' && (
+                <>
+                  <div style={{ marginBottom: '0.75rem' }}>
+                    <div style={{
+                      fontSize: '0.75rem', color: '#6b7280',
+                      marginBottom: '0.4rem',
+                    }}>
+                      Quality rating
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <button
+                          key={star}
+                          onClick={() =>
+                            setRating(prev => ({ ...prev, [sub.id]: star }))
+                          }
+                          style={{
+                            width: '36px', height: '36px',
+                            borderRadius: '8px',
+                            border: '1px solid #374151',
+                            background: (rating[sub.id] ?? 5) >= star
+                              ? '#7B3FE4' : '#1f2937',
+                            color: 'white', cursor: 'pointer',
+                            fontSize: '0.85rem',
+                          }}
+                        >
+                          {star}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <button
-                    key={star}
-                    onClick={() => setRating(prev => ({ ...prev, [submission.id]: star }))}
-                    disabled={submission.status !== 'pending'}
+                    onClick={() => handleApprove(sub.id)}
+                    disabled={processing === sub.id}
                     style={{
-                      ...styles.star,
-                      ...(rating[submission.id] >= star
-                        ? styles.starFilled
-                        : styles.starEmpty),
-                      ...(submission.status !== 'pending' ? styles.starDisabled : {}),
+                      width: '100%', padding: '0.875rem',
+                      background: processing === sub.id
+                        ? '#374151'
+                        : 'linear-gradient(135deg, #7B3FE4, #A855F7)',
+                      color: 'white', border: 'none',
+                      borderRadius: '10px', fontSize: '0.9rem',
+                      fontWeight: '600',
+                      cursor: processing === sub.id ? 'not-allowed' : 'pointer',
+                      marginBottom: '0.75rem',
                     }}
                   >
-                    ★
+                    {processing === sub.id
+                      ? 'Processing...'
+                      : `Approve — release ${sub.agreedReward}π`}
                   </button>
-                ))}
-              </div>
+
+                  <input
+                    type="text"
+                    placeholder="Rejection reason (min 10 characters)"
+                    value={rejectReason[sub.id] ?? ''}
+                    onChange={e =>
+                      setRejectReason(prev => ({
+                        ...prev, [sub.id]: e.target.value,
+                      }))
+                    }
+                    style={{
+                      width: '100%', padding: '0.75rem',
+                      background: '#1f2937', border: '1px solid #374151',
+                      borderRadius: '8px', color: '#ffffff',
+                      fontSize: '0.875rem', outline: 'none',
+                      boxSizing: 'border-box', marginBottom: '0.5rem',
+                    }}
+                  />
+                  <button
+                    onClick={() => handleReject(sub.id)}
+                    disabled={processing === sub.id}
+                    style={{
+                      width: '100%', padding: '0.75rem',
+                      background: 'transparent',
+                      border: '1px solid #dc2626',
+                      borderRadius: '8px', color: '#fca5a5',
+                      fontSize: '0.875rem',
+                      cursor: processing === sub.id ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {processing === sub.id ? 'Processing...' : 'Reject'}
+                  </button>
+                </>
+              )}
             </div>
-
-            {/* Actions */}
-            {submission.status === 'pending' && (
-              <div style={styles.actions}>
-                <button
-                  onClick={() => handleApprove(submission.id)}
-                  disabled={actionInProgress === submission.id}
-                  style={{
-                    ...styles.button,
-                    ...styles.buttonApprove,
-                    ...(actionInProgress === submission.id ? styles.buttonDisabled : {}),
-                  }}
-                >
-                  {actionInProgress === submission.id ? 'Approving...' : '✓ Approve'}
-                </button>
-                <button
-                  onClick={() => handleReject(submission.id)}
-                  disabled={actionInProgress === submission.id}
-                  style={{
-                    ...styles.button,
-                    ...styles.buttonReject,
-                    ...(actionInProgress === submission.id ? styles.buttonDisabled : {}),
-                  }}
-                >
-                  {actionInProgress === submission.id ? 'Rejecting...' : '✕ Reject'}
-                </button>
-              </div>
-            )}
-
-            {submission.status === 'approved' && (
-              <div style={styles.approvedNote}>
-                Approved on {new Date(submission.approvedAt!).toLocaleDateString()} •
-                Rating: {submission.employerQualityRating} ★
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </main>
     </div>
   )
-}
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    maxWidth: '800px',
-    margin: '0 auto',
-    padding: '32px 20px',
-    color: '#ffffff',
-  },
-  pageTitle: {
-    fontSize: '28px',
-    fontWeight: '700',
-    margin: '0 0 32px 0',
-    color: '#ffffff',
-  },
-  center: {
-    textAlign: 'center',
-    padding: '40px 20px',
-    fontSize: '16px',
-  },
-  empty: {
-    textAlign: 'center',
-    padding: '80px 20px',
-    color: '#9ca3af',
-  },
-  emptyIcon: {
-    fontSize: '48px',
-    marginBottom: '16px',
-  },
-  submissionsContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px',
-  },
-  submissionCard: {
-    backgroundColor: '#111827',
-    border: '1px solid #374151',
-    borderRadius: '8px',
-    padding: '24px',
-  },
-  workerHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: '20px',
-    paddingBottom: '16px',
-    borderBottom: '1px solid #374151',
-  },
-  workerName: {
-    fontSize: '16px',
-    fontWeight: '600',
-    color: '#ffffff',
-    marginBottom: '4px',
-  },
-  workerUsername: {
-    fontSize: '13px',
-    color: '#9ca3af',
-    marginBottom: '8px',
-  },
-  workerStats: {
-    fontSize: '12px',
-    color: '#7B3FE4',
-  },
-  statusBadge: {
-    padding: '6px 12px',
-    borderRadius: '4px',
-    fontSize: '11px',
-    fontWeight: '600',
-    textTransform: 'uppercase',
-  },
-  statusPending: {
-    backgroundColor: '#7f453a',
-    color: '#fbbf24',
-  },
-  statusApproved: {
-    backgroundColor: '#064e3b',
-    color: '#10b981',
-  },
-  statusRejected: {
-    backgroundColor: '#7f1d1d',
-    color: '#ef4444',
-  },
-  proofSection: {
-    marginBottom: '20px',
-  },
-  proofLabel: {
-    fontSize: '12px',
-    textTransform: 'uppercase',
-    color: '#9ca3af',
-    marginBottom: '8px',
-  },
-  proofContent: {
-    backgroundColor: '#0f0f0f',
-    padding: '12px',
-    borderRadius: '4px',
-    fontSize: '13px',
-    color: '#d1d5db',
-    lineHeight: '1.5',
-    wordBreak: 'break-word',
-  },
-  ratingSection: {
-    marginBottom: '20px',
-  },
-  ratingLabel: {
-    fontSize: '12px',
-    textTransform: 'uppercase',
-    color: '#9ca3af',
-    marginBottom: '8px',
-  },
-  ratingStars: {
-    display: 'flex',
-    gap: '8px',
-  },
-  star: {
-    fontSize: '24px',
-    border: 'none',
-    backgroundColor: 'transparent',
-    cursor: 'pointer',
-    padding: '0',
-    transition: 'color 0.2s',
-  },
-  starFilled: {
-    color: '#fbbf24',
-  },
-  starEmpty: {
-    color: '#4b5563',
-  },
-  starDisabled: {
-    cursor: 'not-allowed',
-    opacity: 0.6,
-  },
-  actions: {
-    display: 'flex',
-    gap: '12px',
-  },
-  button: {
-    flex: 1,
-    padding: '10px 16px',
-    borderRadius: '6px',
-    border: 'none',
-    fontSize: '13px',
-    fontWeight: '600',
-    cursor: 'pointer',
-  },
-  buttonApprove: {
-    backgroundColor: '#10b981',
-    color: '#ffffff',
-  },
-  buttonReject: {
-    backgroundColor: '#ef4444',
-    color: '#ffffff',
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-    cursor: 'not-allowed',
-  },
-  approvedNote: {
-    fontSize: '12px',
-    color: '#10b981',
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-    padding: '8px 12px',
-    borderRadius: '4px',
-  },
-  message: {
-    padding: '12px 16px',
-    borderRadius: '6px',
-    marginBottom: '20px',
-    fontSize: '14px',
-  },
-  messageSuccess: {
-    backgroundColor: '#064e3b',
-    color: '#10b981',
-    border: '1px solid #10b981',
-  },
-  messageError: {
-    backgroundColor: '#7f1d1d',
-    color: '#fca5a5',
-    border: '1px solid #ef4444',
-  },
 }
