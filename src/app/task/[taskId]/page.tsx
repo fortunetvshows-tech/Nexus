@@ -318,7 +318,7 @@ export default function TaskDetailPage({
             )}
 
             <button
-              onClick={() => claimSlot(taskId ?? '')}
+              onClick={() => claimSlot()}
               disabled={isClaiming || !canClaim}
               style={{
                 width: '100%', padding: '1rem',
