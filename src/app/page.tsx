@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePiAuth } from '@/hooks/use-pi-auth'
 
@@ -13,6 +14,37 @@ export default function HomePage() {
     isSdkReady,
     isAuthenticated,
   } = usePiAuth()
+
+  const [submissions, setSubmissions] = useState<Array<{
+    id:              string
+    status:          string
+    agreedReward:    number
+    rejectionReason: string | null
+    submittedAt:     string
+    reviewedAt:      string | null
+    task: {
+      id:       string
+      title:    string
+      category: string
+      piReward: number
+    }
+  }>>([])
+  const [subLoading, setSubLoading] = useState(false)
+
+  useEffect(() => {
+    if (!user?.piUid) return
+
+    setSubLoading(true)
+    fetch('/api/worker/submissions', {
+      headers: { 'x-pi-uid': user.piUid },
+    })
+      .then(r => r.json())
+      .then(d => {
+        if (d.submissions) setSubmissions(d.submissions)
+        setSubLoading(false)
+      })
+      .catch(() => setSubLoading(false))
+  }, [user?.piUid])
 
   return (
     <div style={{
@@ -329,6 +361,135 @@ export default function HomePage() {
             </Link>
           </div>
 
+          {/* My Submissions */}
+          {(subLoading || submissions.length > 0) && (
+            <div style={{ marginTop: '1.5rem' }}>
+              <h2 style={{
+                margin:        '0 0 1rem',
+                fontSize:      '0.9rem',
+                fontWeight:    '600',
+                color:         '#6b7280',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+              }}>
+                My Submissions
+              </h2>
+
+              {subLoading && (
+                <div style={{
+                  background:   '#111827',
+                  borderRadius: '12px',
+                  height:       '80px',
+                  border:       '1px solid #1f2937',
+                }} />
+              )}
+
+              <div style={{
+                display:       'flex',
+                flexDirection: 'column',
+                gap:           '0.75rem',
+              }}>
+                {submissions.map(sub => {
+                  const statusColor =
+                    sub.status === 'APPROVED'  ? '#16a34a'
+                    : sub.status === 'REJECTED'  ? '#dc2626'
+                    : sub.status === 'DISPUTED'  ? '#d97706'
+                    : '#6b7280'
+
+                  const statusBg =
+                    sub.status === 'APPROVED'  ? '#14532d'
+                    : sub.status === 'REJECTED'  ? '#450a0a'
+                    : sub.status === 'DISPUTED'  ? '#451a03'
+                    : '#1f2937'
+
+                  return (
+                    <Link
+                      key={sub.id}
+                      href={`/task/${sub.task?.id}`}
+                      style={{
+                        background:     '#111827',
+                        border:         `1px solid ${
+                          sub.status === 'REJECTED' ? '#dc2626'
+                          : sub.status === 'DISPUTED' ? '#d97706'
+                          : '#1f2937'
+                        }`,
+                        borderRadius:   '12px',
+                        padding:        '1rem 1.25rem',
+                        textDecoration: 'none',
+                        display:        'block',
+                      }}
+                    >
+                      <div style={{
+                        display:        'flex',
+                        justifyContent: 'space-between',
+                        alignItems:     'flex-start',
+                        marginBottom:   '0.4rem',
+                      }}>
+                        <div style={{
+                          fontWeight: '600',
+                          fontSize:   '0.9rem',
+                          color:      '#ffffff',
+                          flex:       1,
+                          marginRight: '1rem',
+                        }}>
+                          {sub.task?.title}
+                        </div>
+                        <div style={{
+                          padding:      '0.2rem 0.6rem',
+                          borderRadius: '9999px',
+                          fontSize:     '0.7rem',
+                          fontWeight:   '600',
+                          background:   statusBg,
+                          color:        statusColor,
+                          whiteSpace:   'nowrap',
+                          flexShrink:   0,
+                        }}>
+                          {sub.status}
+                        </div>
+                      </div>
+
+                      <div style={{
+                        fontSize: '0.78rem',
+                        color:    '#6b7280',
+                        display:  'flex',
+                        gap:      '1rem',
+                      }}>
+                        <span>{sub.task?.category}</span>
+                        <span style={{ color: '#a78bfa' }}>
+                          {sub.agreedReward}π
+                        </span>
+                        {sub.status === 'REJECTED' && (
+                          <span style={{ color: '#f87171' }}>
+                            Tap to dispute →
+                          </span>
+                        )}
+                        {sub.status === 'APPROVED' && (
+                          <span style={{ color: '#86efac' }}>
+                            ✓ Earned
+                          </span>
+                        )}
+                      </div>
+
+                      {sub.status === 'REJECTED' && sub.rejectionReason && (
+                        <div style={{
+                          marginTop:    '0.5rem',
+                          fontSize:     '0.78rem',
+                          color:        '#9ca3af',
+                          fontStyle:    'italic',
+                          overflow:     'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace:   'nowrap',
+                        }}>
+                          "{sub.rejectionReason}"
+                        </div>
+                      )}
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
           <button
             onClick={clearAuth}
             style={{
@@ -340,6 +501,7 @@ export default function HomePage() {
               borderRadius: '8px',
               fontSize: '0.9rem',
               cursor: 'pointer',
+              marginTop: '1.5rem',
             }}
           >
             Sign out
