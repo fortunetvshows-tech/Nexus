@@ -34,8 +34,9 @@ export default function HomePage() {
   useEffect(() => {
     if (!user?.piUid) return
 
+    console.log('[HomePage] Fetching submissions for user:', user?.piUid)
     setSubLoading(true)
-    fetch('/api/worker/submissions', {
+    fetch(`${window.location.origin}/api/worker/submissions`, {
       headers: { 'x-pi-uid': user.piUid },
     })
       .then(r => r.json())
