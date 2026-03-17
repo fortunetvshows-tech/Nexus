@@ -155,7 +155,19 @@ export function statusStyle(status: string): {
 // Reusable component styles — use these for consistency
 export const COMPONENT_STYLES = {
 
-  // Floating card — the foundational UI element
+  // ── The signature Stripe-grade glass card ──────────────────────
+  // Use this for EVERY card, container, and surface in the app.
+  // Never write raw card styles — always use COMPONENT_STYLES.cardGlass
+  cardGlass: {
+    background:   'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%), #1E293B',
+    border:       '1px solid rgba(148, 163, 184, 0.1)',
+    borderTop:    '0.5px solid rgba(255, 255, 255, 0.1)',
+    borderRadius: '14px',
+    boxShadow:    '0 4px 24px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05)',
+    padding:      '20px 24px',
+  } as React.CSSProperties,
+
+  // Legacy floating card (deprecated — use cardGlass)
   card: {
     background:   `${GRADIENTS.card}, ${COLORS.bgSurface}`,
     border:       `1px solid ${COLORS.border}`,
@@ -164,72 +176,122 @@ export const COMPONENT_STYLES = {
     padding:      SPACING.xl,
   } as React.CSSProperties,
 
-  // Primary CTA button
+  // ── Primary CTA button ────────────────────────────────────────
   buttonPrimary: {
-    background:   GRADIENTS.indigo,
-    color:        '#ffffff',
-    border:       'none',
-    borderRadius: RADII.md,
-    padding:      `${SPACING.md} ${SPACING.xl}`,
-    fontSize:     '0.9rem',
-    fontWeight:   '600',
-    fontFamily:   FONTS.sans,
-    cursor:       'pointer',
-    boxShadow:    SHADOWS.indigoGlow,
-    transition:   'all 0.15s ease',
+    background:    'linear-gradient(180deg, #6366F1 0%, #4F46E5 100%)',
+    color:         '#ffffff',
+    border:        'none',
+    borderRadius:  '10px',
+    padding:       '12px 24px',
+    fontSize:      '0.9rem',
+    fontWeight:    '600',
+    fontFamily:    "'Inter', system-ui, sans-serif",
+    cursor:        'pointer',
+    boxShadow:     '0 0 24px rgba(99,102,241,0.4)',
+    letterSpacing: '-0.01em',
   } as React.CSSProperties,
 
-  // Secondary button
+  // ── Secondary button ──────────────────────────────────────────
   buttonSecondary: {
     background:   'transparent',
-    color:        COLORS.textSecondary,
-    border:       `1px solid ${COLORS.borderAccent}`,
-    borderRadius: RADII.md,
-    padding:      `${SPACING.md} ${SPACING.xl}`,
+    color:        '#94A3B8',
+    border:       '1px solid rgba(148, 163, 184, 0.2)',
+    borderRadius: '10px',
+    padding:      '12px 24px',
     fontSize:     '0.875rem',
     fontWeight:   '500',
-    fontFamily:   FONTS.sans,
+    fontFamily:   "'Inter', system-ui, sans-serif",
     cursor:       'pointer',
-    transition:   'all 0.15s ease',
   } as React.CSSProperties,
 
-  // Text input
+  // ── Danger button ─────────────────────────────────────────────
+  buttonDanger: {
+    background:   'linear-gradient(180deg, #EF4444 0%, #DC2626 100%)',
+    color:        '#ffffff',
+    border:       'none',
+    borderRadius: '10px',
+    padding:      '12px 24px',
+    fontSize:     '0.875rem',
+    fontWeight:   '600',
+    fontFamily:   "'Inter', system-ui, sans-serif",
+    cursor:       'pointer',
+  } as React.CSSProperties,
+
+  // ── Text input ────────────────────────────────────────────────
   input: {
-    background:   COLORS.bgElevated,
-    border:       `1px solid ${COLORS.border}`,
-    borderRadius: RADII.md,
-    padding:      `${SPACING.md} ${SPACING.lg}`,
-    color:        COLORS.textPrimary,
+    background:   '#263348',
+    border:       '1px solid rgba(148, 163, 184, 0.1)',
+    borderRadius: '10px',
+    padding:      '12px 16px',
+    color:        '#F1F5F9',
     fontSize:     '0.9rem',
-    fontFamily:   FONTS.sans,
+    fontFamily:   "'Inter', system-ui, sans-serif",
     outline:      'none',
     width:        '100%',
     boxSizing:    'border-box' as const,
-    transition:   'border-color 0.15s ease',
   } as React.CSSProperties,
 
-  // Section heading
+  // ── Section label ─────────────────────────────────────────────
   sectionLabel: {
     fontSize:      '0.72rem',
     fontWeight:    '600',
-    color:         COLORS.textMuted,
+    color:         '#64748B',
     textTransform: 'uppercase' as const,
     letterSpacing: '0.08em',
-    margin:        `0 0 ${SPACING.md}`,
+    margin:        '0 0 12px',
+    fontFamily:    "'Inter', system-ui, sans-serif",
   } as React.CSSProperties,
 
-  // Page wrapper
+  // ── Pi amount display (always monospaced) ─────────────────────
+  piAmount: {
+    fontFamily:   "'Fira Code', monospace",
+    fontWeight:   '600',
+    color:        '#10B981',
+    letterSpacing: '-0.02em',
+  } as React.CSSProperties,
+
+  // ── Status badge ──────────────────────────────────────────────
+  badge: {
+    padding:       '3px 10px',
+    borderRadius:  '9999px',
+    fontSize:      '0.7rem',
+    fontWeight:    '600',
+    fontFamily:    "'Inter', system-ui, sans-serif",
+    letterSpacing: '0.02em',
+    display:       'inline-block',
+  } as React.CSSProperties,
+
+  // ── Page wrapper ──────────────────────────────────────────────
   pageWrapper: {
     minHeight:  '100vh',
-    background: COLORS.bgBase,
-    fontFamily: FONTS.sans,
-    color:      COLORS.textPrimary,
+    background: '#0F172A',
+    fontFamily: "'Inter', system-ui, sans-serif",
+    color:      '#F1F5F9',
   } as React.CSSProperties,
 
-  // Main content area
+  // ── Main content area ─────────────────────────────────────────
   mainContent: {
     maxWidth: '720px',
     margin:   '0 auto',
     padding:  '72px 1rem 4rem',
   } as React.CSSProperties,
-}
+
+  // ── Page heading ──────────────────────────────────────────────
+  pageHeading: {
+    margin:        '0 0 8px',
+    fontSize:      '1.5rem',
+    fontWeight:    '700',
+    color:         '#F1F5F9',
+    letterSpacing: '-0.02em',
+    fontFamily:    "'Inter', system-ui, sans-serif",
+  } as React.CSSProperties,
+
+  // ── Divider ───────────────────────────────────────────────────
+  divider: {
+    height:     '1px',
+    background: 'rgba(148, 163, 184, 0.1)',
+    border:     'none',
+    margin:     '16px 0',
+  } as React.CSSProperties,
+
+} as const

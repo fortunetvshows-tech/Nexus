@@ -14,7 +14,7 @@ const inputStyle = {
   padding:      '0.75rem 1rem',
   background:   COLORS.bgElevated,
   border:       `1px solid ${COLORS.borderAccent}`,
-  borderRadius: '8px',
+  borderRadius: RADII.md,
   color:        COLORS.textPrimary,
   fontSize:     '0.9rem',
   outline:      'none',
@@ -84,15 +84,15 @@ export default function EmployerPage() {
     return (
       <div style={{
         minHeight:      '100vh',
-        background:     '#0f0f0f',
+        background:     COLORS.bgBase,
         display:        'flex',
         alignItems:     'center',
         justifyContent: 'center',
         flexDirection:  'column',
         gap:            '1rem',
-        fontFamily:     'system-ui, sans-serif',
+        fontFamily:     FONTS.sans,
       }}>
-        <p style={{ color: '#9ca3af' }}>
+        <p style={{ color: COLORS.textSecondary }}>
           Sign in to post tasks
         </p>
         <button
@@ -100,10 +100,10 @@ export default function EmployerPage() {
           disabled={authLoading}
           style={{
             padding:      '0.75rem 2rem',
-            background:   'linear-gradient(135deg, #7B3FE4, #A855F7)',
-            color:        'white',
+            background:   GRADIENTS.indigo,
+            color:        COLORS.textPrimary,
             border:       'none',
-            borderRadius: '10px',
+            borderRadius: RADII.lg,
             fontSize:     '1rem',
             fontWeight:   '600',
             cursor:       authLoading ? 'not-allowed' : 'pointer',
@@ -118,9 +118,9 @@ export default function EmployerPage() {
   return (
     <div style={{
       minHeight:  '100vh',
-      background: '#0f0f0f',
-      fontFamily: 'system-ui, sans-serif',
-      color:      '#ffffff',
+      background: COLORS.bgBase,
+      fontFamily: FONTS.sans,
+      color:      COLORS.textPrimary,
     }}>
       <Navigation currentPage="employer" />
 
@@ -139,7 +139,7 @@ export default function EmployerPage() {
               margin:     '0 0 1rem',
               fontSize:   '1rem',
               fontWeight: '600',
-              color:      '#9ca3af',
+              color:      COLORS.textSecondary,
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
             }}>
@@ -152,9 +152,9 @@ export default function EmployerPage() {
             }}>
               {myTasks.map(task => (
                 <div key={task.id} style={{
-                  background:   '#111827',
-                  border:       '1px solid #1f2937',
-                  borderRadius: '12px',
+                  background:   COLORS.bgSurface,
+                  border:       `1px solid ${COLORS.border}`,
+                  borderRadius: RADII.lg,
                   padding:      '1rem 1.25rem',
                   display:      'flex',
                   justifyContent: 'space-between',
@@ -164,14 +164,14 @@ export default function EmployerPage() {
                     <div style={{
                       fontWeight: '600',
                       fontSize:   '0.9rem',
-                      color:      '#ffffff',
+                      color:      COLORS.textPrimary,
                       marginBottom: '0.25rem',
                     }}>
                       {task.title}
                     </div>
                     <div style={{
                       fontSize: '0.78rem',
-                      color:    '#6b7280',
+                      color:    COLORS.textMuted,
                     }}>
                       {task.category}
                       {' · '}
@@ -184,9 +184,9 @@ export default function EmployerPage() {
                     href={`/review/${task.id}`}
                     style={{
                       padding:        '0.5rem 1rem',
-                      background:     'linear-gradient(135deg, #7B3FE4, #A855F7)',
-                      color:          'white',
-                      borderRadius:   '8px',
+                    background:     GRADIENTS.indigo,
+                      color:          COLORS.textPrimary,
+                      borderRadius:   RADII.md,
                       fontSize:       '0.8rem',
                       fontWeight:     '500',
                       textDecoration: 'none',
@@ -213,7 +213,7 @@ export default function EmployerPage() {
               }}>
                 Post a Task
               </h1>
-              <p style={{ margin: '0', color: '#6b7280', fontSize: '0.875rem' }}>
+              <p style={{ margin: '0', color: COLORS.textMuted, fontSize: '0.875rem' }}>
                 Define the work, set the reward, and lock Pi in escrow
               </p>
             </div>
@@ -221,10 +221,10 @@ export default function EmployerPage() {
             {error && (
               <div style={{
                 padding:      '0.875rem 1rem',
-                background:   '#450a0a',
-                border:       '1px solid #dc2626',
-                borderRadius: '8px',
-                color:        '#fca5a5',
+                background:   COLORS.redDim,
+                border:       `1px solid ${COLORS.red}`,
+                borderRadius: RADII.md,
+                color:        COLORS.red,
                 marginBottom: '1.5rem',
                 fontSize:     '0.875rem',
               }}>
@@ -234,9 +234,9 @@ export default function EmployerPage() {
 
             {/* Section: Basic Info */}
             <div style={{
-              background:   '#111827',
-              border:       '1px solid #1f2937',
-              borderRadius: '12px',
+              background:   COLORS.bgSurface,
+              border:       `1px solid ${COLORS.border}`,
+              borderRadius: RADII.lg,
               padding:      '1.5rem',
               marginBottom: '1rem',
             }}>
@@ -244,7 +244,7 @@ export default function EmployerPage() {
                 margin:       '0 0 1.25rem',
                 fontSize:     '0.95rem',
                 fontWeight:   '600',
-                color:        '#a78bfa',
+                color:        COLORS.indigoLight,
               }}>
                 Task Details
               </h3>
@@ -314,9 +314,9 @@ export default function EmployerPage() {
 
             {/* Section: Economics */}
             <div style={{
-              background:   '#111827',
-              border:       '1px solid #1f2937',
-              borderRadius: '12px',
+              background:   COLORS.bgSurface,
+              border:       `1px solid ${COLORS.border}`,
+              borderRadius: RADII.lg,
               padding:      '1.5rem',
               marginBottom: '1rem',
             }}>
@@ -324,7 +324,7 @@ export default function EmployerPage() {
                 margin:     '0 0 1.25rem',
                 fontSize:   '0.95rem',
                 fontWeight: '600',
-                color:      '#a78bfa',
+                color:        COLORS.indigoLight,
               }}>
                 Economics
               </h3>
@@ -398,8 +398,8 @@ export default function EmployerPage() {
               {/* Total cost preview */}
               {parseFloat(totalCost()) > 0 && (
                 <div style={{
-                  background:   '#0f172a',
-                  borderRadius: '8px',
+                  background:   COLORS.bgBase,
+                  borderRadius: RADII.md,
                   padding:      '1rem',
                   display:      'flex',
                   justifyContent: 'space-between',
@@ -408,13 +408,13 @@ export default function EmployerPage() {
                   <div>
                     <div style={{
                       fontSize: '0.75rem',
-                      color:    '#6b7280',
+                      color:    COLORS.textMuted,
                     }}>
                       Total escrow required
                     </div>
                     <div style={{
                       fontSize:   '0.8rem',
-                      color:      '#9ca3af',
+                      color:      COLORS.textSecondary,
                       marginTop:  '0.2rem',
                     }}>
                       {form.piReward}π × {form.slotsAvailable} slots
@@ -423,7 +423,7 @@ export default function EmployerPage() {
                   <div style={{
                     fontSize:    '1.75rem',
                     fontWeight:  '700',
-                    background:  'linear-gradient(135deg, #7B3FE4, #A855F7)',
+                    background:  GRADIENTS.indigo,
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor:  'transparent',
                   }}>
@@ -446,9 +446,9 @@ export default function EmployerPage() {
 
             {/* Section: Worker Requirements */}
             <div style={{
-              background:   '#111827',
-              border:       '1px solid #1f2937',
-              borderRadius: '12px',
+              background:   COLORS.bgSurface,
+              border:       `1px solid ${COLORS.border}`,
+              borderRadius: RADII.lg,
               padding:      '1.5rem',
               marginBottom: '1rem',
             }}>
@@ -456,7 +456,7 @@ export default function EmployerPage() {
                 margin:     '0 0 1.25rem',
                 fontSize:   '0.95rem',
                 fontWeight: '600',
-                color:      '#a78bfa',
+                color:      COLORS.indigoLight,
               }}>
                 Worker Requirements
               </h3>
@@ -525,10 +525,10 @@ export default function EmployerPage() {
               style={{
                 width:        '100%',
                 padding:      '1rem',
-                background:   'linear-gradient(135deg, #7B3FE4, #A855F7)',
-                color:        'white',
+                background:   GRADIENTS.indigo,
+                color:        COLORS.textPrimary,
                 border:       'none',
-                borderRadius: '12px',
+                borderRadius: RADII.lg,
                 fontSize:     '1rem',
                 fontWeight:   '600',
                 cursor:       'pointer',
@@ -547,15 +547,15 @@ export default function EmployerPage() {
               <h1 style={{ margin: '0 0 0.5rem', fontSize: '1.5rem', fontWeight: '700' }}>
                 Review Your Task
               </h1>
-              <p style={{ margin: '0', color: '#6b7280', fontSize: '0.875rem' }}>
+              <p style={{ margin: '0', color: COLORS.textMuted, fontSize: '0.875rem' }}>
                 Confirm all details before payment
               </p>
             </div>
 
             <div style={{
-              background:   '#111827',
-              border:       '1px solid #1f2937',
-              borderRadius: '12px',
+              background:   COLORS.bgSurface,
+              border:       `1px solid ${COLORS.border}`,
+              borderRadius: RADII.lg,
               padding:      '1.5rem',
               marginBottom: '1.5rem',
             }}>
@@ -575,12 +575,12 @@ export default function EmployerPage() {
                   display:       'flex',
                   justifyContent: 'space-between',
                   padding:       '0.6rem 0',
-                  borderBottom:  '1px solid #1f2937',
+                  borderBottom:  `1px solid ${COLORS.border}`,
                   fontSize:      '0.875rem',
                 }}>
-                  <span style={{ color: '#6b7280' }}>{row.label}</span>
+                  <span style={{ color: COLORS.textMuted }}>{row.label}</span>
                   <span style={{
-                    color:    '#e5e7eb',
+                    color:    COLORS.textSecondary,
                     maxWidth: '60%',
                     textAlign: 'right',
                     wordBreak: 'break-word',
@@ -597,9 +597,9 @@ export default function EmployerPage() {
                 fontSize:       '1rem',
                 fontWeight:     '600',
               }}>
-                <span style={{ color: '#9ca3af' }}>Total escrow</span>
+                <span style={{ color: COLORS.textSecondary }}>Total escrow</span>
                 <span style={{
-                  background:          'linear-gradient(135deg, #7B3FE4, #A855F7)',
+                  background:          GRADIENTS.indigo,
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor:  'transparent',
                   fontSize:            '1.3rem',
@@ -616,9 +616,9 @@ export default function EmployerPage() {
                   flex:         1,
                   padding:      '0.875rem',
                   background:   'transparent',
-                  border:       '1px solid #374151',
-                  borderRadius: '10px',
-                  color:        '#9ca3af',
+                  border:       `1px solid ${COLORS.borderAccent}`,
+                  borderRadius: RADII.lg,
+                  color:        COLORS.textSecondary,
                   fontSize:     '0.9rem',
                   cursor:       'pointer',
                 }}
@@ -631,10 +631,10 @@ export default function EmployerPage() {
                 style={{
                   flex:         2,
                   padding:      '0.875rem',
-                  background:   'linear-gradient(135deg, #7B3FE4, #A855F7)',
-                  color:        'white',
+                  background:   GRADIENTS.indigo,
+                  color:        COLORS.textPrimary,
                   border:       'none',
-                  borderRadius: '10px',
+                  borderRadius: RADII.lg,
                   fontSize:     '0.9rem',
                   fontWeight:   '600',
                   cursor:       isProcessing ? 'not-allowed' : 'pointer',
@@ -655,8 +655,8 @@ export default function EmployerPage() {
             <div style={{
               width:       '60px',
               height:      '60px',
-              borderRadius: '50%',
-              background:  'linear-gradient(135deg, #7B3FE4, #A855F7)',
+              borderRadius: RADII.full,
+              background:  GRADIENTS.indigo,
               margin:      '0 auto 1.5rem',
               display:     'flex',
               alignItems:  'center',
@@ -670,7 +670,7 @@ export default function EmployerPage() {
                 ? 'Complete payment in Pi Browser'
                 : 'Creating your task...'}
             </h2>
-            <p style={{ color: '#6b7280', margin: '0', fontSize: '0.875rem' }}>
+            <p style={{ color: COLORS.textMuted, margin: '0', fontSize: '0.875rem' }}>
               {step === 'payment'
                 ? 'Approve the Pi payment to lock escrow'
                 : 'Setting up task and locking escrow atomically'}
@@ -684,9 +684,9 @@ export default function EmployerPage() {
             <div style={{
               width:        '70px',
               height:       '70px',
-              borderRadius: '50%',
-              background:   '#14532d',
-              border:       '2px solid #16a34a',
+              borderRadius: RADII.full,
+              background:   COLORS.emeraldDim,
+              border:       `2px solid ${COLORS.emerald}`,
               margin:       '0 auto 1.5rem',
               display:      'flex',
               alignItems:   'center',
@@ -697,7 +697,7 @@ export default function EmployerPage() {
             </div>
             <h2 style={{ margin: '0 0 0.5rem' }}>Task Posted!</h2>
             <p style={{
-              color:    '#9ca3af',
+              color:    COLORS.textSecondary,
               margin:   '0 0 2rem',
               fontSize: '0.875rem',
             }}>
@@ -705,23 +705,23 @@ export default function EmployerPage() {
             </p>
 
             <div style={{
-              background:   '#111827',
-              border:       '1px solid #1f2937',
-              borderRadius: '10px',
+              background:   COLORS.bgSurface,
+              border:       `1px solid ${COLORS.border}`,
+              borderRadius: RADII.lg,
               padding:      '1rem',
               marginBottom: '2rem',
               textAlign:    'left',
             }}>
               <div style={{
                 fontSize: '0.75rem',
-                color:    '#6b7280',
+                color:    COLORS.textMuted,
                 marginBottom: '0.3rem',
               }}>
                 Task ID
               </div>
               <code style={{
                 fontSize:  '0.8rem',
-                color:     '#a78bfa',
+                color:     COLORS.indigoLight,
                 wordBreak: 'break-all',
               }}>
                 {taskId}
@@ -735,13 +735,13 @@ export default function EmployerPage() {
                   flex:           1,
                   display:        'block',
                   padding:        '0.875rem',
-                  background:     'linear-gradient(135deg, #7B3FE4, #A855F7)',
-                  color:          'white',
+                  background:     GRADIENTS.indigo,
+                  color:          COLORS.textPrimary,
                   textDecoration: 'none',
                   fontSize:       '0.9rem',
                   fontWeight:     '600',
                   textAlign:      'center',
-                  borderRadius:   '10px',
+                  borderRadius:   RADII.lg,
                 }}
               >
                 Review submissions →
@@ -753,9 +753,9 @@ export default function EmployerPage() {
                   display:        'block',
                   padding:        '0.875rem',
                   background:     'transparent',
-                  border:         '1px solid #374151',
-                  borderRadius:   '10px',
-                  color:          '#9ca3af',
+                  border:         `1px solid ${COLORS.borderAccent}`,
+                  borderRadius:   RADII.lg,
+                  color:          COLORS.textSecondary,
                   textDecoration: 'none',
                   fontSize:       '0.9rem',
                   textAlign:      'center',
@@ -768,10 +768,10 @@ export default function EmployerPage() {
                 style={{
                   flex:         1,
                   padding:      '0.875rem',
-                  background:   '#374151',
-                  color:        'white',
+                  background:   COLORS.bgSecondary,
+                  color:        COLORS.textPrimary,
                   border:       'none',
-                  borderRadius: '10px',
+                  borderRadius: RADII.lg,
                   fontSize:     '0.9rem',
                   fontWeight:   '600',
                   cursor:       'pointer',
@@ -789,9 +789,9 @@ export default function EmployerPage() {
             <div style={{
               width:        '70px',
               height:       '70px',
-              borderRadius: '50%',
-              background:   '#450a0a',
-              border:       '2px solid #dc2626',
+              borderRadius: RADII.full,
+              background:   COLORS.redDim,
+              border:       `2px solid ${COLORS.red}`,
               margin:       '0 auto 1.5rem',
               display:      'flex',
               alignItems:   'center',
@@ -802,7 +802,7 @@ export default function EmployerPage() {
             </div>
             <h2 style={{ margin: '0 0 0.5rem' }}>Something went wrong</h2>
             <p style={{
-              color:    '#fca5a5',
+              color:    COLORS.red,
               margin:   '0 0 2rem',
               fontSize: '0.875rem',
             }}>
@@ -810,12 +810,12 @@ export default function EmployerPage() {
             </p>
             {txid && (
               <div style={{
-                background:   '#111827',
-                borderRadius: '8px',
+                background:   COLORS.bgSurface,
+                borderRadius: RADII.md,
                 padding:      '0.75rem',
                 marginBottom: '1.5rem',
                 fontSize:     '0.8rem',
-                color:        '#9ca3af',
+                color:        COLORS.textSecondary,
               }}>
                 Payment was recorded (txid: {txid?.slice(0, 16)}...)
                 <br />
@@ -826,10 +826,10 @@ export default function EmployerPage() {
               onClick={reset}
               style={{
                 padding:      '0.875rem 2rem',
-                background:   'linear-gradient(135deg, #7B3FE4, #A855F7)',
-                color:        'white',
+                background:   GRADIENTS.indigo,
+                color:        COLORS.textPrimary,
                 border:       'none',
-                borderRadius: '10px',
+                borderRadius: RADII.lg,
                 fontSize:     '0.9rem',
                 fontWeight:   '600',
                 cursor:       'pointer',

@@ -27,15 +27,15 @@ export default function FeedPage() {
     return (
       <div style={{
         minHeight:      '100vh',
-        background:     '#0f0f0f',
+        background:     COLORS.bgBase,
         display:        'flex',
         alignItems:     'center',
         justifyContent: 'center',
         flexDirection:  'column',
         gap:            '1rem',
-        fontFamily:     'system-ui, sans-serif',
+        fontFamily:     FONTS.sans,
       }}>
-        <p style={{ color: '#9ca3af', fontSize: '1rem' }}>
+        <p style={{ color: COLORS.textSecondary, fontSize: '1rem' }}>
           Sign in to browse available tasks
         </p>
         <button
@@ -43,10 +43,10 @@ export default function FeedPage() {
           disabled={authLoading}
           style={{
             padding:       '0.75rem 2rem',
-            background:    'linear-gradient(135deg, #7B3FE4, #A855F7)',
-            color:         'white',
+            background:    GRADIENTS.indigo,
+            color:         COLORS.textPrimary,
             border:        'none',
-            borderRadius:  '10px',
+            borderRadius:  RADII.lg,
             fontSize:      '1rem',
             fontWeight:    '600',
             cursor:        authLoading ? 'not-allowed' : 'pointer',
@@ -61,9 +61,9 @@ export default function FeedPage() {
   return (
     <div style={{
       minHeight:  '100vh',
-      background: '#0f0f0f',
-      fontFamily: 'system-ui, sans-serif',
-      color:      '#ffffff',
+      background: COLORS.bgBase,
+      fontFamily: FONTS.sans,
+      color:      COLORS.textPrimary,
     }}>
       <Navigation currentPage="feed" />
 
@@ -73,11 +73,11 @@ export default function FeedPage() {
           bottom:      '1.5rem',
           left:        '50%',
           transform:   'translateX(-50%)',
-          background:  '#1f2937',
-          border:      '1px solid #374151',
-          borderRadius: '10px',
+          background:  COLORS.bgElevated,
+          border:      `1px solid ${COLORS.borderAccent}`,
+          borderRadius: RADII.lg,
           padding:     '0.875rem 1.5rem',
-          color:       '#e5e7eb',
+          color:       COLORS.textSecondary,
           fontSize:    '0.875rem',
           zIndex:      200,
           whiteSpace:  'nowrap',
@@ -90,7 +90,7 @@ export default function FeedPage() {
               marginLeft: '1rem',
               background: 'none',
               border:     'none',
-              color:      '#6b7280',
+              color:      COLORS.textMuted,
               cursor:     'pointer',
               fontSize:   '0.875rem',
             }}
@@ -123,7 +123,7 @@ export default function FeedPage() {
             </h1>
             <p style={{
               margin:   '0',
-              color:    '#6b7280',
+              color:    COLORS.textMuted,
               fontSize: '0.875rem',
             }}>
               Your reputation score: {user.reputationScore}
@@ -134,10 +134,10 @@ export default function FeedPage() {
             disabled={isLoading}
             style={{
               padding:      '0.5rem 1rem',
-              background:   '#111827',
-              border:       '1px solid #1f2937',
-              borderRadius: '8px',
-              color:        '#9ca3af',
+              background:   COLORS.bgSurface,
+              border:       `1px solid ${COLORS.border}`,
+              borderRadius: RADII.md,
+              color:        COLORS.textSecondary,
               fontSize:     '0.8rem',
               cursor:       isLoading ? 'not-allowed' : 'pointer',
             }}
@@ -164,9 +164,9 @@ export default function FeedPage() {
           }}>
             {[1, 2, 3].map(i => (
               <div key={i} style={{
-                background:   '#111827',
-                border:       '1px solid #1f2937',
-                borderRadius: '16px',
+                background:   COLORS.bgSurface,
+                border:       `1px solid ${COLORS.border}`,
+                borderRadius: RADII.xl,
                 height:       '180px',
                 animation:    'pulse 2s infinite',
               }} />
@@ -179,17 +179,17 @@ export default function FeedPage() {
           <div style={{
             textAlign:    'center',
             padding:      '4rem 2rem',
-            background:   '#111827',
-            borderRadius: '16px',
-            border:       '1px solid #1f2937',
+            background:   COLORS.bgSurface,
+            borderRadius: RADII.xl,
+            border:       `1px solid ${COLORS.border}`,
           }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
               🔍
             </div>
-            <h3 style={{ margin: '0 0 0.5rem', color: '#ffffff' }}>
+            <h3 style={{ margin: '0 0 0.5rem', color: COLORS.textPrimary }}>
               No tasks found
             </h3>
-            <p style={{ color: '#6b7280', margin: '0', fontSize: '0.875rem' }}>
+            <p style={{ color: COLORS.textMuted, margin: '0', fontSize: '0.875rem' }}>
               Try adjusting your filters or check back soon.
             </p>
           </div>
@@ -222,9 +222,9 @@ export default function FeedPage() {
               width:        '100%',
               padding:      '0.875rem',
               background:   'transparent',
-              border:       '1px solid #374151',
-              borderRadius: '10px',
-              color:        '#9ca3af',
+              border:       `1px solid ${COLORS.borderAccent}`,
+              borderRadius: RADII.lg,
+              color:        COLORS.textSecondary,
               fontSize:     '0.875rem',
               cursor:       isLoading ? 'not-allowed' : 'pointer',
               marginTop:    '1rem',

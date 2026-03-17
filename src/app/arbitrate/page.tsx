@@ -51,12 +51,12 @@ export default function ArbitratePage() {
     return (
       <div style={{
         minHeight:      '100vh',
-        background:     '#0f0f0f',
+        background:     COLORS.bgBase,
         display:        'flex',
         alignItems:     'center',
         justifyContent: 'center',
-        color:          '#9ca3af',
-        fontFamily:     'system-ui, sans-serif',
+        color:          COLORS.textSecondary,
+        fontFamily:     FONTS.sans,
       }}>
         Connecting...
       </div>
@@ -67,9 +67,10 @@ export default function ArbitratePage() {
     return (
       <div style={{
         minHeight:  '100vh',
-        background: '#0f0f0f',
-        fontFamily: 'system-ui, sans-serif',
-        color:      '#ffffff',
+        background: COLORS.bgBase,
+        fontFamily: FONTS.sans,
+        color:      COLORS.textPrimary,
+      }}>
       }}>
         <Navigation currentPage="home" />
         <main style={{
@@ -82,7 +83,7 @@ export default function ArbitratePage() {
           <h1 style={{ margin: '0 0 0.5rem', fontSize: '1.3rem' }}>
             Arbitration Panel
           </h1>
-          <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+          <p style={{ color: COLORS.textMuted, fontSize: '0.875rem' }}>
             Only Sovereign-level Pioneers can serve as arbitrators.
             Keep completing tasks to reach Sovereign status.
           </p>
@@ -94,9 +95,9 @@ export default function ArbitratePage() {
   return (
     <div style={{
       minHeight:  '100vh',
-      background: '#0f0f0f',
-      fontFamily: 'system-ui, sans-serif',
-      color:      '#ffffff',
+      background: COLORS.bgBase,
+      fontFamily: FONTS.sans,
+      color:      COLORS.textPrimary,
     }}>
       <Navigation currentPage="home" />
 
@@ -108,16 +109,16 @@ export default function ArbitratePage() {
         <h1 style={{ margin: '0 0 0.5rem', fontSize: '1.4rem', fontWeight: '700' }}>
           Arbitration Panel
         </h1>
-        <p style={{ margin: '0 0 2rem', color: '#6b7280', fontSize: '0.875rem' }}>
+        <p style={{ margin: '0 0 2rem', color: COLORS.textMuted, fontSize: '0.875rem' }}>
           Review disputes and vote fairly. Your reputation depends on it.
         </p>
 
         {isLoading && (
           <div style={{
-            background:   '#111827',
-            borderRadius: '12px',
+            background:   COLORS.bgSurface,
+            borderRadius: RADII.lg,
             height:       '200px',
-            border:       '1px solid #1f2937',
+            border:       `1px solid ${COLORS.border}`,
           }} />
         )}
 
@@ -125,13 +126,13 @@ export default function ArbitratePage() {
           <div style={{
             textAlign:    'center',
             padding:      '4rem 2rem',
-            background:   '#111827',
-            borderRadius: '16px',
-            border:       '1px solid #1f2937',
+            background:   COLORS.bgSurface,
+            borderRadius: RADII.xl,
+            border:       `1px solid ${COLORS.border}`,
           }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✓</div>
             <h3 style={{ margin: '0 0 0.5rem' }}>No pending arbitrations</h3>
-            <p style={{ color: '#6b7280', margin: '0', fontSize: '0.875rem' }}>
+            <p style={{ color: COLORS.textMuted, margin: '0', fontSize: '0.875rem' }}>
               You are up to date. New disputes will appear here.
             </p>
           </div>
@@ -143,9 +144,9 @@ export default function ArbitratePage() {
               key={arb.id}
               href={`/arbitrate/${arb.disputeId}`}
               style={{
-                background:     '#111827',
-                border:         '1px solid #7B3FE4',
-                borderRadius:   '16px',
+                background:     COLORS.bgSurface,
+                border:         `1px solid ${COLORS.indigo}`,
+                borderRadius:   RADII.xl,
                 padding:        '1.25rem',
                 textDecoration: 'none',
                 display:        'block',
@@ -160,23 +161,23 @@ export default function ArbitratePage() {
                 <div style={{
                   fontWeight: '600',
                   fontSize:   '0.95rem',
-                  color:      '#ffffff',
+                  color:      COLORS.textPrimary,
                 }}>
                   Dispute #{arb.disputeId.slice(0, 8)}
                 </div>
                 <div style={{
                   padding:      '0.25rem 0.75rem',
-                  borderRadius: '9999px',
-                  background:   '#1f2937',
+                  borderRadius: RADII.full,
+                  background:   COLORS.bgElevated,
                   fontSize:     '0.75rem',
-                  color:        '#a78bfa',
+                  color:        COLORS.indigoLight,
                 }}>
                   Awaiting vote
                 </div>
               </div>
               <div style={{
                 fontSize: '0.8rem',
-                color:    '#6b7280',
+                color:    COLORS.textMuted,
               }}>
                 Assigned {new Date(arb.createdAt).toLocaleDateString()}
                 {' · '}Tap to review and vote

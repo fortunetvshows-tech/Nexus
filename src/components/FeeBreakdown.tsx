@@ -26,15 +26,15 @@ export function FeeBreakdown({
   if (showFor === 'employer') {
     return (
       <div style={{
-        background:   '#0f172a',
-        border:       `1px solid ${validation.valid ? '#1f2937' : '#dc2626'}`,
-        borderRadius: '10px',
+        background:   COLORS.bgBase,
+        border:       `1px solid ${validation.valid ? COLORS.border : COLORS.red}`,
+        borderRadius: RADII.lg,
         padding:      '1rem',
         fontSize:     '0.85rem',
       }}>
         <div style={{
           fontWeight:   '600',
-          color:        '#9ca3af',
+          color:        COLORS.textSecondary,
           marginBottom: '0.75rem',
           fontSize:     '0.75rem',
           textTransform: 'uppercase' as const,
@@ -47,10 +47,10 @@ export function FeeBreakdown({
           <div style={{
             display: 'flex', justifyContent: 'space-between',
           }}>
-            <span style={{ color: '#6b7280' }}>
+            <span style={{ color: COLORS.textMuted }}>
               Reward per slot
             </span>
-            <span style={{ color: '#ffffff' }}>
+            <span style={{ color: COLORS.textPrimary }}>
               {rewardPi.toFixed(4)}π
             </span>
           </div>
@@ -59,27 +59,27 @@ export function FeeBreakdown({
             <div style={{
               display: 'flex', justifyContent: 'space-between',
             }}>
-              <span style={{ color: '#6b7280' }}>
+              <span style={{ color: COLORS.textMuted }}>
                 × {slots} slots
               </span>
-              <span style={{ color: '#ffffff' }}>
+              <span style={{ color: COLORS.textPrimary }}>
                 {totalEscrow.toFixed(4)}π
               </span>
             </div>
           )}
 
           <div style={{
-            borderTop:  '1px solid #1f2937',
+            borderTop:  `1px solid ${COLORS.border}`,
             marginTop:  '0.4rem',
             paddingTop: '0.4rem',
             display:    'flex',
             justifyContent: 'space-between',
           }}>
-            <span style={{ color: '#6b7280' }}>
+            <span style={{ color: COLORS.textMuted }}>
               Total locked in escrow
             </span>
             <span style={{
-              color:      '#a78bfa',
+              color:      COLORS.indigoLight,
               fontWeight: '700',
             }}>
               {totalEscrow.toFixed(4)}π
@@ -90,9 +90,9 @@ export function FeeBreakdown({
         <div style={{
           marginTop:    '0.75rem',
           paddingTop:   '0.75rem',
-          borderTop:    '1px solid #1f2937',
+          borderTop:    `1px solid ${COLORS.border}`,
           fontSize:     '0.75rem',
-          color:        '#4b5563',
+          color:        COLORS.textMuted,
         }}>
           Worker receives {workerGross.toFixed(4)}π per slot
           {' '}(after {(PLATFORM_CONFIG.PLATFORM_FEE_RATE * 100).toFixed(0)}% platform fee)
@@ -102,9 +102,9 @@ export function FeeBreakdown({
           <div style={{
             marginTop:  '0.75rem',
             padding:    '0.5rem 0.75rem',
-            background: '#450a0a',
-            borderRadius: '6px',
-            color:      '#fca5a5',
+            background: COLORS.redDim,
+            borderRadius: RADII.md,
+            color:      COLORS.red,
             fontSize:   '0.8rem',
           }}>
             ⚠ {validation.reason}
@@ -117,15 +117,15 @@ export function FeeBreakdown({
   // Worker view
   return (
     <div style={{
-      background:   '#0f172a',
-      border:       '1px solid #1f2937',
-      borderRadius: '10px',
+      background:   COLORS.bgBase,
+      border:       `1px solid ${COLORS.border}`,
+      borderRadius: RADII.lg,
       padding:      '1rem',
       fontSize:     '0.85rem',
     }}>
       <div style={{
         fontWeight:    '600',
-        color:         '#9ca3af',
+        color:         COLORS.textSecondary,
         marginBottom:  '0.75rem',
         fontSize:      '0.75rem',
         textTransform: 'uppercase' as const,
@@ -142,8 +142,8 @@ export function FeeBreakdown({
         <div style={{
           display: 'flex', justifyContent: 'space-between',
         }}>
-          <span style={{ color: '#6b7280' }}>Task reward</span>
-          <span style={{ color: '#ffffff' }}>
+          <span style={{ color: COLORS.textMuted }}>Task reward</span>
+          <span style={{ color: COLORS.textPrimary }}>
             {rewardPi.toFixed(4)}π
           </span>
         </div>
@@ -151,10 +151,10 @@ export function FeeBreakdown({
         <div style={{
           display: 'flex', justifyContent: 'space-between',
         }}>
-          <span style={{ color: '#6b7280' }}>
+          <span style={{ color: COLORS.textMuted }}>
             Platform fee ({(PLATFORM_CONFIG.PLATFORM_FEE_RATE * 100).toFixed(0)}%)
           </span>
-          <span style={{ color: '#f87171' }}>
+          <span style={{ color: COLORS.red }}>
             -{platformFee.toFixed(4)}π
           </span>
         </div>
@@ -162,29 +162,29 @@ export function FeeBreakdown({
         <div style={{
           display: 'flex', justifyContent: 'space-between',
         }}>
-          <span style={{ color: '#6b7280' }}>
+          <span style={{ color: COLORS.textMuted }}>
             Network fee
           </span>
-          <span style={{ color: '#f87171' }}>
+          <span style={{ color: COLORS.red }}>
             -{PLATFORM_CONFIG.NETWORK_FEE_PI.toFixed(4)}π
           </span>
         </div>
 
         <div style={{
-          borderTop:  '1px solid #1f2937',
+          borderTop:  `1px solid ${COLORS.border}`,
           marginTop:  '0.4rem',
           paddingTop: '0.4rem',
           display:    'flex',
           justifyContent: 'space-between',
         }}>
           <span style={{
-            color:      '#86efac',
+            color:      COLORS.emerald,
             fontWeight: '600',
           }}>
             You receive
           </span>
           <span style={{
-            color:      '#86efac',
+            color:      COLORS.emerald,
             fontWeight: '700',
             fontSize:   '1rem',
           }}>

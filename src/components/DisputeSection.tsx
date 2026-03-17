@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { COLORS, FONTS, RADII, SHADOWS, GRADIENTS, SPACING, statusStyle } from '@/lib/design/tokens'
+import { COLORS, FONTS, RADII, SHADOWS, GRADIENTS, SPACING, statusStyle, COMPONENT_STYLES } from '@/lib/design/tokens'
 
 interface DisputeSectionProps {
   submissionId: string
@@ -70,8 +70,8 @@ export function DisputeSection({
   if (state === 'idle' || state === 'filing') {
     return (
       <div style={{
-        background:   '#111827',
-        border:       '1px solid #374151',
+        background:   COLORS.bgSurface,
+        border:       `1px solid ${COLORS.borderAccent}`,
         borderRadius: '16px',
         padding:      '1.5rem',
         marginTop:    '1rem',
@@ -80,14 +80,14 @@ export function DisputeSection({
           margin:     '0 0 0.5rem',
           fontSize:   '1rem',
           fontWeight: '600',
-          color:      '#ffffff',
+          color:      COLORS.textPrimary,
         }}>
           Dispute this rejection
         </h3>
         <p style={{
           margin:   '0 0 1rem',
           fontSize: '0.875rem',
-          color:    '#6b7280',
+          color:    COLORS.textMuted,
         }}>
           If you believe your work was unfairly rejected, explain your case
           below. Your dispute will be reviewed automatically first, then
@@ -100,9 +100,9 @@ export function DisputeSection({
             style={{
               padding:      '0.75rem 1.5rem',
               background:   'transparent',
-              border:       '1px solid #6b7280',
+              border:       `1px solid ${COLORS.textMuted}`,
               borderRadius: '8px',
-              color:        '#9ca3af',
+              color:        COLORS.textSecondary,
               fontSize:     '0.875rem',
               cursor:       'pointer',
             }}
@@ -121,10 +121,10 @@ export function DisputeSection({
               style={{
                 width:        '100%',
                 padding:      '0.875rem',
-                background:   '#1f2937',
-                border:       '1px solid #374151',
+                background:   COLORS.bgElevated,
+                border:       `1px solid ${COLORS.borderAccent}`,
                 borderRadius: '8px',
-                color:        '#ffffff',
+                color:        COLORS.textPrimary,
                 fontSize:     '0.875rem',
                 resize:       'vertical',
                 outline:      'none',
@@ -136,9 +136,9 @@ export function DisputeSection({
             {error && (
               <div style={{
                 padding:      '0.75rem',
-                background:   '#450a0a',
+                background:   COLORS.redDim,
                 borderRadius: '8px',
-                color:        '#fca5a5',
+                color:        COLORS.red,
                 fontSize:     '0.875rem',
                 marginBottom: '0.75rem',
               }}>
@@ -153,9 +153,9 @@ export function DisputeSection({
                   flex:         1,
                   padding:      '0.75rem',
                   background:   'transparent',
-                  border:       '1px solid #374151',
+                  border:       `1px solid ${COLORS.borderAccent}`,
                   borderRadius: '8px',
-                  color:        '#6b7280',
+                  color:        COLORS.textMuted,
                   fontSize:     '0.875rem',
                   cursor:       'pointer',
                 }}
@@ -169,8 +169,8 @@ export function DisputeSection({
                   flex:         2,
                   padding:      '0.75rem',
                   background:   reason.trim().length < 20
-                                  ? '#374151'
-                                  : '#7B3FE4',
+                                  ? COLORS.borderAccent
+                                  : COLORS.indigo,
                   border:       'none',
                   borderRadius: '8px',
                   color:        'white',
@@ -193,14 +193,14 @@ export function DisputeSection({
   if (state === 'processing') {
     return (
       <div style={{
-        background:   '#111827',
-        border:       '1px solid #374151',
+        background:   COLORS.bgSurface,
+        border:       `1px solid ${COLORS.borderAccent}`,
         borderRadius: '16px',
         padding:      '1.5rem',
         marginTop:    '1rem',
         textAlign:    'center',
       }}>
-        <p style={{ color: '#9ca3af', margin: '0' }}>
+        <p style={{ color: COLORS.textSecondary, margin: '0' }}>
           Reviewing your dispute...
         </p>
       </div>
@@ -210,8 +210,8 @@ export function DisputeSection({
   if (state === 'escalated') {
     return (
       <div style={{
-        background:   '#111827',
-        border:       '1px solid #7B3FE4',
+        background:   COLORS.bgSurface,
+        border:       `1px solid ${COLORS.indigo}`,
         borderRadius: '16px',
         padding:      '1.5rem',
         marginTop:    '1rem',
@@ -226,14 +226,14 @@ export function DisputeSection({
           margin:     '0 0 0.5rem',
           fontSize:   '1rem',
           fontWeight: '600',
-          color:      '#ffffff',
+          color:      COLORS.textPrimary,
         }}>
           Dispute escalated to peer review
         </h3>
         <p style={{
           margin:   '0',
           fontSize: '0.875rem',
-          color:    '#9ca3af',
+          color:    COLORS.textSecondary,
         }}>
           Your case passed initial review. Three Pioneer arbitrators
           will review your submission and the employer's rejection
@@ -246,8 +246,8 @@ export function DisputeSection({
   if (state === 'employer_upheld') {
     return (
       <div style={{
-        background:   '#111827',
-        border:       '1px solid #374151',
+        background:   COLORS.bgSurface,
+        border:       `1px solid ${COLORS.borderAccent}`,
         borderRadius: '16px',
         padding:      '1.5rem',
         marginTop:    '1rem',
@@ -256,25 +256,25 @@ export function DisputeSection({
           margin:     '0 0 0.5rem',
           fontSize:   '1rem',
           fontWeight: '600',
-          color:      '#ffffff',
+          color:      COLORS.textPrimary,
         }}>
           Dispute resolved — rejection upheld
         </h3>
         <p style={{
           margin:   '0 0 1rem',
           fontSize: '0.875rem',
-          color:    '#9ca3af',
+          color:    COLORS.textSecondary,
         }}>
           The automated review found the rejection was valid based on
           the evidence provided.
         </p>
         {checks && (
           <div style={{
-            background:   '#0f172a',
+            background:   COLORS.bgBase,
             borderRadius: '8px',
             padding:      '0.875rem',
             fontSize:     '0.8rem',
-            color:        '#6b7280',
+            color:        COLORS.textMuted,
           }}>
             Checks passed: {checks.passed as number}/3
           </div>
@@ -285,13 +285,13 @@ export function DisputeSection({
 
   return (
     <div style={{
-      background:   '#111827',
-      border:       '1px solid #dc2626',
+      background:   COLORS.bgSurface,
+      border:       `1px solid ${COLORS.red}`,
       borderRadius: '16px',
       padding:      '1.5rem',
       marginTop:    '1rem',
     }}>
-      <p style={{ color: '#fca5a5', margin: '0', fontSize: '0.875rem' }}>
+      <p style={{ color: COLORS.red, margin: '0', fontSize: '0.875rem' }}>
         {error ?? 'Something went wrong filing your dispute.'}
       </p>
     </div>

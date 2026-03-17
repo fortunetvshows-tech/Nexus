@@ -88,7 +88,7 @@ function statusColor(status: string): string {
   switch (status) {
     case 'confirmed': return COLORS.emerald
     case 'pending':   return COLORS.amber
-    case 'failed':    return '#f87171'
+    case 'failed':    return COLORS.red
     case 'reversed':  return COLORS.textSecondary
     default:          return COLORS.textMuted
   }
@@ -122,7 +122,7 @@ function StatCard({
     <div style={{
       background:   COLORS.bgSurface,
       border:       `1px solid ${COLORS.border}`,
-      borderRadius: '12px',
+      borderRadius: RADII.lg,
       padding:      '1.25rem',
     }}>
       <div style={{
@@ -232,7 +232,7 @@ export default function AnalyticsPage() {
         display:        'flex',
         alignItems:     'center',
         justifyContent: 'center',
-        fontFamily:     'system-ui, sans-serif',
+        fontFamily:     FONTS.sans,
         color:          COLORS.textSecondary,
       }}>
         Connecting...
@@ -252,7 +252,7 @@ export default function AnalyticsPage() {
     <div style={{
       minHeight:  '100vh',
       background: COLORS.bgBase,
-      fontFamily: 'system-ui, sans-serif',
+      fontFamily: FONTS.sans,
       color:      COLORS.textPrimary,
     }}>
       <Navigation currentPage="analytics" />
@@ -283,7 +283,7 @@ export default function AnalyticsPage() {
           gap:          '0.5rem',
           marginBottom: '2rem',
           background:   COLORS.bgSurface,
-          borderRadius: '12px',
+          borderRadius: RADII.lg,
           padding:      '0.35rem',
           border:       `1px solid ${COLORS.border}`,
         }}>
@@ -294,7 +294,7 @@ export default function AnalyticsPage() {
               style={{
                 flex:         1,
                 padding:      '0.6rem',
-                borderRadius: '8px',
+                borderRadius: RADII.md,
                 border:       'none',
                 background:   activeTab === tab.key
                                 ? COLORS.bgElevated
@@ -322,7 +322,7 @@ export default function AnalyticsPage() {
             {[1, 2, 3].map(i => (
               <div key={i} style={{
                 background:   COLORS.bgSurface,
-                borderRadius: '12px',
+                borderRadius: RADII.lg,
                 height:       '80px',
                 border:       `1px solid ${COLORS.border}`,
               }} />
@@ -349,7 +349,7 @@ export default function AnalyticsPage() {
               <StatCard
                 label="This Week"
                 value={formatPi(workerSummary?.thisWeekEarned ?? 0)}
-                color="#a78bfa"
+                color={COLORS.indigoLight}
               />
               <StatCard
                 label="Pending"
@@ -363,7 +363,7 @@ export default function AnalyticsPage() {
             <div style={{
               background:   COLORS.bgSurface,
               border:       `1px solid ${COLORS.border}`,
-              borderRadius: '12px',
+              borderRadius: RADII.lg,
               padding:      '1rem 1.25rem',
               marginBottom: '1.5rem',
               fontSize:     '0.8rem',
@@ -396,7 +396,7 @@ export default function AnalyticsPage() {
                 padding:      '2.5rem',
                 textAlign:    'center',
                 background:   COLORS.bgSurface,
-                borderRadius: '12px',
+                borderRadius: RADII.lg,
                 border:       `1px solid ${COLORS.border}`,
                 color:        COLORS.textMuted,
                 fontSize:     '0.875rem',
@@ -417,7 +417,7 @@ export default function AnalyticsPage() {
                 <div key={tx.id} style={{
                   background:   COLORS.bgSurface,
                   border:       `1px solid ${COLORS.border}`,
-                  borderRadius: '12px',
+                  borderRadius: RADII.lg,
                   padding:      '1rem 1.25rem',
                   display:      'flex',
                   justifyContent: 'space-between',
@@ -478,7 +478,7 @@ export default function AnalyticsPage() {
               <StatCard
                 label="Tasks Posted"
                 value={String(employerSummary?.totalTasksPosted ?? 0)}
-                color="#a78bfa"
+                color={COLORS.indigoLight}
               />
               <StatCard
                 label="Fill Rate"
@@ -518,7 +518,7 @@ export default function AnalyticsPage() {
                 padding:      '2.5rem',
                 textAlign:    'center',
                 background:   COLORS.bgSurface,
-                borderRadius: '12px',
+                borderRadius: RADII.lg,
                 border:       `1px solid ${COLORS.border}`,
                 color:        COLORS.textMuted,
                 fontSize:     '0.875rem',
@@ -545,7 +545,7 @@ export default function AnalyticsPage() {
                   <div key={task.id} style={{
                     background:   COLORS.bgSurface,
                     border:       `1px solid ${COLORS.border}`,
-                    borderRadius: '12px',
+                    borderRadius: RADII.lg,
                     padding:      '1rem 1.25rem',
                   }}>
                     <div style={{
@@ -576,8 +576,8 @@ export default function AnalyticsPage() {
                         style={{
                           padding:        '0.35rem 0.75rem',
                           background:     GRADIENTS.indigo,
-                          color:          'white',
-                          borderRadius:   '6px',
+                          color:          COLORS.textPrimary,
+                          borderRadius:   RADII.md,
                           fontSize:       '0.75rem',
                           textDecoration: 'none',
                           whiteSpace:     'nowrap',
@@ -598,7 +598,7 @@ export default function AnalyticsPage() {
                       <div style={{
                         flex:         1,
                         background:   COLORS.bgElevated,
-                        borderRadius: '9999px',
+                        borderRadius: RADII.full,
                         height:       '4px',
                         overflow:     'hidden',
                       }}>
@@ -608,7 +608,7 @@ export default function AnalyticsPage() {
                           background:   fillPct === 100
                             ? COLORS.emerald
                             : GRADIENTS.indigo,
-                          borderRadius: '9999px',
+                          borderRadius: RADII.full,
                           transition:   'width 0.3s',
                         }} />
                       </div>
@@ -640,7 +640,7 @@ export default function AnalyticsPage() {
               <StatCard
                 label="Total Pi Escrowed"
                 value={formatPi(adminSummary?.totalPiEscrowed ?? 0)}
-                color="#a78bfa"
+                color={COLORS.indigoLight}
                 sub="all time"
               />
               <StatCard
@@ -658,7 +658,7 @@ export default function AnalyticsPage() {
               <StatCard
                 label="Pending Payouts"
                 value={formatPi(adminSummary?.totalPiPending ?? 0)}
-                color="#f87171"
+                color={COLORS.red}
                 sub="awaiting confirmation"
               />
               <StatCard
@@ -695,7 +695,7 @@ export default function AnalyticsPage() {
                 <div key={idx} style={{
                   background:   COLORS.bgSurface,
                   border:       `1px solid ${COLORS.border}`,
-                  borderRadius: '10px',
+                  borderRadius: RADII.lg,
                   padding:      '0.875rem 1.25rem',
                   display:      'flex',
                   justifyContent: 'space-between',
@@ -704,10 +704,10 @@ export default function AnalyticsPage() {
                   <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                     <div style={{
                       padding:      '0.2rem 0.6rem',
-                      borderRadius: '6px',
+                      borderRadius: RADII.md,
                       background:   COLORS.bgElevated,
                       fontSize:     '0.72rem',
-                      color:        '#a78bfa',
+                      color:        COLORS.indigoLight,
                       fontWeight:   '600',
                       whiteSpace:   'nowrap',
                     }}>

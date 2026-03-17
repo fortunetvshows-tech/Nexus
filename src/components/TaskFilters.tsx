@@ -59,10 +59,10 @@ export function TaskFilters({
           style={{
             width:        '100%',
             padding:      '0.75rem 0.875rem 0.75rem 2.5rem',
-            background:   '#111827',
-            border:       '1px solid #1f2937',
-            borderRadius: '10px',
-            color:        '#ffffff',
+            background:   COLORS.bgSurface,
+            border:       `1px solid ${COLORS.border}`,
+            borderRadius: RADII.lg,
+            color:        COLORS.textPrimary,
             fontSize:     '0.9rem',
             outline:      'none',
             boxSizing:    'border-box' as const,
@@ -78,7 +78,7 @@ export function TaskFilters({
               transform:  'translateY(-50%)',
               background: 'transparent',
               border:     'none',
-              color:      '#6b7280',
+              color:      COLORS.textMuted,
               cursor:     'pointer',
               fontSize:   '1rem',
               padding:    '0',
@@ -103,10 +103,10 @@ export function TaskFilters({
             alignItems: 'center',
             gap:        '0.4rem',
             padding:    '0.4rem 0.875rem',
-            background: hasActiveFilters ? '#1e1b4b' : '#111827',
-            border:     `1px solid ${hasActiveFilters ? '#7B3FE4' : '#1f2937'}`,
-            borderRadius: '8px',
-            color:      hasActiveFilters ? '#a78bfa' : '#6b7280',
+            background: hasActiveFilters ? COLORS.bgElevated : COLORS.bgSurface,
+            border:     `1px solid ${hasActiveFilters ? COLORS.indigo : COLORS.border}`,
+            borderRadius: RADII.md,
+            color:      hasActiveFilters ? COLORS.indigoLight : COLORS.textMuted,
             fontSize:   '0.8rem',
             cursor:     'pointer',
           }}
@@ -114,9 +114,9 @@ export function TaskFilters({
           ⚙ Filters
           {hasActiveFilters && (
             <span style={{
-              background:   '#7B3FE4',
-              color:        'white',
-              borderRadius: '9999px',
+              background:   COLORS.indigo,
+              color:        COLORS.textPrimary,
+              borderRadius: RADII.full,
               padding:      '0 6px',
               fontSize:     '0.65rem',
               fontWeight:   '700',
@@ -128,7 +128,7 @@ export function TaskFilters({
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           {!isLoading && (
-            <span style={{ fontSize: '0.78rem', color: '#4b5563' }}>
+            <span style={{ fontSize: '0.78rem', color: COLORS.textMuted }}>
               {resultCount} task{resultCount !== 1 ? 's' : ''}
             </span>
           )}
@@ -139,10 +139,10 @@ export function TaskFilters({
             })}
             style={{
               padding:      '0.4rem 0.75rem',
-              background:   '#111827',
-              border:       '1px solid #1f2937',
-              borderRadius: '8px',
-              color:        '#ffffff',
+              background:   COLORS.bgSurface,
+              border:       `1px solid ${COLORS.border}`,
+              borderRadius: RADII.md,
+              color:        COLORS.textPrimary,
               fontSize:     '0.8rem',
               cursor:       'pointer',
               outline:      'none',
@@ -159,9 +159,9 @@ export function TaskFilters({
       {/* Expanded filters panel */}
       {isExpanded && (
         <div style={{
-          background:   '#111827',
-          border:       '1px solid #1f2937',
-          borderRadius: '12px',
+          background:   COLORS.bgSurface,
+          border:       `1px solid ${COLORS.border}`,
+          borderRadius: RADII.lg,
           padding:      '1.25rem',
         }}>
 
@@ -170,7 +170,7 @@ export function TaskFilters({
             <label style={{
               display:      'block',
               fontSize:     '0.78rem',
-              color:        '#6b7280',
+              color:        COLORS.textMuted,
               marginBottom: '0.5rem',
               fontWeight:   '500',
             }}>
@@ -185,10 +185,10 @@ export function TaskFilters({
                 onClick={() => onFilter({ category: '' })}
                 style={{
                   padding:      '0.35rem 0.75rem',
-                  borderRadius: '9999px',
+                  borderRadius: RADII.full,
                   border:       'none',
-                  background:   !filters.category ? '#7B3FE4' : '#1f2937',
-                  color:        !filters.category ? 'white' : '#9ca3af',
+                  background:   !filters.category ? COLORS.indigo : COLORS.bgElevated,
+                  color:        !filters.category ? COLORS.textPrimary : COLORS.textSecondary,
                   fontSize:     '0.78rem',
                   cursor:       'pointer',
                   fontWeight:   !filters.category ? '600' : '400',
@@ -204,10 +204,10 @@ export function TaskFilters({
                   })}
                   style={{
                     padding:      '0.35rem 0.75rem',
-                    borderRadius: '9999px',
+                    borderRadius: RADII.full,
                     border:       'none',
-                    background:   filters.category === cat ? '#7B3FE4' : '#1f2937',
-                    color:        filters.category === cat ? 'white' : '#9ca3af',
+                    background:   filters.category === cat ? COLORS.indigo : COLORS.bgElevated,
+                    color:        filters.category === cat ? COLORS.textPrimary : COLORS.textSecondary,
                     fontSize:     '0.78rem',
                     cursor:       'pointer',
                     fontWeight:   filters.category === cat ? '600' : '400',
@@ -225,7 +225,7 @@ export function TaskFilters({
             <label style={{
               display:      'block',
               fontSize:     '0.78rem',
-              color:        '#6b7280',
+              color:        COLORS.textMuted,
               marginBottom: '0.5rem',
               fontWeight:   '500',
             }}>
@@ -248,16 +248,16 @@ export function TaskFilters({
                 style={{
                   flex:         1,
                   padding:      '0.5rem 0.75rem',
-                  background:   '#0f172a',
-                  border:       '1px solid #374151',
-                  borderRadius: '8px',
-                  color:        '#ffffff',
+                  background:   COLORS.bgBase,
+                  border:       `1px solid ${COLORS.borderAccent}`,
+                  borderRadius: RADII.md,
+                  color:        COLORS.textPrimary,
                   fontSize:     '0.875rem',
                   outline:      'none',
                   boxSizing:    'border-box' as const,
                 }}
               />
-              <span style={{ color: '#4b5563', fontSize: '0.875rem' }}>
+              <span style={{ color: COLORS.textMuted, fontSize: '0.875rem' }}>
                 to
               </span>
               <input
@@ -272,10 +272,10 @@ export function TaskFilters({
                 style={{
                   flex:         1,
                   padding:      '0.5rem 0.75rem',
-                  background:   '#0f172a',
-                  border:       '1px solid #374151',
-                  borderRadius: '8px',
-                  color:        '#ffffff',
+                  background:   COLORS.bgBase,
+                  border:       `1px solid ${COLORS.borderAccent}`,
+                  borderRadius: RADII.md,
+                  color:        COLORS.textPrimary,
                   fontSize:     '0.875rem',
                   outline:      'none',
                   boxSizing:    'border-box' as const,
@@ -292,9 +292,9 @@ export function TaskFilters({
                 width:        '100%',
                 padding:      '0.6rem',
                 background:   'transparent',
-                border:       '1px solid #374151',
-                borderRadius: '8px',
-                color:        '#6b7280',
+                border:       `1px solid ${COLORS.borderAccent}`,
+                borderRadius: RADII.md,
+                color:        COLORS.textMuted,
                 fontSize:     '0.8rem',
                 cursor:       'pointer',
               }}
