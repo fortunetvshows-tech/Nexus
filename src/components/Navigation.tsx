@@ -14,6 +14,7 @@ export function Navigation({ currentPage }: NavigationProps) {
   const { user, clearAuth }   = usePiAuth()
   const [isOpen, setIsOpen]   = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -123,28 +124,145 @@ export function Navigation({ currentPage }: NavigationProps) {
             <>
               <NotificationBell piUid={user.piUid} />
 
-              {/* Avatar — desktop only */}
-              <div
-                className="hide-mobile"
-                onClick={clearAuth}
-                title="Sign out"
-                style={{
-                  width:          '32px',
-                  height:         '32px',
-                  borderRadius:   '50%',
-                  background:     `linear-gradient(135deg, ${COLORS.indigo}, ${COLORS.indigoLight})`,
-                  display:        'flex',
-                  alignItems:     'center',
-                  justifyContent: 'center',
-                  fontSize:       '0.8rem',
-                  fontWeight:     '700',
-                  color:          'white',
-                  cursor:         'pointer',
-                  boxShadow:      '0 0 12px rgba(99,102,241,0.3)',
-                  flexShrink:     0,
-                }}
-              >
-                {user.piUsername.charAt(0).toUpperCase()}
+              {/* Avatar with dropdown — desktop only */}
+              <div className="hide-mobile" style={{ position: 'relative' }}>
+                <div
+                  onClick={() => setProfileOpen(prev => !prev)}
+                  title="Profile"
+                  style={{
+                    width:          '32px',
+                    height:         '32px',
+                    borderRadius:   '50%',
+                    background:     `linear-gradient(135deg, ${COLORS.indigo}, ${COLORS.indigoLight})`,
+                    display:        'flex',
+                    alignItems:     'center',
+                    justifyContent: 'center',
+                    fontSize:       '0.8rem',
+                    fontWeight:     '700',
+                    color:          'white',
+                    cursor:         'pointer',
+                    boxShadow:      '0 0 12px rgba(99,102,241,0.3)',
+                    flexShrink:     0,
+                  }}
+                >
+                  {user.piUsername.charAt(0).toUpperCase()}
+                </div>
+
+                {profileOpen && (
+                  <>
+                    {/* Dropdown */}
+                    <div style={{
+                      position:     'absolute',
+                      top:          '40px',
+                      right:        0,
+                      width:        '200px',
+                      background:   COLORS.bgElevated,
+                      border:       `1px solid ${COLORS.borderAccent}`,
+                      borderRadius: '12px',
+                      boxShadow:    '0 8px 32px rgba(0,0,0,0.4)',
+                      padding:      '0.625rem',
+                      zIndex:       300,
+                      animation:    'fade-up 0.15s ease both',
+                    }}>
+                      {/* User info */}
+                      <div style={{
+                        padding:      '0.5rem 0.625rem 0.75rem',
+                        borderBottom: `1px solid ${COLORS.border}`,
+                        marginBottom: '0.375rem',
+                      }}>
+                        <div style={{
+                          fontSize:   '0.82rem',
+                          fontWeight: '600',
+                          color:      COLORS.textPrimary,
+                          marginBottom: '2px',
+                        }}>
+                          {user.piUsername}
+                        </div>
+                        <div style={{
+                          fontSize:   '0.72rem',
+                          color:      COLORS.textMuted,
+                          fontFamily: FONTS.mono,
+                        }}>
+                          {user.reputationLevel} · {user.reputationScore} REP
+                        </div>
+                      </div>
+
+                      {/* Links */}
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setProfileOpen(false)}
+                        style={{
+                          display:        'flex',
+                          alignItems:     'center',
+                          gap:            '8px',
+                          padding:        '0.5rem 0.625rem',
+                          borderRadius:   '8px',
+                          fontSize:       '0.82rem',
+                          color:          COLORS.textSecondary,
+                          textDecoration: 'none',
+                          transition:     'background 0.15s',
+                        }}
+                      >
+                        📊 Dashboard
+                      </Link>
+                      <Link
+                        href="/analytics"
+                        onClick={() => setProfileOpen(false)}
+                        style={{
+                          display:        'flex',
+                          alignItems:     'center',
+                          gap:            '8px',
+                          padding:        '0.5rem 0.625rem',
+                          borderRadius:   '8px',
+                          fontSize:       '0.82rem',
+                          color:          COLORS.textSecondary,
+                          textDecoration: 'none',
+                          transition:     'background 0.15s',
+                        }}
+                      >
+                        📈 Analytics
+                      </Link>
+
+                      {/* Sign out */}
+                      <div style={{
+                        borderTop:   `1px solid ${COLORS.border}`,
+                        marginTop:   '0.375rem',
+                        paddingTop:  '0.375rem',
+                      }}>
+                        <button
+                          onClick={() => { clearAuth(); setProfileOpen(false) }}
+                          style={{
+                            display:      'flex',
+                            alignItems:   'center',
+                            gap:          '8px',
+                            width:        '100%',
+                            padding:      '0.5rem 0.625rem',
+                            borderRadius: '8px',
+                            fontSize:     '0.82rem',
+                            color:        COLORS.red,
+                            background:   'transparent',
+                            border:       'none',
+                            cursor:       'pointer',
+                            textAlign:    'left' as const,
+                            fontFamily:   FONTS.sans,
+                          }}
+                        >
+                          🚪 Sign out
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Click outside to close */}
+                    <div
+                      onClick={() => setProfileOpen(false)}
+                      style={{
+                        position: 'fixed',
+                        inset:    0,
+                        zIndex:   299,
+                      }}
+                    />
+                  </>
+                )}
               </div>
             </>
           )}

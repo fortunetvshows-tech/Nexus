@@ -203,6 +203,7 @@ export default function HomePage() {
         justifyContent:  'center',
         textAlign:       'center',
         padding:         '2rem var(--page-padding)',
+        paddingBottom:   '100px',
         backgroundImage: GRADIENTS.hero,
         position:        'relative',
       }}>
@@ -318,34 +319,38 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* SDK status + CTA */}
-        <div style={{
-          display:       'flex',
-          flexDirection: 'column',
-          alignItems:    'center',
-          gap:           '0.875rem',
-          animation:     'fade-up 0.5s ease 0.4s both',
-          opacity:       0,
-          width:         '100%',
-          maxWidth:      '280px',
-        }}>
+        {/* SDK status — only show when not ready AND not authenticated */}
+        {!user && !isSdkReady && (
           <div style={{
             display:    'flex',
             alignItems: 'center',
             gap:        '8px',
             fontSize:   '0.78rem',
-            color:      isSdkReady ? COLORS.emerald : COLORS.textMuted,
+            color:      COLORS.textMuted,
+            marginBottom: '0.875rem',
+            animation:  'fade-up 0.5s ease 0.4s both',
+            opacity:    0,
           }}>
             <div style={{
               width:        '7px',
               height:       '7px',
               borderRadius: '50%',
-              background:   isSdkReady ? COLORS.emerald : COLORS.textMuted,
-              boxShadow:    isSdkReady ? `0 0 8px ${COLORS.emerald}` : 'none',
+              background:   COLORS.textMuted,
             }} />
-            {isSdkReady ? 'Pi Browser detected' : 'Open in Pi Browser'}
+            Open in Pi Browser to connect
           </div>
+        )}
 
+        {/* Smart CTA */}
+        <div style={{
+          display:       'flex',
+          flexDirection: 'column',
+          alignItems:    'center',
+          animation:     'fade-up 0.5s ease 0.4s both',
+          opacity:       0,
+          width:         '100%',
+          maxWidth:      '280px',
+        }}>
           {user ? (
             <Link
               href="/dashboard"
@@ -370,9 +375,9 @@ export default function HomePage() {
           ) : (
             <ShinyButton
               onClick={authenticate}
-              disabled={isLoading || !isSdkReady}
+              disabled={isLoading}
             >
-              {isLoading ? 'Connecting...' : 'Connect with Pi →'}
+              {isLoading ? 'Connecting...' : 'Login with Pi'}
             </ShinyButton>
           )}
         </div>
@@ -611,9 +616,9 @@ export default function HomePage() {
         ) : (
           <ShinyButton
             onClick={authenticate}
-            disabled={isLoading || !isSdkReady}
+            disabled={isLoading}
           >
-            {isLoading ? 'Connecting...' : 'Connect with Pi →'}
+            {isLoading ? 'Connecting...' : 'Login with Pi'}
           </ShinyButton>
         )}
       </section>

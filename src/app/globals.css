@@ -361,3 +361,12 @@ html {
 section[id] {
   scroll-margin-top: 72px;
 }
+
+/* Mobile marquee clearance */
+@media (max-width: 480px) {
+  .landing-marquee {
+    position: static !important;
+    margin-top: 2rem;
+    padding: 0 0 1.5rem;
+  }
+}
