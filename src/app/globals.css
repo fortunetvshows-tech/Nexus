@@ -184,3 +184,11 @@ body {
 ::-webkit-scrollbar-track { background: var(--nexus-bg-base); }
 ::-webkit-scrollbar-thumb { background: var(--nexus-bg-elevated); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+/* Bento card hover */
+.nexus-card:hover {
+  transform:  translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4),
+              0 2px 4px rgba(0,0,0,0.2),
+              inset 0 1px 0 rgba(255,255,255,0.07);
+}
