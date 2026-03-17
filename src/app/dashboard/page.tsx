@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import Link            from 'next/link'
 import { usePiAuth }   from '@/hooks/use-pi-auth'
 import { Navigation }  from '@/components/Navigation'
+import { COLORS, FONTS, SPACING, RADII, SHADOWS, GRADIENTS, statusStyle, COMPONENT_STYLES } from '@/lib/design/tokens'
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -32,29 +33,7 @@ interface PostedTask {
   createdAt:      string
 }
 
-// ── Status helpers ─────────────────────────────────────────────────────
-
-function statusColor(status: string): string {
-  switch (status) {
-    case 'APPROVED':   return '#16a34a'
-    case 'REJECTED':   return '#dc2626'
-    case 'DISPUTED':   return '#d97706'
-    case 'SUBMITTED':  return '#7B3FE4'
-    default:           return '#6b7280'
-  }
-}
-
-function statusBg(status: string): string {
-  switch (status) {
-    case 'APPROVED':   return '#14532d'
-    case 'REJECTED':   return '#450a0a'
-    case 'DISPUTED':   return '#451a03'
-    case 'SUBMITTED':  return '#1e1b4b'
-    default:           return '#1f2937'
-  }
-}
-
-// ── Component ─────────────────────────────────────────────────────────
+// ── Types ──────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
   const {
@@ -138,15 +117,15 @@ export default function DashboardPage() {
     return (
       <div style={{
         minHeight:      '100vh',
-        background:     '#0f0f0f',
+        background:     COLORS.bgBase,
         display:        'flex',
         alignItems:     'center',
         justifyContent: 'center',
         flexDirection:  'column',
         gap:            '1rem',
-        fontFamily:     'system-ui, sans-serif',
+        fontFamily:     FONTS.sans,
       }}>
-        <p style={{ color: '#9ca3af', margin: 0 }}>
+        <p style={{ color: COLORS.textSecondary, margin: 0 }}>
           Connecting to Pi Network...
         </p>
         {isSdkReady && (
@@ -154,10 +133,10 @@ export default function DashboardPage() {
             onClick={authenticate}
             style={{
               padding:      '0.75rem 2rem',
-              background:   'linear-gradient(135deg, #7B3FE4, #A855F7)',
+              background:   GRADIENTS.indigo,
               color:        'white',
               border:       'none',
-              borderRadius: '10px',
+              borderRadius: RADII.lg,
               fontSize:     '1rem',
               fontWeight:   '600',
               cursor:       'pointer',
@@ -175,9 +154,9 @@ export default function DashboardPage() {
   return (
     <div style={{
       minHeight:  '100vh',
-      background: '#0f0f0f',
-      fontFamily: 'system-ui, sans-serif',
-      color:      '#ffffff',
+      background: COLORS.bgBase,
+      fontFamily: FONTS.sans,
+      color:      COLORS.textPrimary,
     }}>
       <Navigation currentPage="dashboard" />
 
@@ -189,38 +168,40 @@ export default function DashboardPage() {
 
         {/* User header */}
         <div style={{
-          display:        'flex',
-          alignItems:     'center',
-          gap:            '1rem',
-          marginBottom:   '2rem',
-          padding:        '1.25rem',
-          background:     '#111827',
-          borderRadius:   '16px',
-          border:         '1px solid #1f2937',
+          ...COMPONENT_STYLES.card,
+          display:      'flex',
+          alignItems:   'center',
+          gap:          SPACING.lg,
+          marginBottom: SPACING.xl,
         }}>
           <div style={{
             width:          '48px',
             height:         '48px',
-            borderRadius:   '50%',
-            background:     'linear-gradient(135deg, #7B3FE4, #A855F7)',
+            borderRadius:   RADII.xl,
+            background:     `linear-gradient(135deg, ${COLORS.indigo}, ${COLORS.indigoLight})`,
             display:        'flex',
             alignItems:     'center',
             justifyContent: 'center',
-            fontSize:       '1.2rem',
+            fontSize:       '1.25rem',
             fontWeight:     '700',
             flexShrink:     0,
+            boxShadow:      SHADOWS.indigoGlow,
           }}>
             {user?.piUsername.charAt(0).toUpperCase()}
           </div>
           <div style={{ flex: 1 }}>
             <div style={{
-              fontWeight: '600',
-              fontSize:   '1rem',
-              marginBottom: '0.2rem',
+              fontWeight:   '600',
+              fontSize:     '1rem',
+              marginBottom: '3px',
+              color:        COLORS.textPrimary,
             }}>
               {user?.piUsername}
             </div>
-            <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>
+            <div style={{
+              fontSize: '0.8rem',
+              color:    COLORS.textSecondary,
+            }}>
               {user?.reputationLevel}
               {' · '}Rep {user?.reputationScore}
               {' · '}KYC {user?.kycLevel}
@@ -229,14 +210,15 @@ export default function DashboardPage() {
           {user?.reputationLevel === 'Sovereign' && (
             <Link href="/arbitrate" style={{
               padding:        '0.4rem 0.875rem',
-              background:     '#1f2937',
-              borderRadius:   '8px',
+              background:     COLORS.indigoDim,
+              border:         `1px solid rgba(99, 102, 241, 0.3)`,
+              borderRadius:   RADII.md,
               fontSize:       '0.8rem',
-              color:          '#a78bfa',
+              color:          COLORS.indigoLight,
               textDecoration: 'none',
               whiteSpace:     'nowrap',
             }}>
-              ⚖️ Arbitrate
+              ⚖ Arbitrate
             </Link>
           )}
         </div>
@@ -245,42 +227,45 @@ export default function DashboardPage() {
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
-          gap:     '0.75rem',
-          marginBottom: '2rem',
+          gap:     SPACING.sm,
+          marginBottom: SPACING.xl,
         }}>
           {[
             {
               label: 'Total Earned',
               value: `${totalEarned.toFixed(3)}π`,
-              color: '#86efac',
+              color: COLORS.emerald,
             },
             {
               label: 'Pending Review',
               value: pendingReview.toString(),
-              color: '#a78bfa',
+              color: COLORS.indigo,
             },
             {
               label: 'Open Disputes',
               value: openDisputes.toString(),
-              color: openDisputes > 0 ? '#fbbf24' : '#6b7280',
+              color: openDisputes > 0 ? COLORS.red : COLORS.textMuted,
             },
           ].map(stat => (
             <div key={stat.label} style={{
-              background:   '#111827',
-              border:       '1px solid #1f2937',
-              borderRadius: '12px',
-              padding:      '1rem',
+              background:   `${GRADIENTS.card}, ${COLORS.bgSurface}`,
+              border:       `1px solid ${COLORS.border}`,
+              borderRadius: RADII.lg,
+              padding:      `${SPACING.lg} ${SPACING.xl}`,
               textAlign:    'center',
+              boxShadow:    SHADOWS.card,
             }}>
               <div style={{
-                fontSize:   '1.3rem',
-                fontWeight: '700',
-                color:      stat.color,
-                marginBottom: '0.25rem',
+                fontSize:     '1.5rem',
+                fontWeight:   '700',
+                color:        stat.color,
+                fontFamily:   FONTS.mono,
+                marginBottom: '4px',
+                letterSpacing: '-0.02em',
               }}>
                 {stat.value}
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+              <div style={{ fontSize: '0.75rem', color: COLORS.textMuted, fontWeight: '500' }}>
                 {stat.label}
               </div>
             </div>
@@ -291,79 +276,81 @@ export default function DashboardPage() {
         <div style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
-          gap:     '0.75rem',
-          marginBottom: '2rem',
+          gap:     SPACING.sm,
+          marginBottom: SPACING.xl,
         }}>
           <Link href="/feed" style={{
-            background:     '#111827',
-            border:         '1px solid #1f2937',
-            borderRadius:   '12px',
-            padding:        '1rem',
+            background:     `${GRADIENTS.card}, ${COLORS.bgSurface}`,
+            border:         `1px solid ${COLORS.border}`,
+            borderRadius:   RADII.lg,
+            padding:        SPACING.lg,
             textDecoration: 'none',
             textAlign:      'center',
+            boxShadow:      SHADOWS.card,
           }}>
-            <div style={{ fontSize: '1.5rem', marginBottom: '0.4rem' }}>
+            <div style={{ fontSize: '1.5rem', marginBottom: SPACING.sm }}>
               🔍
             </div>
             <div style={{
-              color:      '#ffffff',
+              color:      COLORS.textPrimary,
               fontWeight: '600',
               fontSize:   '0.9rem',
-              marginBottom: '0.2rem',
+              marginBottom: SPACING.sm,
             }}>
               Find Work
             </div>
-            <div style={{ color: '#6b7280', fontSize: '0.78rem' }}>
+            <div style={{ color: COLORS.textSecondary, fontSize: '0.78rem' }}>
               Browse available tasks
             </div>
           </Link>
 
           <Link href="/employer" style={{
-            background:     '#111827',
-            border:         '1px solid #1f2937',
-            borderRadius:   '12px',
-            padding:        '1rem',
+            background:     `${GRADIENTS.card}, ${COLORS.bgSurface}`,
+            border:         `1px solid ${COLORS.border}`,
+            borderRadius:   RADII.lg,
+            padding:        SPACING.lg,
             textDecoration: 'none',
             textAlign:      'center',
+            boxShadow:      SHADOWS.card,
           }}>
-            <div style={{ fontSize: '1.5rem', marginBottom: '0.4rem' }}>
+            <div style={{ fontSize: '1.5rem', marginBottom: SPACING.sm }}>
               📋
             </div>
             <div style={{
-              color:      '#ffffff',
+              color:      COLORS.textPrimary,
               fontWeight: '600',
               fontSize:   '0.9rem',
-              marginBottom: '0.2rem',
+              marginBottom: SPACING.sm,
             }}>
               Post Task
             </div>
-            <div style={{ color: '#6b7280', fontSize: '0.78rem' }}>
+            <div style={{ color: COLORS.textSecondary, fontSize: '0.78rem' }}>
               Hire from 60M Pioneers
             </div>
           </Link>
         </div>
 
         {/* My Submissions */}
-        <section style={{ marginBottom: '2rem' }}>
+        <section style={{ marginBottom: SPACING.xl }}>
           <div style={{
             display:        'flex',
             justifyContent: 'space-between',
             alignItems:     'center',
-            marginBottom:   '1rem',
+            marginBottom:   SPACING.lg,
           }}>
             <h2 style={{
               margin:        '0',
-              fontSize:      '0.9rem',
+              fontSize:      '0.72rem',
               fontWeight:    '600',
-              color:         '#6b7280',
+              color:         COLORS.textMuted,
               textTransform: 'uppercase',
-              letterSpacing: '0.05em',
+              letterSpacing: '0.08em',
             }}>
               My Submissions
             </h2>
             <Link href="/feed" style={{
               fontSize:       '0.8rem',
-              color:          '#7B3FE4',
+              color:          COLORS.indigo,
               textDecoration: 'none',
             }}>
               Find more →
@@ -372,25 +359,27 @@ export default function DashboardPage() {
 
           {subLoading && (
             <div style={{
-              background:   '#111827',
-              borderRadius: '12px',
+              background:   COLORS.bgSurface,
+              borderRadius: RADII.lg,
               height:       '80px',
-              border:       '1px solid #1f2937',
+              border:       `1px solid ${COLORS.border}`,
+              boxShadow:    SHADOWS.card,
             }} />
           )}
 
           {!subLoading && submissions.length === 0 && (
             <div style={{
-              padding:      '1.5rem',
-              background:   '#111827',
-              borderRadius: '12px',
-              border:       '1px solid #1f2937',
+              padding:      SPACING.xl,
+              background:   `${GRADIENTS.card}, ${COLORS.bgSurface}`,
+              borderRadius: RADII.lg,
+              border:       `1px solid ${COLORS.border}`,
               textAlign:    'center',
               fontSize:     '0.875rem',
-              color:        '#6b7280',
+              color:        COLORS.textSecondary,
+              boxShadow:    SHADOWS.card,
             }}>
               No submissions yet.{' '}
-              <Link href="/feed" style={{ color: '#7B3FE4' }}>
+              <Link href="/feed" style={{ color: COLORS.indigo }}>
                 Browse tasks →
               </Link>
             </div>
@@ -399,77 +388,73 @@ export default function DashboardPage() {
           <div style={{
             display:       'flex',
             flexDirection: 'column',
-            gap:           '0.75rem',
+            gap:           SPACING.sm,
           }}>
             {submissions.slice(0, 5).map(sub => (
               <Link
                 key={sub.id}
                 href={`/task/${sub.task?.id}`}
                 style={{
-                  background:     '#111827',
-                  border:         `1px solid ${
-                    sub.status === 'REJECTED' ? '#dc2626'
-                    : sub.status === 'DISPUTED' ? '#d97706'
-                    : '#1f2937'
-                  }`,
-                  borderRadius:   '12px',
-                  padding:        '1rem 1.25rem',
+                  background:   `${GRADIENTS.card}, ${COLORS.bgSurface}`,
+                  border:       `1px solid ${COLORS.border}`,
+                  borderLeft:   `3px solid ${statusStyle(sub.status).color}`,
+                  borderRadius: RADII.lg,
+                  padding:      `${SPACING.md} ${SPACING.lg}`,
                   textDecoration: 'none',
-                  display:        'block',
+                  display:      'block',
+                  boxShadow:    SHADOWS.card,
                 }}
               >
                 <div style={{
                   display:        'flex',
                   justifyContent: 'space-between',
                   alignItems:     'flex-start',
-                  marginBottom:   '0.3rem',
+                  marginBottom:   '4px',
                 }}>
                   <div style={{
-                    fontWeight:  '600',
+                    fontWeight:  '500',
                     fontSize:    '0.875rem',
-                    color:       '#ffffff',
+                    color:       COLORS.textPrimary,
                     flex:        1,
-                    marginRight: '0.75rem',
+                    marginRight: SPACING.md,
                   }}>
                     {sub.task?.title}
                   </div>
-                  <div style={{
-                    padding:      '0.2rem 0.6rem',
-                    borderRadius: '9999px',
+                  <span style={{
+                    padding:      '2px 8px',
+                    borderRadius: RADII.full,
                     fontSize:     '0.7rem',
                     fontWeight:   '600',
-                    background:   statusBg(sub.status),
-                    color:        statusColor(sub.status),
+                    background:   statusStyle(sub.status).background,
+                    color:        statusStyle(sub.status).color,
                     whiteSpace:   'nowrap',
                     flexShrink:   0,
                   }}>
                     {sub.status}
-                  </div>
+                  </span>
                 </div>
                 <div style={{
-                  fontSize: '0.78rem',
-                  color:    '#6b7280',
-                  display:  'flex',
-                  gap:      '0.75rem',
+                  fontSize:  '0.78rem',
+                  color:     COLORS.textMuted,
+                  display:   'flex',
+                  gap:       SPACING.md,
                 }}>
                   <span>{sub.task?.category}</span>
-                  <span style={{ color: '#a78bfa' }}>
+                  <span style={{ color: COLORS.emerald, fontFamily: FONTS.mono, fontWeight: '500' }}>
                     {sub.agreedReward}π
                   </span>
                   {sub.status === 'REJECTED' && (
-                    <span style={{ color: '#f87171' }}>
-                      Tap to dispute →
-                    </span>
+                    <span style={{ color: COLORS.indigo }}>Tap to dispute →</span>
                   )}
                   {sub.status === 'APPROVED' && (
-                    <span style={{ color: '#86efac' }}>✓ Earned</span>
+                    <span style={{ color: COLORS.emerald }}>✓ Earned</span>
                   )}
                 </div>
                 {sub.status === 'REJECTED' && sub.rejectionReason && (
                   <div style={{
                     marginTop:    '0.4rem',
                     fontSize:     '0.75rem',
-                    color:        '#9ca3af',
+                    color:        COLORS.textSecondary,
                     fontStyle:    'italic',
                     overflow:     'hidden',
                     textOverflow: 'ellipsis',
@@ -490,21 +475,21 @@ export default function DashboardPage() {
               display:        'flex',
               justifyContent: 'space-between',
               alignItems:     'center',
-              marginBottom:   '1rem',
+              marginBottom:   SPACING.lg,
             }}>
               <h2 style={{
                 margin:        '0',
-                fontSize:      '0.9rem',
+                fontSize:      '0.72rem',
                 fontWeight:    '600',
-                color:         '#6b7280',
+                color:         COLORS.textMuted,
                 textTransform: 'uppercase',
-                letterSpacing: '0.05em',
+                letterSpacing: '0.08em',
               }}>
                 My Posted Tasks
               </h2>
               <Link href="/employer" style={{
                 fontSize:       '0.8rem',
-                color:          '#7B3FE4',
+                color:          COLORS.indigo,
                 textDecoration: 'none',
               }}>
                 Post new →
@@ -513,17 +498,18 @@ export default function DashboardPage() {
 
             {tasksLoading && (
               <div style={{
-                background:   '#111827',
-                borderRadius: '12px',
+                background:   COLORS.bgSurface,
+                borderRadius: RADII.lg,
                 height:       '80px',
-                border:       '1px solid #1f2937',
+                border:       `1px solid ${COLORS.border}`,
+                boxShadow:    SHADOWS.card,
               }} />
             )}
 
             <div style={{
               display:       'flex',
               flexDirection: 'column',
-              gap:           '0.75rem',
+              gap:           SPACING.sm,
             }}>
               {postedTasks.map(task => {
                 const fillPct = Math.round(
@@ -532,21 +518,22 @@ export default function DashboardPage() {
                 )
                 return (
                   <div key={task.id} style={{
-                    background:   '#111827',
-                    border:       '1px solid #1f2937',
-                    borderRadius: '12px',
-                    padding:      '1rem 1.25rem',
+                    background:   `${GRADIENTS.card}, ${COLORS.bgSurface}`,
+                    border:       `1px solid ${COLORS.border}`,
+                    borderRadius: RADII.lg,
+                    padding:      `${SPACING.lg} ${SPACING.xl}`,
+                    boxShadow:    SHADOWS.card,
                   }}>
                     <div style={{
                       display:        'flex',
                       justifyContent: 'space-between',
                       alignItems:     'center',
-                      marginBottom:   '0.5rem',
+                      marginBottom:   SPACING.md,
                     }}>
                       <div style={{
-                        fontWeight: '600',
+                        fontWeight: '500',
                         fontSize:   '0.875rem',
-                        color:      '#ffffff',
+                        color:      COLORS.textPrimary,
                         flex:       1,
                       }}>
                         {task.title}
@@ -555,14 +542,14 @@ export default function DashboardPage() {
                         href={`/review/${task.id}`}
                         style={{
                           padding:        '0.4rem 0.875rem',
-                          background:     'linear-gradient(135deg, #7B3FE4, #A855F7)',
+                          background:     GRADIENTS.indigo,
                           color:          'white',
-                          borderRadius:   '8px',
+                          borderRadius:   RADII.md,
                           fontSize:       '0.78rem',
                           fontWeight:     '500',
                           textDecoration: 'none',
                           whiteSpace:     'nowrap',
-                          marginLeft:     '0.75rem',
+                          marginLeft:     SPACING.md,
                         }}
                       >
                         Review →
@@ -570,8 +557,8 @@ export default function DashboardPage() {
                     </div>
                     <div style={{
                       fontSize:    '0.78rem',
-                      color:       '#6b7280',
-                      marginBottom: '0.5rem',
+                      color:       COLORS.textMuted,
+                      marginBottom: SPACING.md,
                     }}>
                       {task.category}
                       {' · '}
@@ -581,16 +568,16 @@ export default function DashboardPage() {
                     </div>
                     {/* Slot fill progress */}
                     <div style={{
-                      background:   '#1f2937',
-                      borderRadius: '9999px',
+                      background:   COLORS.bgElevated,
+                      borderRadius: RADII.full,
                       height:       '3px',
                       overflow:     'hidden',
                     }}>
                       <div style={{
                         height:       '100%',
                         width:        `${fillPct}%`,
-                        background:   'linear-gradient(90deg, #7B3FE4, #A855F7)',
-                        borderRadius: '9999px',
+                        background:   GRADIENTS.indigo,
+                        borderRadius: RADII.full,
                       }} />
                     </div>
                   </div>

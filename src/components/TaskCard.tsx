@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { COLORS, FONTS, RADII, SHADOWS, GRADIENTS, SPACING } from '@/lib/design/tokens'
 
 interface TaskCardProps {
   task: {
@@ -57,13 +58,16 @@ export function TaskCard({
     : `${Math.round(hoursLeft / 24)}d left`
 
   return (
-    <div style={{
-      background:    '#111827',
-      border:        `1px solid ${task.isFeatured ? '#7B3FE4' : '#1f2937'}`,
-      borderRadius:  '16px',
-      padding:       '1.25rem',
-      position:      'relative',
-      transition:    'border-color 0.2s',
+    <Link href={`/task/${task.id}`} style={{
+      background:     `${GRADIENTS.card}, ${COLORS.bgSurface}`,
+      border:         `1px solid ${COLORS.border}`,
+      borderRadius:   RADII.xl,
+      padding:        SPACING.xl,
+      textDecoration: 'none',
+      boxShadow:      SHADOWS.card,
+      transition:     'all 0.2s ease',
+      display:        'block',
+      position:       'relative',
     }}>
 
       {/* Featured badge */}
@@ -71,8 +75,8 @@ export function TaskCard({
         <div style={{
           position:     'absolute',
           top:          '-1px',
-          right:        '1rem',
-          background:   'linear-gradient(135deg, #7B3FE4, #A855F7)',
+          right:        SPACING.lg,
+          background:   GRADIENTS.indigo,
           color:        'white',
           fontSize:     '0.7rem',
           fontWeight:   '600',
@@ -84,185 +88,67 @@ export function TaskCard({
         </div>
       )}
 
-      {/* Header row */}
+      {/* Top row — category + reward */}
       <div style={{
         display:        'flex',
         justifyContent: 'space-between',
         alignItems:     'flex-start',
-        marginBottom:   '0.75rem',
+        marginBottom:   SPACING.md,
       }}>
-        <div style={{ flex: 1, marginRight: '1rem' }}>
-          <div style={{
-            display:     'flex',
-            alignItems:  'center',
-            gap:         '0.5rem',
-            marginBottom: '0.3rem',
-          }}>
-            <span style={{ fontSize: '1rem' }}>
-              {CATEGORY_ICONS[task.category] ?? '📌'}
-            </span>
-            <span style={{
-              fontSize:    '0.75rem',
-              color:       '#6b7280',
-              fontWeight:  '500',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-            }}>
-              {task.category}
-            </span>
-          </div>
-          <h3 style={{
-            margin:     '0',
-            fontSize:   '1rem',
-            fontWeight: '600',
-            color:      '#ffffff',
-            lineHeight: '1.4',
-          }}>
-            {task.title}
-          </h3>
-        </div>
-
-        {/* Pi reward — most prominent number */}
-        <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <div style={{
-            fontSize:   '1.5rem',
-            fontWeight: '700',
-            background: 'linear-gradient(135deg, #7B3FE4, #A855F7)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor:  'transparent',
-            lineHeight: '1',
-          }}>
-            {task.piReward}π
-          </div>
-          <div style={{
-            fontSize: '0.7rem',
-            color:    '#6b7280',
-            marginTop: '0.2rem',
-          }}>
-            per slot
-          </div>
-        </div>
-      </div>
-
-      {/* Description */}
-      <p style={{
-        margin:     '0 0 1rem',
-        fontSize:   '0.875rem',
-        color:      '#9ca3af',
-        lineHeight: '1.6',
-        display:    '-webkit-box',
-        WebkitLineClamp: 2,
-        WebkitBoxOrient: 'vertical',
-        overflow:   'hidden',
-      }}>
-        {task.description}
-      </p>
-
-      {/* Stats row */}
-      <div style={{
-        display:       'flex',
-        gap:           '1rem',
-        marginBottom:  '1rem',
-        flexWrap:      'wrap',
-      }}>
-        {[
-          { label: 'Time',     value: `~${task.timeEstimateMin}min` },
-          { label: 'Slots',    value: `${task.slotsRemaining} left` },
-          { label: 'Deadline', value: deadlineLabel                 },
-          { label: 'Min Rep',  value: task.minReputationReq.toString() },
-        ].map(stat => (
-          <div key={stat.label} style={{ textAlign: 'center' }}>
-            <div style={{
-              fontSize:   '0.75rem',
-              color:      '#6b7280',
-              marginBottom: '0.1rem',
-            }}>
-              {stat.label}
-            </div>
-            <div style={{
-              fontSize:   '0.85rem',
-              fontWeight: '500',
-              color:      '#e5e7eb',
-            }}>
-              {stat.value}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Slot fill progress bar */}
-      <div style={{
-        background:   '#1f2937',
-        borderRadius: '9999px',
-        height:       '4px',
-        marginBottom: '1rem',
-        overflow:     'hidden',
-      }}>
-        <div style={{
-          height:       '100%',
-          width:        `${fillPct}%`,
-          background:   'linear-gradient(90deg, #7B3FE4, #A855F7)',
-          borderRadius: '9999px',
-          transition:   'width 0.3s',
-        }} />
-      </div>
-
-      {/* Footer row */}
-      <div style={{
-        display:        'flex',
-        justifyContent: 'space-between',
-        alignItems:     'center',
-      }}>
-        {/* Employer info */}
-        <div style={{
-          fontSize: '0.78rem',
-          color:    '#6b7280',
+        <span style={{
+          fontSize:     '0.72rem',
+          fontWeight:   '600',
+          color:        COLORS.indigoLight,
+          background:   COLORS.indigoDim,
+          border:       `1px solid rgba(99,102,241,0.2)`,
+          padding:      '3px 10px',
+          borderRadius: RADII.full,
+          letterSpacing: '0.02em',
         }}>
-          by{' '}
-          <span style={{ color: '#9ca3af', fontWeight: '500' }}>
-            {task.employer.piUsername}
-          </span>
-          {' · '}
-          <span style={{ color: '#7B3FE4' }}>
-            {task.employer.reputationLevel}
-          </span>
-        </div>
-
-        {/* Claim button / link */}
-        {isEligible ? (
-          <Link
-            href={`/task/${task.id}`}
-            style={{
-              padding:        '0.5rem 1.25rem',
-              background:     'linear-gradient(135deg, #7B3FE4, #A855F7)',
-              color:          'white',
-              borderRadius:   '8px',
-              fontSize:       '0.875rem',
-              fontWeight:     '500',
-              cursor:         'pointer',
-              whiteSpace:     'nowrap',
-              textDecoration: 'none',
-              display:        'inline-block',
-            }}
-          >
-            Claim Slot
-          </Link>
-        ) : (
-          <span style={{
-            padding:      '0.5rem 1.25rem',
-            background:   '#374151',
-            color:        'white',
-            borderRadius: '8px',
-            fontSize:     '0.875rem',
-            fontWeight:   '500',
-            whiteSpace:   'nowrap',
-            display:      'inline-block',
-            opacity:      0.6,
-          }}>
-            Need {task.minReputationReq} rep
-          </span>
-        )}
+          {task.category}
+        </span>
+        <span style={{
+          fontFamily:  FONTS.mono,
+          fontSize:    '1.1rem',
+          fontWeight:  '700',
+          color:       COLORS.emerald,
+          letterSpacing: '-0.02em',
+        }}>
+          {task.piReward}π
+        </span>
       </div>
-    </div>
+
+      {/* Title */}
+      <h3 style={{
+        margin:       `0 0 ${SPACING.md}`,
+        fontSize:     '0.95rem',
+        fontWeight:   '600',
+        color:        COLORS.textPrimary,
+        lineHeight:   '1.4',
+      }}>
+        {task.title}
+      </h3>
+
+      {/* Divider */}
+      <div style={{
+        height:       '1px',
+        background:   COLORS.border,
+        margin:       `0 0 ${SPACING.md}`,
+      }} />
+
+      {/* Meta row */}
+      <div style={{
+        display:  'flex',
+        gap:      SPACING.lg,
+        fontSize: '0.775rem',
+        color:    COLORS.textMuted,
+      }}>
+        <span>⏱ ~{task.timeEstimateMin}m</span>
+        <span>👥 {task.slotsRemaining} left</span>
+        <span style={{ marginLeft: 'auto', color: COLORS.textSecondary }}>
+          {task.employer?.piUsername}
+        </span>
+      </div>
+    </Link>
   )
 }

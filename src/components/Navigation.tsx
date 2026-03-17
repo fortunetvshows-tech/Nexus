@@ -1,8 +1,9 @@
 'use client'
 
-import Link from 'next/link'
-import { usePiAuth } from '@/hooks/use-pi-auth'
+import Link             from 'next/link'
+import { usePiAuth }    from '@/hooks/use-pi-auth'
 import { NotificationBell } from '@/components/NotificationBell'
+import { COLORS, FONTS, SHADOWS } from '@/lib/design/tokens'
 
 interface NavigationProps {
   currentPage: 'home' | 'feed' | 'employer' | 'dashboard' | 'arbitrate' | 'analytics'
@@ -12,77 +13,89 @@ export function Navigation({ currentPage }: NavigationProps) {
   const { user, clearAuth } = usePiAuth()
 
   const navItems = [
-    { href: '/dashboard',  label: 'Dashboard', key: 'dashboard'  },
-    { href: '/feed',       label: 'Find Work', key: 'feed'       },
-    { href: '/employer',   label: 'Post Task', key: 'employer'   },
-    { href: '/analytics',  label: 'Analytics', key: 'analytics'  },
+    { href: '/dashboard', label: 'Dashboard', key: 'dashboard' },
+    { href: '/feed',      label: 'Find Work',  key: 'feed'      },
+    { href: '/employer',  label: 'Post Task',  key: 'employer'  },
+    { href: '/analytics', label: 'Analytics',  key: 'analytics' },
   ]
 
-  // Add Arbitrate link for Sovereign users only
   if (user?.reputationLevel === 'Sovereign') {
-    navItems.push({
-      href:  '/arbitrate',
-      label: '⚖️ Arbitrate',
-      key:   'arbitrate',
-    })
+    navItems.push({ href: '/arbitrate', label: '⚖ Arbitrate', key: 'arbitrate' })
   }
 
   return (
     <nav style={{
-      position:        'fixed',
-      top:             0,
-      left:            0,
-      right:           0,
-      height:          '60px',
-      background:      'rgba(15, 15, 15, 0.95)',
-      backdropFilter:  'blur(10px)',
-      borderBottom:    '1px solid #1f2937',
-      display:         'flex',
-      alignItems:      'center',
-      justifyContent:  'space-between',
-      padding:         '0 1.5rem',
-      zIndex:          100,
+      position:         'fixed',
+      top:              0,
+      left:             0,
+      right:            0,
+      height:           '60px',
+      background:       'rgba(15, 23, 42, 0.85)',
+      backdropFilter:   'blur(12px)',
+      WebkitBackdropFilter: 'blur(12px)',
+      borderBottom:     `1px solid ${COLORS.border}`,
+      display:          'flex',
+      alignItems:       'center',
+      justifyContent:   'space-between',
+      padding:          '0 1.5rem',
+      zIndex:           100,
+      fontFamily:       FONTS.sans,
     }}>
 
       {/* Brand */}
       <Link href="/dashboard" style={{
-        fontSize:            '1.2rem',
-        fontWeight:          '700',
-        background:          'linear-gradient(135deg, #7B3FE4, #A855F7)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        textDecoration:      'none',
+        fontSize:       '1.1rem',
+        fontWeight:     '700',
+        color:          COLORS.textPrimary,
+        textDecoration: 'none',
+        letterSpacing:  '-0.02em',
       }}>
         Nexus
+        <span style={{
+          marginLeft:   '6px',
+          fontSize:     '0.55rem',
+          fontWeight:   '500',
+          color:        COLORS.indigo,
+          background:   COLORS.indigoDim,
+          padding:      '2px 6px',
+          borderRadius: '4px',
+          verticalAlign: 'middle',
+          letterSpacing: '0.05em',
+        }}>
+          BETA
+        </span>
       </Link>
 
       {/* Nav links */}
-      <div style={{ display: 'flex', gap: '0.25rem' }}>
-        {navItems.map(item => (
-          <Link
-            key={item.key}
-            href={item.href}
-            style={{
-              padding:          '0.4rem 0.9rem',
-              borderRadius:     '8px',
-              fontSize:         '0.875rem',
-              textDecoration:   'none',
-              color:            currentPage === item.key
-                                  ? '#ffffff'
-                                  : '#9ca3af',
-              background:       currentPage === item.key
-                                  ? '#1f2937'
+      <div style={{ display: 'flex', gap: '2px' }}>
+        {navItems.map(item => {
+          const isActive = currentPage === item.key
+          return (
+            <Link
+              key={item.key}
+              href={item.href}
+              style={{
+                padding:        '0.4rem 0.875rem',
+                borderRadius:   '8px',
+                fontSize:       '0.85rem',
+                fontWeight:     isActive ? '600' : '400',
+                textDecoration: 'none',
+                color:          isActive
+                                  ? COLORS.textPrimary
+                                  : COLORS.textSecondary,
+                background:     isActive
+                                  ? 'rgba(255,255,255,0.06)'
                                   : 'transparent',
-              fontWeight:       currentPage === item.key ? '500' : '400',
-              transition:       'all 0.15s',
-            }}
-          >
-            {item.label}
-          </Link>
-        ))}
+                transition:     'all 0.15s ease',
+              }}
+            >
+              {item.label}
+            </Link>
+          )
+        })}
       </div>
 
-      {/* User info */}
+      {/* Right side */}
       {user && (
         <div style={{
           display:    'flex',
@@ -91,26 +104,28 @@ export function Navigation({ currentPage }: NavigationProps) {
         }}>
           <NotificationBell piUid={user?.piUid} />
           <span style={{
-            fontSize: '0.85rem',
-            color:    '#9ca3af',
+            fontSize: '0.8rem',
+            color:    COLORS.textSecondary,
           }}>
             {user.piUsername}
           </span>
-          <div style={{
-            width:           '32px',
-            height:          '32px',
-            borderRadius:    '50%',
-            background:      'linear-gradient(135deg, #7B3FE4, #A855F7)',
-            display:         'flex',
-            alignItems:      'center',
-            justifyContent:  'center',
-            fontSize:        '0.85rem',
-            fontWeight:      '600',
-            color:           'white',
-            cursor:          'pointer',
-          }}
+          <div
             onClick={clearAuth}
             title="Sign out"
+            style={{
+              width:          '32px',
+              height:         '32px',
+              borderRadius:   '50%',
+              background:     `linear-gradient(135deg, ${COLORS.indigo}, ${COLORS.indigoLight})`,
+              display:        'flex',
+              alignItems:     'center',
+              justifyContent: 'center',
+              fontSize:       '0.8rem',
+              fontWeight:     '700',
+              color:          'white',
+              cursor:         'pointer',
+              boxShadow:      SHADOWS.indigoGlow,
+            }}
           >
             {user.piUsername.charAt(0).toUpperCase()}
           </div>
