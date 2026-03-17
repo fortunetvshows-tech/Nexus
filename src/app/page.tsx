@@ -73,6 +73,7 @@ function LandingContent({
         background:    COLORS.indigoDim,
         border:        `1px solid rgba(99,102,241,0.3)`,
         borderRadius:  '9999px',
+        animation:     'fade-up 0.4s ease 0.1s both',
       }}>
         <span style={{
           width:        '6px',
@@ -80,6 +81,7 @@ function LandingContent({
           borderRadius: '50%',
           background:   COLORS.emerald,
           display:      'inline-block',
+          animation:    'pulse-glow 2s infinite',
         }} />
         Pi Network Labor Marketplace · Live on Testnet
       </div>
@@ -93,6 +95,7 @@ function LandingContent({
           letterSpacing: '-0.03em',
           lineHeight:    '1.1',
           maxWidth:      '700px',
+          animation:     'fade-up 0.5s ease 0.2s both',
         }}
       >
         The marketplace where{' '}
@@ -112,6 +115,7 @@ function LandingContent({
         margin:     '0 0 1rem',
         maxWidth:   '480px',
         lineHeight: '1.6',
+        animation:  'fade-up 0.5s ease 0.3s both',
       }}>
         Workers earn Pi completing real tasks.
         Employers post work with Pi held in escrow.
@@ -124,6 +128,7 @@ function LandingContent({
         marginBottom:   '2.5rem',
         flexWrap:       'wrap' as const,
         justifyContent: 'center',
+        animation:      'fade-up 0.5s ease 0.4s both',
       }}>
         {STATS.map(stat => (
           <div key={stat.label} style={{ textAlign: 'center' }}>
@@ -398,6 +403,7 @@ export default function HomePage() {
             gap:           '0.875rem',
             width:         '100%',
             maxWidth:      '280px',
+            animation:     'fade-up 0.5s ease 0.5s both',
           }}>
             {/* SDK status — only show after mount and when not ready */}
             {hasMounted && !user && (
@@ -427,10 +433,11 @@ export default function HomePage() {
         <div
           className="landing-marquee"
           style={{
-            position: 'absolute',
-            bottom:   '2.5rem',
-            left:     0,
-            right:    0,
+            position:  'absolute',
+            bottom:    '2.5rem',
+            left:      0,
+            right:     0,
+            animation: 'fade-up 0.6s ease 0.6s both',
           }}
         >
           <div style={{
