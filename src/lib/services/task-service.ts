@@ -98,14 +98,26 @@ export async function createTaskWithEscrow(
   }
 }
 
+export interface TaskFilters {
+  search?:       string
+  category?:     string
+  minReward?:    number
+  maxReward?:    number
+  badgeLevel?:   string
+  status?:       string
+  sort?:         'newest' | 'reward_high' | 'reward_low' | 'ending_soon'
+}
+
 /**
- * Fetch active tasks for worker feed.
- * Filters by worker's reputation and badge level.
+ * Fetch active tasks for worker feed (TB-011).
+ * Supports: search, category, reward range, sort, badge filtering
+ * Returns tasks with total count for pagination
  */
 export async function getActiveTasks(
   workerId: string,
-  limit    = 20,
-  offset   = 0
+  limit    = 10,
+  offset   = 0,
+  filters: TaskFilters = {}
 ) {
   // Get worker profile for filtering
   const { data: worker } = await supabaseAdmin
@@ -115,10 +127,11 @@ export async function getActiveTasks(
     .single()
 
   if (!worker) {
-    return { tasks: [], error: 'WORKER_NOT_FOUND' }
+    return { tasks: [], total: 0, error: 'WORKER_NOT_FOUND' }
   }
 
-  const { data: tasks, error } = await supabaseAdmin
+  // Start building the query with count
+  let query = supabaseAdmin
     .from('Task')
     .select(`
       id,
@@ -137,25 +150,83 @@ export async function getActiveTasks(
       tags,
       createdAt,
       employer:employerId (
+        id,
         piUsername,
         reputationScore,
         reputationLevel
       )
-    `)
-    .eq('taskStatus', 'escrowed')
+    `, { count: 'exact' })
+
+  // Apply status filter (default: escrowed)
+  const status = filters.status || 'escrowed'
+  query = query.eq('taskStatus', status)
+
+  // Apply category filter
+  if (filters.category) {
+    query = query.eq('category', filters.category)
+  }
+
+  // Apply reward range filters
+  if (filters.minReward !== undefined) {
+    query = query.gte('piReward', filters.minReward)
+  }
+  if (filters.maxReward !== undefined) {
+    query = query.lte('piReward', filters.maxReward)
+  }
+
+  // Apply worker's reputation filter
+  query = query.lte('minReputationReq', worker.reputationScore)
+
+  // Apply badge level filter if specified
+  if (filters.badgeLevel) {
+    query = query.eq('minBadgeLevel', filters.badgeLevel)
+  }
+
+  // Apply standard filters
+  query = query
     .gt('slotsRemaining', 0)
     .gt('deadline', new Date().toISOString())
-    .lte('minReputationReq', worker.reputationScore)
     .lte('targetKycLevel', worker.kycLevel)
     .is('deletedAt', null)
-    .order('isFeatured', { ascending: false })
-    .order('createdAt', { ascending: false })
-    .range(offset, offset + limit - 1)
+
+  // Apply search filter if specified (TB-011: search title/description)
+  if (filters.search) {
+    const searchTerm = `%${filters.search}%`
+    query = query.or(
+      `title.ilike.${searchTerm},description.ilike.${searchTerm}`
+    )
+  }
+
+  // Apply sorting (TB-011 sort options)
+  const sort = filters.sort || 'newest'
+  switch (sort) {
+    case 'reward_high':
+      query = query.order('piReward', { ascending: false })
+      break
+    case 'reward_low':
+      query = query.order('piReward', { ascending: true })
+      break
+    case 'ending_soon':
+      query = query.order('deadline', { ascending: true })
+      break
+    case 'newest':
+    default:
+      query = query
+        .order('isFeatured', { ascending: false })
+        .order('createdAt', { ascending: false })
+      break
+  }
+
+  // Apply pagination
+  query = query.range(offset, offset + limit - 1)
+
+  const { data: tasks, error, count } = await query
 
   if (error) {
     console.error('[Nexus:TaskService] Feed query failed:', error)
-    return { tasks: [], error: error.message }
+    return { tasks: [], total: 0, error: error.message }
   }
 
-  return { tasks: tasks ?? [], error: null }
+  return { tasks: tasks ?? [], total: count ?? 0, error: null }
 }
+

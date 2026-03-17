@@ -1,16 +1,25 @@
 'use client'
 
-import { useState }      from 'react'
-import { usePiAuth }    from '@/hooks/use-pi-auth'
-import { useTaskFeed }  from '@/hooks/use-task-feed'
-import { TaskCard }     from '@/components/TaskCard'
-import { Navigation }   from '@/components/Navigation'
+import { useState }         from 'react'
+import { usePiAuth }        from '@/hooks/use-pi-auth'
+import { useTaskSearch }    from '@/hooks/use-task-search'
+import { TaskCard }         from '@/components/TaskCard'
+import { TaskFilters }      from '@/components/TaskFilters'
+import { Navigation }       from '@/components/Navigation'
 
 export default function FeedPage() {
   const [claimedTaskId, setClaimedTaskId] = useState<string | null>(null)
   const { user, authenticate, isLoading: authLoading } = usePiAuth()
-  const { tasks, isLoading, error, hasMore, refresh, loadMore } =
-    useTaskFeed(user?.piUid ?? null)
+  const {
+    tasks,
+    pagination,
+    isLoading,
+    filters,
+    setFilters,
+    resetFilters,
+    loadMore,
+    refresh,
+  } = useTaskSearch(user?.piUid)
 
   // Not authenticated
   if (!user) {
@@ -109,14 +118,14 @@ export default function FeedPage() {
               fontSize:   '1.5rem',
               fontWeight: '700',
             }}>
-              Available Tasks
+              Find Work
             </h1>
             <p style={{
               margin:   '0',
               color:    '#6b7280',
               fontSize: '0.875rem',
             }}>
-              Tasks matching your reputation ({user.reputationScore})
+              Your reputation score: {user.reputationScore}
             </p>
           </div>
           <button
@@ -124,32 +133,26 @@ export default function FeedPage() {
             disabled={isLoading}
             style={{
               padding:      '0.5rem 1rem',
-              background:   'transparent',
-              border:       '1px solid #374151',
+              background:   '#111827',
+              border:       '1px solid #1f2937',
               borderRadius: '8px',
               color:        '#9ca3af',
-              fontSize:     '0.875rem',
+              fontSize:     '0.8rem',
               cursor:       isLoading ? 'not-allowed' : 'pointer',
             }}
           >
-            {isLoading ? 'Loading...' : 'Refresh'}
+            ↺ Refresh
           </button>
         </div>
 
-        {/* Error state */}
-        {error && (
-          <div style={{
-            padding:      '1rem',
-            background:   '#450a0a',
-            border:       '1px solid #dc2626',
-            borderRadius: '10px',
-            color:        '#fca5a5',
-            marginBottom: '1rem',
-            fontSize:     '0.875rem',
-          }}>
-            {error}
-          </div>
-        )}
+        {/* Search and filters */}
+        <TaskFilters
+          filters={filters}
+          onFilter={setFilters}
+          onReset={resetFilters}
+          resultCount={pagination?.total ?? 0}
+          isLoading={isLoading}
+        />
 
         {/* Loading state */}
         {isLoading && tasks.length === 0 && (
@@ -171,7 +174,7 @@ export default function FeedPage() {
         )}
 
         {/* Empty state */}
-        {!isLoading && tasks.length === 0 && !error && (
+        {!isLoading && tasks.length === 0 && (
           <div style={{
             textAlign:    'center',
             padding:      '4rem 2rem',
@@ -183,50 +186,53 @@ export default function FeedPage() {
               🔍
             </div>
             <h3 style={{ margin: '0 0 0.5rem', color: '#ffffff' }}>
-              No tasks available
+              No tasks found
             </h3>
             <p style={{ color: '#6b7280', margin: '0', fontSize: '0.875rem' }}>
-              New tasks will appear here as employers post them.
-              Check back soon.
+              Try adjusting your filters or check back soon.
             </p>
           </div>
         )}
 
         {/* Task list */}
-        <div style={{
-          display:       'flex',
-          flexDirection: 'column',
-          gap:           '1rem',
-        }}>
-          {tasks.map(task => {
-            return (
+        {tasks.length > 0 && (
+          <div style={{
+            display:       'flex',
+            flexDirection: 'column',
+            gap:           '1rem',
+            marginBottom:  '1.5rem',
+          }}>
+            {tasks.map((task: any) => (
               <TaskCard
                 key={task.id}
                 task={task}
                 workerReputation={user.reputationScore}
               />
-            )
-          })}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Load more */}
-        {hasMore && tasks.length > 0 && (
+        {pagination?.hasMore && (
           <button
             onClick={loadMore}
             disabled={isLoading}
             style={{
               width:        '100%',
-              marginTop:    '1.5rem',
               padding:      '0.875rem',
               background:   'transparent',
               border:       '1px solid #374151',
               borderRadius: '10px',
               color:        '#9ca3af',
-              fontSize:     '0.9rem',
+              fontSize:     '0.875rem',
               cursor:       isLoading ? 'not-allowed' : 'pointer',
+              marginTop:    '1rem',
             }}
           >
-            {isLoading ? 'Loading more...' : 'Load more tasks'}
+            {isLoading 
+              ? 'Loading...' 
+              : `Load more (${pagination.total - tasks.length} remaining)`
+            }
           </button>
         )}
 

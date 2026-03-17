@@ -279,6 +279,16 @@ export async function POST(req: NextRequest) {
 }
 
 // GET /api/tasks — fetch active tasks for worker feed
+// Supports filtering via query parameters:
+// - category: Task category filter
+// - proofType: Proof type filter
+// - minReward, maxReward: Pi reward range
+// - minReputation: Minimum reputation requirement
+// - badgeLevel: Minimum badge level
+// - status: Task status (default: 'escrowed')
+// - search: Search in title/description/tags
+// - limit: Results per page (max 50, default 20)
+// - offset: Pagination offset (default 0)
 export async function GET(req: NextRequest) {
   try {
     const piUid = req.headers.get('x-pi-uid')
@@ -303,13 +313,30 @@ export async function GET(req: NextRequest) {
     }
 
     const url    = new URL(req.url)
-    const limit  = Math.min(
-      parseInt(url.searchParams.get('limit')  ?? '20'), 50
-    )
-    const offset = parseInt(url.searchParams.get('offset') ?? '0')
+    const page   = Math.max(1, parseInt(url.searchParams.get('page') ?? '1'))
+    const limit  = Math.min(25, Math.max(1, parseInt(url.searchParams.get('limit') ?? '10')))
+    const offset = (page - 1) * limit
 
-    const { tasks, error } = await getActiveTasks(
-      worker.id, limit, offset
+    // Extract filter parameters (following TB-011 brief)
+    const search   = url.searchParams.get('search')?.trim() ?? undefined
+    const category = url.searchParams.get('category')?.trim() ?? undefined
+    const minReward = url.searchParams.get('minReward') ? parseFloat(url.searchParams.get('minReward')!) : undefined
+    const maxReward = url.searchParams.get('maxReward') ? parseFloat(url.searchParams.get('maxReward')!) : undefined
+    const minBadge = url.searchParams.get('minBadge') ?? undefined
+    const sort     = url.searchParams.get('sort') ?? 'newest'
+
+    const filters = {
+      search,
+      category,
+      minReward,
+      maxReward,
+      badgeLevel: minBadge,
+      status: 'escrowed',
+      sort,
+    }
+
+    const { tasks, total, error } = await getActiveTasks(
+      worker.id, limit, offset, filters
     )
 
     if (error) {
@@ -319,7 +346,22 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    return NextResponse.json({ success: true, tasks }, { status: 200 })
+    const totalTasks = total ?? 0
+    const totalPages = Math.ceil(totalTasks / limit)
+    const hasMore = offset + limit < totalTasks
+
+    return NextResponse.json({
+      success: true,
+      tasks: tasks ?? [],
+      pagination: {
+        page,
+        limit,
+        total: totalTasks,
+        totalPages,
+        hasMore,
+      },
+      filters: { search, category, minReward, maxReward, sort },
+    }, { status: 200 })
 
   } catch (err) {
     console.error('[Nexus:TasksRoute] Unhandled GET error:', err)
