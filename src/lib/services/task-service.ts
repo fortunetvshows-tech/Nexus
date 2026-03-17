@@ -160,6 +160,9 @@ export async function getActiveTasks(
   // Apply status filter (default: escrowed)
   const status = filters.status || 'escrowed'
   query = query.eq('taskStatus', status)
+  
+  // Self-submission firewall: workers never see their own posted tasks
+  query = query.neq('employerId', workerId)
 
   // Apply category filter
   if (filters.category) {

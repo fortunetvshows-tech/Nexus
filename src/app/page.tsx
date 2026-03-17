@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useRef }  from 'react'
-import { useRouter }          from 'next/navigation'
-import { usePiAuth }          from '@/hooks/use-pi-auth'
-import { ShinyButton }        from '@/components/ShinyButton'
-import { Marquee }            from '@/components/Marquee'
-import { COLORS, GRADIENTS }  from '@/lib/design/tokens'
+import { useEffect, useRef, useState } from 'react'
+import { useRouter }                    from 'next/navigation'
+import { usePiAuth }                    from '@/hooks/use-pi-auth'
+import { ShinyButton }                  from '@/components/ShinyButton'
+import { Marquee }                      from '@/components/Marquee'
+import { COLORS, GRADIENTS }            from '@/lib/design/tokens'
 
 const TASK_CATEGORIES = [
   '📋 Survey & Research',
@@ -19,77 +19,108 @@ const TASK_CATEGORIES = [
   '✅ Social Verification',
 ]
 
+const STATS = [
+  { value: '9',    label: 'Task Categories' },
+  { value: '5%',   label: 'Platform Fee'    },
+  { value: '0.01π', label: 'Network Fee'   },
+]
+
+const HOW_IT_WORKS = [
+  {
+    step:  '01',
+    title: 'Connect your Pi wallet',
+    body:  'Authenticate once with Pi Browser. Your identity is verified by the Pi Network.',
+    color: COLORS.indigo,
+  },
+  {
+    step:  '02',
+    title: 'Find work or post tasks',
+    body:  'Workers browse the live task feed. Employers post tasks with Pi held in escrow.',
+    color: COLORS.emerald,
+  },
+  {
+    step:  '03',
+    title: 'Complete and get paid',
+    body:  'Submit proof of work. Employers review and approve. Pi releases instantly.',
+    color: COLORS.amber,
+  },
+]
+
 export default function HomePage() {
   const { user, authenticate, isLoading, isSdkReady } = usePiAuth()
   const router   = useRouter()
-  const hasAutoAuthenticated = useRef(false)
+  const hasAutoAuth = useRef(false)
+  const [activeStep, setActiveStep] = useState(0)
 
+  // Redirect authenticated users immediately
   useEffect(() => {
-    if (user) {
-      router.push('/dashboard')
-    }
+    if (user) router.push('/dashboard')
   }, [user, router])
 
   useEffect(() => {
-    if (isSdkReady && !user && !hasAutoAuthenticated.current) {
-      hasAutoAuthenticated.current = true
+    if (isSdkReady && !user && !hasAutoAuth.current) {
+      hasAutoAuth.current = true
       authenticate()
     }
   }, [isSdkReady, user, authenticate])
 
+  // Cycle through how-it-works steps
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveStep(prev => (prev + 1) % HOW_IT_WORKS.length)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
-    <div
-      style={{
+    <div style={{
+      minHeight:   '100vh',
+      background:  COLORS.bgBase,
+      color:       COLORS.textPrimary,
+      fontFamily:  "'Inter', system-ui, sans-serif",
+      overflowX:   'hidden',
+    }}>
+
+      {/* ── Hero Section ─────────────────────────────────── */}
+      <section style={{
         minHeight:       '100vh',
-        background:      COLORS.bgBase,
-        backgroundImage: GRADIENTS.hero,
-        color:           COLORS.textPrimary,
         display:         'flex',
         flexDirection:   'column',
         alignItems:      'center',
         justifyContent:  'center',
-        overflow:        'hidden',
+        textAlign:       'center',
+        padding:         '2rem var(--page-padding)',
+        backgroundImage: GRADIENTS.hero,
         position:        'relative',
-      }}
-    >
-      {/* Ambient background orbs */}
-      <div aria-hidden style={{
-        position:     'absolute',
-        top:          '-20%',
-        left:         '50%',
-        transform:    'translateX(-50%)',
-        width:        '600px',
-        height:       '600px',
-        background:   'radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)',
-        borderRadius: '50%',
-        pointerEvents: 'none',
-      }} />
-
-      {/* Main content */}
-      <div style={{
-        display:        'flex',
-        flexDirection:  'column',
-        alignItems:     'center',
-        textAlign:      'center',
-        padding:        '2rem',
-        maxWidth:       '560px',
-        animation:      'fade-up 0.6s ease both',
       }}>
 
-        {/* Status badge */}
+        {/* Ambient orb */}
+        <div aria-hidden style={{
+          position:     'absolute',
+          top:          '-10%',
+          left:         '50%',
+          transform:    'translateX(-50%)',
+          width:        '700px',
+          height:       '700px',
+          background:   'radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 65%)',
+          borderRadius: '50%',
+          pointerEvents: 'none',
+        }} />
+
+        {/* Live badge */}
         <div style={{
           display:       'inline-flex',
           alignItems:    'center',
           gap:           '8px',
           padding:       '6px 14px',
           background:    COLORS.indigoDim,
-          border:        '1px solid rgba(99,102,241,0.3)',
+          border:        `1px solid rgba(99,102,241,0.3)`,
           borderRadius:  '9999px',
           fontSize:      '0.75rem',
           fontWeight:    '500',
           color:         COLORS.indigoLight,
           marginBottom:  '2rem',
-          letterSpacing: '0.02em',
+          animation:     'fade-up 0.4s ease both',
         }}>
           <span style={{
             width:        '6px',
@@ -100,93 +131,333 @@ export default function HomePage() {
             display:      'inline-block',
             animation:    'pulse-glow 2s infinite',
           }} />
-          Pi Network Labor Marketplace
+          Pi Network Labor Marketplace · Live on Testnet
         </div>
 
         {/* Headline */}
-        <h1 className="landing-headline" style={{
-          fontSize:      'clamp(2.5rem, 8vw, 4.5rem)',
-          fontWeight:    '700',
-          margin:        '0 0 1rem',
-          letterSpacing: '-0.03em',
-          lineHeight:    '1.1',
-          color:         COLORS.textPrimary,
-        }}>
-          Earn Pi for
-          <br />
+        <h1
+          className="landing-headline"
+          style={{
+            fontSize:      'clamp(2.5rem, 7vw, 4.5rem)',
+            fontWeight:    '700',
+            margin:        '0 0 1rem',
+            letterSpacing: '-0.03em',
+            lineHeight:    '1.1',
+            maxWidth:      '700px',
+            animation:     'fade-up 0.5s ease 0.1s both',
+            opacity:       0,
+          }}
+        >
+          The marketplace where{' '}
           <span style={{
             background:           `linear-gradient(135deg, ${COLORS.indigo}, ${COLORS.emerald})`,
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor:  'transparent',
             backgroundClip:       'text',
           }}>
-            real work
+            Pi has value
           </span>
         </h1>
 
+        {/* Dual sub-copy */}
         <p style={{
-          fontSize:     '1.05rem',
-          color:        COLORS.textSecondary,
-          margin:       '0 0 2.5rem',
-          lineHeight:   '1.6',
-          maxWidth:     '360px',
+          fontSize:   '1.05rem',
+          color:      COLORS.textSecondary,
+          margin:     '0 0 1rem',
+          maxWidth:   '480px',
+          lineHeight: '1.6',
+          animation:  'fade-up 0.5s ease 0.2s both',
+          opacity:    0,
         }}>
-          Complete tasks posted by employers.
-          Get paid instantly in Pi.
+          Workers earn Pi completing real tasks.
+          Employers post work with Pi held in escrow.
         </p>
 
-        {/* SDK status */}
+        {/* Stats row */}
         <div style={{
-          display:      'flex',
-          alignItems:   'center',
-          gap:          '8px',
-          marginBottom: '1.25rem',
-          fontSize:     '0.8rem',
-          color:        isSdkReady ? COLORS.emerald : COLORS.textMuted,
+          display:       'flex',
+          gap:           '2rem',
+          marginBottom:  '2.5rem',
+          flexWrap:      'wrap' as const,
+          justifyContent: 'center',
+          animation:     'fade-up 0.5s ease 0.3s both',
+          opacity:       0,
         }}>
-          <div style={{
-            width:        '7px',
-            height:       '7px',
-            borderRadius: '50%',
-            background:   isSdkReady ? COLORS.emerald : COLORS.textMuted,
-            boxShadow:    isSdkReady
-              ? `0 0 8px ${COLORS.emerald}`
-              : 'none',
-          }} />
-          {isSdkReady ? 'Pi Browser detected' : 'Waiting for Pi SDK...'}
+          {STATS.map(stat => (
+            <div key={stat.label} style={{ textAlign: 'center' }}>
+              <div style={{
+                fontFamily:    "'Fira Code', monospace",
+                fontSize:      '1.4rem',
+                fontWeight:    '700',
+                color:         COLORS.textPrimary,
+                letterSpacing: '-0.02em',
+              }}>
+                {stat.value}
+              </div>
+              <div style={{
+                fontSize: '0.72rem',
+                color:    COLORS.textMuted,
+                marginTop: '2px',
+              }}>
+                {stat.label}
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* Shiny CTA */}
+        {/* SDK status + CTA */}
+        <div style={{
+          display:       'flex',
+          flexDirection: 'column',
+          alignItems:    'center',
+          gap:           '0.875rem',
+          animation:     'fade-up 0.5s ease 0.4s both',
+          opacity:       0,
+          width:         '100%',
+          maxWidth:      '280px',
+        }}>
+          <div style={{
+            display:    'flex',
+            alignItems: 'center',
+            gap:        '8px',
+            fontSize:   '0.78rem',
+            color:      isSdkReady ? COLORS.emerald : COLORS.textMuted,
+          }}>
+            <div style={{
+              width:        '7px',
+              height:       '7px',
+              borderRadius: '50%',
+              background:   isSdkReady ? COLORS.emerald : COLORS.textMuted,
+              boxShadow:    isSdkReady ? `0 0 8px ${COLORS.emerald}` : 'none',
+            }} />
+            {isSdkReady ? 'Pi Browser detected' : 'Open in Pi Browser'}
+          </div>
+
+          <ShinyButton
+            onClick={authenticate}
+            disabled={isLoading || !isSdkReady}
+          >
+            {isLoading ? 'Connecting...' : 'Connect with Pi →'}
+          </ShinyButton>
+        </div>
+
+        {/* Marquee */}
+        <div
+          className="landing-marquee"
+          style={{
+            position:  'absolute',
+            bottom:    '3rem',
+            left:      0,
+            right:     0,
+            animation: 'fade-up 0.6s ease 0.6s both',
+            opacity:   0,
+          }}
+        >
+          <div style={{
+            fontSize:      '0.65rem',
+            color:         COLORS.textMuted,
+            textAlign:     'center',
+            marginBottom:  '0.625rem',
+            letterSpacing: '0.1em',
+            fontWeight:    '600',
+          }}>
+            AVAILABLE TASK CATEGORIES
+          </div>
+          <Marquee items={TASK_CATEGORIES} speed={25} />
+        </div>
+      </section>
+
+      {/* ── How It Works Section ──────────────────────────── */}
+      <section style={{
+        padding:    '5rem var(--page-padding)',
+        maxWidth:   '760px',
+        margin:     '0 auto',
+      }}>
+        <div style={{
+          textAlign:     'center',
+          marginBottom:  '3rem',
+        }}>
+          <div style={{
+            fontSize:      '0.7rem',
+            fontWeight:    '600',
+            color:         COLORS.indigo,
+            letterSpacing: '0.12em',
+            marginBottom:  '0.75rem',
+            textTransform: 'uppercase' as const,
+          }}>
+            How It Works
+          </div>
+          <h2 style={{
+            fontSize:      'clamp(1.5rem, 4vw, 2.25rem)',
+            fontWeight:    '700',
+            margin:        0,
+            letterSpacing: '-0.02em',
+          }}>
+            Work-first. Pay-on-delivery.
+          </h2>
+        </div>
+
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap:     '0.875rem',
+        }}>
+          {HOW_IT_WORKS.map((step, idx) => (
+            <div
+              key={step.step}
+              onClick={() => setActiveStep(idx)}
+              className="nexus-card"
+              style={{
+                display:   'flex',
+                gap:       '1.25rem',
+                alignItems: 'flex-start',
+                cursor:    'pointer',
+                borderLeft: `3px solid ${
+                  idx === activeStep ? step.color : 'transparent'
+                }`,
+                transition: 'all 0.3s ease',
+                opacity:   idx === activeStep ? 1 : 0.6,
+              }}
+            >
+              <div style={{
+                fontFamily:    "'Fira Code', monospace",
+                fontSize:      '0.75rem',
+                fontWeight:    '700',
+                color:         step.color,
+                opacity:       0.8,
+                flexShrink:    0,
+                paddingTop:    '2px',
+              }}>
+                {step.step}
+              </div>
+              <div>
+                <div style={{
+                  fontWeight:   '600',
+                  fontSize:     '0.95rem',
+                  marginBottom: '4px',
+                  color:        COLORS.textPrimary,
+                }}>
+                  {step.title}
+                </div>
+                <div style={{
+                  fontSize:   '0.85rem',
+                  color:      COLORS.textSecondary,
+                  lineHeight: '1.5',
+                }}>
+                  {step.body}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Reputation Section ────────────────────────────── */}
+      <section style={{
+        padding:    '3rem var(--page-padding) 5rem',
+        maxWidth:   '760px',
+        margin:     '0 auto',
+        textAlign:  'center',
+      }}>
+        <div style={{
+          fontSize:      '0.7rem',
+          fontWeight:    '600',
+          color:         COLORS.emerald,
+          letterSpacing: '0.12em',
+          marginBottom:  '0.75rem',
+          textTransform: 'uppercase' as const,
+        }}>
+          Reputation System
+        </div>
+        <h2 style={{
+          fontSize:      'clamp(1.5rem, 4vw, 2.25rem)',
+          fontWeight:    '700',
+          margin:        '0 0 1rem',
+          letterSpacing: '-0.02em',
+        }}>
+          Earn trust, unlock opportunities
+        </h2>
+        <p style={{
+          fontSize:   '0.95rem',
+          color:      COLORS.textSecondary,
+          maxWidth:   '480px',
+          margin:     '0 auto 2.5rem',
+          lineHeight: '1.6',
+        }}>
+          Every completed task builds your reputation score.
+          Higher levels unlock higher-reward tasks and arbitration rights.
+        </p>
+
+        {/* Level progression */}
+        <div style={{
+          display:        'flex',
+          justifyContent: 'center',
+          gap:            '0.5rem',
+          flexWrap:       'wrap' as const,
+        }}>
+          {[
+            { level: 'Newcomer',   color: '#94A3B8' },
+            { level: 'Apprentice', color: '#60A5FA' },
+            { level: 'Journeyman', color: '#34D399' },
+            { level: 'Expert',     color: '#A78BFA' },
+            { level: 'Master',     color: '#F59E0B' },
+            { level: 'Sovereign',  color: '#F0B429' },
+          ].map((item, idx) => (
+            <div key={item.level} style={{
+              display:      'flex',
+              alignItems:   'center',
+              gap:          '6px',
+              padding:      '5px 12px',
+              background:   `${item.color}12`,
+              border:       `1px solid ${item.color}30`,
+              borderRadius: '9999px',
+            }}>
+              <div style={{
+                width:        '6px',
+                height:       '6px',
+                borderRadius: '50%',
+                background:   item.color,
+              }} />
+              <span style={{
+                fontSize:   '0.75rem',
+                fontWeight: '500',
+                color:      item.color,
+              }}>
+                {item.level}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Bottom CTA ────────────────────────────────────── */}
+      <section style={{
+        borderTop:  `1px solid ${COLORS.border}`,
+        padding:    '4rem var(--page-padding)',
+        textAlign:  'center',
+      }}>
+        <h2 style={{
+          fontSize:      'clamp(1.5rem, 4vw, 2rem)',
+          fontWeight:    '700',
+          margin:        '0 0 0.75rem',
+          letterSpacing: '-0.02em',
+        }}>
+          Ready to earn Pi?
+        </h2>
+        <p style={{
+          fontSize:     '0.95rem',
+          color:        COLORS.textSecondary,
+          margin:       '0 0 2rem',
+        }}>
+          Open Nexus in Pi Browser to get started.
+        </p>
         <ShinyButton
           onClick={authenticate}
           disabled={isLoading || !isSdkReady}
         >
-          {isLoading ? 'Connecting...' : 'Connect with Pi'}
+          {isLoading ? 'Connecting...' : 'Connect with Pi →'}
         </ShinyButton>
-
-      </div>
-
-      {/* Marquee — positioned below main content */}
-      <div className="landing-marquee" style={{
-        position:  'absolute',
-        bottom:    '3rem',
-        left:      0,
-        right:     0,
-        animation: 'fade-up 0.8s ease 0.3s both',
-        opacity:   0,
-      }}>
-        <div style={{
-          fontSize:     '0.7rem',
-          color:        COLORS.textMuted,
-          textAlign:    'center',
-          marginBottom: '0.75rem',
-          letterSpacing: '0.08em',
-          fontWeight:   '500',
-        }}>
-          AVAILABLE TASK CATEGORIES
-        </div>
-        <Marquee items={TASK_CATEGORIES} speed={25} />
-      </div>
+      </section>
 
     </div>
   )
