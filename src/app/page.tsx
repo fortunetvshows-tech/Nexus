@@ -50,6 +50,7 @@ export default function HomePage() {
   const { user, authenticate, isLoading, isSdkReady } = usePiAuth()
   const hasAutoAuth = useRef(false)
   const [activeStep, setActiveStep] = useState(0)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     if (isSdkReady && !user && !hasAutoAuth.current) {
@@ -57,6 +58,10 @@ export default function HomePage() {
       authenticate()
     }
   }, [isSdkReady, user, authenticate])
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Cycle through how-it-works steps
   useEffect(() => {
@@ -149,7 +154,25 @@ export default function HomePage() {
 
         {/* Smart CTA — compact version for header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-          {user ? (
+          {!mounted ? (
+            <button
+              disabled
+              style={{
+                padding:      '0.45rem 1rem',
+                background:   COLORS.bgElevated,
+                color:        COLORS.textMuted,
+                border:       'none',
+                borderRadius: '8px',
+                fontSize:     '0.82rem',
+                fontWeight:   '600',
+                cursor:       'not-allowed',
+                whiteSpace:   'nowrap' as const,
+                fontFamily:   "'Inter', system-ui, sans-serif",
+              }}
+            >
+              Login with Pi
+            </button>
+          ) : user ? (
             <Link
               href="/dashboard"
               style={{
@@ -170,20 +193,20 @@ export default function HomePage() {
           ) : (
             <button
               onClick={authenticate}
-              disabled={isLoading || !isSdkReady}
+              disabled={isLoading}
               style={{
                 padding:      '0.45rem 1rem',
-                background:   isLoading || !isSdkReady
+                background:   isLoading
                   ? COLORS.bgElevated
                   : `linear-gradient(180deg, ${COLORS.indigo} 0%, ${COLORS.indigoDark} 100%)`,
-                color:        isLoading || !isSdkReady
+                color:        isLoading
                   ? COLORS.textMuted
                   : 'white',
                 border:       'none',
                 borderRadius: '8px',
                 fontSize:     '0.82rem',
                 fontWeight:   '600',
-                cursor:       isLoading || !isSdkReady ? 'not-allowed' : 'pointer',
+                cursor:       isLoading ? 'not-allowed' : 'pointer',
                 whiteSpace:   'nowrap' as const,
                 fontFamily:   "'Inter', system-ui, sans-serif",
               }}
@@ -351,7 +374,11 @@ export default function HomePage() {
           width:         '100%',
           maxWidth:      '280px',
         }}>
-          {user ? (
+          {!mounted ? (
+            <ShinyButton disabled>
+              Login with Pi
+            </ShinyButton>
+          ) : user ? (
             <Link
               href="/dashboard"
               style={{
@@ -592,7 +619,11 @@ export default function HomePage() {
         }}>
           Open Nexus in Pi Browser to get started.
         </p>
-        {user ? (
+        {!mounted ? (
+          <ShinyButton disabled>
+            Login with Pi
+          </ShinyButton>
+        ) : user ? (
           <Link
             href="/dashboard"
             style={{
