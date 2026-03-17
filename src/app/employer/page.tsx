@@ -768,7 +768,7 @@ export default function EmployerPage() {
                 style={{
                   flex:         1,
                   padding:      '0.875rem',
-                  background:   COLORS.bgSecondary,
+                  background:   COLORS.bgSurface,
                   color:        COLORS.textPrimary,
                   border:       'none',
                   borderRadius: RADII.lg,
