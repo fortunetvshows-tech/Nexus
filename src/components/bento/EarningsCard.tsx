@@ -32,15 +32,18 @@ export function EarningsCard({
       </div>
 
       {/* Animated Pi amount */}
-      <div style={{
-        fontFamily:    FONTS.mono,
-        fontSize:      'clamp(2rem, 5vw, 2.75rem)',
-        fontWeight:    '700',
-        color:         COLORS.emerald,
-        letterSpacing: '-0.03em',
-        lineHeight:    1,
-        marginBottom:  '0.5rem',
-      }}>
+      <div
+        className="earnings-amount"
+        style={{
+          fontFamily:    FONTS.mono,
+          fontSize:      'clamp(2rem, 5vw, 2.75rem)',
+          fontWeight:    '700',
+          color:         COLORS.emerald,
+          letterSpacing: '-0.03em',
+          lineHeight:    1,
+          marginBottom:  '0.5rem',
+        }}
+      >
         {animatedTotal}
         <span style={{
           fontSize:   '1.25rem',

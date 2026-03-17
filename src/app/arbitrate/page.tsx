@@ -100,11 +100,7 @@ export default function ArbitratePage() {
     }}>
       <Navigation currentPage="home" />
 
-      <main style={{
-        maxWidth: '680px',
-        margin:   '0 auto',
-        padding:  '80px 1rem 4rem',
-      }}>
+      <main className="page-main">
         <h1 style={{ margin: '0 0 0.5rem', fontSize: '1.4rem', fontWeight: '700' }}>
           Arbitration Panel
         </h1>

@@ -50,7 +50,8 @@ export function Navigation({ currentPage }: NavigationProps) {
         textDecoration: 'none',
         letterSpacing:  '-0.02em',
       }}>
-        Nexus
+        <span className="hide-mobile">Nexus</span>
+        <span className="show-mobile" style={{ fontSize: '1rem', fontWeight: '700' }}>NX</span>
         <span style={{
           marginLeft:   '6px',
           fontSize:     '0.55rem',
@@ -74,6 +75,7 @@ export function Navigation({ currentPage }: NavigationProps) {
             <Link
               key={item.key}
               href={item.href}
+              className="nav-link"
               style={{
                 padding:        '0.4rem 0.875rem',
                 borderRadius:   '8px',
@@ -89,7 +91,7 @@ export function Navigation({ currentPage }: NavigationProps) {
                 transition:     'all 0.15s ease',
               }}
             >
-              {item.label}
+              <span className="nav-label">{item.label}</span>
             </Link>
           )
         })}

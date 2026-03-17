@@ -125,8 +125,8 @@ export default function ArbitrateDisputePage({
             width:          '70px',
             height:         '70px',
             borderRadius:   '50%',
-            background:     COLORS.emeraldDim,
-            border:         `2px solid ${COLORS.emerald}`,
+            background:     '#14532d',
+            border:         '2px solid #16a34a',
             margin:         '0 auto 1.5rem',
             display:        'flex',
             alignItems:     'center',
@@ -136,7 +136,7 @@ export default function ArbitrateDisputePage({
             ✓
           </div>
           <h2 style={{ margin: '0 0 0.5rem' }}>Vote recorded</h2>
-          <p style={{ color: COLORS.textSecondary, margin: '0 0 1.5rem', fontSize: '0.875rem' }}>
+          <p style={{ color: '#9ca3af', margin: '0 0 1.5rem', fontSize: '0.875rem' }}>
             {(voteResult?.resolved as boolean)
               ? 'The dispute has been resolved based on the votes.'
               : 'Waiting for other arbitrators to vote.'}
@@ -144,7 +144,7 @@ export default function ArbitrateDisputePage({
           <a href="/arbitrate" style={{
             display:        'inline-block',
             padding:        '0.75rem 1.5rem',
-            background:     GRADIENTS.indigo,
+            background:     'linear-gradient(135deg, #7B3FE4, #A855F7)',
             color:          'white',
             borderRadius:   '10px',
             textDecoration: 'none',
@@ -161,19 +161,15 @@ export default function ArbitrateDisputePage({
   return (
     <div style={{
       minHeight:  '100vh',
-      background: COLORS.bgBase,
+      background: '#0f0f0f',
       fontFamily: 'system-ui, sans-serif',
-      color:      COLORS.textPrimary,
+      color:      '#ffffff',
     }}>
       <Navigation currentPage="home" />
 
-      <main style={{
-        maxWidth: '680px',
-        margin:   '0 auto',
-        padding:  '80px 1rem 4rem',
-      }}>
+      <main className="page-main">
         <a href="/arbitrate" style={{
-          color:          COLORS.textMuted,
+          color:          '#6b7280',
           fontSize:       '0.875rem',
           textDecoration: 'none',
           display:        'inline-block',
@@ -189,8 +185,8 @@ export default function ArbitrateDisputePage({
         {/* Evidence sections */}
         {task && (
           <div style={{
-            background:   COLORS.bgSurface,
-            border:       `1px solid ${COLORS.border}`,
+            background:   '#111827',
+            border:       '1px solid #1f2937',
             borderRadius: '12px',
             padding:      '1.25rem',
             marginBottom: '1rem',
@@ -218,8 +214,8 @@ export default function ArbitrateDisputePage({
 
         {submission && (
           <div style={{
-            background:   COLORS.bgSurface,
-            border:       `1px solid ${COLORS.border}`,
+            background:   '#111827',
+            border:       '1px solid #1f2937',
             borderRadius: '12px',
             padding:      '1.25rem',
             marginBottom: '1rem',
@@ -245,7 +241,7 @@ export default function ArbitrateDisputePage({
             </p>
             <div style={{
               fontSize:  '0.75rem',
-              color:     COLORS.red,
+              color:     '#dc2626',
               marginTop: '0.75rem',
             }}>
               Rejection reason: "{submission.rejectionReason as string}"
@@ -255,8 +251,8 @@ export default function ArbitrateDisputePage({
 
         {dispute && (
           <div style={{
-            background:   COLORS.bgSurface,
-            border:       `1px solid ${COLORS.border}`,
+            background:   '#111827',
+            border:       '1px solid #1f2937',
             borderRadius: '12px',
             padding:      '1.25rem',
             marginBottom: '2rem',
@@ -285,8 +281,8 @@ export default function ArbitrateDisputePage({
 
         {/* Vote section */}
         <div style={{
-          background:   COLORS.bgSurface,
-          border:       `1px solid ${COLORS.indigo}`,
+          background:   '#111827',
+          border:       '1px solid #7B3FE4',
           borderRadius: '16px',
           padding:      '1.5rem',
         }}>
@@ -308,10 +304,10 @@ export default function ArbitrateDisputePage({
               onClick={() => setVote('worker')}
               style={{
                 padding:      '0.875rem',
-                background:   vote === 'worker' ? COLORS.emeraldDim : COLORS.bgElevated,
-                border:       `2px solid ${vote === 'worker' ? COLORS.emerald : COLORS.borderAccent}`,
+                background:   vote === 'worker' ? '#14532d' : '#1f2937',
+                border:       `2px solid ${vote === 'worker' ? '#16a34a' : '#374151'}`,
                 borderRadius: '10px',
-                color:        vote === 'worker' ? COLORS.emerald : COLORS.textSecondary,
+                color:        vote === 'worker' ? '#86efac' : '#9ca3af',
                 fontSize:     '0.9rem',
                 fontWeight:   '600',
                 cursor:       'pointer',
@@ -323,10 +319,10 @@ export default function ArbitrateDisputePage({
               onClick={() => setVote('employer')}
               style={{
                 padding:      '0.875rem',
-                background:   vote === 'employer' ? COLORS.redDim : COLORS.bgElevated,
-                border:       `2px solid ${vote === 'employer' ? COLORS.red : COLORS.borderAccent}`,
+                background:   vote === 'employer' ? '#450a0a' : '#1f2937',
+                border:       `2px solid ${vote === 'employer' ? '#dc2626' : '#374151'}`,
                 borderRadius: '10px',
-                color:        vote === 'employer' ? COLORS.red : COLORS.textSecondary,
+                color:        vote === 'employer' ? '#fca5a5' : '#9ca3af',
                 fontSize:     '0.9rem',
                 fontWeight:   '600',
                 cursor:       'pointer',
@@ -344,10 +340,10 @@ export default function ArbitrateDisputePage({
             style={{
               width:        '100%',
               padding:      '0.875rem',
-              background:   COLORS.bgElevated,
-              border:       `1px solid ${COLORS.borderAccent}`,
+              background:   '#1f2937',
+              border:       '1px solid #374151',
               borderRadius: '8px',
-              color:        COLORS.textPrimary,
+              color:        '#ffffff',
               fontSize:     '0.875rem',
               resize:       'vertical',
               outline:      'none',
@@ -359,9 +355,9 @@ export default function ArbitrateDisputePage({
           {error && (
             <div style={{
               padding:      '0.75rem',
-              background:   COLORS.redDim,
+              background:   '#450a0a',
               borderRadius: '8px',
-              color:        COLORS.red,
+              color:        '#fca5a5',
               fontSize:     '0.875rem',
               marginBottom: '1rem',
             }}>
@@ -380,8 +376,8 @@ export default function ArbitrateDisputePage({
               width:        '100%',
               padding:      '1rem',
               background:   !vote || reasoning.trim().length < 10
-                              ? COLORS.borderAccent
-                              : GRADIENTS.indigo,
+                              ? '#374151'
+                              : 'linear-gradient(135deg, #7B3FE4, #A855F7)',
               color:        'white',
               border:       'none',
               borderRadius: '12px',

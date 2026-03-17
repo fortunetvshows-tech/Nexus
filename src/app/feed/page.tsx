@@ -100,11 +100,7 @@ export default function FeedPage() {
         </div>
       )}
 
-      <main style={{
-        maxWidth: '680px',
-        margin:   '0 auto',
-        padding:  '80px 1rem 2rem',
-      }}>
+      <main className="page-main">
 
         {/* Header */}
         <div style={{

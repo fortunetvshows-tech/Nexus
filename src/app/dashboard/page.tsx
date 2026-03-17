@@ -198,11 +198,7 @@ export default function DashboardPage() {
     }}>
       <Navigation currentPage="dashboard" />
 
-      <main style={{
-        maxWidth: '760px',
-        margin:   '0 auto',
-        padding:  '72px 1rem 4rem',
-      }}>
+      <main className="page-main">
 
         {/* User header */}
         <div className="nexus-card" style={{

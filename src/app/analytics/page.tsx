@@ -257,11 +257,7 @@ export default function AnalyticsPage() {
     }}>
       <Navigation currentPage="analytics" />
 
-      <main style={{
-        maxWidth: '720px',
-        margin:   '0 auto',
-        padding:  '80px 1rem 4rem',
-      }}>
+      <main className="page-main">
 
         {/* Header */}
         <div style={{ marginBottom: '2rem' }}>

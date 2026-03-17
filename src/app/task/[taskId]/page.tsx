@@ -187,14 +187,10 @@ export default function TaskDetailPage({
     }}>
       <Navigation currentPage="feed" />
 
-      <main style={{
-        maxWidth: '680px',
-        margin:   '0 auto',
-        padding:  '80px 1rem 4rem',
-      }}>
+      <main className="page-main">
 
         <Link href="/dashboard" style={{
-          color: '#6b7280', fontSize: '0.875rem',
+          color: COLORS.textMuted, fontSize: '0.875rem',
           textDecoration: 'none', display: 'inline-block',
           marginBottom: '1.5rem',
         }}>
@@ -203,7 +199,7 @@ export default function TaskDetailPage({
 
         {/* Task header */}
         <div style={{
-          background: '#111827', border: '1px solid #1f2937',
+          background: COLORS.bgSurface, border: `1px solid ${COLORS.border}`,
           borderRadius: '16px', padding: '1.5rem',
           marginBottom: '1rem',
         }}>
@@ -213,7 +209,7 @@ export default function TaskDetailPage({
           }}>
             <div style={{ flex: 1, marginRight: '1rem' }}>
               <div style={{
-                fontSize: '0.75rem', color: '#6b7280',
+                fontSize: '0.75rem', color: COLORS.textMuted,
                 textTransform: 'uppercase', letterSpacing: '0.05em',
                 marginBottom: '0.4rem',
               }}>
@@ -228,7 +224,7 @@ export default function TaskDetailPage({
             </div>
             <div style={{
               fontSize: '2rem', fontWeight: '800',
-              background: 'linear-gradient(135deg, #7B3FE4, #A855F7)',
+              background: GRADIENTS.indigo,
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               flexShrink: 0,
@@ -243,8 +239,8 @@ export default function TaskDetailPage({
             gridTemplateColumns: 'repeat(3, 1fr)',
             gap: '0.75rem',
             padding: '1rem 0',
-            borderTop: '1px solid #1f2937',
-            borderBottom: '1px solid #1f2937',
+            borderTop: `1px solid ${COLORS.border}`,
+            borderBottom: `1px solid ${COLORS.border}`,
             margin: '1rem 0',
           }}>
             {[
@@ -254,7 +250,7 @@ export default function TaskDetailPage({
             ].map(s => (
               <div key={s.label} style={{ textAlign: 'center' }}>
                 <div style={{
-                  fontSize: '0.75rem', color: '#6b7280',
+                  fontSize: '0.75rem', color: COLORS.textMuted,
                   marginBottom: '0.25rem',
                 }}>
                   {s.label}
@@ -290,7 +286,7 @@ export default function TaskDetailPage({
           <div>
             <h3 style={{
               margin: '0 0 0.5rem', fontSize: '0.8rem',
-              fontWeight: '500', color: '#a78bfa',
+              fontWeight: '500', color: COLORS.indigoLight,
               textTransform: 'uppercase', letterSpacing: '0.05em',
             }}>
               Instructions

@@ -5,34 +5,36 @@ import React from 'react'
 interface BentoItem {
   id:        string
   children:  React.ReactNode
-  colSpan?:  1 | 2 | 3      // default 1
-  rowSpan?:  1 | 2           // default 1
+  colSpan?:  1 | 2 | 3
+  rowSpan?:  1 | 2
   className?: string
 }
 
 interface BentoGridProps {
   items:    BentoItem[]
-  columns?: 2 | 3            // default 3
-  gap?:     string           // default '1rem'
+  columns?: 2 | 3
+  gap?:     string
 }
 
-export function BentoGrid({ items, columns = 3, gap = '1rem' }: BentoGridProps) {
+export function BentoGrid({ items, columns = 3, gap = '0.875rem' }: BentoGridProps) {
   return (
-    <div style={{
-      display:             'grid',
-      gridTemplateColumns: `repeat(${columns}, 1fr)`,
-      gap,
-      width:               '100%',
-    }}>
+    <div
+      className="bento-grid"
+      style={{ gap }}
+    >
       {items.map(item => (
         <div
           key={item.id}
-          className={`nexus-card ${item.className ?? ''}`}
+          className={[
+            'nexus-card',
+            item.colSpan ? `bento-col-${item.colSpan}` : 'bento-col-1',
+            item.className ?? '',
+          ].join(' ')}
           style={{
-            gridColumn: item.colSpan ? `span ${item.colSpan}` : 'span 1',
-            gridRow:    item.rowSpan ? `span ${item.rowSpan}` : 'span 1',
-            padding:    '1.25rem',
-            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+            gridColumn:  item.colSpan ? `span ${item.colSpan}` : 'span 1',
+            gridRow:     item.rowSpan ? `span ${item.rowSpan}` : 'span 1',
+            padding:     'var(--card-padding)',
+            transition:  'transform 0.2s ease, box-shadow 0.2s ease',
           }}
         >
           {item.children}

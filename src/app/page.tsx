@@ -104,7 +104,7 @@ export default function HomePage() {
         </div>
 
         {/* Headline */}
-        <h1 style={{
+        <h1 className="landing-headline" style={{
           fontSize:      'clamp(2.5rem, 8vw, 4.5rem)',
           fontWeight:    '700',
           margin:        '0 0 1rem',
@@ -167,7 +167,7 @@ export default function HomePage() {
       </div>
 
       {/* Marquee — positioned below main content */}
-      <div style={{
+      <div className="landing-marquee" style={{
         position:  'absolute',
         bottom:    '3rem',
         left:      0,

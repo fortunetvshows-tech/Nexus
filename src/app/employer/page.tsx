@@ -124,11 +124,7 @@ export default function EmployerPage() {
     }}>
       <Navigation currentPage="employer" />
 
-      <main style={{
-        maxWidth: '600px',
-        margin:   '0 auto',
-        padding:  '80px 1rem 4rem',
-      }}>
+      <main className="page-main">
 
         {/* My Posted Tasks — shown when on form step or after success */}
         {(step === 'form' || step === 'success') && myTasks.length > 0 && (

@@ -193,20 +193,16 @@ export default function ReviewPage({
   return (
     <div style={{
       minHeight:  '100vh',
-      background: COLORS.bgBase,
+      background: '#0f0f0f',
       fontFamily: 'system-ui, sans-serif',
-      color:      COLORS.textPrimary,
+      color:      '#ffffff',
     }}>
       <Navigation currentPage="employer" />
 
-      <main style={{
-        maxWidth: '680px',
-        margin:   '0 auto',
-        padding:  '80px 1rem 4rem',
-      }}>
+      <main className="page-main">
 
         <Link href="/employer" style={{
-          color: COLORS.textMuted, fontSize: '0.875rem',
+          color: '#6b7280', fontSize: '0.875rem',
           textDecoration: 'none', display: 'inline-block',
           marginBottom: '1.5rem',
         }}>
@@ -218,26 +214,26 @@ export default function ReviewPage({
         }}>
           Review Submissions
         </h1>
-        <p style={{ margin: '0 0 2rem', color: COLORS.textMuted, fontSize: '0.875rem' }}>
+        <p style={{ margin: '0 0 2rem', color: '#6b7280', fontSize: '0.875rem' }}>
           {taskTitle}
         </p>
 
         {isLoading && (
           <div style={{
-            background: COLORS.bgSurface, borderRadius: '12px',
-            height: '200px', border: `1px solid ${COLORS.border}`,
+            background: '#111827', borderRadius: '12px',
+            height: '200px', border: '1px solid #1f2937',
           }} />
         )}
 
         {!isLoading && submissions.length === 0 && (
           <div style={{
             textAlign: 'center', padding: '4rem 2rem',
-            background: COLORS.bgSurface, borderRadius: '16px',
-            border: `1px solid ${COLORS.border}`,
+            background: '#111827', borderRadius: '16px',
+            border: '1px solid #1f2937',
           }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📭</div>
             <h3 style={{ margin: '0 0 0.5rem' }}>No submissions yet</h3>
-            <p style={{ color: COLORS.textMuted, margin: '0', fontSize: '0.875rem' }}>
+            <p style={{ color: '#6b7280', margin: '0', fontSize: '0.875rem' }}>
               Workers are working on your task. Check back soon.
             </p>
           </div>
@@ -246,11 +242,11 @@ export default function ReviewPage({
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {submissions.map(sub => (
             <div key={sub.id} style={{
-              background: COLORS.bgSurface,
+              background: '#111827',
               border: `1px solid ${
-                sub.status === 'APPROVED' ? COLORS.emerald
-                : sub.status === 'REJECTED' ? COLORS.red
-                : COLORS.border
+                sub.status === 'APPROVED' ? '#16a34a'
+                : sub.status === 'REJECTED' ? '#dc2626'
+                : '#1f2937'
               }`,
               borderRadius: '16px',
               padding: '1.25rem',
@@ -266,7 +262,7 @@ export default function ReviewPage({
                     {sub.worker?.piUsername}
                   </div>
                   <div style={{
-                    fontSize: '0.78rem', color: COLORS.textMuted, marginTop: '0.2rem',
+                    fontSize: '0.78rem', color: '#6b7280', marginTop: '0.2rem',
                   }}>
                     Rep {sub.worker?.reputationScore}
                     {' · '}{sub.worker?.reputationLevel}
@@ -276,12 +272,12 @@ export default function ReviewPage({
                 <div style={{
                   padding: '0.3rem 0.75rem', borderRadius: '9999px',
                   fontSize: '0.75rem', fontWeight: '500',
-                  background: sub.status === 'APPROVED' ? COLORS.emeraldDim
-                    : sub.status === 'REJECTED' ? COLORS.redDim
-                    : COLORS.bgElevated,
-                  color: sub.status === 'APPROVED' ? COLORS.emerald
-                    : sub.status === 'REJECTED' ? COLORS.red
-                    : COLORS.textSecondary,
+                  background: sub.status === 'APPROVED' ? '#14532d'
+                    : sub.status === 'REJECTED' ? '#450a0a'
+                    : '#1f2937',
+                  color: sub.status === 'APPROVED' ? '#86efac'
+                    : sub.status === 'REJECTED' ? '#fca5a5'
+                    : '#9ca3af',
                 }}>
                   {sub.status}
                 </div>
@@ -289,7 +285,7 @@ export default function ReviewPage({
 
               {/* Proof */}
               <div style={{
-                background: COLORS.bgBase, borderRadius: '8px',
+                background: '#0f172a', borderRadius: '8px',
                 padding: '1rem', marginBottom: '1rem',
                 fontSize: '0.875rem', color: '#d1d5db',
                 lineHeight: '1.6', whiteSpace: 'pre-wrap',
