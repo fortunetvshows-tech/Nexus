@@ -352,3 +352,12 @@ body {
     bottom: 1.5rem !important;
   }
 }
+/* ── Smooth scroll for anchor links ────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Offset for sticky header */
+section[id] {
+  scroll-margin-top: 72px;
+}

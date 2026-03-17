@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useRouter }                    from 'next/navigation'
+import Link                             from 'next/link'
 import { usePiAuth }                    from '@/hooks/use-pi-auth'
 import { ShinyButton }                  from '@/components/ShinyButton'
 import { Marquee }                      from '@/components/Marquee'
@@ -48,14 +48,8 @@ const HOW_IT_WORKS = [
 
 export default function HomePage() {
   const { user, authenticate, isLoading, isSdkReady } = usePiAuth()
-  const router   = useRouter()
   const hasAutoAuth = useRef(false)
   const [activeStep, setActiveStep] = useState(0)
-
-  // Redirect authenticated users immediately
-  useEffect(() => {
-    if (user) router.push('/dashboard')
-  }, [user, router])
 
   useEffect(() => {
     if (isSdkReady && !user && !hasAutoAuth.current) {
@@ -81,8 +75,127 @@ export default function HomePage() {
       overflowX:   'hidden',
     }}>
 
+      {/* ── Landing Sticky Header ─────────────────────────── */}
+      <header style={{
+        position:       'fixed',
+        top:            0,
+        left:           0,
+        right:          0,
+        height:         '60px',
+        background:     'rgba(15,23,42,0.85)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        borderBottom:   `1px solid ${COLORS.border}`,
+        display:        'flex',
+        alignItems:     'center',
+        justifyContent: 'space-between',
+        padding:        '0 var(--page-padding)',
+        zIndex:         200,
+        fontFamily:     "'Inter', system-ui, sans-serif",
+      }}>
+
+        {/* Brand */}
+        <div style={{
+          fontSize:      '1.05rem',
+          fontWeight:    '700',
+          color:         COLORS.textPrimary,
+          letterSpacing: '-0.02em',
+          display:       'flex',
+          alignItems:    'center',
+          gap:           '8px',
+        }}>
+          <span className="hide-mobile">Nexus</span>
+          <span className="show-mobile">NX</span>
+          <span style={{
+            fontSize:     '0.55rem',
+            fontWeight:   '500',
+            color:        COLORS.indigo,
+            background:   COLORS.indigoDim,
+            padding:      '2px 6px',
+            borderRadius: '4px',
+            letterSpacing: '0.05em',
+          }}>
+            BETA
+          </span>
+        </div>
+
+        {/* Nav links — smooth scroll anchors */}
+        <div className="hide-mobile" style={{
+          display: 'flex',
+          gap:     '0.25rem',
+        }}>
+          {[
+            { href: '#hero',       label: 'Home'       },
+            { href: '#how',        label: 'How it works' },
+            { href: '#reputation', label: 'Reputation'  },
+          ].map(link => (
+            <a
+              key={link.href}
+              href={link.href}
+              style={{
+                padding:        '0.4rem 0.875rem',
+                borderRadius:   '8px',
+                fontSize:       '0.85rem',
+                fontWeight:     '400',
+                textDecoration: 'none',
+                color:          COLORS.textSecondary,
+                transition:     'color 0.15s ease',
+              }}
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
+
+        {/* Smart CTA — compact version for header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+          {user ? (
+            <Link
+              href="/dashboard"
+              style={{
+                padding:        '0.45rem 1rem',
+                background:     `linear-gradient(180deg, ${COLORS.emerald} 0%, ${COLORS.emeraldDark} 100%)`,
+                color:          'white',
+                borderRadius:   '8px',
+                fontSize:       '0.82rem',
+                fontWeight:     '600',
+                textDecoration: 'none',
+                boxShadow:      'none',
+                letterSpacing:  '-0.01em',
+                whiteSpace:     'nowrap' as const,
+              }}
+            >
+              Dashboard →
+            </Link>
+          ) : (
+            <button
+              onClick={authenticate}
+              disabled={isLoading || !isSdkReady}
+              style={{
+                padding:      '0.45rem 1rem',
+                background:   isLoading || !isSdkReady
+                  ? COLORS.bgElevated
+                  : `linear-gradient(180deg, ${COLORS.indigo} 0%, ${COLORS.indigoDark} 100%)`,
+                color:        isLoading || !isSdkReady
+                  ? COLORS.textMuted
+                  : 'white',
+                border:       'none',
+                borderRadius: '8px',
+                fontSize:     '0.82rem',
+                fontWeight:   '600',
+                cursor:       isLoading || !isSdkReady ? 'not-allowed' : 'pointer',
+                whiteSpace:   'nowrap' as const,
+                fontFamily:   "'Inter', system-ui, sans-serif",
+              }}
+            >
+              {isLoading ? 'Connecting...' : 'Login with Pi'}
+            </button>
+          )}
+        </div>
+      </header>
+
       {/* ── Hero Section ─────────────────────────────────── */}
-      <section style={{
+      <section id="hero" style={{
         minHeight:       '100vh',
         display:         'flex',
         flexDirection:   'column',
@@ -233,12 +346,35 @@ export default function HomePage() {
             {isSdkReady ? 'Pi Browser detected' : 'Open in Pi Browser'}
           </div>
 
-          <ShinyButton
-            onClick={authenticate}
-            disabled={isLoading || !isSdkReady}
-          >
-            {isLoading ? 'Connecting...' : 'Connect with Pi →'}
-          </ShinyButton>
+          {user ? (
+            <Link
+              href="/dashboard"
+              style={{
+                display:        'inline-flex',
+                alignItems:     'center',
+                gap:            '8px',
+                padding:        '0.9rem 2.5rem',
+                background:     `linear-gradient(180deg, ${COLORS.emerald} 0%, ${COLORS.emeraldDark} 100%)`,
+                color:          'white',
+                borderRadius:   '10px',
+                fontSize:       '1rem',
+                fontWeight:     '600',
+                textDecoration: 'none',
+                boxShadow:      `0 0 24px rgba(16,185,129,0.4)`,
+                letterSpacing:  '-0.01em',
+                fontFamily:     "'Inter', system-ui, sans-serif",
+              }}
+            >
+              Go to Dashboard →
+            </Link>
+          ) : (
+            <ShinyButton
+              onClick={authenticate}
+              disabled={isLoading || !isSdkReady}
+            >
+              {isLoading ? 'Connecting...' : 'Connect with Pi →'}
+            </ShinyButton>
+          )}
         </div>
 
         {/* Marquee */}
@@ -268,7 +404,7 @@ export default function HomePage() {
       </section>
 
       {/* ── How It Works Section ──────────────────────────── */}
-      <section style={{
+      <section id="how" style={{
         padding:    '5rem var(--page-padding)',
         maxWidth:   '760px',
         margin:     '0 auto',
@@ -353,7 +489,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Reputation Section ────────────────────────────── */}
-      <section style={{
+      <section id="reputation" style={{
         padding:    '3rem var(--page-padding) 5rem',
         maxWidth:   '760px',
         margin:     '0 auto',
@@ -451,12 +587,35 @@ export default function HomePage() {
         }}>
           Open Nexus in Pi Browser to get started.
         </p>
-        <ShinyButton
-          onClick={authenticate}
-          disabled={isLoading || !isSdkReady}
-        >
-          {isLoading ? 'Connecting...' : 'Connect with Pi →'}
-        </ShinyButton>
+        {user ? (
+          <Link
+            href="/dashboard"
+            style={{
+              display:        'inline-flex',
+              alignItems:     'center',
+              gap:            '8px',
+              padding:        '0.9rem 2.5rem',
+              background:     `linear-gradient(180deg, ${COLORS.emerald} 0%, ${COLORS.emeraldDark} 100%)`,
+              color:          'white',
+              borderRadius:   '10px',
+              fontSize:       '1rem',
+              fontWeight:     '600',
+              textDecoration: 'none',
+              boxShadow:      `0 0 24px rgba(16,185,129,0.4)`,
+              letterSpacing:  '-0.01em',
+              fontFamily:     "'Inter', system-ui, sans-serif",
+            }}
+          >
+            Go to Dashboard →
+          </Link>
+        ) : (
+          <ShinyButton
+            onClick={authenticate}
+            disabled={isLoading || !isSdkReady}
+          >
+            {isLoading ? 'Connecting...' : 'Connect with Pi →'}
+          </ShinyButton>
+        )}
       </section>
 
     </div>
