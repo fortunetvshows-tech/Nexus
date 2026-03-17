@@ -71,7 +71,6 @@ export default function ArbitratePage() {
         fontFamily: FONTS.sans,
         color:      COLORS.textPrimary,
       }}>
-      }}>
         <Navigation currentPage="home" />
         <main style={{
           maxWidth: '480px',
