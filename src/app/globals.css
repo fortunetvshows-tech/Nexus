@@ -1,26 +1,186 @@
 @import "tailwindcss";
 
+/* ============================================================
+   NEXUS DESIGN TOKENS — Single source of truth
+   All values mirror src/lib/design/tokens.ts
+   ============================================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Backgrounds */
+  --nexus-bg-base:      #0F172A;
+  --nexus-bg-surface:   #1E293B;
+  --nexus-bg-elevated:  #263348;
+  --nexus-bg-overlay:   #2D3D56;
+
+  /* Borders */
+  --nexus-border:       rgba(148, 163, 184, 0.1);
+  --nexus-border-accent: rgba(148, 163, 184, 0.2);
+  --nexus-border-focus: #6366F1;
+
+  /* Indigo — primary accent */
+  --nexus-indigo:       #6366F1;
+  --nexus-indigo-dark:  #4F46E5;
+  --nexus-indigo-light: #818CF8;
+  --nexus-indigo-dim:   rgba(99, 102, 241, 0.15);
+
+  /* Emerald — earned Pi */
+  --nexus-emerald:      #10B981;
+  --nexus-emerald-dark: #059669;
+  --nexus-emerald-dim:  rgba(16, 185, 129, 0.15);
+
+  /* Status */
+  --nexus-amber:        #F59E0B;
+  --nexus-amber-dim:    rgba(245, 158, 11, 0.15);
+  --nexus-red:          #EF4444;
+  --nexus-red-dim:      rgba(239, 68, 68, 0.15);
+  --nexus-blue:         #3B82F6;
+  --nexus-blue-dim:     rgba(59, 130, 246, 0.15);
+
+  /* Text */
+  --nexus-text-primary:   #F1F5F9;
+  --nexus-text-secondary: #94A3B8;
+  --nexus-text-muted:     #64748B;
+  --nexus-text-inverse:   #0F172A;
+
+  /* Shadows */
+  --nexus-shadow-card:   0 4px 24px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+  --nexus-shadow-indigo: 0 0 24px rgba(99,102,241,0.4);
+  --nexus-shadow-emerald: 0 0 20px rgba(16,185,129,0.3);
+
+  /* Typography */
+  --nexus-font-sans: 'Inter', system-ui, sans-serif;
+  --nexus-font-mono: 'Fira Code', monospace;
 }
+
+/* ============================================================
+   TAILWIND v4 THEME EXTENSION
+   Exposes CSS vars as Tailwind utility classes:
+   bg-nexus-base, text-nexus-indigo, border-nexus-border, etc.
+   ============================================================ */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-nexus-base:           var(--nexus-bg-base);
+  --color-nexus-surface:        var(--nexus-bg-surface);
+  --color-nexus-elevated:       var(--nexus-bg-elevated);
+  --color-nexus-overlay:        var(--nexus-bg-overlay);
+
+  --color-nexus-indigo:         var(--nexus-indigo);
+  --color-nexus-indigo-dark:    var(--nexus-indigo-dark);
+  --color-nexus-indigo-light:   var(--nexus-indigo-light);
+  --color-nexus-indigo-dim:     var(--nexus-indigo-dim);
+
+  --color-nexus-emerald:        var(--nexus-emerald);
+  --color-nexus-emerald-dark:   var(--nexus-emerald-dark);
+  --color-nexus-emerald-dim:    var(--nexus-emerald-dim);
+
+  --color-nexus-amber:          var(--nexus-amber);
+  --color-nexus-red:            var(--nexus-red);
+  --color-nexus-blue:           var(--nexus-blue);
+
+  --color-nexus-text-primary:   var(--nexus-text-primary);
+  --color-nexus-text-secondary: var(--nexus-text-secondary);
+  --color-nexus-text-muted:     var(--nexus-text-muted);
+
+  --font-sans: var(--nexus-font-sans);
+  --font-mono: var(--nexus-font-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ============================================================
+   GLOBAL RESET
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background:              var(--nexus-bg-base);
+  color:                   var(--nexus-text-primary);
+  font-family:             var(--nexus-font-sans);
+  -webkit-font-smoothing:  antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin:  0;
+  padding: 0;
 }
+
+/* ============================================================
+   ANIMATION KEYFRAMES — Used by Marquee and Shiny Button
+   ============================================================ */
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(-100% - 1rem)); }
+}
+
+@keyframes marquee-reverse {
+  from { transform: translateX(calc(-100% - 1rem)); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes border-beam {
+  0%   { offset-distance: 0%; }
+  100% { offset-distance: 100%; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 12px rgba(99,102,241,0.3); }
+  50%       { box-shadow: 0 0 24px rgba(99,102,241,0.6); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   COMPONENT CLASSES — Reusable Tailwind-compatible patterns
+   ============================================================ */
+
+.nexus-card {
+  background:    linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%),
+                 var(--nexus-bg-surface);
+  border:        1px solid var(--nexus-border);
+  border-top:    0.5px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  box-shadow:    var(--nexus-shadow-card),
+                 inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.nexus-btn-primary {
+  background:    linear-gradient(180deg, var(--nexus-indigo) 0%, var(--nexus-indigo-dark) 100%);
+  color:         white;
+  border:        none;
+  border-radius: 10px;
+  font-family:   var(--nexus-font-sans);
+  font-weight:   600;
+  cursor:        pointer;
+  box-shadow:    var(--nexus-shadow-indigo);
+  transition:    all 0.15s ease;
+}
+
+.nexus-btn-primary:hover {
+  transform:  translateY(-1px);
+  box-shadow: 0 0 32px rgba(99,102,241,0.5);
+}
+
+.nexus-btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* Focus ring */
+:focus-visible {
+  outline:       none;
+  box-shadow:    0 0 0 3px rgba(99,102,241,0.4);
+  border-radius: 6px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--nexus-bg-base); }
+::-webkit-scrollbar-thumb { background: var(--nexus-bg-elevated); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #334155; }

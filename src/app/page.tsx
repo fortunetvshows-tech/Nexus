@@ -1,171 +1,193 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { usePiAuth } from '@/hooks/use-pi-auth'
-import { COLORS, FONTS, RADII, SHADOWS, GRADIENTS, SPACING } from '@/lib/design/tokens'
+import { useEffect, useRef }  from 'react'
+import { useRouter }          from 'next/navigation'
+import { usePiAuth }          from '@/hooks/use-pi-auth'
+import { ShinyButton }        from '@/components/ShinyButton'
+import { Marquee }            from '@/components/Marquee'
+import { COLORS, GRADIENTS }  from '@/lib/design/tokens'
+
+const TASK_CATEGORIES = [
+  '📋 Survey & Research',
+  '📱 App Testing',
+  '🌐 Translation',
+  '🎙️ Audio Recording',
+  '📷 Photo Capture',
+  '✍️ Content Review',
+  '🏷️ Data Labeling',
+  '💡 Micro-Consulting',
+  '✅ Social Verification',
+]
 
 export default function HomePage() {
-  const {
-    authenticate,
-    isLoading,
-    error,
-    isSdkReady,
-    isAuthenticated,
-  } = usePiAuth()
-  const router = useRouter()
+  const { user, authenticate, isLoading, isSdkReady } = usePiAuth()
+  const router   = useRouter()
+  const hasAutoAuthenticated = useRef(false)
 
-  // Redirect authenticated users to dashboard
   useEffect(() => {
-    if (isAuthenticated) {
-      router.replace('/dashboard')
+    if (user) {
+      router.push('/dashboard')
     }
-  }, [isAuthenticated, router])
+  }, [user, router])
+
+  useEffect(() => {
+    if (isSdkReady && !user && !hasAutoAuthenticated.current) {
+      hasAutoAuthenticated.current = true
+      authenticate()
+    }
+  }, [isSdkReady, user, authenticate])
 
   return (
-    <div style={{
-      minHeight:      '100vh',
-      background:     COLORS.bgBase,
-      backgroundImage: GRADIENTS.hero,
-      color:          COLORS.textPrimary,
-      fontFamily:     FONTS.sans,
-      display:        'flex',
-      flexDirection:  'column',
-      alignItems:     'center',
-      justifyContent: 'center',
-      padding:        '2rem',
-      textAlign:      'center',
-    }}>
+    <div
+      style={{
+        minHeight:       '100vh',
+        background:      COLORS.bgBase,
+        backgroundImage: GRADIENTS.hero,
+        color:           COLORS.textPrimary,
+        display:         'flex',
+        flexDirection:   'column',
+        alignItems:      'center',
+        justifyContent:  'center',
+        overflow:        'hidden',
+        position:        'relative',
+      }}
+    >
+      {/* Ambient background orbs */}
+      <div aria-hidden style={{
+        position:     'absolute',
+        top:          '-20%',
+        left:         '50%',
+        transform:    'translateX(-50%)',
+        width:        '600px',
+        height:       '600px',
+        background:   'radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)',
+        borderRadius: '50%',
+        pointerEvents: 'none',
+      }} />
 
-      {/* Brand badge */}
+      {/* Main content */}
       <div style={{
-        display:       'inline-flex',
-        alignItems:    'center',
-        gap:           '8px',
-        padding:       '6px 14px',
-        background:    COLORS.indigoDim,
-        border:        `1px solid rgba(99, 102, 241, 0.3)`,
-        borderRadius:  RADII.full,
-        fontSize:      '0.75rem',
-        fontWeight:    '500',
-        color:         COLORS.indigoLight,
-        marginBottom:  '2rem',
-        letterSpacing: '0.02em',
+        display:        'flex',
+        flexDirection:  'column',
+        alignItems:     'center',
+        textAlign:      'center',
+        padding:        '2rem',
+        maxWidth:       '560px',
+        animation:      'fade-up 0.6s ease both',
       }}>
-        <span style={{
-          width:        '6px',
-          height:       '6px',
-          borderRadius: '50%',
-          background:   COLORS.emerald,
-          boxShadow:    `0 0 6px ${COLORS.emerald}`,
-          display:      'inline-block',
-        }} />
-        Pi Network Labor Marketplace
-      </div>
 
-      {/* Headline */}
-      <h1 style={{
-        fontSize:      'clamp(2.5rem, 8vw, 4.5rem)',
-        fontWeight:    '700',
-        color:         COLORS.textPrimary,
-        margin:        '0 0 1rem',
-        letterSpacing: '-0.03em',
-        lineHeight:    '1.1',
-      }}>
-        Earn Pi for
-        <br />
-        <span style={{
-          background:             `linear-gradient(135deg, ${COLORS.indigo}, ${COLORS.emerald})`,
-          WebkitBackgroundClip:   'text',
-          WebkitTextFillColor:    'transparent',
-          backgroundClip:         'text',
-        }}>
-          real work
-        </span>
-      </h1>
-
-      <p style={{
-        fontSize:     '1.05rem',
-        color:        COLORS.textSecondary,
-        margin:       '0 0 2.5rem',
-        maxWidth:     '380px',
-        lineHeight:   '1.6',
-      }}>
-        Complete tasks posted by employers.
-        Get paid instantly in Pi.
-      </p>
-
-      {/* SDK status */}
-      <div style={{
-        display:      'flex',
-        alignItems:   'center',
-        gap:          '8px',
-        marginBottom: '1.25rem',
-        fontSize:     '0.8rem',
-        color:        isSdkReady ? COLORS.emerald : COLORS.textMuted,
-      }}>
+        {/* Status badge */}
         <div style={{
-          width:        '7px',
-          height:       '7px',
-          borderRadius: '50%',
-          background:   isSdkReady ? COLORS.emerald : COLORS.textMuted,
-          boxShadow:    isSdkReady ? SHADOWS.emeraldGlow : 'none',
-          animation:    isSdkReady ? 'pulse 2s infinite' : 'none',
-        }} />
-        {isSdkReady ? 'Pi Browser detected' : 'Waiting for Pi SDK...'}
-      </div>
-
-      {/* CTA button */}
-      <button
-        onClick={authenticate}
-        disabled={isLoading || !isSdkReady}
-        style={{
-          padding:      '0.9rem 2.5rem',
-          background:   isLoading || !isSdkReady
-                          ? COLORS.bgElevated
-                          : GRADIENTS.indigo,
-          color:        isLoading || !isSdkReady
-                          ? COLORS.textMuted
-                          : 'white',
-          border:       'none',
-          borderRadius: RADII.lg,
-          fontSize:     '1rem',
-          fontWeight:   '600',
-          fontFamily:   FONTS.sans,
-          cursor:       isLoading || !isSdkReady
-                          ? 'not-allowed'
-                          : 'pointer',
-          boxShadow:    isLoading || !isSdkReady
-                          ? 'none'
-                          : SHADOWS.indigoGlow,
-          transition:   'all 0.2s ease',
-          letterSpacing: '-0.01em',
-        }}
-      >
-        {isLoading ? 'Connecting...' : 'Connect with Pi'}
-      </button>
-
-      {error && (
-        <div style={{
-          marginTop:    '1.5rem',
-          padding:      SPACING.lg,
-          background:   COLORS.redDim,
-          border:       `1px solid rgba(239, 68, 68, 0.3)`,
-          borderRadius: RADII.lg,
-          color:        COLORS.red,
-          maxWidth:     '360px',
-          fontSize:     '0.9rem',
+          display:       'inline-flex',
+          alignItems:    'center',
+          gap:           '8px',
+          padding:       '6px 14px',
+          background:    COLORS.indigoDim,
+          border:        '1px solid rgba(99,102,241,0.3)',
+          borderRadius:  '9999px',
+          fontSize:      '0.75rem',
+          fontWeight:    '500',
+          color:         COLORS.indigoLight,
+          marginBottom:  '2rem',
+          letterSpacing: '0.02em',
         }}>
-          <strong>Error:</strong> {error}
+          <span style={{
+            width:        '6px',
+            height:       '6px',
+            borderRadius: '50%',
+            background:   COLORS.emerald,
+            boxShadow:    `0 0 6px ${COLORS.emerald}`,
+            display:      'inline-block',
+            animation:    'pulse-glow 2s infinite',
+          }} />
+          Pi Network Labor Marketplace
         </div>
-      )}
 
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0.5; }
-        }
-      `}</style>
+        {/* Headline */}
+        <h1 style={{
+          fontSize:      'clamp(2.5rem, 8vw, 4.5rem)',
+          fontWeight:    '700',
+          margin:        '0 0 1rem',
+          letterSpacing: '-0.03em',
+          lineHeight:    '1.1',
+          color:         COLORS.textPrimary,
+        }}>
+          Earn Pi for
+          <br />
+          <span style={{
+            background:           `linear-gradient(135deg, ${COLORS.indigo}, ${COLORS.emerald})`,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor:  'transparent',
+            backgroundClip:       'text',
+          }}>
+            real work
+          </span>
+        </h1>
+
+        <p style={{
+          fontSize:     '1.05rem',
+          color:        COLORS.textSecondary,
+          margin:       '0 0 2.5rem',
+          lineHeight:   '1.6',
+          maxWidth:     '360px',
+        }}>
+          Complete tasks posted by employers.
+          Get paid instantly in Pi.
+        </p>
+
+        {/* SDK status */}
+        <div style={{
+          display:      'flex',
+          alignItems:   'center',
+          gap:          '8px',
+          marginBottom: '1.25rem',
+          fontSize:     '0.8rem',
+          color:        isSdkReady ? COLORS.emerald : COLORS.textMuted,
+        }}>
+          <div style={{
+            width:        '7px',
+            height:       '7px',
+            borderRadius: '50%',
+            background:   isSdkReady ? COLORS.emerald : COLORS.textMuted,
+            boxShadow:    isSdkReady
+              ? `0 0 8px ${COLORS.emerald}`
+              : 'none',
+          }} />
+          {isSdkReady ? 'Pi Browser detected' : 'Waiting for Pi SDK...'}
+        </div>
+
+        {/* Shiny CTA */}
+        <ShinyButton
+          onClick={authenticate}
+          disabled={isLoading || !isSdkReady}
+        >
+          {isLoading ? 'Connecting...' : 'Connect with Pi'}
+        </ShinyButton>
+
+      </div>
+
+      {/* Marquee — positioned below main content */}
+      <div style={{
+        position:  'absolute',
+        bottom:    '3rem',
+        left:      0,
+        right:     0,
+        animation: 'fade-up 0.8s ease 0.3s both',
+        opacity:   0,
+      }}>
+        <div style={{
+          fontSize:     '0.7rem',
+          color:        COLORS.textMuted,
+          textAlign:    'center',
+          marginBottom: '0.75rem',
+          letterSpacing: '0.08em',
+          fontWeight:   '500',
+        }}>
+          AVAILABLE TASK CATEGORIES
+        </div>
+        <Marquee items={TASK_CATEGORIES} speed={25} />
+      </div>
+
     </div>
   )
 }
