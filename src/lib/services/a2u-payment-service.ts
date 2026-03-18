@@ -1,6 +1,7 @@
 'use server'
 
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import PiNetwork from 'pi-backend'
 
 const PI_API_KEY = process.env.PI_API_KEY!
 const WALLET_PRIVATE_SEED = process.env.WALLET_PRIVATE_SEED!
