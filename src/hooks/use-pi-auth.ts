@@ -10,6 +10,7 @@ interface NexusUser {
   reputationScore: number
   reputationLevel: string
   kycLevel: number
+  isAdmin: boolean
 }
 
 interface AuthState {

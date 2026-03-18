@@ -4,19 +4,46 @@ import { fileDispute, runTier1Resolution }
 jest.mock('@/lib/supabase-admin', () => ({
   supabaseAdmin: {
     rpc:  jest.fn(),
-    from: jest.fn(() => ({
-      select:    jest.fn(() => ({
-        eq:        jest.fn(() => ({
-          order:   jest.fn(() => ({
-            limit: jest.fn(() => ({
-              maybeSingle: jest.fn(() => ({
-                data: null, error: null,
+    from: jest.fn((table) => {
+      if (table === 'User') {
+        // Mock for countEligibleArbitrators — return 3 Sovereign arbitrators
+        return {
+          select:    jest.fn(() => ({
+            eq:        jest.fn(async () => ({
+              data: [
+                { id: 'arbitrator-1' },
+                { id: 'arbitrator-2' },
+                { id: 'arbitrator-3' },
+              ],
+              error: null,
+            })),
+          })),
+        }
+      }
+      
+      // Default mock for other tables
+      return {
+        select:    jest.fn(() => ({
+          eq:        jest.fn(() => ({
+            order:   jest.fn(() => ({
+              limit: jest.fn(() => ({
+                maybeSingle: jest.fn(() => ({
+                  data: null, error: null,
+                })),
               })),
             })),
           })),
         })),
-      })),
-    })),
+        update:    jest.fn(() => ({
+          eq:        jest.fn(async () => ({
+            data: null, error: null,
+          })),
+        })),
+        insert:    jest.fn(async () => ({
+          data: null, error: null,
+        })),
+      }
+    }),
   },
 }))
 

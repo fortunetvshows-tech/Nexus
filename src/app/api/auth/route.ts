@@ -203,7 +203,7 @@ export async function POST(req: NextRequest) {
       )
       .select(
         'id, piUid, piUsername, userRole, reputationScore, ' +
-        'reputationLevel, kycLevel, accountStatus'
+        'reputationLevel, kycLevel, accountStatus, isAdmin'
       )
       .single()
 
@@ -245,6 +245,7 @@ export async function POST(req: NextRequest) {
           reputationScore: user.reputationScore,
           reputationLevel: user.reputationLevel,
           kycLevel:        user.kycLevel,
+          isAdmin:         user.isAdmin === true,
         },
       },
       { status: 200 }

@@ -14,13 +14,20 @@ export type DisputeResult = {
 async function countEligibleArbitrators(
   excludeUserIds: string[]
 ): Promise<number> {
-  const { count } = await supabaseAdmin
+  // Fetch all Sovereign-level users
+  const { data, error } = await supabaseAdmin
     .from('User')
-    .select('id', { count: 'exact' })
+    .select('id')
     .eq('reputationLevel', 'Sovereign')
-    .not('id', 'in', `(${excludeUserIds.map(id => `'${id}'`).join(',')})`)
 
-  return count ?? 0
+  if (error) {
+    console.error('[Nexus:DisputeService] Failed to count arbitrators:', error)
+    return 0
+  }
+
+  // Filter out the excluded IDs
+  const eligible = data?.filter(user => !excludeUserIds.includes(user.id)) ?? []
+  return eligible.length
 }
 
 /**

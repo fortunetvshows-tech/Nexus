@@ -51,8 +51,12 @@ interface WorkerDispute {
   resolvedInFavor: string | null
   createdAt:       string
   submission: {
-    id:    string
-    task?: { id: string; title: string; category: string }
+    id:   string
+    task: {
+      id: string
+      title: string
+      category: string
+    } | null
   } | null
 }
 
