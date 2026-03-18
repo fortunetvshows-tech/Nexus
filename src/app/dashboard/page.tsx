@@ -10,6 +10,7 @@ import { ReputationCard }    from '@/components/bento/ReputationCard'
 import { QuickActionsCard }  from '@/components/bento/QuickActionsCard'
 import { ActivityFeedCard }  from '@/components/bento/ActivityFeedCard'
 import { StatsRowCard }      from '@/components/bento/StatsRowCard'
+import { RejectionCard }     from '@/components/bento/RejectionCard'
 import { COLORS, FONTS, SPACING, RADII, SHADOWS, GRADIENTS, statusStyle, COMPONENT_STYLES } from '@/lib/design/tokens'
 
 // ── Types ──────────────────────────────────────────────────────────────
@@ -20,6 +21,8 @@ interface Submission {
   agreedReward:    number
   rejectionReason: string | null
   submittedAt:     string
+  reviewedAt?:     string
+  updatedAt?:      string
   task: {
     id:       string
     title:    string
@@ -60,6 +63,7 @@ export default function DashboardPage() {
 
   // Worker data
   const [submissions,   setSubmissions]   = useState<Submission[]>([])
+  const [submissionFilter, setSubmissionFilter] = useState<'all' | 'APPROVED' | 'SUBMITTED' | 'REJECTED'>('all')
   const [subLoading,    setSubLoading]    = useState(false)
   const [workerAnalytics, setWorkerAnalytics] = useState<{
     summary: {
@@ -137,6 +141,14 @@ export default function DashboardPage() {
   const openDisputes = submissions.filter(
     s => s.status === 'DISPUTED'
   ).length
+
+  const rejectedCount  = submissions.filter(s => s.status === 'REJECTED').length
+  const pendingCount   = submissions.filter(s => s.status === 'SUBMITTED').length
+  const approvedCount  = submissions.filter(s => s.status === 'APPROVED').length
+
+  const filteredSubmissions = submissionFilter === 'all'
+    ? submissions
+    : submissions.filter(s => s.status === submissionFilter)
 
   const recentSubmissions = submissions.slice(0, 4)
 
@@ -336,253 +348,420 @@ export default function DashboardPage() {
           ]}
         />
 
-      {/* My Posted Tasks section — keep existing implementation below grid */}
-      {postedTasks.length > 0 && (
-        <div style={{ marginTop: SPACING.xl }}>
+      {/* ══════════════════════════════════════════════════════
+          WORKER SECTION — My Submissions
+        ═══════════════════════════════════════════════════════ */}
+
+      {/* Section divider */}
+      <div style={{
+        display:    'flex',
+        alignItems: 'center',
+        gap:        '0.75rem',
+        margin:     `${SPACING.xxl} 0 ${SPACING.lg}`,
+      }}>
+        <div style={{
+          fontSize:      '0.65rem',
+          fontWeight:    '600',
+          color:         COLORS.textMuted,
+          textTransform: 'uppercase' as const,
+          letterSpacing: '0.1em',
+          whiteSpace:    'nowrap' as const,
+        }}>
+          My Submissions
+        </div>
+        <div style={{
+          height:     '1px',
+          flex:       1,
+          background: COLORS.border,
+        }} />
+        {/* Rejected alert badge */}
+        {rejectedCount > 0 && (
           <div style={{
-            display:        'flex',
-            justifyContent: 'space-between',
-            alignItems:     'center',
-            marginBottom:   SPACING.lg,
+            padding:      '2px 8px',
+            background:   COLORS.redDim,
+            border:       `1px solid rgba(239,68,68,0.3)`,
+            borderRadius: RADII.full,
+            fontSize:     '0.68rem',
+            fontWeight:   '700',
+            color:        COLORS.red,
+            whiteSpace:   'nowrap' as const,
+            fontFamily:   FONTS.mono,
+            animation:    'pulse-glow 2s infinite',
           }}>
-            <h2 style={{
-              margin:        '0',
-              fontSize:      '0.72rem',
-              fontWeight:    '600',
-              color:         COLORS.textMuted,
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-            }}>
-              My Posted Tasks
-            </h2>
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-              <Link href="/employer/dashboard" style={{
-                padding:        `${SPACING.sm} ${SPACING.lg}`,
-                background:     COLORS.indigoDim,
-                color:          COLORS.indigoLight,
-                borderRadius:   RADII.md,
-                fontSize:       '0.8rem',
-                fontWeight:     '500',
-                textDecoration: 'none',
-                border:         `1px solid rgba(99,102,241,0.2)`,
-              }}>
-                Manage Posted Tasks →
-              </Link>
-              <Link href="/employer" style={{
-                fontSize:       '0.8rem',
-                color:          COLORS.indigo,
-                textDecoration: 'none',
-              }}>
-                Post new →
-              </Link>
-            </div>
+            {rejectedCount} rejected
           </div>
+        )}
+      </div>
 
-          {tasksLoading && (
-            <div style={{
-              background:   COLORS.bgSurface,
-              borderRadius: RADII.lg,
-              height:       '80px',
-              border:       `1px solid ${COLORS.border}`,
-              boxShadow:    SHADOWS.card,
-            }} />
-          )}
+      {/* Three-state filter tabs */}
+      {submissions.length > 0 && (
+        <div style={{
+          display:      'flex',
+          gap:          '0.375rem',
+          marginBottom: SPACING.lg,
+          background:   COLORS.bgElevated,
+          borderRadius: RADII.lg,
+          padding:      '0.3rem',
+          border:       `1px solid ${COLORS.border}`,
+        }}>
+          {[
+            {
+              key:   'all',
+              label: `All (${submissions.length})`,
+              color: COLORS.textSecondary,
+            },
+            {
+              key:   'APPROVED',
+              label: approvedCount > 0 ? `✓ Approved (${approvedCount})` : '✓ Approved',
+              color: COLORS.emerald,
+            },
+            {
+              key:   'SUBMITTED',
+              label: pendingCount > 0 ? `⏳ Pending (${pendingCount})` : '⏳ Pending',
+              color: COLORS.amber,
+            },
+            {
+              key:   'REJECTED',
+              label: rejectedCount > 0 ? `✗ Rejected (${rejectedCount})` : '✗ Rejected',
+              color: COLORS.red,
+            },
+          ].map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setSubmissionFilter(tab.key as typeof submissionFilter)}
+              style={{
+                flex:         1,
+                padding:      '0.4rem 0.25rem',
+                borderRadius: RADII.md,
+                border:       'none',
+                background:   submissionFilter === tab.key
+                  ? COLORS.bgSurface
+                  : 'transparent',
+                color:        submissionFilter === tab.key
+                  ? tab.color
+                  : COLORS.textMuted,
+                fontSize:     '0.72rem',
+                fontWeight:   submissionFilter === tab.key ? '600' : '400',
+                cursor:       'pointer',
+                transition:   'all 0.15s ease',
+                whiteSpace:   'nowrap' as const,
+                fontFamily:   FONTS.sans,
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      )}
 
-          <div style={{
-            display:       'flex',
-            flexDirection: 'column',
-            gap:           SPACING.sm,
-          }}>
-            {postedTasks.map(task => {
-              const fillPct = Math.round(
-                ((task.slotsAvailable - task.slotsRemaining)
-                  / task.slotsAvailable) * 100
-              )
+      {/* Submissions list */}
+      {submissions.length === 0 ? (
+        <div style={{
+          padding:        `${SPACING.xxl} ${SPACING.xl}`,
+          textAlign:      'center',
+          background:     `linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%), ${COLORS.bgSurface}`,
+          border:         `1px solid ${COLORS.border}`,
+          borderRadius:   RADII.xl,
+        }}>
+          <div style={{ fontSize: '1.75rem', marginBottom: SPACING.md, opacity: 0.4 }}>✨</div>
+          <div style={{ fontSize: '0.95rem', fontWeight: '600', color: COLORS.textPrimary, marginBottom: SPACING.sm }}>
+            No submissions yet
+          </div>
+          <div style={{ fontSize: '0.85rem', color: COLORS.textSecondary, marginBottom: SPACING.xl }}>
+            Complete tasks to start earning Pi.
+          </div>
+          <Link
+            href="/feed"
+            style={{
+              padding:        `${SPACING.sm} ${SPACING.xl}`,
+              background:     `linear-gradient(180deg, ${COLORS.indigo} 0%, ${COLORS.indigoDark} 100%)`,
+              color:          'white',
+              borderRadius:   RADII.md,
+              fontSize:       '0.875rem',
+              fontWeight:     '600',
+              textDecoration: 'none',
+            }}
+          >
+            Browse Tasks
+          </Link>
+        </div>
+      ) : filteredSubmissions.length === 0 ? (
+        <div style={{
+          padding:      `${SPACING.xl}`,
+          textAlign:    'center',
+          background:   COLORS.bgSurface,
+          border:       `1px solid ${COLORS.border}`,
+          borderRadius: RADII.lg,
+          color:        COLORS.textMuted,
+          fontSize:     '0.85rem',
+        }}>
+          No {submissionFilter.toLowerCase()} submissions
+        </div>
+      ) : (
+        <div style={{
+          display:       'flex',
+          flexDirection: 'column',
+          gap:           SPACING.sm,
+        }}>
+          {filteredSubmissions.map((sub, idx) => {
+
+            // REJECTED — show RejectionCard
+            if (sub.status === 'REJECTED') {
               return (
-                <div key={task.id} className="nexus-card" style={{
-                  padding:      `${SPACING.lg} ${SPACING.xl}`,
+                <RejectionCard
+                  key={sub.id}
+                  submissionId={sub.id}
+                  taskId={sub.task?.id ?? ''}
+                  taskTitle={sub.task?.title ?? 'Unknown task'}
+                  taskCategory={sub.task?.category ?? ''}
+                  reward={Number(sub.agreedReward ?? 0)}
+                  rejectionReason={sub.rejectionReason ?? null}
+                  rejectedAt={sub.updatedAt ?? sub.submittedAt}
+                />
+              )
+            }
+
+            // APPROVED or SUBMITTED — existing card style
+            const s = statusStyle(sub.status)
+            return (
+              <Link
+                key={sub.id}
+                href={`/task/${sub.task?.id}`}
+                style={{
+                  display:        'block',
+                  background:     `linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%), ${COLORS.bgSurface}`,
+                  border:         `1px solid ${COLORS.border}`,
+                  borderLeft:     `3px solid ${s.color}`,
+                  borderRadius:   RADII.lg,
+                  padding:        `${SPACING.md} ${SPACING.lg}`,
+                  textDecoration: 'none',
+                  boxShadow:      SHADOWS.card,
+                  animation:      `fade-up 0.3s ease ${idx * 0.06}s both`,
+                }}
+              >
+                <div style={{
+                  display:        'flex',
+                  justifyContent: 'space-between',
+                  alignItems:     'flex-start',
+                  marginBottom:   '4px',
                 }}>
                   <div style={{
-                    display:        'flex',
-                    justifyContent: 'space-between',
-                    alignItems:     'center',
-                    marginBottom:   SPACING.md,
+                    fontWeight:   '500',
+                    fontSize:     '0.875rem',
+                    color:        COLORS.textPrimary,
+                    overflow:     'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace:   'nowrap' as const,
+                    flex:         1,
+                    marginRight:  SPACING.md,
                   }}>
+                    {sub.task?.title ?? 'Unknown task'}
+                  </div>
+                  <span style={{
+                    padding:      '2px 8px',
+                    borderRadius: RADII.full,
+                    fontSize:     '0.68rem',
+                    fontWeight:   '600',
+                    letterSpacing: '0.03em',
+                    fontFamily:   FONTS.mono,
+                    flexShrink:   0,
+                    ...s,
+                  }}>
+                    {sub.status}
+                  </span>
+                </div>
+                <div style={{
+                  fontSize: '0.78rem',
+                  color:    COLORS.textMuted,
+                  display:  'flex',
+                  gap:      '0.75rem',
+                  flexWrap: 'wrap' as const,
+                }}>
+                  <span>{sub.task?.category}</span>
+                  <span style={{
+                    color:      COLORS.emerald,
+                    fontFamily: FONTS.mono,
+                    fontWeight: '500',
+                  }}>
+                    {Number(sub.agreedReward ?? 0).toFixed(3)}π
+                  </span>
+                  {sub.status === 'SUBMITTED' && (
+                    <span style={{ color: COLORS.amber }}>Awaiting review</span>
+                  )}
+                  {sub.status === 'APPROVED' && (
+                    <span style={{ color: COLORS.emerald }}>Payment processed</span>
+                  )}
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════
+          EMPLOYER SECTION — Tasks I Posted
+        ═══════════════════════════════════════════════════════ */}
+
+      {/* Section divider */}
+      <div style={{
+        display:    'flex',
+        alignItems: 'center',
+        gap:        '0.75rem',
+        margin:     `${SPACING.xxl} 0 ${SPACING.lg}`,
+      }}>
+        <div style={{
+          fontSize:      '0.65rem',
+          fontWeight:    '600',
+          color:         COLORS.textMuted,
+          textTransform: 'uppercase' as const,
+          letterSpacing: '0.1em',
+          whiteSpace:    'nowrap' as const,
+        }}>
+          Tasks I Posted
+        </div>
+        <div style={{
+          height:     '1px',
+          flex:       1,
+          background: COLORS.border,
+        }} />
+        <Link
+          href="/employer/dashboard"
+          style={{
+            fontSize:       '0.72rem',
+            color:          COLORS.indigoLight,
+            textDecoration: 'none',
+            fontWeight:     '500',
+            whiteSpace:     'nowrap' as const,
+          }}
+        >
+          Full view →
+        </Link>
+      </div>
+
+      {/* Posted tasks */}
+      {postedTasks.length === 0 ? (
+        <div style={{
+          padding:      `${SPACING.xl}`,
+          textAlign:    'center',
+          background:   COLORS.bgSurface,
+          border:       `1px solid ${COLORS.border}`,
+          borderRadius: RADII.lg,
+          color:        COLORS.textMuted,
+          fontSize:     '0.85rem',
+        }}>
+          <div style={{ fontSize: '1.5rem', marginBottom: SPACING.sm, opacity: 0.4 }}>📋</div>
+          No tasks posted yet.{' '}
+          <Link href="/employer" style={{ color: COLORS.indigo }}>
+            Post your first task →
+          </Link>
+        </div>
+      ) : (
+        <div style={{
+          display:       'flex',
+          flexDirection: 'column',
+          gap:           SPACING.sm,
+        }}>
+          {postedTasks.map((task, idx) => {
+            const filled  = task.slotsAvailable - task.slotsRemaining
+            const fillPct = task.slotsAvailable > 0
+              ? Math.round((filled / task.slotsAvailable) * 100)
+              : 0
+
+            return (
+              <div
+                key={task.id}
+                className="nexus-card"
+                style={{
+                  padding:   `${SPACING.md} ${SPACING.lg}`,
+                  animation: `fade-up 0.3s ease ${idx * 0.06}s both`,
+                }}
+              >
+                <div style={{
+                  display:        'flex',
+                  justifyContent: 'space-between',
+                  alignItems:     'flex-start',
+                  marginBottom:   SPACING.sm,
+                }}>
+                  <div style={{ flex: 1, minWidth: 0, marginRight: SPACING.md }}>
                     <div style={{
-                      fontWeight: '500',
-                      fontSize:   '0.875rem',
-                      color:      COLORS.textPrimary,
-                      flex:       1,
+                      fontWeight:   '500',
+                      fontSize:     '0.875rem',
+                      color:        COLORS.textPrimary,
+                      overflow:     'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace:   'nowrap' as const,
+                      marginBottom: '3px',
                     }}>
                       {task.title}
                     </div>
-                    <Link
-                      href={`/review/${task.id}`}
-                      style={{
-                        padding:        '0.4rem 0.875rem',
-                        background:     GRADIENTS.indigo,
-                        color:          'white',
-                        borderRadius:   RADII.md,
-                        fontSize:       '0.78rem',
-                        fontWeight:     '500',
-                        textDecoration: 'none',
-                        whiteSpace:     'nowrap',
-                        marginLeft:     SPACING.md,
-                      }}
-                    >
-                      Review →
-                    </Link>
+                    <div style={{
+                      fontSize:   '0.75rem',
+                      color:      COLORS.textMuted,
+                      display:    'flex',
+                      gap:        '0.5rem',
+                      flexWrap:   'wrap' as const,
+                    }}>
+                      <span>{task.category}</span>
+                      <span>·</span>
+                      <span style={{ fontFamily: FONTS.mono }}>{task.piReward}π per slot</span>
+                    </div>
                   </div>
+                  <Link
+                    href={`/review/${task.id}`}
+                    style={{
+                      padding:        `${SPACING.xs} ${SPACING.md}`,
+                      background:     COLORS.indigoDim,
+                      color:          COLORS.indigoLight,
+                      borderRadius:   RADII.md,
+                      fontSize:       '0.75rem',
+                      fontWeight:     '600',
+                      textDecoration: 'none',
+                      border:         `1px solid rgba(99,102,241,0.2)`,
+                      flexShrink:     0,
+                    }}
+                  >
+                    Review →
+                  </Link>
+                </div>
+
+                {/* Fill progress bar */}
+                <div style={{
+                  display:    'flex',
+                  alignItems: 'center',
+                  gap:        '0.625rem',
+                }}>
                   <div style={{
-                    fontSize:    '0.78rem',
-                    color:       COLORS.textMuted,
-                    marginBottom: SPACING.md,
-                  }}>
-                    {task.category}
-                    {' · '}
-                    {task.piReward}π per slot
-                    {' · '}
-                    {task.slotsRemaining}/{task.slotsAvailable} slots left
-                  </div>
-                  {/* Slot fill progress */}
-                  <div style={{
+                    flex:         1,
+                    height:       '4px',
                     background:   COLORS.bgElevated,
-                    borderRadius: RADII.full,
-                    height:       '3px',
+                    borderRadius: '9999px',
                     overflow:     'hidden',
                   }}>
                     <div style={{
                       height:       '100%',
                       width:        `${fillPct}%`,
-                      background:   GRADIENTS.indigo,
-                      borderRadius: RADII.full,
+                      background:   fillPct === 100
+                        ? `linear-gradient(90deg, ${COLORS.emerald}, ${COLORS.emeraldDark})`
+                        : `linear-gradient(90deg, ${COLORS.indigo}, ${COLORS.indigoLight})`,
+                      borderRadius: '9999px',
+                      transition:   'width 0.8s ease',
                     }} />
                   </div>
+                  <span style={{
+                    fontFamily: FONTS.mono,
+                    fontSize:   '0.68rem',
+                    color:      fillPct === 100 ? COLORS.emerald : COLORS.textMuted,
+                    minWidth:   '40px',
+                    textAlign:  'right' as const,
+                  }}>
+                    {filled}/{task.slotsAvailable}
+                  </span>
                 </div>
-              )
-            })}
-          </div>
+              </div>
+            )
+          })}
         </div>
       )}
-
-        {/* My Posted Tasks */}
-        {postedTasks.length > 0 && (
-          <section>
-            <div style={{
-              display:        'flex',
-              justifyContent: 'space-between',
-              alignItems:     'center',
-              marginBottom:   SPACING.lg,
-            }}>
-              <h2 style={{
-                margin:        '0',
-                fontSize:      '0.72rem',
-                fontWeight:    '600',
-                color:         COLORS.textMuted,
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-              }}>
-                My Posted Tasks
-              </h2>
-              <Link href="/employer" style={{
-                fontSize:       '0.8rem',
-                color:          COLORS.indigo,
-                textDecoration: 'none',
-              }}>
-                Post new →
-              </Link>
-            </div>
-
-            {tasksLoading && (
-              <div style={{
-                background:   COLORS.bgSurface,
-                borderRadius: RADII.lg,
-                height:       '80px',
-                border:       `1px solid ${COLORS.border}`,
-                boxShadow:    SHADOWS.card,
-              }} />
-            )}
-
-            <div style={{
-              display:       'flex',
-              flexDirection: 'column',
-              gap:           SPACING.sm,
-            }}>
-              {postedTasks.map(task => {
-                const fillPct = Math.round(
-                  ((task.slotsAvailable - task.slotsRemaining)
-                    / task.slotsAvailable) * 100
-                )
-                return (
-                  <div key={task.id} style={{
-                    background:   `${GRADIENTS.card}, ${COLORS.bgSurface}`,
-                    border:       `1px solid ${COLORS.border}`,
-                    borderRadius: RADII.lg,
-                    padding:      `${SPACING.lg} ${SPACING.xl}`,
-                    boxShadow:    SHADOWS.card,
-                  }}>
-                    <div style={{
-                      display:        'flex',
-                      justifyContent: 'space-between',
-                      alignItems:     'center',
-                      marginBottom:   SPACING.md,
-                    }}>
-                      <div style={{
-                        fontWeight: '500',
-                        fontSize:   '0.875rem',
-                        color:      COLORS.textPrimary,
-                        flex:       1,
-                      }}>
-                        {task.title}
-                      </div>
-                      <Link
-                        href={`/review/${task.id}`}
-                        style={{
-                          padding:        '0.4rem 0.875rem',
-                          background:     GRADIENTS.indigo,
-                          color:          'white',
-                          borderRadius:   RADII.md,
-                          fontSize:       '0.78rem',
-                          fontWeight:     '500',
-                          textDecoration: 'none',
-                          whiteSpace:     'nowrap',
-                          marginLeft:     SPACING.md,
-                        }}
-                      >
-                        Review →
-                      </Link>
-                    </div>
-                    <div style={{
-                      fontSize:    '0.78rem',
-                      color:       COLORS.textMuted,
-                      marginBottom: SPACING.md,
-                    }}>
-                      {task.category}
-                      {' · '}
-                      {task.piReward}π per slot
-                      {' · '}
-                      {task.slotsRemaining}/{task.slotsAvailable} slots left
-                    </div>
-                    {/* Slot fill progress */}
-                    <div style={{
-                      background:   COLORS.bgElevated,
-                      borderRadius: RADII.full,
-                      height:       '3px',
-                      overflow:     'hidden',
-                    }}>
-                      <div style={{
-                        height:       '100%',
-                        width:        `${fillPct}%`,
-                        background:   GRADIENTS.indigo,
-                        borderRadius: RADII.full,
-                      }} />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </section>
-        )}
 
       </main>
     </div>

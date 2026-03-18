@@ -37,6 +37,7 @@ export async function GET(req: NextRequest) {
         autoApproved,
         submittedAt,
         reviewedAt,
+        updatedAt,
         task:taskId (
           id,
           title,
