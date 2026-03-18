@@ -25,6 +25,35 @@ interface AdminDispute {
   } | null
 }
 
+interface AdminPayout {
+  id:           string
+  status:       string
+  netAmount:    number
+  submissionId: string
+  createdAt:    string
+  confirmedAt:  string | null
+  txid:         string | null
+  piPaymentId:  string | null
+  worker: {
+    id:         string
+    piUsername: string
+    piUid:      string
+  } | null
+  task: {
+    id:    string
+    title: string
+  } | null
+}
+
+interface PayoutResult {
+  txId:    string
+  worker:  string
+  amount:  number
+  success: boolean
+  piTxid:  string | null
+  error:   string | null
+}
+
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
   const hrs  = Math.floor(diff / 3600000)
@@ -51,6 +80,11 @@ export default function AdminDisputesPage() {
   const [resolving,  setResolving]  = useState<string | null>(null)
   const [error,      setError]      = useState<string | null>(null)
   const [filter,     setFilter]     = useState<'all' | 'active' | 'resolved'>('active')
+  const [activeTab,      setActiveTab]      = useState<'disputes' | 'payouts'>('disputes')
+  const [payouts,        setPayouts]        = useState<AdminPayout[]>([])
+  const [payoutsLoading, setPayoutsLoading] = useState(false)
+  const [paying,         setPaying]         = useState<string | null>(null)
+  const [payoutResults,  setPayoutResults]  = useState<Record<string, PayoutResult>>({})
 
   useEffect(() => {
     if (isSdkReady && !user && !hasAutoAuth.current) {
@@ -71,6 +105,30 @@ export default function AdminDisputesPage() {
       })
       .finally(() => setIsLoading(false))
   }, [user?.piUid])
+
+  const fetchPayouts = async () => {
+    if (!user?.piUid) return
+    setPayoutsLoading(true)
+    try {
+      const res = await fetch(
+        `${window.location.origin}/api/admin/payouts`,
+        { headers: { 'x-pi-uid': user.piUid } }
+      )
+      const data = await res.json()
+      if (data.payouts) setPayouts(data.payouts)
+    } catch (err) {
+      console.error('[Admin:Payouts] Fetch error:', err)
+    } finally {
+      setPayoutsLoading(false)
+    }
+  }
+
+  // Fetch payouts when tab switches to payouts
+  useEffect(() => {
+    if (activeTab === 'payouts' && user?.piUid) {
+      fetchPayouts()
+    }
+  }, [activeTab, user?.piUid])
 
   const handleResolve = async (disputeId: string, resolution: string) => {
     if (!user?.piUid) return
@@ -103,6 +161,61 @@ export default function AdminDisputesPage() {
       setError('Network error')
     } finally {
       setResolving(null)
+    }
+  }
+
+  const handlePayNow = async (transactionId: string) => {
+    if (!user?.piUid) return
+    setPaying(transactionId)
+
+    try {
+      const res = await fetch(
+        `${window.location.origin}/api/admin/retry-payouts`,
+        {
+          method:  'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-pi-uid':     user.piUid,
+          },
+          body: JSON.stringify({
+            transactionIds: [transactionId],
+          }),
+        }
+      )
+
+      const data = await res.json()
+      const result = data.results?.[0]
+
+      if (result) {
+        setPayoutResults(prev => ({
+          ...prev,
+          [transactionId]: result,
+        }))
+
+        // Refresh payouts list to show updated status
+        if (result.success) {
+          setPayouts(prev => prev.map(p =>
+            p.id === transactionId
+              ? { ...p, status: 'confirmed', txid: result.piTxid }
+              : p
+          ))
+        }
+      }
+
+    } catch (err) {
+      setPayoutResults(prev => ({
+        ...prev,
+        [transactionId]: {
+          txId:    transactionId,
+          worker:  '',
+          amount:  0,
+          success: false,
+          piTxid:  null,
+          error:   'Network error',
+        },
+      }))
+    } finally {
+      setPaying(null)
     }
   }
 
@@ -229,6 +342,74 @@ export default function AdminDisputesPage() {
             {error}
           </div>
         )}
+
+        {/* ── Tab switcher ──────────────────────────────── */}
+        <div style={{
+          display:      'flex',
+          gap:          '0.375rem',
+          marginBottom: SPACING.lg,
+          background:   COLORS.bgElevated,
+          borderRadius: RADII.lg,
+          padding:      '0.3rem',
+          border:       `1px solid ${COLORS.border}`,
+        }}>
+          {[
+            {
+              key:   'disputes',
+              label: `⚖ Disputes`,
+              badge: activeDisputes.length > 0 ? activeDisputes.length : null,
+              color: COLORS.indigo,
+            },
+            {
+              key:   'payouts',
+              label: `💳 Payouts`,
+              badge: payouts.filter(p => p.status === 'pending').length || null,
+              color: COLORS.amber,
+            },
+          ].map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key as typeof activeTab)}
+              style={{
+                flex:         1,
+                display:      'flex',
+                alignItems:   'center',
+                justifyContent: 'center',
+                gap:          '6px',
+                padding:      '0.5rem 0.75rem',
+                borderRadius: RADII.md,
+                border:       'none',
+                background:   activeTab === tab.key ? COLORS.bgSurface : 'transparent',
+                color:        activeTab === tab.key ? tab.color : COLORS.textMuted,
+                fontSize:     '0.85rem',
+                fontWeight:   activeTab === tab.key ? '600' : '400',
+                cursor:       'pointer',
+                transition:   'all 0.15s ease',
+                fontFamily:   FONTS.sans,
+              }}
+            >
+              {tab.label}
+              {tab.badge && (
+                <span style={{
+                  padding:      '1px 6px',
+                  background:   `${tab.color}20`,
+                  border:       `1px solid ${tab.color}40`,
+                  borderRadius: RADII.full,
+                  fontSize:     '0.68rem',
+                  fontWeight:   '700',
+                  color:        tab.color,
+                  fontFamily:   FONTS.mono,
+                }}>
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* ── Disputes tab content ──────────────────────── */}
+        {activeTab === 'disputes' && (
+        <>
 
         {/* Filter tabs */}
         <div style={{
@@ -484,6 +665,282 @@ export default function AdminDisputesPage() {
               )
             })}
           </div>
+        )}
+        </>
+        )}
+
+        {/* ── Payouts tab content ───────────────────────── */}
+        {activeTab === 'payouts' && (
+        <>
+
+        {/* Summary row */}
+        <div style={{
+          display:             'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap:                 SPACING.sm,
+          marginBottom:        SPACING.lg,
+        }}>
+          {[
+            {
+              label: 'Pending',
+              value: `${payouts.filter(p => p.status === 'pending').length}`,
+              sub:   `${payouts.filter(p => p.status === 'pending').reduce((s, p) => s + Number(p.netAmount), 0).toFixed(3)}π owed`,
+              color: COLORS.amber,
+            },
+            {
+              label: 'Confirmed',
+              value: `${payouts.filter(p => p.status === 'confirmed').length}`,
+              sub:   `${payouts.filter(p => p.status === 'confirmed').reduce((s, p) => s + Number(p.netAmount), 0).toFixed(3)}π paid`,
+              color: COLORS.emerald,
+            },
+            {
+              label: 'Total',
+              value: `${payouts.length}`,
+              sub:   'all time',
+              color: COLORS.textSecondary,
+            },
+          ].map(stat => (
+            <div key={stat.label} className="nexus-card" style={{ padding: SPACING.md }}>
+              <div style={{
+                fontSize:      '0.62rem',
+                color:         COLORS.textMuted,
+                fontWeight:    '600',
+                textTransform: 'uppercase' as const,
+                letterSpacing: '0.1em',
+                marginBottom:  '4px',
+              }}>
+                {stat.label}
+              </div>
+              <div style={{
+                fontFamily:    FONTS.mono,
+                fontSize:      '1.4rem',
+                fontWeight:    '700',
+                color:         stat.color,
+                letterSpacing: '-0.02em',
+                lineHeight:    1,
+                marginBottom:  '3px',
+              }}>
+                {stat.value}
+              </div>
+              <div style={{ fontSize: '0.7rem', color: COLORS.textMuted }}>
+                {stat.sub}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Payouts list */}
+        {payoutsLoading ? (
+          <div style={{
+            display:       'flex',
+            flexDirection: 'column',
+            gap:           SPACING.sm,
+          }}>
+            {[1, 2, 3].map(i => (
+              <div key={i} className="nexus-card" style={{ height: '80px' }} />
+            ))}
+          </div>
+        ) : payouts.length === 0 ? (
+          <div style={{
+            padding:      `${SPACING.xxl} ${SPACING.xl}`,
+            textAlign:    'center' as const,
+            background:   COLORS.bgSurface,
+            border:       `1px solid ${COLORS.border}`,
+            borderRadius: RADII.xl,
+            color:        COLORS.textMuted,
+            fontSize:     '0.85rem',
+          }}>
+            <div style={{ fontSize: '2rem', marginBottom: SPACING.md, opacity: 0.4 }}>💳</div>
+            No payout transactions yet
+          </div>
+        ) : (
+          <div style={{
+            display:       'flex',
+            flexDirection: 'column',
+            gap:           SPACING.sm,
+          }}>
+            {payouts.map((payout, idx) => {
+              const isPending   = payout.status === 'pending'
+              const isConfirmed = payout.status === 'confirmed'
+              const isPaying    = paying === payout.id
+              const result      = payoutResults[payout.id]
+              const statusColor = isPending ? COLORS.amber : isConfirmed ? COLORS.emerald : COLORS.red
+
+              return (
+                <div
+                  key={payout.id}
+                  className="nexus-card"
+                  style={{
+                    borderLeft: `3px solid ${statusColor}`,
+                  }}
+                >
+                  <div style={{
+                    display:        'flex',
+                    justifyContent: 'space-between',
+                    alignItems:     'flex-start',
+                    gap:            SPACING.md,
+                  }}>
+                    {/* Left — worker + task info */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{
+                        display:      'flex',
+                        alignItems:   'center',
+                        gap:          SPACING.sm,
+                        marginBottom: '4px',
+                      }}>
+                        {/* Worker avatar */}
+                        <div style={{
+                          width:          '28px',
+                          height:         '28px',
+                          borderRadius:   '8px',
+                          background:     `linear-gradient(135deg, ${COLORS.indigo}, ${COLORS.indigoLight || '#a78bfa'})`,
+                          display:        'flex',
+                          alignItems:     'center',
+                          justifyContent: 'center',
+                          fontSize:       '0.75rem',
+                          fontWeight:     '700',
+                          color:          'white',
+                          flexShrink:     0,
+                        }}>
+                          {payout.worker?.piUsername?.charAt(0).toUpperCase() ?? '?'}
+                        </div>
+                        <div>
+                          <div style={{
+                            fontSize:  '0.85rem',
+                            fontWeight: '600',
+                            color:     COLORS.textPrimary,
+                          }}>
+                            {payout.worker?.piUsername ?? 'Unknown'}
+                          </div>
+                          <div style={{
+                            fontSize:   '0.68rem',
+                            color:      COLORS.textMuted,
+                            fontFamily: FONTS.mono,
+                          }}>
+                            {payout.worker?.piUid?.slice(0, 8)}...
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Task title */}
+                      <div style={{
+                        fontSize:     '0.75rem',
+                        color:        COLORS.textSecondary,
+                        overflow:     'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace:   'nowrap' as const,
+                        marginBottom: '4px',
+                      }}>
+                        {payout.task?.title ?? 'Unknown task'}
+                      </div>
+
+                      {/* Time */}
+                      <div style={{
+                        fontSize: '0.68rem',
+                        color:    COLORS.textMuted,
+                      }}>
+                        {timeAgo(payout.createdAt)}
+                      </div>
+                    </div>
+
+                    {/* Right — amount + status + action */}
+                    <div style={{
+                      display:        'flex',
+                      flexDirection:  'column',
+                      alignItems:     'flex-end',
+                      gap:            SPACING.sm,
+                      flexShrink:     0,
+                    }}>
+                      {/* Amount */}
+                      <div style={{
+                        fontFamily:    FONTS.mono,
+                        fontSize:      '1.1rem',
+                        fontWeight:    '700',
+                        color:         isConfirmed ? COLORS.emerald : COLORS.textPrimary,
+                        letterSpacing: '-0.02em',
+                      }}>
+                        {Number(payout.netAmount).toFixed(4)}π
+                      </div>
+
+                      {/* Status badge */}
+                      <span style={{
+                        padding:      '2px 8px',
+                        background:   `${statusColor}18`,
+                        border:       `1px solid ${statusColor}40`,
+                        borderRadius: RADII.full,
+                        fontSize:     '0.65rem',
+                        fontWeight:   '700',
+                        color:        statusColor,
+                        fontFamily:   FONTS.mono,
+                        letterSpacing: '0.03em',
+                      }}>
+                        {payout.status.toUpperCase()}
+                      </span>
+
+                      {/* Pay Now button — only for pending */}
+                      {isPending && !result && (
+                        <button
+                          onClick={() => handlePayNow(payout.id)}
+                          disabled={!!paying}
+                          style={{
+                            padding:      `${SPACING.xs} ${SPACING.md}`,
+                            background:   paying
+                              ? COLORS.bgElevated
+                              : `linear-gradient(180deg, ${COLORS.emerald} 0%, #10b981 100%)`,
+                            border:       'none',
+                            borderRadius: RADII.md,
+                            fontSize:     '0.75rem',
+                            fontWeight:   '600',
+                            color:        paying ? COLORS.textMuted : 'white',
+                            cursor:       paying ? 'not-allowed' : 'pointer',
+                            fontFamily:   FONTS.sans,
+                            transition:   'all 0.15s ease',
+                            boxShadow:    paying ? 'none' : `0 0 12px rgba(16,185,129,0.3)`,
+                            whiteSpace:   'nowrap' as const,
+                          }}
+                        >
+                          {isPaying ? '⏳ Paying...' : '💳 Pay Now'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Result feedback */}
+                  {result && (
+                    <div style={{
+                      marginTop:    SPACING.sm,
+                      padding:      `${SPACING.xs} ${SPACING.sm}`,
+                      background:   result.success ? COLORS.emeraldDim : COLORS.redDim,
+                      border:       `1px solid ${result.success ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}`,
+                      borderRadius: RADII.sm,
+                      fontSize:     '0.72rem',
+                      color:        result.success ? COLORS.emerald : COLORS.red,
+                      fontFamily:   result.success ? FONTS.mono : FONTS.sans,
+                    }}>
+                      {result.success
+                        ? `✓ Paid — TX: ${result.piTxid?.slice(0, 16)}...`
+                        : `✗ Failed: ${result.error}`}
+                    </div>
+                  )}
+
+                  {/* Confirmed txid */}
+                  {isConfirmed && payout.txid && (
+                    <div style={{
+                      marginTop:  SPACING.sm,
+                      fontSize:   '0.68rem',
+                      color:      COLORS.textMuted,
+                      fontFamily: FONTS.mono,
+                    }}>
+                      TX: {payout.txid.slice(0, 20)}...
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        </>
         )}
       </main>
     </div>
