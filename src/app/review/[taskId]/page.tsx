@@ -255,8 +255,8 @@ export default function ReviewPage({
         {!isLoading && submissions.length === 0 && (
           <div style={{
             textAlign: 'center', padding: '4rem 2rem',
-            background: '#111827', borderRadius: '16px',
-            border: '1px solid #1f2937',
+            background: COLORS.bgSurface, borderRadius: RADII.xl,
+            border: `1px solid ${COLORS.border}`,
           }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📭</div>
             <h3 style={{ margin: '0 0 0.5rem' }}>No submissions yet</h3>
@@ -269,14 +269,19 @@ export default function ReviewPage({
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {submissions.map(sub => (
             <div key={sub.id} style={{
-              background: '#111827',
-              border: `1px solid ${
-                sub.status === 'APPROVED' ? '#16a34a'
-                : sub.status === 'REJECTED' ? '#dc2626'
-                : '#1f2937'
+              background:   COLORS.bgSurface,
+              border:       `1px solid ${
+                sub.status === 'APPROVED' ? COLORS.emerald
+                : sub.status === 'REJECTED' ? COLORS.red
+                : COLORS.border
               }`,
-              borderRadius: '16px',
-              padding: '1.25rem',
+              borderLeft:   `3px solid ${
+                sub.status === 'APPROVED' ? COLORS.emerald
+                : sub.status === 'REJECTED' ? COLORS.red
+                : COLORS.amber
+              }`,
+              borderRadius: RADII.xl,
+              padding:      SPACING.lg,
             }}>
 
               {/* Worker info */}
@@ -299,12 +304,12 @@ export default function ReviewPage({
                 <div style={{
                   padding: '0.3rem 0.75rem', borderRadius: '9999px',
                   fontSize: '0.75rem', fontWeight: '500',
-                  background: sub.status === 'APPROVED' ? '#14532d'
-                    : sub.status === 'REJECTED' ? '#450a0a'
-                    : '#1f2937',
-                  color: sub.status === 'APPROVED' ? '#86efac'
-                    : sub.status === 'REJECTED' ? '#fca5a5'
-                    : '#9ca3af',
+                  background: sub.status === 'APPROVED' ? COLORS.emeraldDim
+                    : sub.status === 'REJECTED' ? COLORS.redDim
+                    : COLORS.bgElevated,
+                  color: sub.status === 'APPROVED' ? COLORS.emerald
+                    : sub.status === 'REJECTED' ? COLORS.red
+                    : COLORS.textMuted,
                 }}>
                   {sub.status}
                 </div>
@@ -338,7 +343,7 @@ export default function ReviewPage({
                   }}>
                     ⚖ Dispute History
                   </div>
-                  <div style={{ color: '#9ca3af' }}>
+                  <div style={{ color: COLORS.textSecondary }}>
                     {taskDisputes[sub.id].status === 'resolved_worker'
                       ? 'Worker disputed the rejection and won. Please review this submission again and approve if work is satisfactory.'
                       : 'A dispute was filed on this submission.'}

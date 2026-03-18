@@ -401,55 +401,330 @@ export default function TaskDetailPage({
               </span>
             </div>
 
+            {/* Proof submission header */}
             <h3 style={{
-              margin: '0 0 0.75rem', fontSize: '0.95rem',
-              fontWeight: '600', color: '#ffffff',
+              margin: '0 0 0.5rem',
+              fontSize: '0.95rem',
+              fontWeight: '600',
+              color: COLORS.textPrimary,
             }}>
               Submit your proof
             </h3>
 
-            <textarea
-              value={proofContent}
-              onChange={e => setProofContent(e.target.value)}
-              placeholder={task.instructions}
-              rows={6}
-              style={{
-                width: '100%', padding: '0.875rem',
-                background: '#1f2937', border: '1px solid #374151',
-                borderRadius: '8px', color: '#ffffff',
-                fontSize: '0.9rem', resize: 'vertical',
-                outline: 'none', boxSizing: 'border-box',
-                lineHeight: '1.6', marginBottom: '1rem',
-              }}
-            />
+            {/* Proof type indicator */}
+            <div style={{
+              display:      'flex',
+              alignItems:   'center',
+              gap:          '6px',
+              marginBottom: '0.875rem',
+              fontSize:     '0.75rem',
+              color:        COLORS.textMuted,
+            }}>
+              <span style={{
+                padding:      '2px 8px',
+                background:   COLORS.indigoDim,
+                border:       `1px solid rgba(99,102,241,0.2)`,
+                borderRadius: RADII.full,
+                color:        COLORS.indigoLight,
+                fontWeight:   '500',
+                fontFamily:   FONTS.mono,
+                fontSize:     '0.68rem',
+                letterSpacing: '0.05em',
+              }}>
+                {task.proofType?.toUpperCase() ?? 'TEXT'}
+              </span>
+              <span>proof required</span>
+            </div>
 
+            {/* Conditional proof input based on proofType */}
+            {(() => {
+              const type = (task.proofType ?? 'TEXT').toUpperCase()
+
+              // TEXT proof — standard textarea
+              if (type === 'TEXT') {
+                return (
+                  <textarea
+                    value={proofContent}
+                    onChange={e => setProofContent(e.target.value)}
+                    placeholder={task.instructions ?? 'Describe your completed work in detail...'}
+                    rows={6}
+                    style={{
+                      width:      '100%',
+                      padding:    '0.875rem',
+                      background: COLORS.bgElevated,
+                      border:     `1px solid ${COLORS.borderAccent}`,
+                      borderRadius: RADII.md,
+                      color:      COLORS.textPrimary,
+                      fontSize:   '0.9rem',
+                      resize:     'vertical' as const,
+                      outline:    'none',
+                      boxSizing:  'border-box' as const,
+                      lineHeight: '1.6',
+                      marginBottom: '1rem',
+                      fontFamily: FONTS.sans,
+                    }}
+                  />
+                )
+              }
+
+              // PHOTO / IMAGE proof — URL input + preview
+              if (type === 'PHOTO' || type === 'IMAGE') {
+                return (
+                  <div style={{ marginBottom: '1rem' }}>
+                    <div style={{
+                      padding:      '1.5rem',
+                      background:   COLORS.bgElevated,
+                      border:       `2px dashed ${COLORS.borderAccent}`,
+                      borderRadius: RADII.lg,
+                      textAlign:    'center',
+                      marginBottom: '0.75rem',
+                    }}>
+                      <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📷</div>
+                      <div style={{
+                        fontSize:   '0.82rem',
+                        color:      COLORS.textSecondary,
+                        marginBottom: '0.75rem',
+                      }}>
+                        Paste a photo URL or describe what you photographed
+                      </div>
+                    </div>
+                    <textarea
+                      value={proofContent}
+                      onChange={e => setProofContent(e.target.value)}
+                      placeholder="Paste image URL or describe the photo you took and where it can be verified..."
+                      rows={4}
+                      style={{
+                        width:        '100%',
+                        padding:      '0.875rem',
+                        background:   COLORS.bgElevated,
+                        border:       `1px solid ${COLORS.borderAccent}`,
+                        borderRadius: RADII.md,
+                        color:        COLORS.textPrimary,
+                        fontSize:     '0.9rem',
+                        resize:       'vertical' as const,
+                        outline:      'none',
+                        boxSizing:    'border-box' as const,
+                        lineHeight:   '1.6',
+                        fontFamily:   FONTS.sans,
+                      }}
+                    />
+                  </div>
+                )
+              }
+
+              // AUDIO proof — URL or description
+              if (type === 'AUDIO') {
+                return (
+                  <div style={{ marginBottom: '1rem' }}>
+                    <div style={{
+                      padding:      '1.5rem',
+                      background:   COLORS.bgElevated,
+                      border:       `2px dashed ${COLORS.borderAccent}`,
+                      borderRadius: RADII.lg,
+                      textAlign:    'center',
+                      marginBottom: '0.75rem',
+                    }}>
+                      <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🎙️</div>
+                      <div style={{
+                        fontSize: '0.82rem',
+                        color:    COLORS.textSecondary,
+                      }}>
+                        Paste an audio file URL or recording link
+                      </div>
+                    </div>
+                    <textarea
+                      value={proofContent}
+                      onChange={e => setProofContent(e.target.value)}
+                      placeholder="Paste the URL to your audio recording (Google Drive, Dropbox, etc.) or describe what you recorded..."
+                      rows={4}
+                      style={{
+                        width:        '100%',
+                        padding:      '0.875rem',
+                        background:   COLORS.bgElevated,
+                        border:       `1px solid ${COLORS.borderAccent}`,
+                        borderRadius: RADII.md,
+                        color:        COLORS.textPrimary,
+                        fontSize:     '0.9rem',
+                        resize:       'vertical' as const,
+                        outline:      'none',
+                        boxSizing:    'border-box' as const,
+                        lineHeight:   '1.6',
+                        fontFamily:   FONTS.sans,
+                      }}
+                    />
+                  </div>
+                )
+              }
+
+              // FILE / DOCUMENT proof — URL input
+              if (type === 'FILE' || type === 'DOCUMENT') {
+                return (
+                  <div style={{ marginBottom: '1rem' }}>
+                    <div style={{
+                      padding:      '1.5rem',
+                      background:   COLORS.bgElevated,
+                      border:       `2px dashed ${COLORS.borderAccent}`,
+                      borderRadius: RADII.lg,
+                      textAlign:    'center',
+                      marginBottom: '0.75rem',
+                    }}>
+                      <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📎</div>
+                      <div style={{
+                        fontSize: '0.82rem',
+                        color:    COLORS.textSecondary,
+                      }}>
+                        Share a file link or document URL
+                      </div>
+                    </div>
+                    <textarea
+                      value={proofContent}
+                      onChange={e => setProofContent(e.target.value)}
+                      placeholder="Paste the URL to your file (Google Drive, Dropbox, OneDrive, etc.) — make sure sharing is enabled..."
+                      rows={3}
+                      style={{
+                        width:        '100%',
+                        padding:      '0.875rem',
+                        background:   COLORS.bgElevated,
+                        border:       `1px solid ${COLORS.borderAccent}`,
+                        borderRadius: RADII.md,
+                        color:        COLORS.textPrimary,
+                        fontSize:     '0.9rem',
+                        resize:       'vertical' as const,
+                        outline:      'none',
+                        boxSizing:    'border-box' as const,
+                        lineHeight:   '1.6',
+                        fontFamily:   FONTS.sans,
+                      }}
+                    />
+                  </div>
+                )
+              }
+
+              // VIDEO proof — URL or description
+              if (type === 'VIDEO') {
+                return (
+                  <div style={{ marginBottom: '1rem' }}>
+                    <div style={{
+                      padding:      '1.5rem',
+                      background:   COLORS.bgElevated,
+                      border:       `2px dashed ${COLORS.borderAccent}`,
+                      borderRadius: RADII.lg,
+                      textAlign:    'center',
+                      marginBottom: '0.75rem',
+                    }}>
+                      <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🎬</div>
+                      <div style={{
+                        fontSize: '0.82rem',
+                        color:    COLORS.textSecondary,
+                      }}>
+                        Paste a video link or upload URL
+                      </div>
+                    </div>
+                    <textarea
+                      value={proofContent}
+                      onChange={e => setProofContent(e.target.value)}
+                      placeholder="Paste the URL to your video (YouTube, Vimeo, Google Drive, etc.)..."
+                      rows={4}
+                      style={{
+                        width:        '100%',
+                        padding:      '0.875rem',
+                        background:   COLORS.bgElevated,
+                        border:       `1px solid ${COLORS.borderAccent}`,
+                        borderRadius: RADII.md,
+                        color:        COLORS.textPrimary,
+                        fontSize:     '0.9rem',
+                        resize:       'vertical' as const,
+                        outline:      'none',
+                        boxSizing:    'border-box' as const,
+                        lineHeight:   '1.6',
+                        fontFamily:   FONTS.sans,
+                      }}
+                    />
+                  </div>
+                )
+              }
+
+              // Default fallback — generic textarea for any other type
+              return (
+                <textarea
+                  value={proofContent}
+                  onChange={e => setProofContent(e.target.value)}
+                  placeholder={task.instructions ?? 'Describe your completed work...'}
+                  rows={6}
+                  style={{
+                    width:        '100%',
+                    padding:      '0.875rem',
+                    background:   COLORS.bgElevated,
+                    border:       `1px solid ${COLORS.borderAccent}`,
+                    borderRadius: RADII.md,
+                    color:        COLORS.textPrimary,
+                    fontSize:     '0.9rem',
+                    resize:       'vertical' as const,
+                    outline:      'none',
+                    boxSizing:    'border-box' as const,
+                    lineHeight:   '1.6',
+                    marginBottom: '1rem',
+                    fontFamily:   FONTS.sans,
+                  }}
+                />
+              )
+            })()}
+
+            {/* Character count for text proof */}
+            {(task.proofType ?? 'TEXT').toUpperCase() === 'TEXT' && (
+              <div style={{
+                fontSize:    '0.7rem',
+                color:       proofContent.trim().length < 10
+                  ? COLORS.red
+                  : COLORS.textMuted,
+                marginBottom: '0.75rem',
+                textAlign:   'right' as const,
+              }}>
+                {proofContent.trim().length} characters
+                {proofContent.trim().length < 10 && ' (minimum 10)'}
+              </div>
+            )}
+
+            {/* Error message */}
             {submitError && (
               <div style={{
-                padding: '0.875rem', background: '#450a0a',
-                border: '1px solid #dc2626', borderRadius: '8px',
-                color: '#fca5a5', fontSize: '0.875rem',
+                padding:      '0.875rem',
+                background:   COLORS.redDim,
+                border:       `1px solid rgba(239,68,68,0.3)`,
+                borderRadius: RADII.md,
+                color:        COLORS.red,
+                fontSize:     '0.875rem',
                 marginBottom: '1rem',
               }}>
                 {submitError}
               </div>
             )}
 
+            {/* Submit button */}
             <button
-              onClick={() =>
-                submitProof(proofContent, '', task.proofType)
-              }
+              onClick={() => submitProof(proofContent, '', task.proofType)}
               disabled={isSubmitting || proofContent.trim().length < 10}
               style={{
-                width: '100%', padding: '1rem',
-                background: proofContent.trim().length < 10
-                  ? '#374151'
-                  : 'linear-gradient(135deg, #7B3FE4, #A855F7)',
-                color: 'white', border: 'none',
-                borderRadius: '12px', fontSize: '1rem',
-                fontWeight: '600',
-                cursor: isSubmitting || proofContent.trim().length < 10
+                width:        '100%',
+                padding:      '1rem',
+                background:   isSubmitting || proofContent.trim().length < 10
+                  ? COLORS.bgElevated
+                  : `linear-gradient(180deg, ${COLORS.indigo} 0%, ${COLORS.indigoDark} 100%)`,
+                color:        isSubmitting || proofContent.trim().length < 10
+                  ? COLORS.textMuted
+                  : 'white',
+                border:       'none',
+                borderRadius: RADII.lg,
+                fontSize:     '1rem',
+                fontWeight:   '600',
+                cursor:       isSubmitting || proofContent.trim().length < 10
                   ? 'not-allowed'
                   : 'pointer',
+                boxShadow:    isSubmitting || proofContent.trim().length < 10
+                  ? 'none'
+                  : SHADOWS.indigoGlow,
+                fontFamily:   FONTS.sans,
+                transition:   'all 0.15s ease',
               }}
             >
               {isSubmitting
