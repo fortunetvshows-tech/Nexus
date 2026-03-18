@@ -11,6 +11,7 @@ import { QuickActionsCard }  from '@/components/bento/QuickActionsCard'
 import { ActivityFeedCard }  from '@/components/bento/ActivityFeedCard'
 import { StatsRowCard }      from '@/components/bento/StatsRowCard'
 import { RejectionCard }     from '@/components/bento/RejectionCard'
+import { DisputeTrackerCard } from '@/components/bento/DisputeTrackerCard'
 import { COLORS, FONTS, SPACING, RADII, SHADOWS, GRADIENTS, statusStyle, COMPONENT_STYLES } from '@/lib/design/tokens'
 
 // ── Types ──────────────────────────────────────────────────────────────
@@ -40,6 +41,19 @@ interface PostedTask {
   slotsRemaining: number
   taskStatus:     string
   createdAt:      string
+}
+
+interface WorkerDispute {
+  id:              string
+  status:          string
+  tier2VotesFor:   number
+  tier2VotesAgainst: number
+  resolvedInFavor: string | null
+  createdAt:       string
+  submission: {
+    id:    string
+    task?: { id: string; title: string; category: string }
+  } | null
 }
 
 // ── Types ──────────────────────────────────────────────────────────────
@@ -76,6 +90,9 @@ export default function DashboardPage() {
   // Employer data
   const [postedTasks,   setPostedTasks]   = useState<PostedTask[]>([])
   const [tasksLoading,  setTasksLoading]  = useState(false)
+
+  // Disputes data
+  const [workerDisputes, setWorkerDisputes] = useState<WorkerDispute[]>([])
 
   // Fetch worker submissions
   const fetchSubmissions = useCallback(() => {
@@ -120,13 +137,27 @@ export default function DashboardPage() {
       .catch(console.error)
   }, [user?.piUid])
 
+  // Fetch worker disputes
+  const fetchWorkerDisputes = useCallback(() => {
+    if (!user?.piUid) return
+    fetch(`${window.location.origin}/api/disputes/worker`, {
+      headers: { 'x-pi-uid': user.piUid },
+    })
+      .then(r => r.json())
+      .then(d => {
+        if (d.disputes) setWorkerDisputes(d.disputes)
+      })
+      .catch(console.error)
+  }, [user?.piUid])
+
   useEffect(() => {
     if (user?.piUid) {
       fetchSubmissions()
       fetchPostedTasks()
       fetchWorkerAnalytics()
+      fetchWorkerDisputes()
     }
-  }, [user?.piUid, fetchSubmissions, fetchPostedTasks, fetchWorkerAnalytics])
+  }, [user?.piUid, fetchSubmissions, fetchPostedTasks, fetchWorkerAnalytics, fetchWorkerDisputes])
 
   // ── Stats ──────────────────────────────────────────────────────────
 
@@ -596,6 +627,57 @@ export default function DashboardPage() {
             )
           })}
         </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════
+          DISPUTES SECTION — My Disputes (if any)
+        ═══════════════════════════════════════════════════════ */}
+
+      {workerDisputes.length > 0 && (
+        <>
+          {/* Section divider */}
+          <div style={{
+            display:    'flex',
+            alignItems: 'center',
+            gap:        '0.75rem',
+            margin:     `${SPACING.xxl} 0 ${SPACING.lg}`,
+          }}>
+            <div style={{
+              fontSize:      '0.65rem',
+              fontWeight:    '600',
+              color:         COLORS.textMuted,
+              textTransform: 'uppercase' as const,
+              letterSpacing: '0.1em',
+              whiteSpace:    'nowrap' as const,
+            }}>
+              My Disputes
+            </div>
+            <div style={{
+              height:     '1px',
+              flex:       1,
+              background: COLORS.border,
+            }} />
+            {/* Active disputes badge */}
+            {workerDisputes.some(d => !['resolved_worker', 'resolved_employer', 'closed_no_action'].includes(d.status)) && (
+              <div style={{
+                padding:      '2px 8px',
+                background:   COLORS.indigoDim,
+                border:       `1px solid rgba(99,102,241,0.3)`,
+                borderRadius: RADII.full,
+                fontSize:     '0.68rem',
+                fontWeight:   '700',
+                color:        COLORS.indigo,
+                whiteSpace:   'nowrap' as const,
+                fontFamily:   FONTS.mono,
+              }}>
+                {workerDisputes.filter(d => !['resolved_worker', 'resolved_employer', 'closed_no_action'].includes(d.status)).length} active
+              </div>
+            )}
+          </div>
+
+          {/* Disputes list */}
+          <DisputeTrackerCard disputes={workerDisputes} workerId={user?.id ?? ''} />
+        </>
       )}
 
       {/* ══════════════════════════════════════════════════════

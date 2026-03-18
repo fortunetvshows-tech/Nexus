@@ -10,9 +10,23 @@ export type DisputeResult = {
   code?:       string
 }
 
+/** Count eligible arbitrators (Sovereign-level, excluding specified user IDs) */
+async function countEligibleArbitrators(
+  excludeUserIds: string[]
+): Promise<number> {
+  const { count } = await supabaseAdmin
+    .from('User')
+    .select('id', { count: 'exact' })
+    .eq('reputationLevel', 'Sovereign')
+    .not('id', 'in', `(${excludeUserIds.map(id => `'${id}'`).join(',')})`)
+
+  return count ?? 0
+}
+
 /**
  * File a dispute on a rejected submission.
  * Worker provides their reason for challenging the rejection.
+ * Includes arbitrator eligibility guard before escalating to tier2.
  */
 export async function fileDispute(
   submissionId: string,
@@ -55,6 +69,7 @@ export async function fileDispute(
   const result = data as {
     success:   boolean
     disputeId?: string
+    employerId?: string
     error?:    string
   }
 
@@ -63,6 +78,47 @@ export async function fileDispute(
       success: false,
       error:   result.error,
       code:    'DISPUTE_FAILED',
+    }
+  }
+
+  // Arbitrator eligibility guard: Check if ≥3 Sovereign-level arbitrators available
+  const eligibleCount = await countEligibleArbitrators([workerId, result.employerId ?? ''])
+
+  if (eligibleCount < 3) {
+    // Insufficient arbitrators — escalate to tier3_review
+    const { error: escalateError } = await supabaseAdmin
+      .from('Dispute')
+      .update({
+        status: 'tier3_review',
+        updatedAt: new Date().toISOString(),
+      })
+      .eq('id', result.disputeId)
+
+    if (escalateError) {
+      console.error('[Nexus:DisputeService] Failed to escalate to tier3:', escalateError)
+    }
+
+    // Create notification for admins
+    const notifyError = await supabaseAdmin
+      .from('Notification')
+      .insert({
+        userId: null, // Will be handled by admin notifications system
+        type: 'DISPUTE_TIER3_ESCALATED',
+        title: 'Dispute Escalated to Admin Review',
+        message: `Dispute ${result.disputeId} escalated due to insufficient arbitrators.`,
+        metadata: { disputeId: result.disputeId },
+        createdAt: new Date().toISOString(),
+      })
+
+    if (notifyError) {
+      console.warn('[Nexus:DisputeService] Failed to create admin notification:', notifyError)
+    }
+
+    return {
+      success:    true,
+      disputeId:  result.disputeId,
+      resolution: 'ESCALATE_TO_TIER3',
+      checks:     { eligibleArbitrators: eligibleCount },
     }
   }
 

@@ -7,7 +7,7 @@ import { NotificationBell }    from '@/components/NotificationBell'
 import { COLORS, FONTS }       from '@/lib/design/tokens'
 
 interface NavigationProps {
-  currentPage: 'home' | 'feed' | 'employer' | 'employer-dashboard' | 'dashboard' | 'arbitrate' | 'analytics'
+  currentPage: 'home' | 'feed' | 'employer' | 'employer-dashboard' | 'dashboard' | 'arbitrate' | 'analytics' | 'admin'
 }
 
 export function Navigation({ currentPage }: NavigationProps) {
@@ -35,6 +35,10 @@ export function Navigation({ currentPage }: NavigationProps) {
 
   if (user?.reputationLevel === 'Sovereign') {
     navItems.push({ href: '/arbitrate', label: '⚖ Arbitrate', key: 'arbitrate' })
+  }
+
+  if (user?.isAdmin) {
+    navItems.push({ href: '/admin/disputes', label: '⚖ Disputes', key: 'admin' })
   }
 
   return (
@@ -223,6 +227,26 @@ export function Navigation({ currentPage }: NavigationProps) {
                       >
                         📈 Analytics
                       </Link>
+
+                      {user?.isAdmin && (
+                        <Link
+                          href="/admin/disputes"
+                          onClick={() => setProfileOpen(false)}
+                          style={{
+                            display:        'flex',
+                            alignItems:     'center',
+                            gap:            '8px',
+                            padding:        '0.5rem 0.625rem',
+                            borderRadius:   '8px',
+                            fontSize:       '0.82rem',
+                            color:          COLORS.red,
+                            textDecoration: 'none',
+                            transition:     'background 0.15s',
+                          }}
+                        >
+                          ⚖ Disputes
+                        </Link>
+                      )}
 
                       {/* Sign out */}
                       <div style={{
