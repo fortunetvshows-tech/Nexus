@@ -78,6 +78,15 @@ export async function approveSubmission(
     }
   }
 
+  // Check RPC payload — RPC returns {success, error} not just transport errors
+  if (data && data.success === false) {
+    return {
+      success: false,
+      error:   data.error ?? 'RPC_APPROVAL_FAILED',
+      code:    'SUBMISSION_NOT_ELIGIBLE',
+    }
+  }
+
   return { success: true, data }
 }
 
@@ -128,15 +137,21 @@ export async function rejectSubmission(
       targetType: 'submission',
       targetId:   submissionId,
       notes:      error.message,
-      metadata:   {
-        rejectionReason,
-        timestamp: new Date().toISOString(),
-      },
+      metadata:   { rejectionReason, timestamp: new Date().toISOString() },
     })
     return {
       success: false,
-      error: error.message,
-      code: 'REJECTION_FAILED',
+      error:   error.message,
+      code:    'REJECTION_FAILED',
+    }
+  }
+
+  // Check RPC payload — RPC returns {success, error} not just transport errors
+  if (data && data.success === false) {
+    return {
+      success: false,
+      error:   data.error ?? 'RPC_REJECTION_FAILED',
+      code:    'SUBMISSION_NOT_ELIGIBLE',
     }
   }
 

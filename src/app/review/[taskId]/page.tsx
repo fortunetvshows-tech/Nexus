@@ -144,12 +144,23 @@ export default function ReviewPage({
         },
         body: JSON.stringify({
           submissionId,
-          rejectionReason: reason,
+          rejectReason: reason,
         }),
       })
 
       const data = await res.json()
-      if (!res.ok) throw new Error(data.message ?? data.error ?? 'Rejection failed')
+
+      if (!res.ok || !data.success) {
+        setFeedback(prev => ({
+          ...prev,
+          [submissionId]: {
+            type:    'error',
+            message: data.error ?? 'Rejection failed. Please try again.',
+          },
+        }))
+        setProcessing(null)
+        return
+      }
 
       setSubmissions(prev =>
         prev.map(s =>
@@ -163,13 +174,18 @@ export default function ReviewPage({
           message: 'Submission rejected. Slot returned to pool.',
         },
       }))
+      setRejectReason(prev => {
+        const updated = { ...prev }
+        delete updated[submissionId]
+        return updated
+      })
 
     } catch (err) {
       setFeedback(prev => ({
         ...prev,
         [submissionId]: {
           type:    'error',
-          message: err instanceof Error ? err.message : 'Failed',
+          message: 'Network error. Please try again.',
         },
       }))
     } finally {
@@ -389,6 +405,13 @@ export default function ReviewPage({
                       boxSizing: 'border-box', marginBottom: '0.5rem',
                     }}
                   />
+                  <div style={{
+                    fontSize: '0.72rem',
+                    color: (rejectReason[sub.id] ?? '').trim().length < 10 ? '#dc2626' : '#6b7280',
+                    marginBottom: '0.75rem',
+                  }}>
+                    {(rejectReason[sub.id] ?? '').trim().length}/10 minimum characters
+                  </div>
                   <button
                     onClick={() => handleReject(sub.id)}
                     disabled={processing === sub.id}

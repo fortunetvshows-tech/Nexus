@@ -72,7 +72,7 @@ export async function POST(
 
     const result = await rejectSubmission(
       submissionId,
-      submission.workerId,
+      employer.id,
       rejectReason || 'Quality below threshold'
     )
 
