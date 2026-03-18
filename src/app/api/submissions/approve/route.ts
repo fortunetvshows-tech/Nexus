@@ -93,20 +93,23 @@ export async function POST(
     if (submissionDetails) {
       // Update the most recent task_approved notification for this worker with earned amount
       const earnedAmount = Number(submissionDetails.agreedReward).toFixed(4)
-      await supabaseAdmin
-        .from('Notification')
-        .update({
-          body: `Your submission was approved. You earned ${earnedAmount}π. Payment is being processed.`,
-          metadata: {
-            submissionId,
-            amount: submissionDetails.agreedReward,
-          }
-        })
-        .eq('userId', submissionDetails.workerId)
-        .eq('type', 'task_approved')
-        .order('createdAt', { ascending: false })
-        .limit(1)
-        .catch(err => console.error('[Nexus:ApproveRoute] Failed to update notification:', err))
+      try {
+        await supabaseAdmin
+          .from('Notification')
+          .update({
+            body: `Your submission was approved. You earned ${earnedAmount}π. Payment is being processed.`,
+            metadata: {
+              submissionId,
+              amount: submissionDetails.agreedReward,
+            }
+          })
+          .eq('userId', submissionDetails.workerId)
+          .eq('type', 'task_approved')
+          .order('createdAt', { ascending: false })
+          .limit(1)
+      } catch (err) {
+        console.error('[Nexus:ApproveRoute] Failed to update notification:', err)
+      }
     }
 
     return NextResponse.json(
