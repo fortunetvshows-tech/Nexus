@@ -102,27 +102,75 @@ export default function ReviewPage({
       })
 
       const data = await res.json()
-      if (!res.ok) throw new Error(data.message ?? data.error ?? 'Approval failed')
+
+      if (!res.ok || !data.success) {
+        setFeedback(prev => ({
+          ...prev,
+          [submissionId]: {
+            type:    'error',
+            message: data.error ?? 'Approval failed. Please try again.',
+          },
+        }))
+        return
+      }
 
       setSubmissions(prev =>
         prev.map(s =>
           s.id === submissionId ? { ...s, status: 'APPROVED' } : s
         )
       )
-      setFeedback(prev => ({
-        ...prev,
-        [submissionId]: {
-          type:    'success',
-          message: `Approved — ${data.workerPayout?.toFixed(4) ?? ''}π released to worker`,
-        },
-      }))
+
+      if (data.alreadyPaid) {
+        setFeedback(prev => ({
+          ...prev,
+          [submissionId]: {
+            type:    'success',
+            message: 'Submission already approved and paid.',
+          },
+        }))
+      } else if (data.paymentSent && data.txid) {
+        setFeedback(prev => ({
+          ...prev,
+          [submissionId]: {
+            type:    'success',
+            message: `✓ Approved & paid ${Number(data.amount).toFixed(4)}π to worker. TX: ${data.txid.slice(0, 12)}...`,
+          },
+        }))
+      } else if (data.warning) {
+        setFeedback(prev => ({
+          ...prev,
+          [submissionId]: {
+            type:    'success',
+            message: data.warning,
+          },
+        }))
+      } else {
+        setFeedback(prev => ({
+          ...prev,
+          [submissionId]: {
+            type:    'success',
+            message: 'Submission approved. Payment processing.',
+          },
+        }))
+      }
+
+      // Refresh submissions list
+      if (user?.piUid && taskId) {
+        fetch(`/api/tasks/${taskId}/submissions`, {
+          headers: { 'x-pi-uid': user.piUid },
+        }).then(r => r.json())
+          .then(data => {
+            if (data.submissions) setSubmissions(data.submissions)
+          })
+          .catch(console.error)
+      }
 
     } catch (err) {
       setFeedback(prev => ({
         ...prev,
         [submissionId]: {
           type:    'error',
-          message: err instanceof Error ? err.message : 'Failed',
+          message: err instanceof Error ? err.message : 'Network error. Please try again.',
         },
       }))
     } finally {
@@ -437,7 +485,7 @@ export default function ReviewPage({
                   >
                     {processing === sub.id
                       ? 'Processing...'
-                      : `Approve — release ${sub.agreedReward}π`}
+                      : `✓ Approve & Pay ${Number(sub.agreedReward * 0.95).toFixed(3)}π`}
                   </button>
 
                   <input
