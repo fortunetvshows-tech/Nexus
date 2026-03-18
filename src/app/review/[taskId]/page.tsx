@@ -54,6 +54,7 @@ export default function ReviewPage({
     type: 'success' | 'error'
     message: string
   }>>({})
+  const [taskDisputes, setTaskDisputes] = useState<Record<string, any>>({})
 
   useEffect(() => {
     if (!taskId) return
@@ -66,9 +67,19 @@ export default function ReviewPage({
       fetch(`/api/tasks/${taskId}/submissions`, {
         headers: { 'x-pi-uid': user.piUid },
       }).then(r => r.json()),
-    ]).then(([taskData, subData]) => {
+      fetch(`/api/disputes?taskId=${taskId}`, {
+        headers: { 'x-pi-uid': user.piUid },
+      }).then(r => r.json()),
+    ]).then(([taskData, subData, disputeData]) => {
       if (taskData.task) setTaskTitle(taskData.task.title)
       if (subData.submissions) setSubmissions(subData.submissions)
+      if (disputeData.disputes) {
+        const lookup = disputeData.disputes.reduce((acc: any, d: any) => {
+          if (d.submissionId) acc[d.submissionId] = d
+          return acc
+        }, {})
+        setTaskDisputes(lookup)
+      }
       setIsLoading(false)
     }).catch(() => setIsLoading(false))
   }, [taskId, user?.piUid])
@@ -298,6 +309,42 @@ export default function ReviewPage({
                   {sub.status}
                 </div>
               </div>
+
+              {/* Dispute history banner */}
+              {taskDisputes[sub.id] && (
+                <div style={{
+                  padding: '0.75rem 1rem',
+                  background: taskDisputes[sub.id].status === 'resolved_worker'
+                    ? 'rgba(16,185,129,0.08)'
+                    : 'rgba(245,158,11,0.08)',
+                  border: `1px solid ${
+                    taskDisputes[sub.id].status === 'resolved_worker'
+                      ? 'rgba(16,185,129,0.25)'
+                      : 'rgba(245,158,11,0.25)'
+                  }`,
+                  borderRadius: '8px',
+                  marginBottom: '1rem',
+                  fontSize: '0.78rem',
+                }}>
+                  <div style={{
+                    fontWeight:    '600',
+                    color:         taskDisputes[sub.id].status === 'resolved_worker'
+                      ? '#86efac'
+                      : '#fbbf24',
+                    marginBottom:  '3px',
+                    fontSize:      '0.68rem',
+                    textTransform: 'uppercase' as const,
+                    letterSpacing: '0.06em',
+                  }}>
+                    ⚖ Dispute History
+                  </div>
+                  <div style={{ color: '#9ca3af' }}>
+                    {taskDisputes[sub.id].status === 'resolved_worker'
+                      ? 'Worker disputed the rejection and won. Please review this submission again and approve if work is satisfactory.'
+                      : 'A dispute was filed on this submission.'}
+                  </div>
+                </div>
+              )}
 
               {/* Proof */}
               <div style={{

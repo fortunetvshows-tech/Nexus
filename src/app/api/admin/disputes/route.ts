@@ -103,12 +103,28 @@ export async function POST(req: NextRequest) {
       })
       .eq('id', disputeId)
 
-    // If worker wins — re-queue submission
+    // If worker wins — re-queue submission and re-reserve slot
     if (resolution === 'resolved_worker' && dispute.submissionId) {
+      // Re-queue submission
       await supabaseAdmin
         .from('Submission')
         .update({ status: 'SUBMITTED', updatedAt: new Date().toISOString() })
         .eq('id', dispute.submissionId)
+
+      // Get taskId and workerId for this submission
+      const { data: sub } = await supabaseAdmin
+        .from('Submission')
+        .select('taskId, workerId')
+        .eq('id', dispute.submissionId)
+        .single()
+
+      if (sub) {
+        // Decrement slotsRemaining to re-reserve the slot
+        await supabaseAdmin.rpc('reserve_task_slot', {
+          p_task_id:   sub.taskId,
+          p_worker_id: sub.workerId,
+        })
+      }
     }
 
     // Notify worker

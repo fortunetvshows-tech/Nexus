@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// GET /api/disputes?submissionId=... — get dispute status
+// GET /api/disputes?submissionId=... or ?taskId=... — get disputes
 export async function GET(req: NextRequest) {
   try {
     const piUid = req.headers.get('x-pi-uid')
@@ -94,14 +94,46 @@ export async function GET(req: NextRequest) {
 
     const url          = new URL(req.url)
     const submissionId = url.searchParams.get('submissionId')
+    const taskId       = url.searchParams.get('taskId')
 
-    if (!submissionId) {
+    if (!submissionId && !taskId) {
       return NextResponse.json(
-        { error: 'MISSING_SUBMISSION_ID' },
+        { error: 'MISSING_PARAMS' },
         { status: 400 }
       )
     }
 
+    // If taskId provided, fetch disputes by taskId (join via Submission)
+    if (taskId) {
+      const { data: taskSubmissions } = await supabaseAdmin
+        .from('Submission')
+        .select('id')
+        .eq('taskId', taskId)
+
+      const submissionIds = (taskSubmissions ?? []).map(s => s.id)
+
+      if (submissionIds.length === 0) {
+        return NextResponse.json(
+          { success: true, disputes: [] },
+          { status: 200 }
+        )
+      }
+
+      const { data: disputes } = await supabaseAdmin
+        .from('Dispute')
+        .select(`
+          id, status, submissionId, raisedBy, createdAt
+        `)
+        .in('submissionId', submissionIds)
+        .order('createdAt', { ascending: false })
+
+      return NextResponse.json(
+        { success: true, disputes: disputes ?? [] },
+        { status: 200 }
+      )
+    }
+
+    // Otherwise fetch by submissionId
     const { data: dispute, error } = await supabaseAdmin
       .from('Dispute')
       .select(`
@@ -109,7 +141,7 @@ export async function GET(req: NextRequest) {
         workerReason, tier1Result,
         resolution, filedAt, tier1ResolvedAt
       `)
-      .eq('submissionId', submissionId)
+      .eq('submissionId', submissionId!)
       .order('filedAt', { ascending: false })
       .limit(1)
       .maybeSingle()
