@@ -556,17 +556,109 @@ export default function DashboardPage() {
               )
             }
 
-            // APPROVED or SUBMITTED — existing card style
-            const s = statusStyle(sub.status)
+            // SUBMITTED — check if re-queued after dispute win
+            if (sub.status === 'SUBMITTED') {
+              const relatedDispute = workerDisputes.find(d => d.submission?.id === sub.id)
+              const isRequeued = relatedDispute?.status === 'resolved_worker'
+
+              return (
+                <div
+                  key={sub.id}
+                  style={{
+                    background:   isRequeued
+                      ? `linear-gradient(180deg, rgba(16,185,129,0.04) 0%, transparent 100%), ${COLORS.bgSurface}`
+                      : `linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%), ${COLORS.bgSurface}`,
+                    border:       `1px solid ${isRequeued ? 'rgba(16,185,129,0.25)' : COLORS.border}`,
+                    borderLeft:   `3px solid ${isRequeued ? COLORS.emerald : COLORS.amber}`,
+                    borderRadius: RADII.lg,
+                    padding:      `${SPACING.md} ${SPACING.lg}`,
+                    animation:    `fade-up 0.3s ease ${idx * 0.06}s both`,
+                  }}
+                >
+                  <div style={{
+                    display:        'flex',
+                    justifyContent: 'space-between',
+                    alignItems:     'flex-start',
+                    marginBottom:   isRequeued ? SPACING.sm : '4px',
+                  }}>
+                    <div style={{ flex: 1, minWidth: 0, marginRight: SPACING.md }}>
+                      <div style={{
+                        fontWeight:   '500',
+                        fontSize:     '0.875rem',
+                        color:        COLORS.textPrimary,
+                        overflow:     'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace:   'nowrap' as const,
+                        marginBottom: '3px',
+                      }}>
+                        {sub.task?.title ?? 'Unknown task'}
+                      </div>
+                      <div style={{
+                        fontSize: '0.78rem',
+                        color:    COLORS.textMuted,
+                        display:  'flex',
+                        gap:      '0.5rem',
+                      }}>
+                        <span>{sub.task?.category}</span>
+                        <span>·</span>
+                        <span style={{ fontFamily: FONTS.mono }}>{Number(sub.agreedReward ?? 0).toFixed(3)}π</span>
+                      </div>
+                    </div>
+                    <span style={{
+                      padding:      '2px 8px',
+                      borderRadius: RADII.full,
+                      fontSize:     '0.68rem',
+                      fontWeight:   '600',
+                      fontFamily:   FONTS.mono,
+                      flexShrink:   0,
+                      background:   isRequeued ? COLORS.emeraldDim : COLORS.amberDim,
+                      color:        isRequeued ? COLORS.emerald : COLORS.amber,
+                      border:       `1px solid ${isRequeued ? 'rgba(16,185,129,0.3)' : 'rgba(245,158,11,0.3)'}`,
+                    }}>
+                      {isRequeued ? 'DISPUTE WON' : 'PENDING'}
+                    </span>
+                  </div>
+
+                  {/* Dispute win notice */}
+                  {isRequeued && (
+                    <div style={{
+                      padding:      `${SPACING.xs} ${SPACING.sm}`,
+                      background:   COLORS.emeraldDim,
+                      border:       `1px solid rgba(16,185,129,0.2)`,
+                      borderRadius: RADII.sm,
+                      fontSize:     '0.75rem',
+                      color:        COLORS.emerald,
+                      marginTop:    SPACING.sm,
+                    }}>
+                      ✓ Dispute resolved in your favor — awaiting employer re-approval
+                    </div>
+                  )}
+
+                  {/* Normal pending notice */}
+                  {!isRequeued && (
+                    <div style={{
+                      fontSize: '0.75rem',
+                      color:    COLORS.amber,
+                      marginTop: '2px',
+                    }}>
+                      Awaiting employer review
+                    </div>
+                  )}
+                </div>
+              )
+            }
+
+            // APPROVED — link card
+            const s = { color: COLORS.emerald, background: COLORS.emeraldDim }
             return (
               <Link
                 key={sub.id}
                 href={`/task/${sub.task?.id}`}
                 style={{
                   display:        'block',
-                  background:     `linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%), ${COLORS.bgSurface}`,
+                  background:     `linear-gradient(180deg, rgba(16,185,129,0.04) 0%, transparent 100%), ${COLORS.bgSurface}`,
                   border:         `1px solid ${COLORS.border}`,
-                  borderLeft:     `3px solid ${s.color}`,
+                  borderLeft:     `3px solid ${COLORS.emerald}`,
                   borderRadius:   RADII.lg,
                   padding:        `${SPACING.md} ${SPACING.lg}`,
                   textDecoration: 'none',
@@ -600,9 +692,11 @@ export default function DashboardPage() {
                     letterSpacing: '0.03em',
                     fontFamily:   FONTS.mono,
                     flexShrink:   0,
-                    ...s,
+                    background:   COLORS.emeraldDim,
+                    color:        COLORS.emerald,
+                    border:       `1px solid rgba(16,185,129,0.3)`,
                   }}>
-                    {sub.status}
+                    APPROVED
                   </span>
                 </div>
                 <div style={{
@@ -620,12 +714,7 @@ export default function DashboardPage() {
                   }}>
                     {Number(sub.agreedReward ?? 0).toFixed(3)}π
                   </span>
-                  {sub.status === 'SUBMITTED' && (
-                    <span style={{ color: COLORS.amber }}>Awaiting review</span>
-                  )}
-                  {sub.status === 'APPROVED' && (
-                    <span style={{ color: COLORS.emerald }}>Payment processed</span>
-                  )}
+                  <span style={{ color: COLORS.emerald }}>Payment processed</span>
                 </div>
               </Link>
             )
