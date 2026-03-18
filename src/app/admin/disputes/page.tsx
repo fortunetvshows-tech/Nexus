@@ -161,7 +161,7 @@ export default function AdminDisputesPage() {
       fontFamily: FONTS.sans,
       color:      COLORS.textPrimary,
     }}>
-      <Navigation currentPage="dashboard" />
+      <Navigation currentPage="admin" />
 
       <main className="page-main">
 

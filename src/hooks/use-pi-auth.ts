@@ -106,7 +106,11 @@ export function usePiAuth() {
       )
 
       // Phase 2: Server-side verification
-      const response = await fetch('/api/auth', {
+      // MUST use absolute URL — Pi Browser intercepts relative URLs
+      const origin = typeof window !== 'undefined'
+        ? window.location.origin
+        : ''
+      const response = await fetch(`${origin}/api/auth`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

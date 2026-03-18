@@ -363,7 +363,8 @@ export default function HomePage() {
           alignItems:     'center',
           justifyContent: 'center',
           textAlign:      'center',
-          padding:        '80px var(--page-padding) 120px',
+          padding:        '80px var(--page-padding) 0',
+          paddingBottom:  '140px',
           backgroundImage: GRADIENTS.hero,
           position:       'relative',
         }}
@@ -434,9 +435,11 @@ export default function HomePage() {
           className="landing-marquee"
           style={{
             position:  'absolute',
-            bottom:    '2.5rem',
+            bottom:    '0',
             left:      0,
             right:     0,
+            padding:   '1rem 0 1.5rem',
+            background: 'linear-gradient(to top, rgba(15,23,42,0.95) 0%, transparent 100%)',
             animation: 'fade-up 0.6s ease 0.6s both',
           }}
         >
