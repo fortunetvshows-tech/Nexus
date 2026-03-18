@@ -7,7 +7,7 @@ import { NotificationBell }    from '@/components/NotificationBell'
 import { COLORS, FONTS }       from '@/lib/design/tokens'
 
 interface NavigationProps {
-  currentPage: 'home' | 'feed' | 'employer' | 'dashboard' | 'arbitrate' | 'analytics'
+  currentPage: 'home' | 'feed' | 'employer' | 'employer-dashboard' | 'dashboard' | 'arbitrate' | 'analytics'
 }
 
 export function Navigation({ currentPage }: NavigationProps) {
@@ -29,6 +29,7 @@ export function Navigation({ currentPage }: NavigationProps) {
     { href: '/dashboard', label: 'Dashboard', key: 'dashboard' },
     { href: '/feed',      label: 'Find Work',  key: 'feed'      },
     { href: '/employer',  label: 'Post Task',  key: 'employer'  },
+    { href: '/employer/dashboard', label: 'My Tasks', key: 'employer-dashboard' },
     { href: '/analytics', label: 'Analytics',  key: 'analytics' },
   ]
 

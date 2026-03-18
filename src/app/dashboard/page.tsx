@@ -355,13 +355,27 @@ export default function DashboardPage() {
             }}>
               My Posted Tasks
             </h2>
-            <Link href="/employer" style={{
-              fontSize:       '0.8rem',
-              color:          COLORS.indigo,
-              textDecoration: 'none',
-            }}>
-              Post new →
-            </Link>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <Link href="/employer/dashboard" style={{
+                padding:        `${SPACING.sm} ${SPACING.lg}`,
+                background:     COLORS.indigoDim,
+                color:          COLORS.indigoLight,
+                borderRadius:   RADII.md,
+                fontSize:       '0.8rem',
+                fontWeight:     '500',
+                textDecoration: 'none',
+                border:         `1px solid rgba(99,102,241,0.2)`,
+              }}>
+                Manage Posted Tasks →
+              </Link>
+              <Link href="/employer" style={{
+                fontSize:       '0.8rem',
+                color:          COLORS.indigo,
+                textDecoration: 'none',
+              }}>
+                Post new →
+              </Link>
+            </div>
           </div>
 
           {tasksLoading && (
