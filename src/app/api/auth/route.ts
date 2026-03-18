@@ -43,6 +43,7 @@ type UserRow = {
   reputationLevel: string
   kycLevel: number
   accountStatus: string
+  isAdmin: boolean
 }
 
 export async function POST(req: NextRequest) {
