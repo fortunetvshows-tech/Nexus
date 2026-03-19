@@ -255,7 +255,11 @@ export function Navigation({ currentPage }: NavigationProps) {
                         paddingTop:  '0.375rem',
                       }}>
                         <button
-                          onClick={() => { clearAuth(); setProfileOpen(false) }}
+                          onClick={() => {
+                            clearAuth()
+                            setProfileOpen(false)
+                            window.location.href = '/'
+                          }}
                           style={{
                             display:      'flex',
                             alignItems:   'center',
@@ -402,7 +406,11 @@ export function Navigation({ currentPage }: NavigationProps) {
               {user.piUsername}
             </div>
             <button
-              onClick={() => { clearAuth(); setIsOpen(false) }}
+              onClick={() => {
+                clearAuth()
+                setIsOpen(false)
+                window.location.href = '/'
+              }}
               style={{
                 background:   'transparent',
                 border:       `1px solid ${COLORS.borderAccent}`,

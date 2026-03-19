@@ -179,8 +179,13 @@ export default function HomePage() {
   // ── Auth CTA — only fires on explicit user click ─────────
   // NO auto-authenticate. NO router.push redirect.
   // The user is always in control of when auth fires.
-  const handleLogin = () => {
-    if (!isLoading) authenticate()
+  const handleLogin = async () => {
+    if (isLoading) return
+    const loggedInUser = await authenticate()
+    if (loggedInUser) {
+      // User just authenticated — take them to dashboard
+      window.location.href = '/dashboard'
+    }
   }
 
   // ── Auth button — server-safe default ────────────────────
