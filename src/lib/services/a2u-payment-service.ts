@@ -129,7 +129,22 @@ async function submitStellarTransaction(paymentDetails: {
   transaction.sign(keypair)
 
   // Submit to Pi Horizon
-  const txResponse = await horizon.submitTransaction(transaction)
+  let txResponse: any
+  try {
+    txResponse = await horizon.submitTransaction(transaction)
+  } catch (horizonErr: any) {
+    // Extract detailed Stellar error codes
+    const resultCodes = horizonErr?.response?.data?.extras?.result_codes
+    const envelopeXdr = horizonErr?.response?.data?.extras?.envelope_xdr
+    const resultXdr   = horizonErr?.response?.data?.extras?.result_xdr
+    const errMessage  = JSON.stringify({
+      resultCodes,
+      status:      horizonErr?.response?.status,
+      title:       horizonErr?.response?.data?.title,
+      envelopeXdr: envelopeXdr?.slice(0, 100),
+    })
+    throw new Error(`Stellar Horizon rejected transaction: ${errMessage}`)
+  }
   const txid = (txResponse as any).id ?? (txResponse as any).hash
 
   if (!txid) {
