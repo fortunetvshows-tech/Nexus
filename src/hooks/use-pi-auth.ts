@@ -99,7 +99,7 @@ export function usePiAuth() {
 
       // Phase 1: Client-side Pi authentication
       const auth = await window.Pi.authenticate(
-        ['username'],
+        ['username', 'wallet_address'],
         (incompletePayment: any) => {
           console.warn('[Nexus] Incomplete payment found:', incompletePayment)
         }
@@ -117,8 +117,9 @@ export function usePiAuth() {
           'x-pi-uid': auth.user.uid,
         },
         body: JSON.stringify({
-          accessToken: auth.accessToken,
-          uid: auth.user.uid,
+          accessToken:   auth.accessToken,
+          uid:           auth.user.uid,
+          walletAddress: (auth.user as any).wallet_address ?? null,
         }),
       })
 

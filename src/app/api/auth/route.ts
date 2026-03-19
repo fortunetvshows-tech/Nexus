@@ -30,8 +30,9 @@ interface PiMeResponse {
 }
 
 interface AuthRequestBody {
-  accessToken: string
-  uid: string
+  accessToken:   string
+  uid:           string
+  walletAddress: string | null
 }
 
 type UserRow = {
@@ -67,7 +68,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { accessToken, uid } = body
+    const { accessToken, uid, walletAddress } = body
 
     if (!accessToken || !uid) {
       return NextResponse.json(
@@ -193,9 +194,10 @@ export async function POST(req: NextRequest) {
       .from('User')
       .upsert(
         {
-          piUid:       piUser.uid,
-          piUsername:  piUser.username,
-          lastLoginAt: new Date().toISOString(),
+          piUid:         piUser.uid,
+          piUsername:    piUser.username,
+          lastLoginAt:   new Date().toISOString(),
+          walletAddress: walletAddress ?? null,
         },
         {
           onConflict:       'piUid',

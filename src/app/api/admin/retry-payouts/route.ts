@@ -48,15 +48,21 @@ export async function POST(req: NextRequest) {
         continue
       }
 
-      // Get worker Pi UID
+      // Get worker wallet address or Pi UID
       const { data: worker } = await supabaseAdmin
         .from('User')
-        .select('piUid, piUsername')
+        .select('piUid, piUsername, walletAddress')
         .eq('id', (tx.submission as any).workerId)
         .single()
 
-      if (!worker?.piUid) {
-        results.push({ txId, success: false, error: 'WORKER_PI_UID_NOT_FOUND' })
+      if (!worker) {
+        results.push({ txId, success: false, error: 'WORKER_NOT_FOUND' })
+        continue
+      }
+
+      const workerPiUid = worker.walletAddress ?? worker.piUid
+      if (!workerPiUid) {
+        results.push({ txId, success: false, error: 'WORKER_WALLET_ADDRESS_NOT_FOUND — worker must log in again to grant wallet_address scope' })
         continue
       }
 
@@ -64,7 +70,7 @@ export async function POST(req: NextRequest) {
 
       // Trigger A2U payment
       const payResult = await payWorkerA2U({
-        workerPiUid:  worker.piUid,
+        workerPiUid,  // now uses walletAddress if available
         amount:       Number(tx.netAmount),
         submissionId: tx.submissionId,
         taskId:       task?.id ?? '',

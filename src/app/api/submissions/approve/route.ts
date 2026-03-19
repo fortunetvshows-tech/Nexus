@@ -102,24 +102,24 @@ export async function POST(
       )
     }
 
-    // Get worker's Pi UID for A2U payment
+    // Get worker's wallet address or Pi UID for A2U payment
     const { data: worker } = await supabaseAdmin
       .from('User')
-      .select('piUid')
+      .select('piUid, walletAddress')
       .eq('id', submission.workerId)
       .single()
 
-    const workerPiUid = worker?.piUid ?? null
+    // A2U payments require walletAddress (from wallet_address scope)
+    // Fall back to piUid if walletAddress not yet captured
+    const workerPiUid = worker?.walletAddress ?? worker?.piUid ?? null
     const netAmount = Number(submission.agreedReward) * 0.95 // 5% platform fee
 
     if (!workerPiUid) {
-      // Approval recorded — but payment data missing
-      console.error('[Nexus:Approve] No workerPiUid found for worker:', submission.workerId)
       return NextResponse.json({
-        success: true,
+        success:     true,
         paymentSent: false,
-        warning: 'Submission approved but worker Pi UID unavailable. Manual payment required.',
-      }, { status: 200 })
+        warning:     'Worker has not granted wallet_address scope yet. They must log in again before payment can be processed.',
+      })
     }
 
     // Trigger A2U payment from platform wallet to worker
