@@ -85,6 +85,7 @@ export default function AdminDisputesPage() {
   const [payoutsLoading, setPayoutsLoading] = useState(false)
   const [paying,         setPaying]         = useState<string | null>(null)
   const [payoutResults,  setPayoutResults]  = useState<Record<string, PayoutResult>>({})
+  const [cancelling,     setCancelling]     = useState<string | null>(null)
 
   useEffect(() => {
     if (isSdkReady && !user && !hasAutoAuth.current) {
@@ -216,6 +217,56 @@ export default function AdminDisputesPage() {
       }))
     } finally {
       setPaying(null)
+    }
+  }
+
+  const handleCancelPayment = async (transactionId: string, piPaymentId: string) => {
+    if (!user?.piUid) return
+    if (!confirm('Cancel this payment on Pi Network? This cannot be undone.')) return
+    setCancelling(transactionId)
+
+    try {
+      const res = await fetch(
+        `${window.location.origin}/api/admin/cancel-payment`,
+        {
+          method:  'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-pi-uid':     user.piUid,
+          },
+          body: JSON.stringify({
+            paymentId:     piPaymentId,
+            transactionId,
+          }),
+        }
+      )
+      const data = await res.json()
+
+      if (data.success) {
+        // Update local state
+        setPayouts(prev => prev.map(p =>
+          p.id === transactionId
+            ? { ...p, status: 'failed' }
+            : p
+        ))
+        setPayoutResults(prev => ({
+          ...prev,
+          [transactionId]: {
+            txId:    transactionId,
+            worker:  '',
+            amount:  0,
+            success: false,
+            piTxid:  null,
+            error:   'Cancelled by admin',
+          },
+        }))
+      } else {
+        alert(`Cancel failed: ${data.error}`)
+      }
+    } catch (err) {
+      alert('Network error cancelling payment')
+    } finally {
+      setCancelling(null)
     }
   }
 
@@ -879,28 +930,53 @@ export default function AdminDisputesPage() {
 
                       {/* Pay Now button — only for pending */}
                       {isPending && !result && (
-                        <button
-                          onClick={() => handlePayNow(payout.id)}
-                          disabled={!!paying}
-                          style={{
-                            padding:      `${SPACING.xs} ${SPACING.md}`,
-                            background:   paying
-                              ? COLORS.bgElevated
-                              : `linear-gradient(180deg, ${COLORS.emerald} 0%, #10b981 100%)`,
-                            border:       'none',
-                            borderRadius: RADII.md,
-                            fontSize:     '0.75rem',
-                            fontWeight:   '600',
-                            color:        paying ? COLORS.textMuted : 'white',
-                            cursor:       paying ? 'not-allowed' : 'pointer',
-                            fontFamily:   FONTS.sans,
-                            transition:   'all 0.15s ease',
-                            boxShadow:    paying ? 'none' : `0 0 12px rgba(16,185,129,0.3)`,
-                            whiteSpace:   'nowrap' as const,
-                          }}
-                        >
-                          {isPaying ? '⏳ Paying...' : '💳 Pay Now'}
-                        </button>
+                        <div style={{ display: 'flex', gap: SPACING.xs }}>
+                          <button
+                            onClick={() => handlePayNow(payout.id)}
+                            disabled={!!paying || !!cancelling}
+                            style={{
+                              padding:      `${SPACING.xs} ${SPACING.md}`,
+                              background:   paying || cancelling
+                                ? COLORS.bgElevated
+                                : `linear-gradient(180deg, ${COLORS.emerald} 0%, #10b981 100%)`,
+                              border:       'none',
+                              borderRadius: RADII.md,
+                              fontSize:     '0.75rem',
+                              fontWeight:   '600',
+                              color:        paying || cancelling ? COLORS.textMuted : 'white',
+                              cursor:       paying || cancelling ? 'not-allowed' : 'pointer',
+                              fontFamily:   FONTS.sans,
+                              transition:   'all 0.15s ease',
+                              boxShadow:    paying || cancelling ? 'none' : `0 0 12px rgba(16,185,129,0.3)`,
+                              whiteSpace:   'nowrap' as const,
+                            }}
+                          >
+                            {isPaying ? '⏳ Paying...' : '💳 Pay Now'}
+                          </button>
+
+                          {/* Cancel button — only when payment is stuck (has piPaymentId but not confirmed) */}
+                          {payout.piPaymentId && !result && (
+                            <button
+                              onClick={() => handleCancelPayment(payout.id, payout.piPaymentId!)}
+                              disabled={!!paying || !!cancelling}
+                              style={{
+                                padding:      `${SPACING.xs} ${SPACING.md}`,
+                                background:   'transparent',
+                                border:       `1px solid rgba(239,68,68,0.3)`,
+                                borderRadius: RADII.md,
+                                fontSize:     '0.75rem',
+                                fontWeight:   '600',
+                                color:        cancelling === payout.id ? COLORS.textMuted : COLORS.red,
+                                cursor:       cancelling === payout.id || !!paying ? 'not-allowed' : 'pointer',
+                                fontFamily:   FONTS.sans,
+                                transition:   'all 0.15s ease',
+                                whiteSpace:   'nowrap' as const,
+                              }}
+                            >
+                              {cancelling === payout.id ? 'Cancelling...' : '✗ Cancel'}
+                            </button>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
