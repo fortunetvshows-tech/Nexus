@@ -5,7 +5,7 @@ import Link                             from 'next/link'
 import { usePiAuth }                    from '@/hooks/use-pi-auth'
 import { ShinyButton }                  from '@/components/ShinyButton'
 import { Marquee }                      from '@/components/Marquee'
-import { COLORS, GRADIENTS }            from '@/lib/design/tokens'
+import { COLORS, GRADIENTS, SPACING, RADII }            from '@/lib/design/tokens'
 
 // ── Static data — defined outside component (no re-render) ──
 
@@ -173,8 +173,9 @@ export default function HomePage() {
     if (isLoading) return
     const loggedInUser = await authenticate()
     if (loggedInUser) {
-      // User just authenticated — take them to dashboard
-      window.location.href = '/dashboard'
+      // Stay on landing page — show authenticated state
+      // User navigates to dashboard via Quick Actions
+      // Forced redirect corrupts Pi Browser payment state
     }
   }
 
@@ -207,29 +208,71 @@ export default function HomePage() {
       )
     }
 
-    // Authenticated — show dashboard link
+    // Authenticated — show Quick Actions
     if (user) {
       return (
-        <Link
-          href="/dashboard"
-          style={{
-            display:        'inline-flex',
-            alignItems:     'center',
-            padding:        isCompact ? '0.45rem 1rem' : '0.9rem 2.5rem',
-            background:     `linear-gradient(180deg, ${COLORS.emerald} 0%, ${COLORS.emeraldDark} 100%)`,
-            color:          'white',
-            borderRadius:   isCompact ? '8px' : '10px',
-            fontSize:       isCompact ? '0.82rem' : '1rem',
-            fontWeight:     '600',
-            textDecoration: 'none',
-            boxShadow:      isCompact ? 'none' : `0 0 24px rgba(16,185,129,0.4)`,
-            letterSpacing:  '-0.01em',
-            fontFamily:     "'Inter', system-ui, sans-serif",
-            whiteSpace:     'nowrap' as const,
-          }}
-        >
-          {isCompact ? 'Dashboard →' : 'Go to Dashboard →'}
-        </Link>
+        <div style={{
+          display:        'flex',
+          flexDirection:  'column',
+          alignItems:     'center',
+          gap:            SPACING.md,
+        }}>
+          <div style={{
+            fontSize:   '1rem',
+            color:      COLORS.textSecondary,
+            fontWeight: '500',
+          }}>
+            Welcome back, {user.piUsername} 👋
+          </div>
+          <div style={{
+            display: 'flex',
+            gap:     SPACING.sm,
+          }}>
+            <a
+              href="/feed"
+              style={{
+                padding:        `${SPACING.sm} ${SPACING.lg}`,
+                background:     COLORS.indigo,
+                color:          'white',
+                borderRadius:   RADII.md,
+                textDecoration: 'none',
+                fontWeight:     '600',
+                fontSize:       '0.9rem',
+              }}
+            >
+              🔍 Find Work
+            </a>
+            <a
+              href="/employer"
+              style={{
+                padding:        `${SPACING.sm} ${SPACING.lg}`,
+                background:     COLORS.emerald,
+                color:          'white',
+                borderRadius:   RADII.md,
+                textDecoration: 'none',
+                fontWeight:     '600',
+                fontSize:       '0.9rem',
+              }}
+            >
+              📋 Post Task
+            </a>
+            <a
+              href="/dashboard"
+              style={{
+                padding:        `${SPACING.sm} ${SPACING.lg}`,
+                background:     COLORS.bgSurface,
+                border:         `1px solid ${COLORS.border}`,
+                color:          COLORS.textPrimary,
+                borderRadius:   RADII.md,
+                textDecoration: 'none',
+                fontWeight:     '600',
+                fontSize:       '0.9rem',
+              }}
+            >
+              📊 Dashboard
+            </a>
+          </div>
+        </div>
       )
     }
 
