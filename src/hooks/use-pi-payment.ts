@@ -51,7 +51,7 @@ export function usePiPayment() {
             onReadyForServerApproval: async (paymentId: string) => {
               setState(prev => ({ ...prev, paymentId }))
               try {
-                const res = await fetch('/api/pi/approve', {
+                const res = await fetch(`${window.location.origin}/api/pi/approve`, {
                   method:  'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body:    JSON.stringify({ paymentId }),
@@ -77,7 +77,7 @@ export function usePiPayment() {
               txid:      string
             ) => {
               try {
-                const res = await fetch('/api/pi/complete', {
+                const res = await fetch(`${window.location.origin}/api/pi/complete`, {
                   method:  'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body:    JSON.stringify({ paymentId, txid }),
