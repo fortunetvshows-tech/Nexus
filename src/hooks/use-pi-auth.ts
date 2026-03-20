@@ -116,13 +116,39 @@ export function usePiAuth() {
         async (incompletePayment: any) => {
           console.warn('[Nexus] Incomplete payment found:', incompletePayment)
           if (!incompletePayment?.identifier) return
+
+          const paymentId = incompletePayment.identifier
+          const txid      = incompletePayment.transaction?.txid ?? null
+          const verified  = incompletePayment.transaction?.verified ?? false
+          const direction = incompletePayment.direction
+
           try {
-            // Send incomplete payment to server for completion/cancellation
-            await fetch(`${window.location.origin}/api/pi/handle-incomplete`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ payment: incompletePayment }),
-            })
+            if (direction === 'user_to_app') {
+              if (txid && verified) {
+                // Transaction on blockchain — complete it
+                await fetch(`${window.location.origin}/api/pi/complete`, {
+                  method:  'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body:    JSON.stringify({ paymentId, txid }),
+                })
+                console.log('[Nexus] Incomplete U2A payment completed:', paymentId)
+              } else {
+                // No blockchain transaction — cancel it
+                await fetch(`${window.location.origin}/api/pi/cancel`, {
+                  method:  'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body:    JSON.stringify({ paymentId }),
+                })
+                console.log('[Nexus] Incomplete U2A payment cancelled:', paymentId)
+              }
+            } else {
+              // A2U — handle via existing route
+              await fetch(`${window.location.origin}/api/pi/handle-incomplete`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ payment: incompletePayment }),
+              })
+            }
           } catch (err) {
             console.error('[Nexus] Failed to handle incomplete payment:', err)
           }
