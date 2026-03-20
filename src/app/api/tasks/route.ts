@@ -10,15 +10,11 @@ import { NextRequest, NextResponse } from 'next/server'
 
 // Validation constants matching Master Architecture Document
 const VALID_CATEGORIES = [
-  'Survey & Research',
-  'App Testing',
-  'Translation',
-  'Audio Recording',
-  'Photo Capture',
-  'Content Review',
-  'Data Labeling',
-  'Micro-Consulting',
-  'Social Verification',
+  '🤖 AI & Data Labeling',
+  '📍 Local Verification',
+  '🌐 Translation',
+  '📱 App Testing',
+  '✍️ Community & Content',
 ] as const
 
 const VALID_PROOF_TYPES = [
