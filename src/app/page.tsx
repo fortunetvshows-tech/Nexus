@@ -12,7 +12,7 @@ import { COLORS, GRADIENTS }            from '@/lib/design/tokens'
 import { TASK_CATEGORIES } from '@/lib/config/categories'
 
 const STATS = [
-  { value: '9',     label: 'Task Categories' },
+  { value: '5',     label: 'Task Categories' },
   { value: '5%',    label: 'Platform Fee'    },
   { value: '0.01π', label: 'Network Fee'     },
 ]
