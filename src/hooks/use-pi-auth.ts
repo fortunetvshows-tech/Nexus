@@ -100,8 +100,19 @@ export function usePiAuth() {
       // Phase 1: Client-side Pi authentication
       const auth = await window.Pi.authenticate(
         ['username', 'wallet_address', 'payments'],
-        (incompletePayment: any) => {
+        async (incompletePayment: any) => {
           console.warn('[Nexus] Incomplete payment found:', incompletePayment)
+          if (!incompletePayment?.identifier) return
+          try {
+            // Send incomplete payment to server for completion/cancellation
+            await fetch(`${window.location.origin}/api/pi/handle-incomplete`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ payment: incompletePayment }),
+            })
+          } catch (err) {
+            console.error('[Nexus] Failed to handle incomplete payment:', err)
+          }
         }
       )
 
