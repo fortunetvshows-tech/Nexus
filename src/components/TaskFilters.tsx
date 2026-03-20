@@ -4,8 +4,8 @@ import { useState } from 'react'
 import {
   TaskSearchFilters,
   DEFAULT_FILTERS,
-  TASK_CATEGORIES,
 } from '@/hooks/use-task-search'
+import { TASK_CATEGORIES } from '@/lib/config/categories'
 import { COLORS, FONTS, RADII, SHADOWS, GRADIENTS, SPACING, statusStyle } from '@/lib/design/tokens'
 
 interface TaskFiltersProps {

@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePiAuth }        from '@/hooks/use-pi-auth'
-import { useTaskCreation, CATEGORIES, PROOF_TYPES, INITIAL_FORM }
-  from '@/hooks/use-task-creation'
+import { useTaskCreation, PROOF_TYPES, INITIAL_FORM } from '@/hooks/use-task-creation'
+import { TASK_CATEGORIES } from '@/lib/config/categories'
 import { Navigation }       from '@/components/Navigation'
 import { FeeBreakdown }     from '@/components/FeeBreakdown'
 import { COLORS, FONTS, RADII, SHADOWS, GRADIENTS, SPACING, statusStyle } from '@/lib/design/tokens'
@@ -264,7 +264,8 @@ export default function EmployerPage() {
                   onChange={e => updateField('category', e.target.value)}
                   style={inputStyle}
                 >
-                  {CATEGORIES.map(cat => (
+                  <option value="" disabled>Select a category</option>
+                  {TASK_CATEGORIES.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </select>

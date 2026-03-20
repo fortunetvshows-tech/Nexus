@@ -9,17 +9,7 @@ import { COLORS, GRADIENTS }            from '@/lib/design/tokens'
 
 // ── Static data — defined outside component (no re-render) ──
 
-const TASK_CATEGORIES = [
-  '📋 Survey & Research',
-  '📱 App Testing',
-  '🌐 Translation',
-  '🎙️ Audio Recording',
-  '📷 Photo Capture',
-  '✍️ Content Review',
-  '🏷️ Data Labeling',
-  '💡 Micro-Consulting',
-  '✅ Social Verification',
-]
+import { TASK_CATEGORIES } from '@/lib/config/categories'
 
 const STATS = [
   { value: '9',     label: 'Task Categories' },

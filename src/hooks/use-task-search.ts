@@ -18,17 +18,6 @@ export const DEFAULT_FILTERS: TaskSearchFilters = {
   sort:      'newest',
 }
 
-export const TASK_CATEGORIES = [
-  'Survey & Research',
-  'App Testing',
-  'Translation',
-  'Audio Recording',
-  'Photo Capture',
-  'Content Review',
-  'Data Labeling',
-  'Micro-Consulting',
-  'Social Verification',
-] as const
 
 interface PaginationInfo {
   page:       number

@@ -36,17 +36,6 @@ export const INITIAL_FORM: TaskFormData = {
   tags:            '',
 }
 
-export const CATEGORIES = [
-  'Survey & Research',
-  'App Testing',
-  'Translation',
-  'Audio Recording',
-  'Photo Capture',
-  'Content Review',
-  'Data Labeling',
-  'Micro-Consulting',
-  'Social Verification',
-] as const
 
 export const PROOF_TYPES = [
   { value: 'TEXT',            label: 'Text response'    },
