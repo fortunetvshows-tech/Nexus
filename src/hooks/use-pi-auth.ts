@@ -43,15 +43,34 @@ function clearUserFromSession() {
   } catch { /* ignore */ }
 }
 
+function saveAuthScopesToSession(scopes: string[]) {
+  try {
+    sessionStorage.setItem('nexus_auth_scopes', JSON.stringify(scopes))
+  } catch { /* ignore */ }
+}
+
+function getAuthScopesFromSession(): string[] {
+  try {
+    const raw = sessionStorage.getItem('nexus_auth_scopes')
+    return raw ? JSON.parse(raw) : []
+  } catch {
+    return []
+  }
+}
+
 export function usePiAuth() {
-  const [state, setState] = useState<AuthState>(() => ({
-    // Restore user from sessionStorage on hook initialization
-    // This means navigating to any page has user immediately
-    user:       getUserFromSession(),
-    isLoading:  false,
-    error:      null,
-    isSdkReady: false,
-  }))
+  const [state, setState] = useState<AuthState>(() => {
+    const savedUser   = getUserFromSession()
+    const savedScopes = getAuthScopesFromSession()
+    // Only restore session if payments scope was previously granted
+    const hasPayments = savedScopes.includes('payments')
+    return {
+      user:       hasPayments ? savedUser : null,
+      isLoading:  false,
+      error:      null,
+      isSdkReady: false,
+    }
+  })
 
   // Check for Pi SDK availability after mount
   // window.Pi is injected by the Pi Browser environment
@@ -116,6 +135,17 @@ export function usePiAuth() {
         }
       )
 
+      // Store granted scopes so we can verify payments scope is present
+      const grantedScopes = (auth as any).user?.credentials?.scopes ?? []
+      saveAuthScopesToSession(grantedScopes)
+
+      // If payments scope not granted — clear session and force re-auth
+      if (!grantedScopes.includes('payments')) {
+        clearUserFromSession()
+        sessionStorage.removeItem('nexus_auth_scopes')
+        throw new Error('payments_scope_missing')
+      }
+
       // Phase 2: Server-side verification
       // MUST use absolute URL — Pi Browser intercepts relative URLs
       const origin = typeof window !== 'undefined'
@@ -169,6 +199,7 @@ export function usePiAuth() {
 
   const clearAuth = useCallback(() => {
     clearUserFromSession()
+    sessionStorage.removeItem('nexus_auth_scopes')
     setState(prev => ({
       ...prev,
       user:  null,
