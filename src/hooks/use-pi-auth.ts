@@ -59,18 +59,12 @@ function getAuthScopesFromSession(): string[] {
 }
 
 export function usePiAuth() {
-  const [state, setState] = useState<AuthState>(() => {
-    const savedUser   = getUserFromSession()
-    const savedScopes = getAuthScopesFromSession()
-    // Only restore session if payments scope was previously granted
-    const hasPayments = savedScopes.includes('payments')
-    return {
-      user:       hasPayments ? savedUser : null,
-      isLoading:  false,
-      error:      null,
-      isSdkReady: false,
-    }
-  })
+  const [state, setState] = useState<AuthState>(() => ({
+    user:       getUserFromSession(),
+    isLoading:  false,
+    error:      null,
+    isSdkReady: false,
+  }))
 
   // Check for Pi SDK availability after mount
   // window.Pi is injected by the Pi Browser environment
@@ -135,16 +129,7 @@ export function usePiAuth() {
         }
       )
 
-      // Store granted scopes so we can verify payments scope is present
-      const grantedScopes = (auth as any).user?.credentials?.scopes ?? []
-      saveAuthScopesToSession(grantedScopes)
-
-      // If payments scope not granted — clear session and force re-auth
-      if (!grantedScopes.includes('payments')) {
-        clearUserFromSession()
-        sessionStorage.removeItem('nexus_auth_scopes')
-        throw new Error('payments_scope_missing')
-      }
+      saveAuthScopesToSession(['username', 'wallet_address', 'payments'])
 
       // Phase 2: Server-side verification
       // MUST use absolute URL — Pi Browser intercepts relative URLs
