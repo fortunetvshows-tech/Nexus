@@ -5,7 +5,6 @@ import Link                    from 'next/link'
 import { usePiAuth }           from '@/hooks/use-pi-auth'
 import { NotificationBell }    from '@/components/NotificationBell'
 import { BottomNav }           from '@/components/BottomNav'
-import { TopBar }              from '@/components/TopBar'
 import { COLORS, FONTS }       from '@/lib/design/tokens'
 
 interface NavigationProps {
@@ -45,7 +44,7 @@ export function Navigation({ currentPage }: NavigationProps) {
 
   return (
     <>
-      <TopBar />
+
       {/* Main nav bar */}
       <nav style={{
         position:       'fixed',
