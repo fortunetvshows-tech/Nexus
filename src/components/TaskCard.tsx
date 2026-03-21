@@ -1,7 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { COLORS, FONTS, RADII, SHADOWS, GRADIENTS, SPACING } from '@/lib/design/tokens'
+import {
+  COLORS, FONTS, RADII, SHADOWS, SPACING
+} from '@/lib/design/tokens'
 
 interface TaskCardProps {
   task: {
@@ -27,16 +29,17 @@ interface TaskCardProps {
   workerReputation?: number
 }
 
-const CATEGORY_ICONS: Record<string, string> = {
-  'Survey & Research':  '📋',
-  'App Testing':        '🔧',
-  'Translation':        '🌐',
-  'Audio Recording':    '🎙',
-  'Photo Capture':      '📷',
-  'Content Review':     '👁',
-  'Data Labeling':      '🏷',
-  'Micro-Consulting':   '💡',
-  'Social Verification':'✓',
+// Map category to color for visual variety
+const CATEGORY_COLORS: Record<string, string> = {
+  '🤖 AI & Data Labeling':  '#6366F1',
+  '📍 Local Verification':  '#10B981',
+  '🌐 Translation':         '#F59E0B',
+  '📱 App Testing':         '#EC4899',
+  '✍️ Community & Content': '#8B5CF6',
+}
+
+function getCategoryColor(category: string): string {
+  return CATEGORY_COLORS[category] ?? '#6366F1'
 }
 
 export function TaskCard({
@@ -44,110 +47,177 @@ export function TaskCard({
   workerReputation = 0,
 }: TaskCardProps) {
 
-  const isEligible    = workerReputation >= task.minReputationReq
-  const fillPct       = Math.round(
-    ((task.slotsAvailable - task.slotsRemaining) / task.slotsAvailable) * 100
-  )
+  const color         = getCategoryColor(task.category)
+  const spotsLeft     = task.slotsRemaining
+  const isLastSpot    = spotsLeft === 1
+  const isUrgent      = spotsLeft <= 2
   const deadlineDate  = new Date(task.deadline)
   const hoursLeft     = Math.max(
     0,
     Math.round((deadlineDate.getTime() - Date.now()) / 3600000)
   )
-  const deadlineLabel = hoursLeft < 24
-    ? `${hoursLeft}h left`
-    : `${Math.round(hoursLeft / 24)}d left`
+  const isExpiringSoon = hoursLeft < 24
 
   return (
-    <Link href={`/task/${task.id}`} style={{
-      background:     `${GRADIENTS.card}, ${COLORS.bgSurface}`,
-      border:         `1px solid ${COLORS.border}`,
-      borderRadius:   RADII.xl,
-      padding:        SPACING.xl,
-      textDecoration: 'none',
-      boxShadow:      SHADOWS.card,
-      transition:     'all 0.2s ease',
-      display:        'block',
-      position:       'relative',
-    }}>
+    <Link
+      href={`/task/${task.id}`}
+      style={{
+        display:        'block',
+        textDecoration: 'none',
+        position:       'relative' as const,
+      }}
+    >
+      <div
+        className="nexus-card"
+        style={{
+          borderLeft:  `4px solid ${color}`,
+          padding:     SPACING.lg,
+          transition:  'all 0.15s ease',
+          cursor:      'pointer',
+        }}
+      >
+        {/* Featured badge */}
+        {task.isFeatured && (
+          <div style={{
+            position:     'absolute' as const,
+            top:          '-1px',
+            right:        SPACING.lg,
+            background:   color,
+            color:        'white',
+            fontSize:     '0.62rem',
+            fontWeight:   '700',
+            padding:      '2px 8px',
+            borderRadius: '0 0 6px 6px',
+            letterSpacing: '0.08em',
+          }}>
+            FEATURED
+          </div>
+        )}
 
-      {/* Featured badge */}
-      {task.isFeatured && (
+        {/* Row 1 — category + urgency signals */}
         <div style={{
-          position:     'absolute',
-          top:          '-1px',
-          right:        SPACING.lg,
-          background:   GRADIENTS.indigo,
-          color:        'white',
-          fontSize:     '0.7rem',
-          fontWeight:   '600',
-          padding:      '0.2rem 0.6rem',
-          borderRadius: '0 0 8px 8px',
-          letterSpacing: '0.05em',
+          display:        'flex',
+          alignItems:     'center',
+          justifyContent: 'space-between',
+          marginBottom:   SPACING.sm,
         }}>
-          FEATURED
+          <span style={{
+            fontSize:     '0.68rem',
+            fontWeight:   '600',
+            color:        color,
+            background:   `${color}18`,
+            border:       `1px solid ${color}30`,
+            padding:      '2px 8px',
+            borderRadius: RADII.full,
+          }}>
+            {task.category}
+          </span>
+
+          <div style={{
+            display: 'flex',
+            gap:     '6px',
+            alignItems: 'center',
+          }}>
+            {isUrgent && (
+              <span style={{
+                fontSize:   '0.65rem',
+                fontWeight: '700',
+                color:      '#EF4444',
+                background: 'rgba(239,68,68,0.1)',
+                border:     '1px solid rgba(239,68,68,0.2)',
+                padding:    '2px 6px',
+                borderRadius: RADII.full,
+              }}>
+                {isLastSpot ? '🔥 Last spot' : `⚡ ${spotsLeft} spots left`}
+              </span>
+            )}
+            {isExpiringSoon && !isUrgent && (
+              <span style={{
+                fontSize:   '0.65rem',
+                fontWeight: '600',
+                color:      '#F59E0B',
+              }}>
+                {hoursLeft}h left
+              </span>
+            )}
+          </div>
         </div>
-      )}
 
-      {/* Top row — category + reward */}
-      <div style={{
-        display:        'flex',
-        justifyContent: 'space-between',
-        alignItems:     'flex-start',
-        marginBottom:   SPACING.md,
-      }}>
-        <span style={{
-          fontSize:     '0.72rem',
-          fontWeight:   '600',
-          color:        COLORS.indigoLight,
-          background:   COLORS.indigoDim,
-          border:       `1px solid rgba(99,102,241,0.2)`,
-          padding:      '3px 10px',
-          borderRadius: RADII.full,
-          letterSpacing: '0.02em',
+        {/* Row 2 — REWARD (biggest element) + time */}
+        <div style={{
+          display:        'flex',
+          alignItems:     'baseline',
+          gap:            '12px',
+          marginBottom:   SPACING.sm,
         }}>
-          {task.category}
-        </span>
-        <span style={{
-          fontFamily:  FONTS.mono,
-          fontSize:    '1.1rem',
-          fontWeight:  '700',
-          color:       COLORS.emerald,
-          letterSpacing: '-0.02em',
+          <span style={{
+            fontFamily:    FONTS.mono,
+            fontSize:      '2rem',
+            fontWeight:    '800',
+            color:         COLORS.emerald,
+            letterSpacing: '-0.03em',
+            lineHeight:    1,
+          }}>
+            {task.piReward}π
+          </span>
+          <span style={{
+            fontSize:   '0.82rem',
+            color:      COLORS.textMuted,
+            fontWeight: '500',
+          }}>
+            in ~{task.timeEstimateMin} min
+          </span>
+        </div>
+
+        {/* Row 3 — Title */}
+        <p style={{
+          margin:     `0 0 ${SPACING.md}`,
+          fontSize:   '0.9rem',
+          fontWeight: '500',
+          color:      COLORS.textSecondary,
+          lineHeight: 1.4,
+          overflow:   'hidden',
+          display:    '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical' as any,
         }}>
-          {task.piReward}π
-        </span>
-      </div>
+          {task.title}
+        </p>
 
-      {/* Title */}
-      <h3 style={{
-        margin:       `0 0 ${SPACING.md}`,
-        fontSize:     '0.95rem',
-        fontWeight:   '600',
-        color:        COLORS.textPrimary,
-        lineHeight:   '1.4',
-      }}>
-        {task.title}
-      </h3>
+        {/* Row 4 — action row */}
+        <div style={{
+          display:        'flex',
+          alignItems:     'center',
+          justifyContent: 'space-between',
+        }}>
+          {/* Social proof */}
+          <div style={{
+            fontSize: '0.72rem',
+            color:    COLORS.textMuted,
+          }}>
+            {spotsLeft > 2
+              ? `${task.slotsAvailable - spotsLeft} Pioneers already in`
+              : spotsLeft === 0
+              ? '✗ Full'
+              : `${spotsLeft} spot${spotsLeft > 1 ? 's' : ''} remaining`
+            }
+          </div>
 
-      {/* Divider */}
-      <div style={{
-        height:       '1px',
-        background:   COLORS.border,
-        margin:       `0 0 ${SPACING.md}`,
-      }} />
-
-      {/* Meta row */}
-      <div style={{
-        display:  'flex',
-        gap:      SPACING.lg,
-        fontSize: '0.775rem',
-        color:    COLORS.textMuted,
-      }}>
-        <span>⏱ ~{task.timeEstimateMin}m</span>
-        <span>👥 {task.slotsRemaining} left</span>
-        <span style={{ marginLeft: 'auto', color: COLORS.textSecondary }}>
-          {task.employer?.piUsername}
-        </span>
+          {/* Claim button */}
+          <div style={{
+            padding:      '6px 16px',
+            background:   spotsLeft === 0 ? COLORS.bgElevated : color,
+            color:        spotsLeft === 0 ? COLORS.textMuted : 'white',
+            borderRadius: RADII.md,
+            fontSize:     '0.78rem',
+            fontWeight:   '700',
+            letterSpacing: '0.02em',
+            transition:   'all 0.15s ease',
+            whiteSpace:   'nowrap' as const,
+          }}>
+            {spotsLeft === 0 ? 'Full' : 'Claim →'}
+          </div>
+        </div>
       </div>
     </Link>
   )

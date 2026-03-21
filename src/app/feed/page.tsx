@@ -36,7 +36,7 @@ export default function FeedPage() {
         fontFamily:     FONTS.sans,
       }}>
         <p style={{ color: COLORS.textSecondary, fontSize: '1rem' }}>
-          Sign in to browse available tasks
+          Sign in to see earning opportunities
         </p>
         <button
           onClick={authenticate}
@@ -109,20 +109,45 @@ export default function FeedPage() {
           alignItems:     'center',
           marginBottom:   '1.5rem',
         }}>
-          <div>
-            <h1 style={{
-              margin:     '0 0 0.25rem',
-              fontSize:   '1.5rem',
-              fontWeight: '700',
+          <div style={{
+            marginBottom: SPACING.lg,
+          }}>
+            <div style={{
+              display:      'flex',
+              alignItems:   'center',
+              gap:          SPACING.sm,
+              marginBottom: '4px',
             }}>
-              Find Work
-            </h1>
+              <h1 style={{
+                margin:        0,
+                fontSize:      '1.4rem',
+                fontWeight:    '800',
+                color:         COLORS.textPrimary,
+                letterSpacing: '-0.02em',
+              }}>
+                Opportunities
+              </h1>
+              {!isLoading && tasks.length > 0 && (
+                <span style={{
+                  padding:      '2px 8px',
+                  background:   'rgba(16,185,129,0.1)',
+                  border:       '1px solid rgba(16,185,129,0.2)',
+                  borderRadius: RADII.full,
+                  fontSize:     '0.72rem',
+                  fontWeight:   '700',
+                  color:        COLORS.emerald,
+                  fontFamily:   FONTS.mono,
+                }}>
+                  {tasks.length} live
+                </span>
+              )}
+            </div>
             <p style={{
-              margin:   '0',
+              margin:   0,
+              fontSize: '0.85rem',
               color:    COLORS.textMuted,
-              fontSize: '0.875rem',
             }}>
-              Your reputation score: {user.reputationScore}
+              Pick a task, complete it, earn Pi instantly
             </p>
           </div>
           <button
@@ -183,10 +208,10 @@ export default function FeedPage() {
               🔍
             </div>
             <h3 style={{ margin: '0 0 0.5rem', color: COLORS.textPrimary }}>
-              No tasks found
+              No opportunities right now
             </h3>
             <p style={{ color: COLORS.textMuted, margin: '0', fontSize: '0.875rem' }}>
-              Try adjusting your filters or check back soon.
+              New tasks are posted daily. Check back soon or adjust your filters.
             </p>
           </div>
         )}
@@ -226,9 +251,9 @@ export default function FeedPage() {
               marginTop:    '1rem',
             }}
           >
-            {isLoading 
-              ? 'Loading...' 
-              : `Load more (${pagination.total - tasks.length} remaining)`
+            {isLoading
+              ? 'Finding more opportunities...'
+              : `See ${pagination.total - tasks.length} more opportunities`
             }
           </button>
         )}
