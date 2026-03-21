@@ -1,0 +1,418 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { usePiAuth }    from '@/hooks/use-pi-auth'
+import { Navigation }   from '@/components/Navigation'
+import {
+  COLORS, FONTS, RADII, SPACING, SHADOWS
+} from '@/lib/design/tokens'
+
+interface ProfileData {
+  piUsername:     string
+  piUid:          string
+  walletAddress:  string | null
+  reputationScore: number
+  reputationLevel: string
+  kycLevel:       number
+  totalEarnings:  number
+  totalTasksCompleted: number
+  createdAt:      string
+}
+
+export default function ProfilePage() {
+  const { user } = usePiAuth()
+
+  const [profile,       setProfile]       = useState<ProfileData | null>(null)
+  const [isLoading,     setIsLoading]     = useState(true)
+  const [walletInput,   setWalletInput]   = useState('')
+  const [isSaving,      setIsSaving]      = useState(false)
+  const [saveMessage,   setSaveMessage]   = useState<{
+    type: 'success' | 'error', text: string
+  } | null>(null)
+  const [hasMounted,    setHasMounted]    = useState(false)
+
+  useEffect(() => { setHasMounted(true) }, [])
+
+  useEffect(() => {
+    if (!user?.piUid || !hasMounted) return
+    fetchProfile()
+  }, [user?.piUid, hasMounted])
+
+  const fetchProfile = async () => {
+    setIsLoading(true)
+    try {
+      const res = await fetch(
+        `${window.location.origin}/api/profile`,
+        { headers: { 'x-pi-uid': user!.piUid } }
+      )
+      const data = await res.json()
+      if (data.profile) {
+        setProfile(data.profile)
+        setWalletInput(data.profile.walletAddress ?? '')
+      }
+    } catch (err) {
+      console.error('Failed to fetch profile:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleSaveWallet = async () => {
+    if (!user?.piUid || !walletInput.trim()) return
+    setIsSaving(true)
+    setSaveMessage(null)
+
+    try {
+      const res = await fetch(
+        `${window.location.origin}/api/profile/wallet`,
+        {
+          method:  'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-pi-uid':     user.piUid,
+          },
+          body: JSON.stringify({
+            walletAddress: walletInput.trim(),
+          }),
+        }
+      )
+      const data = await res.json()
+
+      if (data.success) {
+        setSaveMessage({
+          type: 'success',
+          text: '✓ Wallet address saved. Future payments will go to this address.',
+        })
+        setProfile(prev => prev
+          ? { ...prev, walletAddress: walletInput.trim() }
+          : prev
+        )
+      } else {
+        setSaveMessage({
+          type: 'error',
+          text: data.error ?? 'Failed to save wallet address',
+        })
+      }
+    } catch (err) {
+      setSaveMessage({
+        type: 'error',
+        text: 'Network error. Please try again.',
+      })
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  if (!hasMounted) return null
+
+  if (!user) {
+    return (
+      <div style={{
+        minHeight:  '100vh',
+        background: COLORS.bgBase,
+        display:    'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <p style={{ color: COLORS.textMuted }}>
+          Please log in to view your profile.
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <div style={{
+      minHeight:  '100vh',
+      background: COLORS.bgBase,
+      fontFamily: FONTS.sans,
+      color:      COLORS.textPrimary,
+    }}>
+      <Navigation currentPage="profile" />
+
+      <main className="page-main" style={{ maxWidth: '600px' }}>
+
+        {/* Header */}
+        <div style={{ marginBottom: SPACING.xl }}>
+          <h1 style={{
+            margin:     '0 0 0.25rem',
+            fontSize:   '1.5rem',
+            fontWeight: '700',
+          }}>
+            Your Profile
+          </h1>
+          <p style={{
+            margin:  0,
+            color:   COLORS.textMuted,
+            fontSize: '0.875rem',
+          }}>
+            Manage your Pi identity and payment settings
+          </p>
+        </div>
+
+        {isLoading ? (
+          <div style={{
+            background:   COLORS.bgSurface,
+            border:       `1px solid ${COLORS.border}`,
+            borderRadius: RADII.xl,
+            padding:      SPACING.xl,
+            color:        COLORS.textMuted,
+            textAlign:    'center' as const,
+          }}>
+            Loading profile...
+          </div>
+        ) : (
+          <>
+            {/* Identity Card */}
+            <div className="nexus-card" style={{ marginBottom: SPACING.lg }}>
+              <div style={{
+                fontSize:      '0.65rem',
+                fontWeight:    '600',
+                color:         COLORS.textMuted,
+                textTransform: 'uppercase' as const,
+                letterSpacing: '0.1em',
+                marginBottom:  SPACING.md,
+              }}>
+                Pi Identity
+              </div>
+
+              {/* Avatar + Username */}
+              <div style={{
+                display:     'flex',
+                alignItems:  'center',
+                gap:         SPACING.md,
+                marginBottom: SPACING.md,
+              }}>
+                <div style={{
+                  width:          '56px',
+                  height:         '56px',
+                  borderRadius:   RADII.lg,
+                  background:     `linear-gradient(135deg, ${COLORS.indigo}, ${COLORS.indigoLight})`,
+                  display:        'flex',
+                  alignItems:     'center',
+                  justifyContent: 'center',
+                  fontSize:       '1.5rem',
+                  fontWeight:     '700',
+                  color:          'white',
+                  flexShrink:     0,
+                }}>
+                  {user.piUsername.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <div style={{
+                    fontSize:   '1.1rem',
+                    fontWeight: '700',
+                    color:      COLORS.textPrimary,
+                  }}>
+                    {user.piUsername}
+                  </div>
+                  <div style={{
+                    fontSize:   '0.8rem',
+                    color:      COLORS.textMuted,
+                    fontFamily: FONTS.mono,
+                  }}>
+                    {user.reputationLevel} · {user.reputationScore} REP
+                  </div>
+                </div>
+              </div>
+
+              {/* Stats row */}
+              <div style={{
+                display:             'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap:                 SPACING.sm,
+              }}>
+                {[
+                  {
+                    label: 'KYC Level',
+                    value: profile?.kycLevel ?? 0,
+                  },
+                  {
+                    label: 'Tasks Done',
+                    value: profile?.totalTasksCompleted ?? 0,
+                  },
+                  {
+                    label: 'Pi Earned',
+                    value: `${Number(profile?.totalEarnings ?? 0).toFixed(2)}π`,
+                  },
+                ].map(stat => (
+                  <div key={stat.label} style={{
+                    background:   COLORS.bgElevated,
+                    border:       `1px solid ${COLORS.border}`,
+                    borderRadius: RADII.md,
+                    padding:      SPACING.sm,
+                    textAlign:    'center' as const,
+                  }}>
+                    <div style={{
+                      fontSize:   '1.1rem',
+                      fontWeight: '700',
+                      color:      COLORS.textPrimary,
+                      fontFamily: FONTS.mono,
+                    }}>
+                      {stat.value}
+                    </div>
+                    <div style={{
+                      fontSize: '0.65rem',
+                      color:    COLORS.textMuted,
+                      marginTop: '2px',
+                    }}>
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Wallet Address Card */}
+            <div className="nexus-card">
+              <div style={{
+                fontSize:      '0.65rem',
+                fontWeight:    '600',
+                color:         COLORS.textMuted,
+                textTransform: 'uppercase' as const,
+                letterSpacing: '0.1em',
+                marginBottom:  SPACING.sm,
+              }}>
+                Payment Wallet
+              </div>
+
+              <p style={{
+                margin:   `0 0 ${SPACING.md}`,
+                fontSize: '0.82rem',
+                color:    COLORS.textSecondary,
+                lineHeight: 1.5,
+              }}>
+                This is where you receive Pi payments for completed tasks.
+                Keep it accurate — payments sent to wrong addresses cannot
+                be recovered.
+              </p>
+
+              {/* Current wallet status */}
+              {profile?.walletAddress ? (
+                <div style={{
+                  padding:      SPACING.sm,
+                  background:   'rgba(16,185,129,0.08)',
+                  border:       '1px solid rgba(16,185,129,0.2)',
+                  borderRadius: RADII.md,
+                  marginBottom: SPACING.md,
+                  display:      'flex',
+                  alignItems:   'center',
+                  gap:          SPACING.sm,
+                }}>
+                  <span style={{ color: COLORS.emerald }}>✓</span>
+                  <span style={{
+                    fontSize:   '0.72rem',
+                    fontFamily: FONTS.mono,
+                    color:      COLORS.emerald,
+                    wordBreak:  'break-all' as const,
+                  }}>
+                    {profile.walletAddress}
+                  </span>
+                </div>
+              ) : (
+                <div style={{
+                  padding:      SPACING.sm,
+                  background:   'rgba(245,158,11,0.08)',
+                  border:       '1px solid rgba(245,158,11,0.2)',
+                  borderRadius: RADII.md,
+                  marginBottom: SPACING.md,
+                  fontSize:     '0.82rem',
+                  color:        COLORS.amber,
+                }}>
+                  ⚠ No wallet address set. Payments cannot be processed
+                  until you add your Pi wallet address below.
+                </div>
+              )}
+
+              {/* Wallet input */}
+              <div style={{ marginBottom: SPACING.sm }}>
+                <label style={{
+                  display:      'block',
+                  fontSize:     '0.78rem',
+                  fontWeight:   '500',
+                  color:        COLORS.textSecondary,
+                  marginBottom: '6px',
+                }}>
+                  Pi Wallet Address
+                </label>
+                <input
+                  type="text"
+                  value={walletInput}
+                  onChange={e => setWalletInput(e.target.value)}
+                  placeholder="G... (starts with G, 56 characters)"
+                  style={{
+                    width:        '100%',
+                    padding:      '0.75rem',
+                    background:   COLORS.bgElevated,
+                    border:       `1px solid ${COLORS.borderAccent}`,
+                    borderRadius: RADII.md,
+                    color:        COLORS.textPrimary,
+                    fontSize:     '0.8rem',
+                    fontFamily:   FONTS.mono,
+                    outline:      'none',
+                    boxSizing:    'border-box' as const,
+                  }}
+                />
+                <p style={{
+                  margin:   '6px 0 0',
+                  fontSize: '0.72rem',
+                  color:    COLORS.textMuted,
+                }}>
+                  Find your wallet address in Pi Wallet → Settings →
+                  Wallet Address. It starts with G and is 56 characters long.
+                </p>
+              </div>
+
+              {/* Save message */}
+              {saveMessage && (
+                <div style={{
+                  padding:      `${SPACING.xs} ${SPACING.sm}`,
+                  background:   saveMessage.type === 'success'
+                    ? 'rgba(16,185,129,0.08)'
+                    : 'rgba(239,68,68,0.08)',
+                  border:       `1px solid ${saveMessage.type === 'success'
+                    ? 'rgba(16,185,129,0.2)'
+                    : 'rgba(239,68,68,0.2)'}`,
+                  borderRadius: RADII.md,
+                  marginBottom: SPACING.sm,
+                  fontSize:     '0.8rem',
+                  color:        saveMessage.type === 'success'
+                    ? COLORS.emerald
+                    : COLORS.red,
+                }}>
+                  {saveMessage.text}
+                </div>
+              )}
+
+              {/* Save button */}
+              <button
+                onClick={handleSaveWallet}
+                disabled={
+                  isSaving ||
+                  !walletInput.trim() ||
+                  walletInput.trim() === profile?.walletAddress
+                }
+                style={{
+                  width:        '100%',
+                  padding:      '0.875rem',
+                  background:   isSaving ? COLORS.bgElevated
+                    : `linear-gradient(180deg, ${COLORS.indigo} 0%, ${COLORS.indigoDark ?? COLORS.indigo} 100%)`,
+                  border:       'none',
+                  borderRadius: RADII.md,
+                  color:        isSaving ? COLORS.textMuted : 'white',
+                  fontSize:     '0.9rem',
+                  fontWeight:   '600',
+                  cursor:       isSaving ? 'not-allowed' : 'pointer',
+                  fontFamily:   FONTS.sans,
+                  transition:   'all 0.15s ease',
+                }}
+              >
+                {isSaving ? 'Saving...' : 'Save Wallet Address'}
+              </button>
+            </div>
+          </>
+        )}
+      </main>
+    </div>
+  )
+}

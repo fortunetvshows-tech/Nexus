@@ -7,7 +7,7 @@ import { NotificationBell }    from '@/components/NotificationBell'
 import { COLORS, FONTS }       from '@/lib/design/tokens'
 
 interface NavigationProps {
-  currentPage: 'home' | 'feed' | 'employer' | 'employer-dashboard' | 'dashboard' | 'arbitrate' | 'analytics' | 'admin'
+  currentPage: 'home' | 'feed' | 'employer' | 'employer-dashboard' | 'dashboard' | 'arbitrate' | 'analytics' | 'admin' | 'profile'
 }
 
 export function Navigation({ currentPage }: NavigationProps) {
@@ -226,6 +226,23 @@ export function Navigation({ currentPage }: NavigationProps) {
                         }}
                       >
                         📈 Analytics
+                      </Link>
+                      <Link
+                        href="/profile"
+                        onClick={() => setProfileOpen(false)}
+                        style={{
+                          display:        'flex',
+                          alignItems:     'center',
+                          gap:            '8px',
+                          padding:        '0.5rem 0.625rem',
+                          borderRadius:   '8px',
+                          fontSize:       '0.82rem',
+                          color:          COLORS.textSecondary,
+                          textDecoration: 'none',
+                          transition:     'background 0.15s',
+                        }}
+                      >
+                        👤 Profile & Wallet
                       </Link>
 
                       {user?.isAdmin && (
