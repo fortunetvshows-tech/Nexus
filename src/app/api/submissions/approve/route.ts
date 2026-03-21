@@ -105,20 +105,19 @@ export async function POST(
     // Get worker's wallet address or Pi UID for A2U payment
     const { data: worker } = await supabaseAdmin
       .from('User')
-      .select('piUid, walletAddress')
+      .select('piUid, piUsername, walletAddress')
       .eq('id', submission.workerId)
       .single()
 
     // A2U payments require walletAddress (from wallet_address scope)
-    // Fall back to piUid if walletAddress not yet captured
-    const workerPiUid = worker?.walletAddress ?? worker?.piUid ?? null
+    const workerPiUid = worker?.walletAddress ?? null
     const netAmount = Number(submission.agreedReward) * 0.95 // 5% platform fee
 
     if (!workerPiUid) {
       return NextResponse.json({
         success:     true,
         paymentSent: false,
-        warning:     'Worker has not granted wallet_address scope yet. They must log in again before payment can be processed.',
+        warning:     `Worker ${worker?.piUsername} has not set up their wallet address. They must log into Nexus once to grant wallet_address permission before payment can be processed.`,
       })
     }
 

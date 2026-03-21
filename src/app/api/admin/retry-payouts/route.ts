@@ -60,9 +60,16 @@ export async function POST(req: NextRequest) {
         continue
       }
 
-      const workerPiUid = worker.walletAddress ?? worker.piUid
+      const workerPiUid = worker.walletAddress ?? null
       if (!workerPiUid) {
-        results.push({ txId, success: false, error: 'WORKER_WALLET_ADDRESS_NOT_FOUND — worker must log in again to grant wallet_address scope' })
+        results.push({
+          txId:    txId,
+          worker:  worker.piUsername,
+          amount:  Number(tx.netAmount),
+          success: false,
+          piTxid:  null,
+          error:   `Worker ${worker.piUsername} has no wallet address. They must log into Nexus first.`,
+        })
         continue
       }
 
