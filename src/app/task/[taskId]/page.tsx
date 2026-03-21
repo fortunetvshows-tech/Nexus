@@ -189,129 +189,179 @@ export default function TaskDetailPage({
 
       <main className="page-main">
 
-        <Link href="/dashboard" style={{
+        <Link href="/feed" style={{
           color: COLORS.textMuted, fontSize: '0.875rem',
           textDecoration: 'none', display: 'inline-block',
           marginBottom: '1.5rem',
         }}>
-          ← Back to dashboard
+          ← Back to opportunities
         </Link>
 
-        {/* Task header */}
+        {/* Task header — earning-first layout */}
         <div style={{
-          background: COLORS.bgSurface, border: `1px solid ${COLORS.border}`,
-          borderRadius: '16px', padding: '1.5rem',
-          marginBottom: '1rem',
+          background:   COLORS.bgSurface,
+          border:       `1px solid ${COLORS.border}`,
+          borderRadius: RADII.xl,
+          padding:      SPACING.xl,
+          marginBottom: SPACING.md,
         }}>
+          {/* Reward — hero element */}
           <div style={{
-            display: 'flex', justifyContent: 'space-between',
-            alignItems: 'flex-start', marginBottom: '1rem',
+            textAlign:    'center' as const,
+            marginBottom: SPACING.lg,
+            paddingBottom: SPACING.lg,
+            borderBottom: `1px solid ${COLORS.border}`,
           }}>
-            <div style={{ flex: 1, marginRight: '1rem' }}>
-              <div style={{
-                fontSize: '0.75rem', color: COLORS.textMuted,
-                textTransform: 'uppercase', letterSpacing: '0.05em',
-                marginBottom: '0.4rem',
-              }}>
-                {task.category}
-              </div>
-              <h1 style={{
-                margin: '0', fontSize: '1.3rem',
-                fontWeight: '700', lineHeight: '1.4',
-              }}>
-                {task.title}
-              </h1>
+            <div style={{
+              fontSize:      '0.72rem',
+              fontWeight:    '700',
+              color:         COLORS.emerald,
+              textTransform: 'uppercase' as const,
+              letterSpacing: '0.15em',
+              marginBottom:  '8px',
+            }}>
+              You will earn
             </div>
             <div style={{
-              fontSize: '2rem', fontWeight: '800',
-              background: GRADIENTS.indigo,
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              flexShrink: 0,
+              fontFamily:    FONTS.mono,
+              fontSize:      'clamp(3rem, 10vw, 4rem)',
+              fontWeight:    '800',
+              color:         COLORS.emerald,
+              letterSpacing: '-0.04em',
+              lineHeight:    1,
             }}>
               {task.piReward}π
             </div>
+            <div style={{
+              fontSize:   '0.85rem',
+              color:      COLORS.textMuted,
+              marginTop:  '6px',
+            }}>
+              in ~{task.timeEstimateMin} minutes · paid on approval
+            </div>
           </div>
 
-          {/* Stats */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '0.75rem',
-            padding: '1rem 0',
-            borderTop: `1px solid ${COLORS.border}`,
-            borderBottom: `1px solid ${COLORS.border}`,
-            margin: '1rem 0',
+          {/* Title */}
+          <h1 style={{
+            margin:        `0 0 ${SPACING.md}`,
+            fontSize:      '1.15rem',
+            fontWeight:    '600',
+            color:         COLORS.textPrimary,
+            lineHeight:    1.4,
           }}>
-            {[
-              { label: 'Slots left',  value: `${task.slotsRemaining}/${task.slotsAvailable}` },
-              { label: 'Est. time',   value: `~${task.timeEstimateMin}min` },
-              { label: 'Deadline',    value: deadlineLabel },
-            ].map(s => (
-              <div key={s.label} style={{ textAlign: 'center' }}>
-                <div style={{
-                  fontSize: '0.75rem', color: COLORS.textMuted,
-                  marginBottom: '0.25rem',
-                }}>
-                  {s.label}
-                </div>
-                <div style={{
-                  fontSize: '0.9rem', fontWeight: '600',
-                  color: '#e5e7eb',
-                }}>
-                  {s.value}
-                </div>
-              </div>
-            ))}
+            {task.title}
+          </h1>
+
+          {/* Urgency bar */}
+          <div style={{
+            display:        'flex',
+            gap:            SPACING.sm,
+            flexWrap:       'wrap' as const,
+            marginBottom:   SPACING.lg,
+          }}>
+            <span style={{
+              padding:      '4px 10px',
+              background:   task.slotsRemaining <= 2
+                ? 'rgba(239,68,68,0.1)'
+                : 'rgba(16,185,129,0.1)',
+              border:       `1px solid ${task.slotsRemaining <= 2
+                ? 'rgba(239,68,68,0.2)'
+                : 'rgba(16,185,129,0.2)'}`,
+              borderRadius: RADII.full,
+              fontSize:     '0.72rem',
+              fontWeight:   '700',
+              color:        task.slotsRemaining <= 2
+                ? '#EF4444'
+                : COLORS.emerald,
+            }}>
+              {task.slotsRemaining === 0
+                ? '✗ No spots left'
+                : task.slotsRemaining === 1
+                ? '🔥 Last spot!'
+                : `⚡ ${task.slotsRemaining} spots left`
+              }
+            </span>
+            <span style={{
+              padding:      '4px 10px',
+              background:   COLORS.bgElevated,
+              border:       `1px solid ${COLORS.border}`,
+              borderRadius: RADII.full,
+              fontSize:     '0.72rem',
+              color:        COLORS.textMuted,
+            }}>
+              ⏱ {deadlineLabel}
+            </span>
+            <span style={{
+              padding:      '4px 10px',
+              background:   COLORS.bgElevated,
+              border:       `1px solid ${COLORS.border}`,
+              borderRadius: RADII.full,
+              fontSize:     '0.72rem',
+              color:        COLORS.textMuted,
+            }}>
+              {task.category}
+            </span>
           </div>
 
-          {/* Description */}
-          <div style={{ marginBottom: '1rem' }}>
-            <h3 style={{
-              margin: '0 0 0.5rem', fontSize: '0.8rem',
-              fontWeight: '500', color: '#6b7280',
-              textTransform: 'uppercase', letterSpacing: '0.05em',
+          {/* What you need to do */}
+          <div style={{ marginBottom: SPACING.md }}>
+            <div style={{
+              fontSize:      '0.68rem',
+              fontWeight:    '700',
+              color:         COLORS.textMuted,
+              textTransform: 'uppercase' as const,
+              letterSpacing: '0.1em',
+              marginBottom:  SPACING.sm,
             }}>
-              Description
-            </h3>
+              What you need to do
+            </div>
             <p style={{
-              margin: '0', fontSize: '0.9rem',
-              color: '#d1d5db', lineHeight: '1.6',
-            }}>
-              {task.description}
-            </p>
-          </div>
-
-          {/* Instructions */}
-          <div>
-            <h3 style={{
-              margin: '0 0 0.5rem', fontSize: '0.8rem',
-              fontWeight: '500', color: COLORS.indigoLight,
-              textTransform: 'uppercase', letterSpacing: '0.05em',
-            }}>
-              Instructions
-            </h3>
-            <p style={{
-              margin: '0', fontSize: '0.9rem',
-              color: '#d1d5db', lineHeight: '1.6',
-              whiteSpace: 'pre-wrap',
+              margin:     0,
+              fontSize:   '0.9rem',
+              color:      COLORS.textSecondary,
+              lineHeight: 1.6,
             }}>
               {task.instructions}
             </p>
           </div>
 
-          {/* Employer */}
+          {/* Context — collapsed by default */}
+          {task.description && (
+            <details style={{ marginTop: SPACING.sm }}>
+              <summary style={{
+                fontSize:   '0.78rem',
+                color:      COLORS.textMuted,
+                cursor:     'pointer',
+                listStyle:  'none',
+                userSelect: 'none' as const,
+              }}>
+                + More context
+              </summary>
+              <p style={{
+                margin:     `${SPACING.sm} 0 0`,
+                fontSize:   '0.85rem',
+                color:      COLORS.textMuted,
+                lineHeight: 1.6,
+              }}>
+                {task.description}
+              </p>
+            </details>
+          )}
+
+          {/* Posted by — minimal */}
           <div style={{
-            marginTop: '1rem', paddingTop: '1rem',
-            borderTop: '1px solid #1f2937',
-            fontSize: '0.8rem', color: '#6b7280',
+            marginTop:  SPACING.md,
+            paddingTop: SPACING.md,
+            borderTop:  `1px solid ${COLORS.border}`,
+            fontSize:   '0.72rem',
+            color:      COLORS.textMuted,
           }}>
             Posted by{' '}
-            <span style={{ color: '#9ca3af', fontWeight: '500' }}>
+            <span style={{ color: COLORS.textSecondary, fontWeight: '500' }}>
               {task.employer?.piUsername}
             </span>
             {' · '}
-            <span style={{ color: '#7B3FE4' }}>
+            <span style={{ color: COLORS.indigo }}>
               {task.employer?.reputationLevel}
             </span>
           </div>
@@ -359,19 +409,19 @@ export default function TaskDetailPage({
               }}
             >
               {isClaiming
-                ? 'Claiming...'
+                ? '⚡ Securing your spot...'
                 : !canClaim
                 ? task.slotsRemaining === 0
-                  ? 'No slots remaining'
-                  : `Need ${task.minReputationReq} reputation`
-                : `Claim slot — earn ${task.piReward}π`}
+                  ? 'All spots taken'
+                  : `Need ${task.minReputationReq} reputation to unlock`
+                : `Start earning ${task.piReward}π now →`}
             </button>
 
             <p style={{
               margin: '0.75rem 0 0', fontSize: '0.8rem',
               color: '#6b7280', textAlign: 'center',
             }}>
-              You have {task.timeEstimateMin} minutes to complete after claiming
+              Complete in ~{task.timeEstimateMin} min · Pi sent directly to your wallet on approval
             </p>
           </div>
         )}
@@ -391,7 +441,7 @@ export default function TaskDetailPage({
               <span style={{
                 fontSize: '0.85rem', color: '#9ca3af', fontWeight: '500',
               }}>
-                Slot claimed ✓
+                🔒 Spot secured — complete to earn {task.piReward}π
               </span>
               <span style={{
                 fontSize: '0.85rem', fontWeight: '600',
@@ -728,8 +778,8 @@ export default function TaskDetailPage({
               }}
             >
               {isSubmitting
-                ? 'Submitting...'
-                : `Submit proof — earn ${task.piReward}π`}
+                ? '⏳ Submitting your work...'
+                : `Submit & earn ${task.piReward}π →`}
             </button>
           </div>
         )}
@@ -737,55 +787,113 @@ export default function TaskDetailPage({
         {/* Success state */}
         {isSubmitted && (
           <div style={{
-            background: '#111827', border: '1px solid #16a34a',
-            borderRadius: '16px', padding: '1.5rem',
-            textAlign: 'center',
+            background:   COLORS.bgSurface,
+            border:       `1px solid rgba(16,185,129,0.4)`,
+            borderRadius: RADII.xl,
+            padding:      SPACING.xl,
+            textAlign:    'center' as const,
           }}>
+            {/* Success icon */}
             <div style={{
-              width: '60px', height: '60px', borderRadius: '50%',
-              background: '#14532d', border: '2px solid #16a34a',
-              margin: '0 auto 1rem', display: 'flex',
-              alignItems: 'center', justifyContent: 'center',
-              fontSize: '1.5rem',
+              width:          '72px',
+              height:         '72px',
+              borderRadius:   '50%',
+              background:     'rgba(16,185,129,0.1)',
+              border:         '2px solid rgba(16,185,129,0.4)',
+              margin:         `0 auto ${SPACING.md}`,
+              display:        'flex',
+              alignItems:     'center',
+              justifyContent: 'center',
+              fontSize:       '2rem',
             }}>
-              ✓
+              ✅
             </div>
-            <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.1rem' }}>
-              Proof submitted!
-            </h3>
-            <p style={{
-              color: '#9ca3af', fontSize: '0.875rem',
-              margin: '0 0 1.25rem',
+
+            <h3 style={{
+              margin:     `0 0 ${SPACING.xs}`,
+              fontSize:   '1.3rem',
+              fontWeight: '800',
+              color:      COLORS.textPrimary,
             }}>
-              Waiting for employer review.
-              Auto-approved in 72 hours if not reviewed.
+              Work submitted!
+            </h3>
+
+            <p style={{
+              color:    COLORS.textMuted,
+              fontSize: '0.85rem',
+              margin:   `0 0 ${SPACING.lg}`,
+            }}>
+              You will receive{' '}
+              <span style={{
+                color:      COLORS.emerald,
+                fontWeight: '700',
+                fontFamily: FONTS.mono,
+              }}>
+                {agreedReward ?? task.piReward}π
+              </span>
+              {' '}when your employer approves.
+              Auto-approved in 72h if no response.
             </p>
+
+            {/* Earnings preview */}
             <div style={{
-              background: '#0f172a', borderRadius: '8px',
-              padding: '0.875rem', marginBottom: '1.25rem',
+              padding:      SPACING.md,
+              background:   'rgba(16,185,129,0.06)',
+              border:       '1px solid rgba(16,185,129,0.15)',
+              borderRadius: RADII.lg,
+              marginBottom: SPACING.lg,
             }}>
               <div style={{
-                fontSize: '0.75rem', color: '#6b7280',
-                marginBottom: '0.25rem',
+                fontSize:   '0.68rem',
+                color:      COLORS.textMuted,
+                fontWeight: '600',
+                textTransform: 'uppercase' as const,
+                letterSpacing: '0.1em',
+                marginBottom: '6px',
               }}>
-                Potential earnings
+                Pending earnings
               </div>
               <div style={{
-                fontSize: '1.5rem', fontWeight: '700',
-                background: 'linear-gradient(135deg, #7B3FE4, #A855F7)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+                fontFamily:    FONTS.mono,
+                fontSize:      '2rem',
+                fontWeight:    '800',
+                color:         COLORS.emerald,
+                letterSpacing: '-0.03em',
               }}>
                 {agreedReward ?? task.piReward}π
               </div>
             </div>
-            <Link href="/dashboard" style={{
-              display: 'block', padding: '0.875rem',
-              background: 'transparent', border: '1px solid #374151',
-              borderRadius: '10px', color: '#9ca3af',
-              textDecoration: 'none', fontSize: '0.9rem',
-            }}>
-              Back to dashboard
+
+            {/* Next action — the loop */}
+            <Link
+              href="/feed"
+              style={{
+                display:        'block',
+                padding:        SPACING.md,
+                background:     `linear-gradient(135deg, ${COLORS.indigo}, #4338CA)`,
+                color:          'white',
+                borderRadius:   RADII.lg,
+                textDecoration: 'none',
+                fontSize:       '0.95rem',
+                fontWeight:     '700',
+                marginBottom:   SPACING.sm,
+                boxShadow:      '0 0 20px rgba(99,102,241,0.3)',
+              }}
+            >
+              Find next opportunity →
+            </Link>
+
+            <Link
+              href="/dashboard"
+              style={{
+                display:        'block',
+                padding:        SPACING.sm,
+                color:          COLORS.textMuted,
+                textDecoration: 'none',
+                fontSize:       '0.82rem',
+              }}
+            >
+              View my earnings
             </Link>
           </div>
         )}
