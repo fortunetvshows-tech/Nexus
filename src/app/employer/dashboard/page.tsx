@@ -353,6 +353,18 @@ export default function EmployerDashboardPage() {
                   />
                 ),
               },
+              {
+                id:       'stat-pending',
+                children: (
+                  <EmployerStatCard
+                    label="Pending Reviews"
+                    value={pending.length}
+                    sub="awaiting review"
+                    color={COLORS.amber}
+                    icon="⏳"
+                  />
+                ),
+              },
 
               // ── Row 2: Task performance (wide) + Quick post ──
               {
