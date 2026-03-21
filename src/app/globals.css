@@ -370,3 +370,83 @@ section[id] {
     padding: 0 0 1.5rem;
   }
 }
+
+/* ── Modern Layout System ─────────────────────────────────── */
+
+/* Sticky top bar height compensation */
+:root {
+  --topbar-height: 60px;
+}
+
+/* Page content max width — centered feed */
+.page-main {
+  max-width:  900px !important;
+  margin:     0 auto !important;
+  padding:    calc(var(--topbar-height) + 1.5rem) 1rem 5rem !important;
+}
+
+/* Glass card effect */
+.nexus-card {
+  background:    rgba(17, 24, 39, 0.8) !important;
+  border:        1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 20px !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  box-shadow:    0 4px 24px rgba(0, 0, 0, 0.3),
+                 0 1px 0 rgba(255,255,255,0.05) inset !important;
+  transition:    transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.nexus-card:hover {
+  transform:  translateY(-2px) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+              0 1px 0 rgba(255,255,255,0.08) inset !important;
+}
+
+/* Breathing room between sections */
+.section-gap {
+  margin-top:    3rem;
+  margin-bottom: 3rem;
+}
+
+/* Floating Action Button */
+.fab {
+  position:       fixed;
+  bottom:         88px;
+  right:          1.5rem;
+  width:          56px;
+  height:         56px;
+  border-radius:  50%;
+  background:     linear-gradient(135deg, #6366F1, #4338CA);
+  color:          white;
+  font-size:      1.5rem;
+  display:        flex;
+  align-items:    center;
+  justify-content: center;
+  box-shadow:     0 4px 20px rgba(99,102,241,0.5);
+  cursor:         pointer;
+  border:         none;
+  z-index:        150;
+  transition:     transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+}
+
+.fab:hover {
+  transform:  scale(1.08);
+  box-shadow: 0 6px 28px rgba(99,102,241,0.6);
+}
+
+/* Big typography utility */
+.earn-hero {
+  font-size:     clamp(2rem, 6vw, 3.5rem);
+  font-weight:   800;
+  letter-spacing: -0.03em;
+  line-height:   1.1;
+}
+
+/* Hide bottom nav spacer on desktop */
+@media (min-width: 769px) {
+  .page-main {
+    padding-bottom: 2rem !important;
+  }
+}

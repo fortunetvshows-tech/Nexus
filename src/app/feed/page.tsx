@@ -258,6 +258,13 @@ export default function FeedPage() {
           </button>
         )}
 
+        {/* Floating Action Button — quick access to post */}
+        {user?.isAdmin && (
+          <a href="/employer" className="fab" title="Post an opportunity">
+            ✚
+          </a>
+        )}
+
       </main>
     </div>
   )
