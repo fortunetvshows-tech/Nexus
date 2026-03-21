@@ -277,7 +277,7 @@ export default function EmployerDashboardPage() {
               fontWeight:    '700',
               letterSpacing: '-0.02em',
             }}>
-              My Tasks
+              Your Opportunities
             </h1>
           </div>
           <Link
@@ -333,7 +333,7 @@ export default function EmployerDashboardPage() {
                 id:       'stat-fillrate',
                 children: (
                   <EmployerStatCard
-                    label="Fill Rate"
+                    label="Pioneers Working"
                     value={`${fillRate}%`}
                     sub={`${summary?.totalSlotsFilled ?? 0} / ${summary?.totalSlotsPosted ?? 0} slots`}
                     color={parseFloat(fillRate) > 50 ? COLORS.emerald : COLORS.amber}

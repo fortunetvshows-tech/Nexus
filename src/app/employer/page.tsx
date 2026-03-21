@@ -159,7 +159,7 @@ export default function EmployerPage() {
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
             }}>
-              My Posted Tasks
+              Your Active Opportunities
             </h2>
             <div style={{
               display:       'flex',
@@ -210,7 +210,7 @@ export default function EmployerPage() {
                       marginLeft:     '1rem',
                     }}
                   >
-                    Review →
+                    Review Work →
                   </Link>
                 </div>
               ))}
@@ -227,10 +227,10 @@ export default function EmployerPage() {
                 fontSize: '1.5rem',
                 fontWeight: '700',
               }}>
-                Post a Task
+                Create an Opportunity
               </h1>
               <p style={{ margin: '0', color: COLORS.textMuted, fontSize: '0.875rem' }}>
-                Define the work, set the reward, and lock Pi in escrow
+                Set the reward, define the work, and reach thousands of Pioneers
               </p>
             </div>
 
@@ -552,7 +552,7 @@ export default function EmployerPage() {
                 marginTop:    '0.5rem',
               }}
             >
-              Review Task →
+              Preview & Publish →
             </button>
           </>
         )}
@@ -562,7 +562,7 @@ export default function EmployerPage() {
           <>
             <div style={{ marginBottom: '2rem' }}>
               <h1 style={{ margin: '0 0 0.5rem', fontSize: '1.5rem', fontWeight: '700' }}>
-                Review Your Task
+                Review Your Opportunity
               </h1>
               <p style={{ margin: '0', color: COLORS.textMuted, fontSize: '0.875rem' }}>
                 Confirm all details before payment
@@ -657,7 +657,7 @@ export default function EmployerPage() {
                   cursor:       isProcessing ? 'not-allowed' : 'pointer',
                 }}
               >
-                Pay {totalCost()}π & Post Task
+                Pay {totalCost()}π & Publish →
               </button>
             </div>
           </>
