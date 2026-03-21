@@ -1,642 +1,709 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import Link                             from 'next/link'
-import { usePiAuth }                    from '@/hooks/use-pi-auth'
-import { ShinyButton }                  from '@/components/ShinyButton'
-import { Marquee }                      from '@/components/Marquee'
-import { COLORS, GRADIENTS }            from '@/lib/design/tokens'
-
-// ── Static data — defined outside component (no re-render) ──
-
+import { useEffect, useState, useCallback } from 'react'
+import { usePiAuth }  from '@/hooks/use-pi-auth'
+import { Navigation } from '@/components/Navigation'
+import { Marquee }    from '@/components/Marquee'
+import {
+  COLORS, FONTS, RADII, SPACING, GRADIENTS
+} from '@/lib/design/tokens'
 import { TASK_CATEGORIES } from '@/lib/config/categories'
 
+// ── Static opportunity previews ──────────────────────────────
+const SAMPLE_OPPORTUNITIES = [
+  {
+    emoji:   '🤖',
+    title:   'Label 10 product images',
+    reward:  '1.50',
+    time:    '10 min',
+    color:   '#6366F1',
+    dim:     'rgba(99,102,241,0.12)',
+  },
+  {
+    emoji:   '🌐',
+    title:   'Translate 5 app phrases',
+    reward:  '2.00',
+    time:    '10 min',
+    color:   '#10B981',
+    dim:     'rgba(16,185,129,0.12)',
+  },
+  {
+    emoji:   '📱',
+    title:   'Test Nexus and write feedback',
+    reward:  '2.50',
+    time:    '15 min',
+    color:   '#F59E0B',
+    dim:     'rgba(245,158,11,0.12)',
+  },
+]
+
+// ── Live activity ticker ─────────────────────────────────────
+const ACTIVITY_ITEMS = [
+  '🎉 Pioneer just earned 2.85π for Local Verification',
+  '⚡ New opportunity: Earn 1.50π in 10 minutes',
+  '✅ Translation task completed — 2.00π paid',
+  '🔥 5 Pioneers earning right now',
+  '💳 App Testing opportunity — 2.50π available',
+  '🌍 Pioneer from Nigeria earned 3.00π',
+  '⚡ New AI Labeling task — 1.50π per slot',
+  '✅ Community task completed — 1.00π paid',
+]
+
 const STATS = [
-  { value: '5',     label: 'Task Categories' },
-  { value: '5%',    label: 'Platform Fee'    },
-  { value: '0.01π', label: 'Network Fee'     },
+  { value: '5',     label: 'Task Categories'    },
+  { value: '0.01π', label: 'Network Fee'        },
+  { value: '< 30',  label: 'Minutes per task'   },
+  { value: '100%',  label: 'Pi payments'        },
 ]
 
-const HOW_IT_WORKS = [
-  {
-    step:  '01',
-    title: 'Connect your Pi wallet',
-    body:  'Authenticate once with Pi Browser. Your identity is verified by the Pi Network.',
-    color: COLORS.indigo,
-  },
-  {
-    step:  '02',
-    title: 'Find work or post tasks',
-    body:  'Workers browse the live task feed. Employers post tasks with Pi held in escrow.',
-    color: COLORS.emerald,
-  },
-  {
-    step:  '03',
-    title: 'Complete and get paid',
-    body:  'Submit proof of work. Employers review and approve. Pi releases instantly.',
-    color: COLORS.amber,
-  },
-]
 
-// ── Static landing content — server-safe, no SDK references ─
-
-function LandingContent({
-  activeStep,
-  onStepClick,
-}: {
-  activeStep: number
-  onStepClick: (i: number) => void
-}) {
-  return (
-    <>
-      {/* Hero */}
-      <div style={{
-        fontSize:      '0.65rem',
-        fontWeight:    '600',
-        color:         COLORS.indigoLight,
-        letterSpacing: '0.1em',
-        marginBottom:  '2rem',
-        display:       'inline-flex',
-        alignItems:    'center',
-        gap:           '8px',
-        padding:       '6px 14px',
-        background:    COLORS.indigoDim,
-        border:        `1px solid rgba(99,102,241,0.3)`,
-        borderRadius:  '9999px',
-        animation:     'fade-up 0.4s ease 0.1s both',
-      }}>
-        <span style={{
-          width:        '6px',
-          height:       '6px',
-          borderRadius: '50%',
-          background:   COLORS.emerald,
-          display:      'inline-block',
-          animation:    'pulse-glow 2s infinite',
-        }} />
-        Pi Network Labor Marketplace · Live on Testnet
-      </div>
-
-      <h1
-        className="landing-headline"
-        style={{
-          fontSize:      'clamp(2.5rem, 7vw, 4.5rem)',
-          fontWeight:    '700',
-          margin:        '0 0 1rem',
-          letterSpacing: '-0.03em',
-          lineHeight:    '1.1',
-          maxWidth:      '700px',
-          animation:     'fade-up 0.5s ease 0.2s both',
-        }}
-      >
-        The marketplace where{' '}
-        <span style={{
-          background:           `linear-gradient(135deg, ${COLORS.indigo}, ${COLORS.emerald})`,
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor:  'transparent',
-          backgroundClip:       'text',
-        }}>
-          Pi has value
-        </span>
-      </h1>
-
-      <p style={{
-        fontSize:   '1.05rem',
-        color:      COLORS.textSecondary,
-        margin:     '0 0 1rem',
-        maxWidth:   '480px',
-        lineHeight: '1.6',
-        animation:  'fade-up 0.5s ease 0.3s both',
-      }}>
-        Workers earn Pi completing real tasks.
-        Employers post work with Pi held in escrow.
-      </p>
-
-      {/* Stats */}
-      <div style={{
-        display:        'flex',
-        gap:            '2rem',
-        marginBottom:   '2.5rem',
-        flexWrap:       'wrap' as const,
-        justifyContent: 'center',
-        animation:      'fade-up 0.5s ease 0.4s both',
-      }}>
-        {STATS.map(stat => (
-          <div key={stat.label} style={{ textAlign: 'center' }}>
-            <div style={{
-              fontFamily:    "'Fira Code', monospace",
-              fontSize:      '1.4rem',
-              fontWeight:    '700',
-              color:         COLORS.textPrimary,
-              letterSpacing: '-0.02em',
-            }}>
-              {stat.value}
-            </div>
-            <div style={{
-              fontSize:  '0.72rem',
-              color:     COLORS.textMuted,
-              marginTop: '2px',
-            }}>
-              {stat.label}
-            </div>
-          </div>
-        ))}
-      </div>
-    </>
-  )
-}
-
-// ── Main component ───────────────────────────────────────────
-
-export default function HomePage() {
+export default function LandingPage() {
   const { user, authenticate, isLoading, isSdkReady } = usePiAuth()
-
-  // ── Hydration guard ──────────────────────────────────────
-  // Never run SDK logic during SSR. Mount flag ensures all
-  // auth-dependent UI only renders after client hydration.
   const [hasMounted, setHasMounted] = useState(false)
+  const [isAuthenticating, setIsAuthenticating] = useState(false)
+
   useEffect(() => { setHasMounted(true) }, [])
 
-
-  // ── How-it-works cycle ───────────────────────────────────
-  const [activeStep, setActiveStep] = useState(0)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveStep(prev => (prev + 1) % HOW_IT_WORKS.length)
-    }, 3000)
-    return () => clearInterval(interval)
-  }, [])
-
-  // ── Auth CTA — only fires on explicit user click ─────────
-  // NO auto-authenticate. NO router.push redirect.
-  // The user is always in control of when auth fires.
-  const handleLogin = async () => {
-    if (isLoading) return
-    await authenticate()
-    // No redirect — Pi Browser payment state must not be interrupted
-    // User navigates via Navigation component
-  }
-
-  // ── Auth button — server-safe default ────────────────────
-  // Before mount: render static "Login with Pi" button (no SDK)
-  // After mount: render context-aware smart button
-  const AuthButton = ({ size = 'full' }: { size?: 'full' | 'compact' }) => {
-    const isCompact = size === 'compact'
-
-    if (!hasMounted) {
-      // Static server-safe version — no SDK references
-      return (
-        <button
-          disabled
-          style={{
-            padding:      isCompact ? '0.45rem 1rem' : '0.9rem 2.5rem',
-            background:   COLORS.bgElevated,
-            color:        COLORS.textMuted,
-            border:       'none',
-            borderRadius: isCompact ? '8px' : '10px',
-            fontSize:     isCompact ? '0.82rem' : '1rem',
-            fontWeight:   '600',
-            cursor:       'not-allowed',
-            fontFamily:   "'Inter', system-ui, sans-serif",
-            whiteSpace:   'nowrap' as const,
-          }}
-        >
-          Login with Pi
-        </button>
-      )
+  const handleLogin = useCallback(async () => {
+    if (isAuthenticating || isLoading) return
+    setIsAuthenticating(true)
+    try {
+      await authenticate()
+    } finally {
+      setIsAuthenticating(false)
     }
+  }, [authenticate, isAuthenticating, isLoading])
 
-    // Authenticated — show dashboard link
-    if (user) {
-      return (
-        <Link
-          href="/dashboard"
-          style={{
-            display:        'inline-flex',
-            alignItems:     'center',
-            padding:        isCompact ? '0.45rem 1rem' : '0.9rem 2.5rem',
-            background:     `linear-gradient(180deg, ${COLORS.emerald} 0%, ${COLORS.emeraldDark} 100%)`,
-            color:          'white',
-            borderRadius:   isCompact ? '8px' : '10px',
-            fontSize:       isCompact ? '0.82rem' : '1rem',
-            fontWeight:     '600',
-            textDecoration: 'none',
-            boxShadow:      isCompact ? 'none' : `0 0 24px rgba(16,185,129,0.4)`,
-            letterSpacing:  '-0.01em',
-            fontFamily:     "'Inter', system-ui, sans-serif",
-            whiteSpace:     'nowrap' as const,
-          }}
-        >
-          {isCompact ? 'Dashboard →' : 'Go to Dashboard →'}
-        </Link>
-      )
-    }
+  if (!hasMounted) return null
 
-    // Guest — explicit login button
-    if (isCompact) {
-      return (
-        <button
-          onClick={handleLogin}
-          disabled={isLoading}
-          style={{
-            padding:      '0.45rem 1rem',
-            background:   isLoading
-              ? COLORS.bgElevated
-              : `linear-gradient(180deg, ${COLORS.indigo} 0%, ${COLORS.indigoDark} 100%)`,
-            color:        isLoading ? COLORS.textMuted : 'white',
-            border:       'none',
-            borderRadius: '8px',
-            fontSize:     '0.82rem',
-            fontWeight:   '600',
-            cursor:       isLoading ? 'not-allowed' : 'pointer',
-            fontFamily:   "'Inter', system-ui, sans-serif",
-            whiteSpace:   'nowrap' as const,
-          }}
-        >
-          {isLoading ? 'Connecting...' : 'Login with Pi'}
-        </button>
-      )
-    }
-
-    return (
-      <ShinyButton onClick={handleLogin} disabled={isLoading}>
-        {isLoading ? 'Connecting...' : 'Login with Pi'}
-      </ShinyButton>
-    )
-  }
+  const isButtonLoading = isAuthenticating || isLoading
 
   return (
     <div style={{
-      minHeight:   '100vh',
-      background:  COLORS.bgBase,
-      color:       COLORS.textPrimary,
-      fontFamily:  "'Inter', system-ui, sans-serif",
-      overflowX:   'hidden',
+      minHeight:  '100vh',
+      background: COLORS.bgBase,
+      fontFamily: FONTS.sans,
+      color:      COLORS.textPrimary,
+      overflowX:  'hidden',
     }}>
+      <Navigation currentPage="home" />
 
-      {/* ── Landing Sticky Header ─────────────────────────── */}
-      <header style={{
-        position:       'fixed',
-        top:            0,
-        left:           0,
-        right:          0,
-        height:         '60px',
-        background:     'rgba(15,23,42,0.85)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderBottom:   `1px solid ${COLORS.border}`,
+      {/* ── HERO ──────────────────────────────────────────── */}
+      <section style={{
+        minHeight:      '100vh',
         display:        'flex',
+        flexDirection:  'column',
         alignItems:     'center',
-        justifyContent: 'space-between',
-        padding:        '0 var(--page-padding)',
-        zIndex:         200,
-        fontFamily:     "'Inter', system-ui, sans-serif",
+        justifyContent: 'center',
+        padding:        `80px ${SPACING.lg} ${SPACING.xl}`,
+        textAlign:      'center' as const,
+        position:       'relative' as const,
+        overflow:       'hidden',
       }}>
-
-        {/* Brand */}
+        {/* Background glow */}
         <div style={{
-          fontSize:      '1.05rem',
-          fontWeight:    '700',
-          color:         COLORS.textPrimary,
-          letterSpacing: '-0.02em',
-          display:       'flex',
-          alignItems:    'center',
-          gap:           '8px',
-        }}>
-          <span className="hide-mobile">Nexus</span>
-          <span className="show-mobile">NX</span>
-          <span style={{
-            fontSize:     '0.55rem',
-            fontWeight:   '500',
-            color:        COLORS.indigo,
-            background:   COLORS.indigoDim,
-            padding:      '2px 6px',
-            borderRadius: '4px',
-            letterSpacing: '0.05em',
-          }}>
-            BETA
-          </span>
-        </div>
-
-        {/* Smooth scroll nav — desktop only */}
-        <div className="hide-mobile" style={{ display: 'flex', gap: '0.25rem' }}>
-          {[
-            { href: '#hero',       label: 'Home'         },
-            { href: '#how',        label: 'How it works' },
-            { href: '#reputation', label: 'Reputation'   },
-          ].map(link => (
-            <a
-              key={link.href}
-              href={link.href}
-              style={{
-                padding:        '0.4rem 0.875rem',
-                borderRadius:   '8px',
-                fontSize:       '0.85rem',
-                fontWeight:     '400',
-                textDecoration: 'none',
-                color:          COLORS.textSecondary,
-                transition:     'color 0.15s ease',
-              }}
-            >
-              {link.label}
-            </a>
-          ))}
-        </div>
-
-        {/* Smart CTA — compact */}
-        <AuthButton size="compact" />
-      </header>
-
-      {/* ── Hero Section ───────────────────────────────── */}
-      <section
-        id="hero"
-        style={{
-          minHeight:      '100vh',
-          display:        'flex',
-          flexDirection:  'column',
-          alignItems:     'center',
-          justifyContent: 'center',
-          textAlign:      'center',
-          padding:        '80px var(--page-padding) 0',
-          paddingBottom:  '140px',
-          backgroundImage: GRADIENTS.hero,
-          position:       'relative',
-        }}
-      >
-        {/* Ambient orb */}
-        <div aria-hidden style={{
-          position:      'absolute',
-          top:           '-10%',
-          left:          '50%',
-          transform:     'translateX(-50%)',
-          width:         '700px',
-          height:        '700px',
-          background:    'radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 65%)',
-          borderRadius:  '50%',
-          pointerEvents: 'none',
+          position:     'absolute' as const,
+          top:          '20%',
+          left:         '50%',
+          transform:    'translateX(-50%)',
+          width:        '600px',
+          height:       '600px',
+          background:   `radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)`,
+          pointerEvents: 'none' as const,
+          zIndex:       0,
         }} />
 
-        {/* Static content — always visible, server-safe */}
+        {/* Live badge */}
         <div style={{
-          display:       'flex',
-          flexDirection: 'column',
-          alignItems:    'center',
-          maxWidth:      '560px',
-          position:      'relative',
-          zIndex:        1,
+          display:      'inline-flex',
+          alignItems:   'center',
+          gap:          '8px',
+          padding:      '6px 16px',
+          background:   'rgba(16,185,129,0.1)',
+          border:       '1px solid rgba(16,185,129,0.3)',
+          borderRadius: RADII.full,
+          fontSize:     '0.78rem',
+          fontWeight:   '600',
+          color:        COLORS.emerald,
+          marginBottom: SPACING.lg,
+          position:     'relative' as const,
+          zIndex:       1,
         }}>
-          <LandingContent
-            activeStep={activeStep}
-            onStepClick={setActiveStep}
-          />
-
-          {/* Auth CTA — client-only aware */}
-          <div style={{
-            display:       'flex',
-            flexDirection: 'column',
-            alignItems:    'center',
-            gap:           '0.875rem',
-            width:         '100%',
-            maxWidth:      '280px',
-            animation:     'fade-up 0.5s ease 0.5s both',
-          }}>
-            {/* SDK status — only show after mount and when not ready */}
-            {hasMounted && !user && (
-              <div style={{
-                display:    'flex',
-                alignItems: 'center',
-                gap:        '8px',
-                fontSize:   '0.78rem',
-                color:      isSdkReady ? COLORS.emerald : COLORS.textMuted,
-              }}>
-                <div style={{
-                  width:        '7px',
-                  height:       '7px',
-                  borderRadius: '50%',
-                  background:   isSdkReady ? COLORS.emerald : COLORS.textMuted,
-                  boxShadow:    isSdkReady ? `0 0 8px ${COLORS.emerald}` : 'none',
-                }} />
-                {isSdkReady ? 'Pi Browser detected' : 'Open in Pi Browser'}
-              </div>
-            )}
-
-            <AuthButton size="full" />
-          </div>
+          <span style={{
+            width:        '6px',
+            height:       '6px',
+            borderRadius: '50%',
+            background:   COLORS.emerald,
+            display:      'inline-block',
+            animation:    'pulse 2s infinite',
+          }} />
+          Pioneers earning right now
         </div>
 
-        {/* Marquee — absolute bottom */}
-        <div
-          className="landing-marquee"
-          style={{
-            position:  'absolute',
-            bottom:    '0',
-            left:      0,
-            right:     0,
-            padding:   '1rem 0 1.5rem',
-            background: 'linear-gradient(to top, rgba(15,23,42,0.95) 0%, transparent 100%)',
-            animation: 'fade-up 0.6s ease 0.6s both',
-          }}
-        >
-          <div style={{
-            fontSize:      '0.65rem',
-            color:         COLORS.textMuted,
-            textAlign:     'center',
-            marginBottom:  '0.625rem',
-            letterSpacing: '0.1em',
-            fontWeight:    '600',
+        {/* Main headline */}
+        <h1 style={{
+          margin:       '0 0 1.25rem',
+          fontSize:     'clamp(2.5rem, 8vw, 4.5rem)',
+          fontWeight:   '800',
+          lineHeight:   1.1,
+          letterSpacing: '-0.03em',
+          position:     'relative' as const,
+          zIndex:       1,
+          maxWidth:     '800px',
+        }}>
+          Earn Pi doing{' '}
+          <span style={{
+            background:        `linear-gradient(135deg, ${COLORS.indigo}, ${COLORS.emerald})`,
+            WebkitBackgroundClip: 'text' as any,
+            WebkitTextFillColor: 'transparent',
           }}>
-            AVAILABLE TASK CATEGORIES
-          </div>
-          <Marquee items={TASK_CATEGORIES} speed={25} />
+            real work
+          </span>
+        </h1>
+
+        {/* Subheadline */}
+        <p style={{
+          margin:       '0 0 2.5rem',
+          fontSize:     'clamp(1rem, 2.5vw, 1.25rem)',
+          color:        COLORS.textSecondary,
+          maxWidth:     '520px',
+          lineHeight:   1.6,
+          position:     'relative' as const,
+          zIndex:       1,
+        }}>
+          Simple tasks. Instant Pi payments.
+          No experience needed — just your phone and 10 minutes.
+        </p>
+
+        {/* CTA buttons */}
+        <div style={{
+          display:        'flex',
+          gap:            SPACING.md,
+          flexWrap:       'wrap' as const,
+          justifyContent: 'center',
+          position:       'relative' as const,
+          zIndex:         1,
+          marginBottom:   '3rem',
+        }}>
+          {user ? (
+            <>
+              <a
+                href="/feed"
+                style={{
+                  padding:        '1rem 2rem',
+                  background:     `linear-gradient(135deg, ${COLORS.indigo}, #4338CA)`,
+                  color:          'white',
+                  borderRadius:   RADII.lg,
+                  fontSize:       '1rem',
+                  fontWeight:     '700',
+                  textDecoration: 'none',
+                  boxShadow:      '0 0 30px rgba(99,102,241,0.4)',
+                  transition:     'all 0.2s ease',
+                  display:        'inline-flex',
+                  alignItems:     'center',
+                  gap:            '8px',
+                }}
+              >
+                🔍 Find Opportunities
+              </a>
+              <a
+                href="/employer"
+                style={{
+                  padding:        '1rem 2rem',
+                  background:     'transparent',
+                  color:          COLORS.textPrimary,
+                  borderRadius:   RADII.lg,
+                  fontSize:       '1rem',
+                  fontWeight:     '600',
+                  textDecoration: 'none',
+                  border:         `1px solid ${COLORS.border}`,
+                  transition:     'all 0.2s ease',
+                  display:        'inline-flex',
+                  alignItems:     'center',
+                  gap:            '8px',
+                }}
+              >
+                📋 Post Work
+              </a>
+            </>
+          ) : (
+            <button
+              onClick={handleLogin}
+              disabled={isButtonLoading || !isSdkReady}
+              style={{
+                padding:      '1rem 2.5rem',
+                background:   isButtonLoading
+                  ? COLORS.bgElevated
+                  : `linear-gradient(135deg, ${COLORS.indigo}, #4338CA)`,
+                color:        isButtonLoading ? COLORS.textMuted : 'white',
+                borderRadius: RADII.lg,
+                fontSize:     '1.1rem',
+                fontWeight:   '700',
+                border:       'none',
+                cursor:       isButtonLoading ? 'not-allowed' : 'pointer',
+                boxShadow:    isButtonLoading
+                  ? 'none'
+                  : '0 0 40px rgba(99,102,241,0.5)',
+                transition:   'all 0.2s ease',
+                fontFamily:   FONTS.sans,
+                display:      'flex',
+                alignItems:   'center',
+                gap:          '10px',
+              }}
+            >
+              {isButtonLoading ? (
+                'Connecting...'
+              ) : (
+                <>
+                  <span>Start Earning Pi</span>
+                  <span>→</span>
+                </>
+              )}
+            </button>
+          )}
+        </div>
+
+        {/* Stats row */}
+        <div style={{
+          display:        'flex',
+          gap:            SPACING.xl,
+          flexWrap:       'wrap' as const,
+          justifyContent: 'center',
+          position:       'relative' as const,
+          zIndex:         1,
+        }}>
+          {STATS.map(stat => (
+            <div key={stat.label} style={{ textAlign: 'center' as const }}>
+              <div style={{
+                fontFamily:    FONTS.mono,
+                fontSize:      '1.5rem',
+                fontWeight:    '700',
+                color:         COLORS.textPrimary,
+                letterSpacing: '-0.02em',
+              }}>
+                {stat.value}
+              </div>
+              <div style={{
+                fontSize: '0.72rem',
+                color:    COLORS.textMuted,
+                marginTop: '2px',
+              }}>
+                {stat.label}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* ── How It Works Section ──────────────────────────── */}
-      <section id="how" style={{
-        padding:    '5rem var(--page-padding)',
-        maxWidth:   '760px',
-        margin:     '0 auto',
+      {/* ── LIVE TICKER ──────────────────────────────────── */}
+      <div style={{
+        borderTop:    `1px solid ${COLORS.border}`,
+        borderBottom: `1px solid ${COLORS.border}`,
+        padding:      `${SPACING.sm} 0`,
+        background:   COLORS.bgSurface,
+        overflow:     'hidden',
+      }}>
+        <Marquee items={ACTIVITY_ITEMS} speed={30} />
+      </div>
+
+      {/* ── LIVE OPPORTUNITIES ───────────────────────────── */}
+      <section style={{
+        padding:   `${SPACING.xxl} ${SPACING.lg}`,
+        maxWidth:  '1100px',
+        margin:    '0 auto',
       }}>
         <div style={{
-          textAlign:     'center',
-          marginBottom:  '3rem',
+          textAlign:    'center' as const,
+          marginBottom: SPACING.xl,
         }}>
           <div style={{
-            fontSize:      '0.7rem',
-            fontWeight:    '600',
+            fontSize:      '0.72rem',
+            fontWeight:    '700',
             color:         COLORS.indigo,
-            letterSpacing: '0.12em',
-            marginBottom:  '0.75rem',
             textTransform: 'uppercase' as const,
+            letterSpacing: '0.15em',
+            marginBottom:  SPACING.sm,
           }}>
-            How It Works
+            Available Right Now
           </div>
           <h2 style={{
-            fontSize:      'clamp(1.5rem, 4vw, 2.25rem)',
-            fontWeight:    '700',
             margin:        0,
+            fontSize:      'clamp(1.75rem, 4vw, 2.5rem)',
+            fontWeight:    '700',
             letterSpacing: '-0.02em',
           }}>
-            Work-first. Pay-on-delivery.
+            Opportunities waiting for you
           </h2>
+          <p style={{
+            margin:   `${SPACING.sm} 0 0`,
+            color:    COLORS.textMuted,
+            fontSize: '0.95rem',
+          }}>
+            Complete any task and receive Pi directly to your wallet
+          </p>
         </div>
 
         <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap:     '0.875rem',
+          display:             'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap:                 SPACING.md,
+          marginBottom:        SPACING.xl,
         }}>
-          {HOW_IT_WORKS.map((step, idx) => (
+          {SAMPLE_OPPORTUNITIES.map((opp, i) => (
             <div
-              key={step.step}
-              onClick={() => setActiveStep(idx)}
+              key={i}
               className="nexus-card"
               style={{
-                display:   'flex',
-                gap:       '1.25rem',
-                alignItems: 'flex-start',
-                cursor:    'pointer',
-                borderLeft: `3px solid ${
-                  idx === activeStep ? step.color : 'transparent'
-                }`,
-                transition: 'all 0.3s ease',
-                opacity:   idx === activeStep ? 1 : 0.6,
+                borderLeft:  `3px solid ${opp.color}`,
+                transition:  'transform 0.2s ease',
+                cursor:      'pointer',
               }}
             >
               <div style={{
-                fontFamily:    "'Fira Code', monospace",
-                fontSize:      '0.75rem',
-                fontWeight:    '700',
-                color:         step.color,
-                opacity:       0.8,
-                flexShrink:    0,
-                paddingTop:    '2px',
+                display:        'flex',
+                alignItems:     'flex-start',
+                gap:            SPACING.md,
+                marginBottom:   SPACING.md,
               }}>
-                {step.step}
-              </div>
-              <div>
                 <div style={{
-                  fontWeight:   '600',
-                  fontSize:     '0.95rem',
-                  marginBottom: '4px',
+                  width:          '48px',
+                  height:         '48px',
+                  borderRadius:   RADII.md,
+                  background:     opp.dim,
+                  display:        'flex',
+                  alignItems:     'center',
+                  justifyContent: 'center',
+                  fontSize:       '1.4rem',
+                  flexShrink:     0,
+                }}>
+                  {opp.emoji}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{
+                    fontSize:     '0.95rem',
+                    fontWeight:   '600',
+                    color:        COLORS.textPrimary,
+                    marginBottom: '4px',
+                    lineHeight:   1.3,
+                  }}>
+                    {opp.title}
+                  </div>
+                  <div style={{
+                    fontSize: '0.78rem',
+                    color:    COLORS.textMuted,
+                  }}>
+                    ⏱ {opp.time} · Pay on completion
+                  </div>
+                </div>
+              </div>
+
+              <div style={{
+                display:        'flex',
+                alignItems:     'center',
+                justifyContent: 'space-between',
+              }}>
+                <div style={{
+                  fontFamily:    FONTS.mono,
+                  fontSize:      '1.4rem',
+                  fontWeight:    '700',
+                  color:         opp.color,
+                  letterSpacing: '-0.02em',
+                }}>
+                  {opp.reward}π
+                </div>
+                <a
+                  href={user ? '/feed' : '#'}
+                  onClick={!user ? (e) => { e.preventDefault(); handleLogin() } : undefined}
+                  style={{
+                    padding:        `${SPACING.xs} ${SPACING.md}`,
+                    background:     opp.color,
+                    color:          'white',
+                    borderRadius:   RADII.md,
+                    fontSize:       '0.82rem',
+                    fontWeight:     '600',
+                    textDecoration: 'none',
+                    border:         'none',
+                    cursor:         'pointer',
+                    fontFamily:     FONTS.sans,
+                  }}
+                >
+                  Claim →
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ textAlign: 'center' as const }}>
+          <a
+            href={user ? '/feed' : '#'}
+            onClick={!user ? (e) => { e.preventDefault(); handleLogin() } : undefined}
+            style={{
+              display:        'inline-flex',
+              alignItems:     'center',
+              gap:            '8px',
+              color:          COLORS.indigo,
+              fontSize:       '0.9rem',
+              fontWeight:     '600',
+              textDecoration: 'none',
+              cursor:         'pointer',
+              border:         'none',
+              background:     'transparent',
+              fontFamily:     FONTS.sans,
+            }}
+          >
+            View all opportunities →
+          </a>
+        </div>
+      </section>
+
+      {/* ── HOW IT WORKS ─────────────────────────────────── */}
+      <section style={{
+        padding:    `${SPACING.xxl} ${SPACING.lg}`,
+        background: COLORS.bgSurface,
+        borderTop:  `1px solid ${COLORS.border}`,
+      }}>
+        <div style={{
+          maxWidth:  '900px',
+          margin:    '0 auto',
+          textAlign: 'center' as const,
+        }}>
+          <div style={{
+            fontSize:      '0.72rem',
+            fontWeight:    '700',
+            color:         COLORS.emerald,
+            textTransform: 'uppercase' as const,
+            letterSpacing: '0.15em',
+            marginBottom:  SPACING.sm,
+          }}>
+            Dead Simple
+          </div>
+          <h2 style={{
+            margin:        `0 0 ${SPACING.xl}`,
+            fontSize:      'clamp(1.75rem, 4vw, 2.5rem)',
+            fontWeight:    '700',
+            letterSpacing: '-0.02em',
+          }}>
+            Three steps to earning Pi
+          </h2>
+
+          <div style={{
+            display:             'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap:                 SPACING.lg,
+          }}>
+            {[
+              {
+                step:  '01',
+                emoji: '👁',
+                title: 'See an opportunity',
+                desc:  'Browse tasks that match your skills. Each shows exactly how much Pi you earn.',
+                color: COLORS.indigo,
+              },
+              {
+                step:  '02',
+                emoji: '⚡',
+                title: 'Complete the work',
+                desc:  'Do the task on your phone in minutes. Submit your proof when done.',
+                color: COLORS.amber,
+              },
+              {
+                step:  '03',
+                emoji: '💳',
+                title: 'Earn Pi instantly',
+                desc:  'Pi is sent directly to your wallet the moment your work is approved.',
+                color: COLORS.emerald,
+              },
+            ].map(step => (
+              <div
+                key={step.step}
+                style={{
+                  padding:      SPACING.xl,
+                  background:   COLORS.bgBase,
+                  border:       `1px solid ${COLORS.border}`,
+                  borderRadius: RADII.xl,
+                  textAlign:    'left' as const,
+                }}
+              >
+                <div style={{
+                  fontFamily:    FONTS.mono,
+                  fontSize:      '0.7rem',
+                  fontWeight:    '700',
+                  color:         step.color,
+                  letterSpacing: '0.1em',
+                  marginBottom:  SPACING.sm,
+                }}>
+                  STEP {step.step}
+                </div>
+                <div style={{
+                  fontSize:     '2rem',
+                  marginBottom: SPACING.sm,
+                }}>
+                  {step.emoji}
+                </div>
+                <div style={{
+                  fontSize:     '1rem',
+                  fontWeight:   '700',
                   color:        COLORS.textPrimary,
+                  marginBottom: SPACING.xs,
                 }}>
                   {step.title}
                 </div>
                 <div style={{
                   fontSize:   '0.85rem',
-                  color:      COLORS.textSecondary,
-                  lineHeight: '1.5',
+                  color:      COLORS.textMuted,
+                  lineHeight: 1.6,
                 }}>
-                  {step.body}
+                  {step.desc}
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ── Reputation Section ────────────────────────────── */}
-      <section id="reputation" style={{
-        padding:    '3rem var(--page-padding) 5rem',
-        maxWidth:   '760px',
-        margin:     '0 auto',
-        textAlign:  'center',
+      {/* ── CATEGORY PILLS ───────────────────────────────── */}
+      <section style={{
+        padding:   `${SPACING.xxl} ${SPACING.lg}`,
+        maxWidth:  '900px',
+        margin:    '0 auto',
+        textAlign: 'center' as const,
       }}>
         <div style={{
-          fontSize:      '0.7rem',
-          fontWeight:    '600',
-          color:         COLORS.emerald,
-          letterSpacing: '0.12em',
-          marginBottom:  '0.75rem',
-          textTransform: 'uppercase' as const,
-        }}>
-          Reputation System
-        </div>
-        <h2 style={{
-          fontSize:      'clamp(1.5rem, 4vw, 2.25rem)',
+          fontSize:      '0.72rem',
           fontWeight:    '700',
-          margin:        '0 0 1rem',
-          letterSpacing: '-0.02em',
+          color:         COLORS.textMuted,
+          textTransform: 'uppercase' as const,
+          letterSpacing: '0.15em',
+          marginBottom:  SPACING.md,
         }}>
-          Earn trust, unlock opportunities
-        </h2>
-        <p style={{
-          fontSize:   '0.95rem',
-          color:      COLORS.textSecondary,
-          maxWidth:   '480px',
-          margin:     '0 auto 2.5rem',
-          lineHeight: '1.6',
-        }}>
-          Every completed task builds your reputation score.
-          Higher levels unlock higher-reward tasks and arbitration rights.
-        </p>
-
-        {/* Level progression */}
+          Opportunity Types
+        </div>
         <div style={{
           display:        'flex',
-          justifyContent: 'center',
-          gap:            '0.5rem',
           flexWrap:       'wrap' as const,
+          gap:            SPACING.sm,
+          justifyContent: 'center',
+          marginBottom:   SPACING.xl,
         }}>
-          {[
-            { level: 'Newcomer',   color: '#94A3B8' },
-            { level: 'Apprentice', color: '#60A5FA' },
-            { level: 'Journeyman', color: '#34D399' },
-            { level: 'Expert',     color: '#A78BFA' },
-            { level: 'Master',     color: '#F59E0B' },
-            { level: 'Sovereign',  color: '#F0B429' },
-          ].map((item, idx) => (
-            <div key={item.level} style={{
-              display:      'flex',
-              alignItems:   'center',
-              gap:          '6px',
-              padding:      '5px 12px',
-              background:   `${item.color}12`,
-              border:       `1px solid ${item.color}30`,
-              borderRadius: '9999px',
-            }}>
-              <div style={{
-                width:        '6px',
-                height:       '6px',
-                borderRadius: '50%',
-                background:   item.color,
-              }} />
-              <span style={{
-                fontSize:   '0.75rem',
-                fontWeight: '500',
-                color:      item.color,
-              }}>
-                {item.level}
-              </span>
-            </div>
+          {TASK_CATEGORIES.map(cat => (
+            <span
+              key={cat}
+              style={{
+                padding:      `${SPACING.xs} ${SPACING.md}`,
+                background:   COLORS.bgSurface,
+                border:       `1px solid ${COLORS.border}`,
+                borderRadius: RADII.full,
+                fontSize:     '0.85rem',
+                color:        COLORS.textSecondary,
+                fontWeight:   '500',
+              }}
+            >
+              {cat}
+            </span>
           ))}
         </div>
       </section>
 
-      {/* ── Bottom CTA ─────────────────────────────────── */}
+      {/* ── BOTTOM CTA ───────────────────────────────────── */}
       <section style={{
+        padding:    `${SPACING.xxl} ${SPACING.lg}`,
+        background: `linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(16,185,129,0.1) 100%)`,
         borderTop:  `1px solid ${COLORS.border}`,
-        padding:    '4rem var(--page-padding)',
-        textAlign:  'center',
+        textAlign:  'center' as const,
       }}>
         <h2 style={{
-          fontSize:      'clamp(1.5rem, 4vw, 2rem)',
-          fontWeight:    '700',
-          margin:        '0 0 0.75rem',
+          margin:        '0 0 1rem',
+          fontSize:      'clamp(1.75rem, 4vw, 2.75rem)',
+          fontWeight:    '800',
           letterSpacing: '-0.02em',
         }}>
           Ready to earn Pi?
         </h2>
         <p style={{
-          fontSize: '0.95rem',
-          color:    COLORS.textSecondary,
           margin:   '0 0 2rem',
+          color:    COLORS.textMuted,
+          fontSize: '1rem',
         }}>
-          Open Nexus in Pi Browser to get started.
+          Join Pioneers already earning. Your first opportunity is waiting.
         </p>
-        <AuthButton size="full" />
+        {user ? (
+          <a
+            href="/feed"
+            style={{
+              display:        'inline-flex',
+              alignItems:     'center',
+              gap:            '8px',
+              padding:        '1rem 2.5rem',
+              background:     `linear-gradient(135deg, ${COLORS.indigo}, #4338CA)`,
+              color:          'white',
+              borderRadius:   RADII.lg,
+              fontSize:       '1.1rem',
+              fontWeight:     '700',
+              textDecoration: 'none',
+              boxShadow:      '0 0 40px rgba(99,102,241,0.4)',
+            }}
+          >
+            Browse Opportunities →
+          </a>
+        ) : (
+          <button
+            onClick={handleLogin}
+            disabled={isButtonLoading || !isSdkReady}
+            style={{
+              padding:      '1rem 2.5rem',
+              background:   isButtonLoading
+                ? COLORS.bgElevated
+                : `linear-gradient(135deg, ${COLORS.indigo}, #4338CA)`,
+              color:        isButtonLoading ? COLORS.textMuted : 'white',
+              borderRadius: RADII.lg,
+              fontSize:     '1.1rem',
+              fontWeight:   '700',
+              border:       'none',
+              cursor:       isButtonLoading ? 'not-allowed' : 'pointer',
+              boxShadow:    isButtonLoading
+                ? 'none'
+                : '0 0 40px rgba(99,102,241,0.4)',
+              fontFamily:   FONTS.sans,
+              display:      'inline-flex',
+              alignItems:   'center',
+              gap:          '10px',
+            }}
+          >
+            {isButtonLoading ? 'Connecting...' : 'Start Earning Pi →'}
+          </button>
+        )}
       </section>
 
+      {/* ── FOOTER ───────────────────────────────────────── */}
+      <footer style={{
+        padding:    `${SPACING.xl} ${SPACING.lg}`,
+        borderTop:  `1px solid ${COLORS.border}`,
+        textAlign:  'center' as const,
+        color:      COLORS.textMuted,
+        fontSize:   '0.78rem',
+      }}>
+        <div style={{ marginBottom: SPACING.sm }}>
+          <span style={{ fontWeight: '700', color: COLORS.textSecondary }}>
+            Nexus
+          </span>
+          {' '}· Pi Network Labor Marketplace
+        </div>
+        <div>
+          Built for Pioneers · Powered by Pi Network · Payments on blockchain
+        </div>
+      </footer>
+
+      {/* ── CSS Animations ───────────────────────────────── */}
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
+        }
+        .nexus-card:hover {
+          transform: translateY(-2px);
+        }
+      `}</style>
     </div>
   )
 }
