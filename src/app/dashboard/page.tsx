@@ -247,47 +247,118 @@ export default function DashboardPage() {
 
       <main className="page-main">
 
-        {/* User header */}
-        <div className="nexus-card" style={{
-          display:      'flex',
-          alignItems:   'center',
-          gap:          SPACING.lg,
-          marginBottom: SPACING.xl,
-          padding:      `${SPACING.lg} ${SPACING.xl}`,
+        {/* ── Earning Machine Header ─────────────────────── */}
+        <div style={{
+          marginBottom: SPACING.lg,
         }}>
+          {/* Greeting + earnings summary */}
           <div style={{
-            width:          '44px',
-            height:         '44px',
-            borderRadius:   '12px',
-            background:     'linear-gradient(135deg, var(--nexus-indigo), var(--nexus-indigo-light))',
             display:        'flex',
             alignItems:     'center',
-            justifyContent: 'center',
-            fontSize:       '1.1rem',
-            fontWeight:     '700',
-            color:          'white',
-            flexShrink:     0,
-            boxShadow:      'var(--nexus-shadow-indigo)',
+            justifyContent: 'space-between',
+            marginBottom:   SPACING.md,
           }}>
-            {user?.piUsername?.charAt(0).toUpperCase()}
-          </div>
-          <div style={{ flex: 1 }}>
-            <div style={{
-              fontWeight:   '600',
-              fontSize:     '0.95rem',
-              color:        COLORS.textPrimary,
-              marginBottom: '2px',
-            }}>
-              {user?.piUsername}
+            <div>
+              <div style={{
+                fontSize:   '0.78rem',
+                color:      COLORS.textMuted,
+                marginBottom: '2px',
+              }}>
+                Welcome back
+              </div>
+              <div style={{
+                fontSize:   '1.3rem',
+                fontWeight: '800',
+                color:      COLORS.textPrimary,
+                letterSpacing: '-0.02em',
+              }}>
+                {user?.piUsername}
+              </div>
             </div>
+
+            {/* Total earned — always visible */}
             <div style={{
-              fontSize:   '0.75rem',
-              color:      COLORS.textSecondary,
-              fontFamily: "'Fira Code', monospace",
+              textAlign: 'right' as const,
             }}>
-              {user?.reputationLevel} · {user?.reputationScore} REP · KYC {user?.kycLevel}
+              <div style={{
+                fontSize:   '0.68rem',
+                color:      COLORS.textMuted,
+                marginBottom: '2px',
+                textTransform: 'uppercase' as const,
+                letterSpacing: '0.08em',
+              }}>
+                Total earned
+              </div>
+              <div style={{
+                fontFamily:    FONTS.mono,
+                fontSize:      '1.5rem',
+                fontWeight:    '800',
+                color:         COLORS.emerald,
+                letterSpacing: '-0.03em',
+                lineHeight:    1,
+              }}>
+                {totalEarned.toFixed(2)}π
+              </div>
             </div>
           </div>
+
+          {/* Hero CTA — the most important element */}
+          <Link
+            href="/feed"
+            style={{
+              display:        'block',
+              padding:        '1rem 1.5rem',
+              background:     `linear-gradient(135deg, ${COLORS.indigo}, #4338CA)`,
+              borderRadius:   RADII.xl,
+              textDecoration: 'none',
+              boxShadow:      '0 0 30px rgba(99,102,241,0.3)',
+              position:       'relative' as const,
+              overflow:       'hidden',
+            }}
+          >
+            {/* Background shimmer */}
+            <div style={{
+              position:   'absolute' as const,
+              top:        0,
+              left:       0,
+              right:      0,
+              bottom:     0,
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 60%)',
+              pointerEvents: 'none' as const,
+            }} />
+
+            <div style={{
+              display:        'flex',
+              alignItems:     'center',
+              justifyContent: 'space-between',
+            }}>
+              <div>
+                <div style={{
+                  fontSize:   '1rem',
+                  fontWeight: '800',
+                  color:      'white',
+                  marginBottom: '2px',
+                }}>
+                  Start earning Pi now
+                </div>
+                <div style={{
+                  fontSize: '0.78rem',
+                  color:    'rgba(255,255,255,0.7)',
+                }}>
+                  {pendingReview > 0
+                    ? `${pendingReview} submission${pendingReview > 1 ? 's' : ''} pending review`
+                    : 'New opportunities available'}
+                </div>
+              </div>
+              <div style={{
+                fontSize:   '1.5rem',
+                color:      'white',
+                fontWeight: '700',
+              }}>
+                →
+              </div>
+            </div>
+          </Link>
         </div>
 
         {/* Bento Grid */}
@@ -296,7 +367,7 @@ export default function DashboardPage() {
           gap="0.875rem"
           items={[
 
-            // Row 1: Earnings (wide) + Reputation
+            // Row 1: Earnings (wide) + Quick Actions
             {
               id:      'earnings',
               colSpan: 2,
@@ -306,6 +377,29 @@ export default function DashboardPage() {
                   totalEarned={totalEarned}
                   thisWeekEarned={thisWeekEarned}
                   pendingAmount={pendingAmount}
+                />
+              ),
+            },
+            {
+              id:      'quick-actions',
+              children: <QuickActionsCard />,
+            },
+
+            // Row 2: Activity (wide) + Reputation
+            {
+              id:      'activity',
+              colSpan: 2,
+              children: (
+                <ActivityFeedCard
+                  submissions={recentSubmissions.map(sub => ({
+                    id:        sub.id,
+                    status:    sub.status,
+                    taskTitle: sub.task?.title ?? 'Unknown task',
+                    reward:    Number(sub.agreedReward ?? 0),
+                    timeAgo:   sub.submittedAt
+                      ? timeAgo(sub.submittedAt)
+                      : 'recently',
+                  }))}
                 />
               ),
             },
@@ -321,7 +415,7 @@ export default function DashboardPage() {
               ),
             },
 
-            // Row 2: Stats (3 small cards)
+            // Row 3: Stats (3 small cards)
             {
               id:       'stat-tasks',
               children: (
@@ -357,34 +451,11 @@ export default function DashboardPage() {
               ),
             },
 
-            // Row 3: Activity (wide) + Quick Actions
-            {
-              id:      'activity',
-              colSpan: 2,
-              children: (
-                <ActivityFeedCard
-                  submissions={recentSubmissions.map(sub => ({
-                    id:        sub.id,
-                    status:    sub.status,
-                    taskTitle: sub.task?.title ?? 'Unknown task',
-                    reward:    Number(sub.agreedReward ?? 0),
-                    timeAgo:   sub.submittedAt
-                      ? timeAgo(sub.submittedAt)
-                      : 'recently',
-                  }))}
-                />
-              ),
-            },
-            {
-              id:      'quick-actions',
-              children: <QuickActionsCard />,
-            },
-
           ]}
         />
 
       {/* ══════════════════════════════════════════════════════
-          WORKER SECTION — My Submissions
+          WORKER SECTION — My Earning History
         ═══════════════════════════════════════════════════════ */}
 
       {/* Section divider */}
@@ -402,7 +473,7 @@ export default function DashboardPage() {
           letterSpacing: '0.1em',
           whiteSpace:    'nowrap' as const,
         }}>
-          My Submissions
+          My Work
         </div>
         <div style={{
           height:     '1px',

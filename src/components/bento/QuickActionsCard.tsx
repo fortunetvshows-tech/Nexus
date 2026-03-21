@@ -13,23 +13,23 @@ interface QuickAction {
 
 const ACTIONS: QuickAction[] = [
   {
-    label:    'Find Work',
+    label:    'Find Opportunities',
     href:     '/feed',
-    icon:     '🔍',
+    icon:     '⚡',
     color:    '#6366F1',
     dimColor: 'rgba(99,102,241,0.12)',
   },
   {
-    label:    'Post Task',
+    label:    'Post Work',
     href:     '/employer',
     icon:     '📋',
     color:    '#10B981',
     dimColor: 'rgba(16,185,129,0.12)',
   },
   {
-    label:    'Analytics',
+    label:    'My Earnings',
     href:     '/analytics',
-    icon:     '📊',
+    icon:     '💰',
     color:    '#F59E0B',
     dimColor: 'rgba(245,158,11,0.12)',
   },

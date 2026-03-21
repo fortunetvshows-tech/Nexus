@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { COLORS, FONTS } from '@/lib/design/tokens'
 
 interface ActivityItem {
@@ -53,19 +54,23 @@ export function ActivityFeedCard({ submissions }: ActivityFeedCardProps) {
       </div>
 
       {submissions.length === 0 ? (
-        <div style={{
-          flex:           1,
-          display:        'flex',
-          flexDirection:  'column',
-          alignItems:     'center',
-          justifyContent: 'center',
-          color:          COLORS.textMuted,
-          fontSize:       '0.8rem',
-          gap:            '0.5rem',
-        }}>
+        <Link
+          href="/feed"
+          style={{
+            flex:           1,
+            display:        'flex',
+            flexDirection:  'column',
+            alignItems:     'center',
+            justifyContent: 'center',
+            color:          COLORS.textMuted,
+            fontSize:       '0.8rem',
+            gap:            '0.5rem',
+            textDecoration: 'none',
+          }}
+        >
           <span style={{ fontSize: '1.5rem', opacity: 0.4 }}>📭</span>
-          No activity yet
-        </div>
+          No earnings yet — find your first opportunity →
+        </Link>
       ) : (
         <div style={{
           display:       'flex',
