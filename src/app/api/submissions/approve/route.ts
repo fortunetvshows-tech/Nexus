@@ -109,15 +109,23 @@ export async function POST(
       .eq('id', submission.workerId)
       .single()
 
-    // A2U payments require walletAddress (from wallet_address scope)
-    const workerPiUid = worker?.walletAddress ?? null
+    // A2U needs Pi UID (to identify user) AND wallet address (for Stellar tx)
+    const workerPiUid = worker?.piUid ?? null
+    const workerWallet = worker?.walletAddress ?? null
     const netAmount = Number(submission.agreedReward) * 0.95 // 5% platform fee
 
     if (!workerPiUid) {
       return NextResponse.json({
+        success: false,
+        error:   'WORKER_NOT_FOUND',
+      })
+    }
+
+    if (!workerWallet) {
+      return NextResponse.json({
         success:     true,
         paymentSent: false,
-        warning:     `Worker ${worker?.piUsername} has not set up their wallet address. They must log into Nexus once to grant wallet_address permission before payment can be processed.`,
+        warning:     `Worker ${worker?.piUsername} has not set their wallet address. Ask them to visit their Profile page to add it before payment can be processed.`,
       })
     }
 
