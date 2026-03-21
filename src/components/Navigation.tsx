@@ -246,23 +246,42 @@ export function Navigation({ currentPage }: NavigationProps) {
                       </Link>
 
                       {user?.isAdmin && (
-                        <Link
-                          href="/admin/disputes"
-                          onClick={() => setProfileOpen(false)}
-                          style={{
-                            display:        'flex',
-                            alignItems:     'center',
-                            gap:            '8px',
-                            padding:        '0.5rem 0.625rem',
-                            borderRadius:   '8px',
-                            fontSize:       '0.82rem',
-                            color:          COLORS.red,
-                            textDecoration: 'none',
+                        <>
+                          <Link
+                            href="/admin/categories"
+                            onClick={() => setProfileOpen(false)}
+                            style={{
+                              display:        'flex',
+                              alignItems:     'center',
+                              gap:            '8px',
+                              padding:        '0.5rem 0.625rem',
+                              borderRadius:   '8px',
+                              fontSize:       '0.82rem',
+                              color:          COLORS.textSecondary,
+                              textDecoration: 'none',
+                              transition:     'background 0.15s',
+                            }}
+                          >
+                            🏷️ Categories
+                          </Link>
+                          <Link
+                            href="/admin/disputes"
+                            onClick={() => setProfileOpen(false)}
+                            style={{
+                              display:        'flex',
+                              alignItems:     'center',
+                              gap:            '8px',
+                              padding:        '0.5rem 0.625rem',
+                              borderRadius:   '8px',
+                              fontSize:       '0.82rem',
+                              color:          COLORS.red,
+                              textDecoration: 'none',
                             transition:     'background 0.15s',
                           }}
                         >
                           ⚖ Disputes
                         </Link>
+                        </>
                       )}
 
                       {/* Sign out */}

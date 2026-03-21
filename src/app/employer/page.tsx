@@ -63,6 +63,24 @@ export default function EmployerPage() {
     createdAt:      string
   }>>([])
   const [tasksLoading, setTasksLoading] = useState(false)
+  const [dbCategories, setDbCategories] = useState<string[]>([])
+
+  // Fetch categories from database
+  useEffect(() => {
+    fetch(`${window.location.origin}/api/categories`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.categories?.length) {
+          setDbCategories(
+            data.categories.map((c: any) => `${c.emoji} ${c.name}`)
+          )
+        }
+      })
+      .catch(() => {
+        // fallback to hardcoded if API fails
+        setDbCategories(TASK_CATEGORIES)
+      })
+  }, [])
 
   // Fetch employer's posted tasks when authenticated
   useEffect(() => {
@@ -79,6 +97,8 @@ export default function EmployerPage() {
       })
       .catch(() => setTasksLoading(false))
   }, [user?.piUid])
+
+  const categoryList = dbCategories.length > 0 ? dbCategories : TASK_CATEGORIES
 
   if (!user) {
     return (
@@ -265,7 +285,7 @@ export default function EmployerPage() {
                   style={inputStyle}
                 >
                   <option value="" disabled>Select a category</option>
-                  {TASK_CATEGORIES.map(cat => (
+                  {categoryList.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </select>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   TaskSearchFilters,
   DEFAULT_FILTERS,
@@ -25,6 +25,24 @@ export function TaskFilters({
 }: TaskFiltersProps) {
 
   const [isExpanded, setIsExpanded] = useState(false)
+  const [dbCategories, setDbCategories] = useState<string[]>([])
+
+  useEffect(() => {
+    fetch(`${window.location.origin}/api/categories`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.categories?.length) {
+          setDbCategories(
+            data.categories.map((c: any) => `${c.emoji} ${c.name}`)
+          )
+        }
+      })
+      .catch(() => {
+        setDbCategories(TASK_CATEGORIES)
+      })
+  }, [])
+
+  const categoryList = dbCategories.length > 0 ? dbCategories : TASK_CATEGORIES
 
   const hasActiveFilters =
     filters.search     !== DEFAULT_FILTERS.search     ||
@@ -196,7 +214,7 @@ export function TaskFilters({
               >
                 All
               </button>
-              {TASK_CATEGORIES.map(cat => (
+              {categoryList.map(cat => (
                 <button
                   key={cat}
                   onClick={() => onFilter({
