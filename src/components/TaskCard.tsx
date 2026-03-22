@@ -150,16 +150,26 @@ export function TaskCard({
           gap:            '12px',
           marginBottom:   SPACING.sm,
         }}>
-          <span style={{
-            fontFamily:    FONTS.mono,
-            fontSize:      '2rem',
-            fontWeight:    '800',
-            color:         COLORS.emerald,
-            letterSpacing: '-0.03em',
-            lineHeight:    1,
-          }}>
-            {task.piReward}π
-          </span>
+          <div>
+            <span style={{
+              fontFamily:    FONTS.mono,
+              fontSize:      '2rem',
+              fontWeight:    '800',
+              color:         COLORS.emerald,
+              letterSpacing: '-0.03em',
+              lineHeight:    1,
+            }}>
+              {(task.piReward * 0.95).toFixed(2)}π
+            </span>
+            <span style={{
+              fontSize:   '0.72rem',
+              color:      COLORS.textMuted,
+              marginLeft: '6px',
+              fontFamily: FONTS.mono,
+            }}>
+              (listed {task.piReward}π − 5% fee)
+            </span>
+          </div>
           <span style={{
             fontSize:   '0.82rem',
             color:      COLORS.textMuted,

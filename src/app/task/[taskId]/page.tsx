@@ -222,15 +222,24 @@ export default function TaskDetailPage({
             }}>
               You will earn
             </div>
-            <div style={{
-              fontFamily:    FONTS.mono,
-              fontSize:      'clamp(3rem, 10vw, 4rem)',
-              fontWeight:    '800',
-              color:         COLORS.emerald,
-              letterSpacing: '-0.04em',
-              lineHeight:    1,
-            }}>
-              {task.piReward}π
+            <div>
+              <div style={{
+                fontFamily:    FONTS.mono,
+                fontSize:      'clamp(3rem, 10vw, 4rem)',
+                fontWeight:    '800',
+                color:         COLORS.emerald,
+                letterSpacing: '-0.04em',
+                lineHeight:    1,
+              }}>
+                {(task.piReward * 0.95).toFixed(2)}π
+              </div>
+              <div style={{
+                fontSize:   '0.78rem',
+                color:      COLORS.textMuted,
+                marginTop:  '4px',
+              }}>
+                You receive this · Listed at {task.piReward}π · 5% platform fee
+              </div>
             </div>
             <div style={{
               fontSize:   '0.85rem',
