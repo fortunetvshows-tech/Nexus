@@ -36,9 +36,9 @@ export function Navigation({ currentPage }: NavigationProps) {
     })
       .then(r => r.json())
       .then(data => {
-        if (data) {
-          setEarned(Number(data.totalEarned ?? 0))
-          setPending(Number(data.pendingEarnings ?? data.pendingAmount ?? 0))
+        if (data?.summary) {
+          setEarned(Number(data.summary.totalEarned ?? 0))
+          setPending(Number(data.summary.totalPending ?? 0))
         }
       })
       .catch(() => {})
