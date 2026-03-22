@@ -16,6 +16,8 @@ export function Navigation({ currentPage }: NavigationProps) {
   const [isOpen, setIsOpen]   = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
+  const [earned,  setEarned]  = useState<number>(0)
+  const [pending, setPending] = useState<number>(0)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -25,6 +27,22 @@ export function Navigation({ currentPage }: NavigationProps) {
 
   // Close menu on route change
   useEffect(() => { setIsOpen(false) }, [currentPage])
+
+  // Fetch balance
+  useEffect(() => {
+    if (!user?.piUid) return
+    fetch(`${window.location.origin}/api/analytics/worker`, {
+      headers: { 'x-pi-uid': user.piUid },
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data) {
+          setEarned(Number(data.totalEarned ?? 0))
+          setPending(Number(data.pendingEarnings ?? data.pendingAmount ?? 0))
+        }
+      })
+      .catch(() => {})
+  }, [user?.piUid])
 
   const navItems = [
     { href: '/dashboard', label: 'Dashboard', key: 'dashboard' },
@@ -48,10 +66,10 @@ export function Navigation({ currentPage }: NavigationProps) {
       {/* Main nav bar */}
       <nav style={{
         position:       'fixed',
-        top:            '60px',
+        top:            0,
         left:           0,
         right:          0,
-        height:         '56px',
+        height:         '64px',
         background:     scrolled
           ? 'rgba(15,23,42,0.95)'
           : 'rgba(15,23,42,0.85)',
@@ -129,6 +147,44 @@ export function Navigation({ currentPage }: NavigationProps) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
           {user && (
             <>
+              {/* Balance — desktop only */}
+              <div
+                className="hide-mobile"
+                style={{
+                  display:      'flex',
+                  alignItems:   'center',
+                  gap:          '6px',
+                  padding:      '5px 10px',
+                  background:   'rgba(16,185,129,0.1)',
+                  border:       '1px solid rgba(16,185,129,0.2)',
+                  borderRadius: '999px',
+                  marginRight:  '4px',
+                }}
+              >
+                <span style={{ fontSize: '0.7rem' }}>💰</span>
+                <div style={{ lineHeight: 1 }}>
+                  <div style={{
+                    fontFamily:    "'Fira Code', monospace",
+                    fontSize:      '0.82rem',
+                    fontWeight:    '700',
+                    color:         '#10B981',
+                    letterSpacing: '-0.02em',
+                  }}>
+                    {earned.toFixed(2)}π
+                  </div>
+                  {pending > 0 && (
+                    <div style={{
+                      fontFamily: "'Fira Code', monospace",
+                      fontSize:   '0.6rem',
+                      color:      '#F59E0B',
+                      lineHeight: 1.2,
+                    }}>
+                      +{pending.toFixed(2)}π pending
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <NotificationBell piUid={user.piUid} />
 
               {/* Avatar with dropdown — desktop only */}

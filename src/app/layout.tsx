@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import { TopBar } from '@/components/TopBar'
 
 export const metadata: Metadata = {
   title: 'Nexus',
@@ -110,7 +109,6 @@ export default function RootLayout({
         `}} />
       </head>
       <body>
-        <TopBar />
         {children}
       </body>
     </html>
