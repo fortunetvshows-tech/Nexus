@@ -45,6 +45,7 @@ export function NotificationBell({ piUid }: NotificationBellProps) {
   } = useNotifications(piUid)
 
   const [isOpen,    setIsOpen]    = useState(false)
+  const [expandedId, setExpandedId] = useState<string | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   // Close dropdown when clicking outside
@@ -183,13 +184,14 @@ export function NotificationBell({ piUid }: NotificationBellProps) {
               <div
                 key={notif.id}
                 onClick={() => {
+                  setExpandedId(prev => prev === notif.id ? null : notif.id)
                   if (!notif.isRead) markRead(notif.id)
                 }}
                 style={{
                   padding:    '0.875rem 1.25rem',
                   borderBottom: '1px solid #1f2937',
                   background: notif.isRead ? 'transparent' : '#1e1b4b',
-                  cursor:     notif.isRead ? 'default' : 'pointer',
+                  cursor:     'pointer',
                   transition: 'background 0.15s',
                 }}
               >
@@ -216,12 +218,27 @@ export function NotificationBell({ piUid }: NotificationBellProps) {
                       fontSize: '0.78rem',
                       color:    '#9ca3af',
                       marginBottom: '0.25rem',
-                      display:      '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical' as const,
-                      overflow:     'hidden',
                     }}>
-                      {notif.body}
+                      <span style={{
+                        display:           expandedId === notif.id ? 'block' : '-webkit-box',
+                        WebkitLineClamp:   expandedId === notif.id ? undefined : 2,
+                        WebkitBoxOrient:   'vertical' as any,
+                        overflow:          expandedId === notif.id ? 'visible' : 'hidden',
+                        cursor:            'pointer',
+                      }}>
+                        {notif.body}
+                      </span>
+                      {notif.body.length > 80 && (
+                        <span style={{
+                          fontSize:   '0.65rem',
+                          color:      COLORS.indigo,
+                          marginTop:  '2px',
+                          display:    'block',
+                          cursor:     'pointer',
+                        }}>
+                          {expandedId === notif.id ? '▲ Show less' : '▼ Read more'}
+                        </span>
+                      )}
                     </div>
                     <div style={{
                       fontSize: '0.72rem',
