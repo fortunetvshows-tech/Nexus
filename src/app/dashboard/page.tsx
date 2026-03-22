@@ -31,17 +31,6 @@ interface Submission {
   }
 }
 
-interface PostedTask {
-  id:             string
-  title:          string
-  category:       string
-  piReward:       number
-  slotsAvailable: number
-  slotsRemaining: number
-  taskStatus:     string
-  createdAt:      string
-}
-
 interface WorkerDispute {
   id:              string
   status:          string
@@ -90,10 +79,6 @@ export default function DashboardPage() {
     }
   } | null>(null)
 
-  // Employer data
-  const [postedTasks,   setPostedTasks]   = useState<PostedTask[]>([])
-  const [tasksLoading,  setTasksLoading]  = useState(false)
-
   // Disputes data
   const [workerDisputes, setWorkerDisputes] = useState<WorkerDispute[]>([])
 
@@ -110,21 +95,6 @@ export default function DashboardPage() {
         setSubLoading(false)
       })
       .catch(() => setSubLoading(false))
-  }, [user?.piUid])
-
-  // Fetch employer tasks
-  const fetchPostedTasks = useCallback(() => {
-    if (!user?.piUid) return
-    setTasksLoading(true)
-    fetch(`${window.location.origin}/api/employer/tasks`, {
-      headers: { 'x-pi-uid': user.piUid },
-    })
-      .then(r => r.json())
-      .then(d => {
-        if (d.tasks) setPostedTasks(d.tasks)
-        setTasksLoading(false)
-      })
-      .catch(() => setTasksLoading(false))
   }, [user?.piUid])
 
   // Fetch worker analytics
@@ -156,11 +126,10 @@ export default function DashboardPage() {
   useEffect(() => {
     if (user?.piUid) {
       fetchSubmissions()
-      fetchPostedTasks()
       fetchWorkerAnalytics()
       fetchWorkerDisputes()
     }
-  }, [user?.piUid, fetchSubmissions, fetchPostedTasks, fetchWorkerAnalytics, fetchWorkerDisputes])
+  }, [user?.piUid, fetchSubmissions, fetchWorkerAnalytics, fetchWorkerDisputes])
 
   // ── Stats ──────────────────────────────────────────────────────────
 
@@ -840,169 +809,7 @@ export default function DashboardPage() {
       )}
 
       {/* ══════════════════════════════════════════════════════
-          EMPLOYER SECTION — Tasks I Posted
-        ═══════════════════════════════════════════════════════ */}
-
-      {/* Section divider */}
-      <div style={{
-        display:    'flex',
-        alignItems: 'center',
-        gap:        '0.75rem',
-        margin:     `${SPACING.xxl} 0 ${SPACING.lg}`,
-      }}>
-        <div style={{
-          fontSize:      '0.65rem',
-          fontWeight:    '600',
-          color:         COLORS.textMuted,
-          textTransform: 'uppercase' as const,
-          letterSpacing: '0.1em',
-          whiteSpace:    'nowrap' as const,
-        }}>
-          Tasks I Posted
-        </div>
-        <div style={{
-          height:     '1px',
-          flex:       1,
-          background: COLORS.border,
-        }} />
-        <Link
-          href="/employer/dashboard"
-          style={{
-            fontSize:       '0.72rem',
-            color:          COLORS.indigoLight,
-            textDecoration: 'none',
-            fontWeight:     '500',
-            whiteSpace:     'nowrap' as const,
-          }}
-        >
-          Full view →
-        </Link>
-      </div>
-
-      {/* Posted tasks */}
-      {postedTasks.length === 0 ? (
-        <div style={{
-          padding:      `${SPACING.xl}`,
-          textAlign:    'center',
-          background:   COLORS.bgSurface,
-          border:       `1px solid ${COLORS.border}`,
-          borderRadius: RADII.lg,
-          color:        COLORS.textMuted,
-          fontSize:     '0.85rem',
-        }}>
-          <div style={{ fontSize: '1.5rem', marginBottom: SPACING.sm, opacity: 0.4 }}>📋</div>
-          No tasks posted yet.{' '}
-          <Link href="/employer" style={{ color: COLORS.indigo }}>
-            Post your first task →
-          </Link>
-        </div>
-      ) : (
-        <div style={{
-          display:       'flex',
-          flexDirection: 'column',
-          gap:           SPACING.sm,
-        }}>
-          {postedTasks.map((task, idx) => {
-            const filled  = task.slotsAvailable - task.slotsRemaining
-            const fillPct = task.slotsAvailable > 0
-              ? Math.round((filled / task.slotsAvailable) * 100)
-              : 0
-
-            return (
-              <div
-                key={task.id}
-                className="nexus-card"
-                style={{
-                  padding:   `${SPACING.md} ${SPACING.lg}`,
-                  animation: `fade-up 0.3s ease ${idx * 0.06}s both`,
-                }}
-              >
-                <div style={{
-                  display:        'flex',
-                  justifyContent: 'space-between',
-                  alignItems:     'flex-start',
-                  marginBottom:   SPACING.sm,
-                }}>
-                  <div style={{ flex: 1, minWidth: 0, marginRight: SPACING.md }}>
-                    <div style={{
-                      fontWeight:   '500',
-                      fontSize:     '0.875rem',
-                      color:        COLORS.textPrimary,
-                      overflow:     'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace:   'nowrap' as const,
-                      marginBottom: '3px',
-                    }}>
-                      {task.title}
-                    </div>
-                    <div style={{
-                      fontSize:   '0.75rem',
-                      color:      COLORS.textMuted,
-                      display:    'flex',
-                      gap:        '0.5rem',
-                      flexWrap:   'wrap' as const,
-                    }}>
-                      <span>{task.category}</span>
-                      <span>·</span>
-                      <span style={{ fontFamily: FONTS.mono }}>{task.piReward}π per slot</span>
-                    </div>
-                  </div>
-                  <Link
-                    href={`/review/${task.id}`}
-                    style={{
-                      padding:        `${SPACING.xs} ${SPACING.md}`,
-                      background:     COLORS.indigoDim,
-                      color:          COLORS.indigoLight,
-                      borderRadius:   RADII.md,
-                      fontSize:       '0.75rem',
-                      fontWeight:     '600',
-                      textDecoration: 'none',
-                      border:         `1px solid rgba(99,102,241,0.2)`,
-                      flexShrink:     0,
-                    }}
-                  >
-                    Review →
-                  </Link>
-                </div>
-
-                {/* Fill progress bar */}
-                <div style={{
-                  display:    'flex',
-                  alignItems: 'center',
-                  gap:        '0.625rem',
-                }}>
-                  <div style={{
-                    flex:         1,
-                    height:       '4px',
-                    background:   COLORS.bgElevated,
-                    borderRadius: '9999px',
-                    overflow:     'hidden',
-                  }}>
-                    <div style={{
-                      height:       '100%',
-                      width:        `${fillPct}%`,
-                      background:   fillPct === 100
-                        ? `linear-gradient(90deg, ${COLORS.emerald}, ${COLORS.emeraldDark})`
-                        : `linear-gradient(90deg, ${COLORS.indigo}, ${COLORS.indigoLight})`,
-                      borderRadius: '9999px',
-                      transition:   'width 0.8s ease',
-                    }} />
-                  </div>
-                  <span style={{
-                    fontFamily: FONTS.mono,
-                    fontSize:   '0.68rem',
-                    color:      fillPct === 100 ? COLORS.emerald : COLORS.textMuted,
-                    minWidth:   '40px',
-                    textAlign:  'right' as const,
-                  }}>
-                    {filled}/{task.slotsAvailable}
-                  </span>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      )}
+          ══════════════════════════════════════════════════════ */}
 
       </main>
     </div>

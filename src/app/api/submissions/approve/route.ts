@@ -147,11 +147,13 @@ export async function POST(
     // Update notification with actual earned amount
     if (paymentResult.success) {
       try {
+        const grossAmount = Number(submission.agreedReward)
+        const feeAmount = Number(submission.agreedReward) * 0.05
         await supabaseAdmin
           .from('Notification')
           .update({
             title: `You earned ${netAmount.toFixed(4)}π! 🎉`,
-            body: `Your submission was approved and ${netAmount.toFixed(4)}π has been sent to your Pi wallet.`,
+            body: `Your work was approved! You earned ${netAmount.toFixed(4)}π (${grossAmount.toFixed(4)}π reward − ${feeAmount.toFixed(4)}π platform fee)`,
           })
           .eq('userId', submission.workerId)
           .eq('type', 'task_approved')

@@ -371,6 +371,70 @@ section[id] {
   }
 }
 
+/* ── Mobile Responsive Fixes ─────────────────────────────── */
+
+/* Profile + Dashboard stats grid — stack on mobile */
+@media (max-width: 480px) {
+  .stats-grid-3 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* Navigation dropdown — prevent overflow on small screens */
+@media (max-width: 380px) {
+  .profile-dropdown {
+    right: 0 !important;
+    left: auto !important;
+    width: calc(100vw - 2rem) !important;
+    max-width: 220px !important;
+  }
+}
+
+/* Analytics transaction rows — stack on very small screens */
+@media (max-width: 400px) {
+  .tx-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+  }
+  .tx-row .tx-amount {
+    font-size: 0.9rem !important;
+  }
+}
+
+/* Task filter buttons — smaller on mobile */
+@media (max-width: 480px) {
+  .filter-btn {
+    padding: 4px 8px !important;
+    font-size: 0.72rem !important;
+  }
+}
+
+/* Prevent cards stretching on small screens */
+@media (max-width: 480px) {
+  .nexus-card {
+    min-width: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  .bento-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .page-main {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+}
+
+/* BentoGrid — force single column on mobile */
+@media (max-width: 600px) {
+  .bento-grid > div {
+    grid-column: span 1 !important;
+  }
+}
+
 /* ── Modern Layout System ─────────────────────────────────── */
 
 /* Sticky top bar height compensation */

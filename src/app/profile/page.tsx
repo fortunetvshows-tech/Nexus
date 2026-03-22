@@ -221,7 +221,7 @@ export default function ProfilePage() {
                 display:             'grid',
                 gridTemplateColumns: 'repeat(3, 1fr)',
                 gap:                 SPACING.sm,
-              }}>
+              }} className="stats-grid-3">
                 {[
                   {
                     label: 'KYC Level',
