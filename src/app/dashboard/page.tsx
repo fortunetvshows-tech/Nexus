@@ -6,9 +6,7 @@ import { usePiAuth }   from '@/hooks/use-pi-auth'
 import { Navigation }  from '@/components/Navigation'
 import { BentoGrid }         from '@/components/BentoGrid'
 import { EarningsCard }      from '@/components/bento/EarningsCard'
-import { ReputationCard }    from '@/components/bento/ReputationCard'
 import { ActivityFeedCard }  from '@/components/bento/ActivityFeedCard'
-import { StatsRowCard }      from '@/components/bento/StatsRowCard'
 import { RejectionCard }     from '@/components/bento/RejectionCard'
 import { DisputeTrackerCard } from '@/components/bento/DisputeTrackerCard'
 import { COLORS, FONTS, SPACING, RADII, SHADOWS, GRADIENTS, statusStyle, COMPONENT_STYLES } from '@/lib/design/tokens'
@@ -367,53 +365,8 @@ export default function DashboardPage() {
                 />
               ),
             },
-            {
-              id:      'reputation',
-              colSpan: 1,
-              children: (
-                <ReputationCard
-                  reputationScore={user?.reputationScore ?? 0}
-                  reputationLevel={user?.reputationLevel ?? 'Newcomer'}
-                  kycLevel={user?.kycLevel ?? 0}
-                />
-              ),
-            },
 
-            // Row 3: Stats (3 small cards)
-            {
-              id:       'stat-tasks',
-              children: (
-                <StatsRowCard
-                  label="Tasks Completed"
-                  value={completedTasks}
-                  color={COLORS.indigo}
-                  icon="✓"
-                />
-              ),
-            },
-            {
-              id:       'stat-pending',
-              children: (
-                <StatsRowCard
-                  label="Pending Review"
-                  value={pendingReview}
-                  color={pendingReview > 0 ? COLORS.amber : COLORS.textMuted}
-                  icon="⏳"
-                />
-              ),
-            },
-            {
-              id:       'stat-disputes',
-              children: (
-                <StatsRowCard
-                  label="Open Disputes"
-                  value={openDisputes}
-                  color={openDisputes > 0 ? COLORS.red : COLORS.textMuted}
-                  subValue={openDisputes > 0 ? 'Needs attention' : 'All clear'}
-                  icon="⚖"
-                />
-              ),
-            },
+            // Row 3: Stats (3 small cards) - removed in favor of profile page stats
 
           ]}
         />
