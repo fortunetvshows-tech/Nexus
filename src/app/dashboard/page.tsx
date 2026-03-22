@@ -7,6 +7,8 @@ import { Navigation }  from '@/components/Navigation'
 import { BentoGrid }         from '@/components/BentoGrid'
 import { EarningsCard }      from '@/components/bento/EarningsCard'
 import { ActivityFeedCard }  from '@/components/bento/ActivityFeedCard'
+import { ReputationMiniCard } from '@/components/bento/ReputationMiniCard'
+import { LeaderboardCard }   from '@/components/bento/LeaderboardCard'
 import { RejectionCard }     from '@/components/bento/RejectionCard'
 import { DisputeTrackerCard } from '@/components/bento/DisputeTrackerCard'
 import { COLORS, FONTS, SPACING, RADII, SHADOWS, GRADIENTS, statusStyle, COMPONENT_STYLES } from '@/lib/design/tokens'
@@ -77,6 +79,14 @@ export default function DashboardPage() {
     }
   } | null>(null)
 
+  // Worker reputation stats for mini card
+  const [workerStats, setWorkerStats] = useState({
+    reputationScore:   0,
+    reputationLevel:   'Newcomer',
+    kycLevel:          0,
+    tasksCompleted:    0,
+  })
+
   // Disputes data
   const [workerDisputes, setWorkerDisputes] = useState<WorkerDispute[]>([])
 
@@ -128,6 +138,19 @@ export default function DashboardPage() {
       fetchWorkerDisputes()
     }
   }, [user?.piUid, fetchSubmissions, fetchWorkerAnalytics, fetchWorkerDisputes])
+
+  // Update worker stats for reputation card
+  useEffect(() => {
+    if (user) {
+      const tasksCompleted = submissions.filter(s => s.status === 'APPROVED').length
+      setWorkerStats({
+        reputationScore: user.reputationScore ?? 0,
+        reputationLevel: user.reputationLevel ?? 'Newcomer',
+        kycLevel:        user.kycLevel ?? 0,
+        tasksCompleted,
+      })
+    }
+  }, [user, submissions])
 
   // ── Stats ──────────────────────────────────────────────────────────
 
@@ -333,7 +356,7 @@ export default function DashboardPage() {
           gap="0.875rem"
           items={[
 
-            // Row 1: Earnings (wide) + Quick Actions
+            // Row 1: Earnings (wide) + Reputation
             {
               id:      'earnings',
               colSpan: 2,
@@ -346,8 +369,20 @@ export default function DashboardPage() {
                 />
               ),
             },
+            {
+              id:      'reputation',
+              colSpan: 1,
+              children: (
+                <ReputationMiniCard
+                  reputationScore={workerStats.reputationScore}
+                  reputationLevel={workerStats.reputationLevel}
+                  kycLevel={workerStats.kycLevel}
+                  tasksCompleted={workerStats.tasksCompleted}
+                />
+              ),
+            },
 
-            // Row 2: Activity (wide) + Reputation
+            // Row 2: Activity (wide) + Leaderboard
             {
               id:      'activity',
               colSpan: 2,
@@ -365,8 +400,16 @@ export default function DashboardPage() {
                 />
               ),
             },
-
-            // Row 3: Stats (3 small cards) - removed in favor of profile page stats
+            {
+              id:      'leaderboard',
+              colSpan: 1,
+              children: (
+                <LeaderboardCard
+                  piUid={user?.piUid ?? ''}
+                  username={user?.piUsername ?? ''}
+                />
+              ),
+            },
 
           ]}
         />
