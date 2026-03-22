@@ -12,6 +12,8 @@ import { COLORS, FONTS, SPACING, RADII, SHADOWS, GRADIENTS, statusStyle } from '
 interface PostedTask {
   id:             string
   title:          string
+  description?:   string
+  instructions?:  string
   category:       string
   piReward:       number
   slotsAvailable: number
@@ -165,6 +167,11 @@ export default function EmployerDashboardPage() {
   const [tasks,       setTasks]       = useState<PostedTask[]>([])
   const [pending,     setPending]     = useState<PendingSubmission[]>([])
   const [isLoading,   setIsLoading]   = useState(true)
+  const [editingTask, setEditingTask] = useState<PostedTask | null>(null)
+  const [editForm,    setEditForm]    = useState({ title: '', description: '', instructions: '', deadline: '' })
+  const [isSaving,    setIsSaving]    = useState(false)
+  const [actionMessage, setActionMessage] = useState<string | null>(null)
+  const [postedTasks, setPostedTasks] = useState<PostedTask[]>([])
 
   useEffect(() => {
     if (isSdkReady && !user && !hasAutoAuthenticated.current) {
@@ -185,7 +192,10 @@ export default function EmployerDashboardPage() {
         .then(r => r.json())
         .then(d => {
           if (d.summary) setSummary(d.summary)
-          if (d.tasks)   setTasks(d.tasks)
+          if (d.tasks) {
+            setTasks(d.tasks)
+            setPostedTasks(d.tasks)
+          }
         }),
 
       // Pending submissions across all employer tasks
@@ -234,6 +244,54 @@ export default function EmployerDashboardPage() {
         Connecting...
       </div>
     )
+  }
+
+  const handleArchive = async (taskId: string, taskTitle: string) => {
+    if (!user?.piUid) return
+    if (!confirm(`Archive "${taskTitle}"? Workers who already claimed slots can still submit and get paid. The task will be hidden from new workers.`)) return
+
+    const res = await fetch(`${window.location.origin}/api/tasks/${taskId}`, {
+      method:  'DELETE',
+      headers: { 'x-pi-uid': user.piUid },
+    })
+    const data = await res.json()
+    if (data.success) {
+      setActionMessage(`"${taskTitle}" archived successfully`)
+      // Remove from local list
+      setPostedTasks(prev => prev.filter(t => t.id !== taskId))
+    } else {
+      setActionMessage(`Error: ${data.error}`)
+    }
+  }
+
+  const handleSaveEdit = async () => {
+    if (!editingTask || !user?.piUid) return
+    setIsSaving(true)
+    try {
+      const res = await fetch(`${window.location.origin}/api/tasks/${editingTask.id}`, {
+        method:  'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-pi-uid':     user.piUid,
+        },
+        body: JSON.stringify(editForm),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setActionMessage('Task updated successfully')
+        setEditingTask(null)
+        // Update local list
+        setPostedTasks(prev => prev.map(t =>
+          t.id === editingTask.id
+            ? { ...t, title: editForm.title || t.title }
+            : t
+        ))
+      } else {
+        setActionMessage(`Error: ${data.error}`)
+      }
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const activeTasks    = tasks.filter(t => t.taskStatus === 'escrowed')
@@ -465,6 +523,45 @@ export default function EmployerDashboardPage() {
                                   </Link>
                                 </div>
                               </div>
+
+                              {/* Task actions */}
+                              <div style={{
+                                display: 'flex',
+                                gap:     '8px',
+                                marginTop: '0.75rem',
+                              }}>
+                                <button
+                                  onClick={() => setEditingTask(task)}
+                                  style={{
+                                    padding:      '4px 12px',
+                                    background:   'transparent',
+                                    border:       `1px solid ${COLORS.borderAccent}`,
+                                    borderRadius: RADII.sm,
+                                    color:        COLORS.textSecondary,
+                                    fontSize:     '0.75rem',
+                                    cursor:       'pointer',
+                                    fontFamily:   FONTS.sans,
+                                  }}
+                                >
+                                  ✏️ Edit
+                                </button>
+                                <button
+                                  onClick={() => handleArchive(task.id, task.title)}
+                                  style={{
+                                    padding:      '4px 12px',
+                                    background:   'transparent',
+                                    border:       '1px solid rgba(239,68,68,0.3)',
+                                    borderRadius: RADII.sm,
+                                    color:        '#EF4444',
+                                    fontSize:     '0.75rem',
+                                    cursor:       'pointer',
+                                    fontFamily:   FONTS.sans,
+                                  }}
+                                >
+                                  🗄 Archive
+                                </button>
+                              </div>
+
                               <FillBar
                                 filled={filled}
                                 total={task.slotsAvailable}
@@ -685,6 +782,160 @@ export default function EmployerDashboardPage() {
         )}
 
       </main>
+
+      {/* Edit modal */}
+      {editingTask && (
+        <div style={{
+          position:   'fixed' as const,
+          inset:      0,
+          background: 'rgba(0,0,0,0.7)',
+          zIndex:     500,
+          display:    'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding:    '1rem',
+        }}>
+          <div style={{
+            background:   COLORS.bgSurface,
+            border:       `1px solid ${COLORS.border}`,
+            borderRadius: RADII.xl,
+            padding:      SPACING.xl,
+            width:        '100%',
+            maxWidth:     '520px',
+            maxHeight:    '80vh',
+            overflowY:    'auto' as const,
+          }}>
+            <h2 style={{
+              margin:     `0 0 ${SPACING.lg}`,
+              fontSize:   '1.1rem',
+              fontWeight: '700',
+              color:      COLORS.textPrimary,
+            }}>
+              Edit Opportunity
+            </h2>
+
+            <div style={{ marginBottom: SPACING.md }}>
+              <label style={{ display: 'block', fontSize: '0.78rem', color: COLORS.textMuted, marginBottom: '4px' }}>Title</label>
+              <input
+                defaultValue={editingTask.title}
+                onChange={e => setEditForm(prev => ({ ...prev, title: e.target.value }))}
+                style={{
+                  width:        '100%',
+                  padding:      '0.75rem',
+                  background:   COLORS.bgElevated,
+                  border:       `1px solid ${COLORS.borderAccent}`,
+                  borderRadius: RADII.md,
+                  color:        COLORS.textPrimary,
+                  fontSize:     '0.9rem',
+                  outline:      'none',
+                  boxSizing:    'border-box' as const,
+                  fontFamily:   FONTS.sans,
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: SPACING.md }}>
+              <label style={{ display: 'block', fontSize: '0.78rem', color: COLORS.textMuted, marginBottom: '4px' }}>Description</label>
+              <textarea
+                defaultValue={editingTask.description ?? ''}
+                onChange={e => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                rows={3}
+                style={{
+                  width:        '100%',
+                  padding:      '0.75rem',
+                  background:   COLORS.bgElevated,
+                  border:       `1px solid ${COLORS.borderAccent}`,
+                  borderRadius: RADII.md,
+                  color:        COLORS.textPrimary,
+                  fontSize:     '0.875rem',
+                  resize:       'vertical' as const,
+                  outline:      'none',
+                  boxSizing:    'border-box' as const,
+                  fontFamily:   FONTS.sans,
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: SPACING.lg }}>
+              <label style={{ display: 'block', fontSize: '0.78rem', color: COLORS.textMuted, marginBottom: '4px' }}>Instructions</label>
+              <textarea
+                defaultValue={editingTask.instructions ?? ''}
+                onChange={e => setEditForm(prev => ({ ...prev, instructions: e.target.value }))}
+                rows={4}
+                style={{
+                  width:        '100%',
+                  padding:      '0.75rem',
+                  background:   COLORS.bgElevated,
+                  border:       `1px solid ${COLORS.borderAccent}`,
+                  borderRadius: RADII.md,
+                  color:        COLORS.textPrimary,
+                  fontSize:     '0.875rem',
+                  resize:       'vertical' as const,
+                  outline:      'none',
+                  boxSizing:    'border-box' as const,
+                  fontFamily:   FONTS.sans,
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: SPACING.sm }}>
+              <button
+                onClick={() => setEditingTask(null)}
+                style={{
+                  flex:         1,
+                  padding:      '0.875rem',
+                  background:   'transparent',
+                  border:       `1px solid ${COLORS.border}`,
+                  borderRadius: RADII.md,
+                  color:        COLORS.textSecondary,
+                  fontSize:     '0.875rem',
+                  cursor:       'pointer',
+                  fontFamily:   FONTS.sans,
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveEdit}
+                disabled={isSaving}
+                style={{
+                  flex:         2,
+                  padding:      '0.875rem',
+                  background:   COLORS.indigo,
+                  border:       'none',
+                  borderRadius: RADII.md,
+                  color:        'white',
+                  fontSize:     '0.875rem',
+                  fontWeight:   '600',
+                  cursor:       isSaving ? 'not-allowed' : 'pointer',
+                  fontFamily:   FONTS.sans,
+                }}
+              >
+                {isSaving ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {actionMessage && (
+        <div style={{
+          position:     'fixed' as const,
+          bottom:       '5rem',
+          left:         '50%',
+          transform:    'translateX(-50%)',
+          padding:      `${SPACING.sm} ${SPACING.lg}`,
+          background:   COLORS.bgSurface,
+          border:       `1px solid ${COLORS.border}`,
+          borderRadius: RADII.full,
+          color:        COLORS.textPrimary,
+          fontSize:     '0.85rem',
+          zIndex:       600,
+          boxShadow:    '0 4px 20px rgba(0,0,0,0.4)',
+        }}>
+          {actionMessage}
+        </div>
+      )}
     </div>
   )
 }
