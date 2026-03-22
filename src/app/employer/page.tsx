@@ -52,17 +52,6 @@ export default function EmployerPage() {
     reset,
   } = useTaskCreation(user?.piUid ?? null)
 
-  const [myTasks, setMyTasks]       = useState<Array<{
-    id:             string
-    title:          string
-    category:       string
-    piReward:       number
-    slotsAvailable: number
-    slotsRemaining: number
-    taskStatus:     string
-    createdAt:      string
-  }>>([])
-  const [tasksLoading, setTasksLoading] = useState(false)
   const [dbCategories, setDbCategories] = useState<string[]>([])
 
   // Fetch categories from database
@@ -81,22 +70,6 @@ export default function EmployerPage() {
         setDbCategories(TASK_CATEGORIES)
       })
   }, [])
-
-  // Fetch employer's posted tasks when authenticated
-  useEffect(() => {
-    if (!user?.piUid) return
-
-    setTasksLoading(true)
-    fetch('/api/employer/tasks', {
-      headers: { 'x-pi-uid': user.piUid },
-    })
-      .then(r => r.json())
-      .then(d => {
-        if (d.tasks) setMyTasks(d.tasks)
-        setTasksLoading(false)
-      })
-      .catch(() => setTasksLoading(false))
-  }, [user?.piUid])
 
   const categoryList = dbCategories.length > 0 ? dbCategories : TASK_CATEGORIES
 
@@ -145,78 +118,6 @@ export default function EmployerPage() {
       <Navigation currentPage="employer" />
 
       <main className="page-main">
-
-        {/* My Posted Tasks — shown when on form step or after success */}
-        {(step === 'form' || step === 'success') && myTasks.length > 0 && (
-          <div style={{
-            marginBottom: '2rem',
-          }}>
-            <h2 style={{
-              margin:     '0 0 1rem',
-              fontSize:   '1rem',
-              fontWeight: '600',
-              color:      COLORS.textSecondary,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-            }}>
-              Your Active Opportunities
-            </h2>
-            <div style={{
-              display:       'flex',
-              flexDirection: 'column',
-              gap:           '0.75rem',
-            }}>
-              {myTasks.map(task => (
-                <div key={task.id} style={{
-                  background:   COLORS.bgSurface,
-                  border:       `1px solid ${COLORS.border}`,
-                  borderRadius: RADII.lg,
-                  padding:      '1rem 1.25rem',
-                  display:      'flex',
-                  justifyContent: 'space-between',
-                  alignItems:   'center',
-                }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{
-                      fontWeight: '600',
-                      fontSize:   '0.9rem',
-                      color:      COLORS.textPrimary,
-                      marginBottom: '0.25rem',
-                    }}>
-                      {task.title}
-                    </div>
-                    <div style={{
-                      fontSize: '0.78rem',
-                      color:    COLORS.textMuted,
-                    }}>
-                      {task.category}
-                      {' · '}
-                      {task.piReward}π per slot
-                      {' · '}
-                      {task.slotsRemaining}/{task.slotsAvailable} slots left
-                    </div>
-                  </div>
-                  <Link
-                    href={`/review/${task.id}`}
-                    style={{
-                      padding:        '0.5rem 1rem',
-                    background:     GRADIENTS.indigo,
-                      color:          COLORS.textPrimary,
-                      borderRadius:   RADII.md,
-                      fontSize:       '0.8rem',
-                      fontWeight:     '500',
-                      textDecoration: 'none',
-                      whiteSpace:     'nowrap',
-                      marginLeft:     '1rem',
-                    }}
-                  >
-                    Review Work →
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Step: Form */}
         {step === 'form' && (

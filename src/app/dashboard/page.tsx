@@ -7,7 +7,6 @@ import { Navigation }  from '@/components/Navigation'
 import { BentoGrid }         from '@/components/BentoGrid'
 import { EarningsCard }      from '@/components/bento/EarningsCard'
 import { ReputationCard }    from '@/components/bento/ReputationCard'
-import { QuickActionsCard }  from '@/components/bento/QuickActionsCard'
 import { ActivityFeedCard }  from '@/components/bento/ActivityFeedCard'
 import { StatsRowCard }      from '@/components/bento/StatsRowCard'
 import { RejectionCard }     from '@/components/bento/RejectionCard'
@@ -379,10 +378,6 @@ export default function DashboardPage() {
                   pendingAmount={pendingAmount}
                 />
               ),
-            },
-            {
-              id:      'quick-actions',
-              children: <QuickActionsCard />,
             },
 
             // Row 2: Activity (wide) + Reputation
