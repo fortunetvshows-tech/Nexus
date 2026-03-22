@@ -29,7 +29,33 @@ export function TopBar() {
       .catch(() => {})
   }, [user?.piUid, hasMounted])
 
-  if (!hasMounted) return null
+  if (!hasMounted) return (
+    <header style={{
+      position:        'fixed' as const,
+      top:             0,
+      left:            0,
+      right:           0,
+      height:          '60px',
+      background:      'rgba(10, 10, 15, 0.85)',
+      backdropFilter:  'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)' as any,
+      borderBottom:    '1px solid rgba(255,255,255,0.06)',
+      zIndex:          300,
+      display:         'flex',
+      alignItems:      'center',
+      padding:         '0 1rem',
+    }}>
+      <span style={{
+        fontFamily:    FONTS.mono,
+        fontSize:      '1.1rem',
+        fontWeight:    '800',
+        color:         COLORS.textPrimary,
+        letterSpacing: '-0.02em',
+      }}>
+        Nexus
+      </span>
+    </header>
+  )
 
   return (
     <header style={{
