@@ -3,51 +3,10 @@
 import { useEffect, useState, useCallback } from 'react'
 import { usePiAuth }  from '@/hooks/use-pi-auth'
 import { Navigation } from '@/components/Navigation'
-import { Marquee }    from '@/components/Marquee'
 import {
   COLORS, FONTS, RADII, SPACING, GRADIENTS
 } from '@/lib/design/tokens'
 import { TASK_CATEGORIES } from '@/lib/config/categories'
-
-// ── Static opportunity previews ──────────────────────────────
-const SAMPLE_OPPORTUNITIES = [
-  {
-    emoji:   '🤖',
-    title:   'Label 10 product images',
-    reward:  '1.50',
-    time:    '10 min',
-    color:   '#6366F1',
-    dim:     'rgba(99,102,241,0.12)',
-  },
-  {
-    emoji:   '🌐',
-    title:   'Translate 5 app phrases',
-    reward:  '2.00',
-    time:    '10 min',
-    color:   '#10B981',
-    dim:     'rgba(16,185,129,0.12)',
-  },
-  {
-    emoji:   '📱',
-    title:   'Test Nexus and write feedback',
-    reward:  '2.50',
-    time:    '15 min',
-    color:   '#F59E0B',
-    dim:     'rgba(245,158,11,0.12)',
-  },
-]
-
-// ── Live activity ticker ─────────────────────────────────────
-const ACTIVITY_ITEMS = [
-  '🎉 Pioneer just earned 2.85π for Local Verification',
-  '⚡ New opportunity: Earn 1.50π in 10 minutes',
-  '✅ Translation task completed — 2.00π paid',
-  '🔥 5 Pioneers earning right now',
-  '💳 App Testing opportunity — 2.50π available',
-  '🌍 Pioneer from Nigeria earned 3.00π',
-  '⚡ New AI Labeling task — 1.50π per slot',
-  '✅ Community task completed — 1.00π paid',
-]
 
 const STATS = [
   { value: '5',     label: 'Task Categories'    },
@@ -295,167 +254,63 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── LIVE TICKER ──────────────────────────────────── */}
+      {/* ── REAL OPPORTUNITIES CTA ───────────────────────── */}
       <div style={{
-        borderTop:    `1px solid ${COLORS.border}`,
-        borderBottom: `1px solid ${COLORS.border}`,
-        padding:      `${SPACING.sm} 0`,
-        background:   COLORS.bgSurface,
-        overflow:     'hidden',
+        textAlign:    'center' as const,
+        padding:      '3rem 1rem',
+        maxWidth:     '600px',
+        margin:       '0 auto',
       }}>
-        <Marquee items={ACTIVITY_ITEMS} speed={30} />
+        <div style={{
+          fontSize:      '0.72rem',
+          fontWeight:    '700',
+          color:         COLORS.indigo,
+          textTransform: 'uppercase' as const,
+          letterSpacing: '0.15em',
+          marginBottom:  SPACING.sm,
+        }}>
+          Real Opportunities
+        </div>
+        <h2 style={{
+          margin:        `0 0 ${SPACING.sm}`,
+          fontSize:      'clamp(1.5rem, 4vw, 2rem)',
+          fontWeight:    '700',
+          color:         COLORS.textPrimary,
+          letterSpacing: '-0.02em',
+        }}>
+          Tasks posted by real employers
+        </h2>
+        <p style={{
+          margin:   `0 0 ${SPACING.lg}`,
+          color:    COLORS.textMuted,
+          fontSize: '0.9rem',
+        }}>
+          Every task pays real Pi directly to your wallet.
+          New opportunities added daily.
+        </p>
+        <a
+          href={user ? '/feed' : '#'}
+          onClick={!user ? (e) => { e.preventDefault(); handleLogin() } : undefined}
+          style={{
+            display:        'inline-flex',
+            alignItems:     'center',
+            gap:            '8px',
+            padding:        '0.875rem 2rem',
+            background:     `linear-gradient(135deg, ${COLORS.indigo}, #4338CA)`,
+            color:          'white',
+            borderRadius:   RADII.lg,
+            fontSize:       '0.95rem',
+            fontWeight:     '700',
+            textDecoration: 'none',
+            border:         'none',
+            cursor:         'pointer',
+            fontFamily:     FONTS.sans,
+            boxShadow:      '0 0 20px rgba(99,102,241,0.3)',
+          }}
+        >
+          Browse Live Opportunities →
+        </a>
       </div>
-
-      {/* ── LIVE OPPORTUNITIES ───────────────────────────── */}
-      <section style={{
-        padding:   `${SPACING.xxl} ${SPACING.lg}`,
-        maxWidth:  '1100px',
-        margin:    '0 auto',
-      }}>
-        <div style={{
-          textAlign:    'center' as const,
-          marginBottom: SPACING.xl,
-        }}>
-          <div style={{
-            fontSize:      '0.72rem',
-            fontWeight:    '700',
-            color:         COLORS.indigo,
-            textTransform: 'uppercase' as const,
-            letterSpacing: '0.15em',
-            marginBottom:  SPACING.sm,
-          }}>
-            Available Right Now
-          </div>
-          <h2 style={{
-            margin:        0,
-            fontSize:      'clamp(1.75rem, 4vw, 2.5rem)',
-            fontWeight:    '700',
-            letterSpacing: '-0.02em',
-          }}>
-            Opportunities waiting for you
-          </h2>
-          <p style={{
-            margin:   `${SPACING.sm} 0 0`,
-            color:    COLORS.textMuted,
-            fontSize: '0.95rem',
-          }}>
-            Complete any task and receive Pi directly to your wallet
-          </p>
-        </div>
-
-        <div style={{
-          display:             'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap:                 SPACING.md,
-          marginBottom:        SPACING.xl,
-        }}>
-          {SAMPLE_OPPORTUNITIES.map((opp, i) => (
-            <div
-              key={i}
-              className="nexus-card"
-              style={{
-                borderLeft:  `3px solid ${opp.color}`,
-                transition:  'transform 0.2s ease',
-                cursor:      'pointer',
-              }}
-            >
-              <div style={{
-                display:        'flex',
-                alignItems:     'flex-start',
-                gap:            SPACING.md,
-                marginBottom:   SPACING.md,
-              }}>
-                <div style={{
-                  width:          '48px',
-                  height:         '48px',
-                  borderRadius:   RADII.md,
-                  background:     opp.dim,
-                  display:        'flex',
-                  alignItems:     'center',
-                  justifyContent: 'center',
-                  fontSize:       '1.4rem',
-                  flexShrink:     0,
-                }}>
-                  {opp.emoji}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{
-                    fontSize:     '0.95rem',
-                    fontWeight:   '600',
-                    color:        COLORS.textPrimary,
-                    marginBottom: '4px',
-                    lineHeight:   1.3,
-                  }}>
-                    {opp.title}
-                  </div>
-                  <div style={{
-                    fontSize: '0.78rem',
-                    color:    COLORS.textMuted,
-                  }}>
-                    ⏱ {opp.time} · Pay on completion
-                  </div>
-                </div>
-              </div>
-
-              <div style={{
-                display:        'flex',
-                alignItems:     'center',
-                justifyContent: 'space-between',
-              }}>
-                <div style={{
-                  fontFamily:    FONTS.mono,
-                  fontSize:      '1.4rem',
-                  fontWeight:    '700',
-                  color:         opp.color,
-                  letterSpacing: '-0.02em',
-                }}>
-                  {opp.reward}π
-                </div>
-                <a
-                  href={user ? '/feed' : '#'}
-                  onClick={!user ? (e) => { e.preventDefault(); handleLogin() } : undefined}
-                  style={{
-                    padding:        `${SPACING.xs} ${SPACING.md}`,
-                    background:     opp.color,
-                    color:          'white',
-                    borderRadius:   RADII.md,
-                    fontSize:       '0.82rem',
-                    fontWeight:     '600',
-                    textDecoration: 'none',
-                    border:         'none',
-                    cursor:         'pointer',
-                    fontFamily:     FONTS.sans,
-                  }}
-                >
-                  Claim →
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ textAlign: 'center' as const }}>
-          <a
-            href={user ? '/feed' : '#'}
-            onClick={!user ? (e) => { e.preventDefault(); handleLogin() } : undefined}
-            style={{
-              display:        'inline-flex',
-              alignItems:     'center',
-              gap:            '8px',
-              color:          COLORS.indigo,
-              fontSize:       '0.9rem',
-              fontWeight:     '600',
-              textDecoration: 'none',
-              cursor:         'pointer',
-              border:         'none',
-              background:     'transparent',
-              fontFamily:     FONTS.sans,
-            }}
-          >
-            View all opportunities →
-          </a>
-        </div>
-      </section>
 
       {/* ── HOW IT WORKS ─────────────────────────────────── */}
       <section style={{
