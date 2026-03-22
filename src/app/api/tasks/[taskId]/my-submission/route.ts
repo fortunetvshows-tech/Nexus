@@ -38,8 +38,27 @@ export async function GET(
       .limit(1)
       .maybeSingle()
 
+    // Also check for active slot reservation (worker claimed but not submitted)
+    let reservation = null
+    if (!submission) {
+      const { data: activeReservation } = await supabaseAdmin
+        .from('SlotReservation')
+        .select('id, status, timeoutAt, verificationCode')
+        .eq('taskId', taskId)
+        .eq('workerId', worker.id)
+        .in('status', ['CLAIMED', 'ACTIVE'])
+        .order('createdAt', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      reservation = activeReservation ?? null
+    }
+
     return NextResponse.json(
-      { success: true, submission: submission ?? null },
+      {
+        success:     true,
+        submission:  submission ?? null,
+        reservation: reservation ?? null,
+      },
       { status: 200 }
     )
 

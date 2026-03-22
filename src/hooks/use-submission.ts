@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 
 interface SlotState {
   isClaimed: boolean
@@ -138,6 +138,41 @@ export function useSubmission(taskId: string, piUid: string = '') {
     },
     [taskId]
   )
+
+  // Check for existing submission or reservation on mount
+  useEffect(() => {
+    if (!taskId || !piUid) return
+
+    fetch(`/api/tasks/${taskId}/my-submission`, {
+      headers: { 'x-pi-uid': piUid },
+    })
+      .then(r => r.json())
+      .then(data => {
+        // If submitted, set submitted state
+        if (data.submission) {
+          setSubmitState(prev => ({
+            ...prev,
+            isSubmitted: true,
+            submissionId: data.submission.id,
+          }))
+        }
+        // If not submitted but reservation exists, restore claimed state
+        if (data.reservation && !data.submission) {
+          const r = data.reservation
+          // Check reservation not expired
+          if (new Date(r.timeoutAt) > new Date()) {
+            setSlotState(prev => ({
+              ...prev,
+              isClaimed: true,
+              reservationId: r.id,
+              timeoutAt: r.timeoutAt,
+              verificationCode: r.verificationCode ?? null,
+            }))
+          }
+        }
+      })
+      .catch(err => console.error('[Nexus:useSubmission] Mount check error:', err))
+  }, [taskId, piUid])
 
   const reset = useCallback(() => {
     setSlotState({
