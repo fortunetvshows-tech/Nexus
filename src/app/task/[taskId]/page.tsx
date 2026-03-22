@@ -393,6 +393,30 @@ export default function TaskDetailPage({
               </div>
             )}
 
+            <div style={{
+              padding:      SPACING.md,
+              background:   'rgba(245,158,11,0.08)',
+              border:       '1px solid rgba(245,158,11,0.25)',
+              borderRadius: RADII.md,
+              marginBottom: SPACING.md,
+              fontSize:     '0.82rem',
+              color:        '#F59E0B',
+              lineHeight:   1.5,
+            }}>
+              ⚠️ Set your wallet address before claiming.
+              Without it your payment cannot be sent.{' '}
+              <Link
+                href="/profile"
+                style={{
+                  color:          COLORS.indigo,
+                  fontWeight:     '600',
+                  textDecoration: 'none',
+                }}
+              >
+                Go to Profile →
+              </Link>
+            </div>
+
             <button
               onClick={() => claimSlot()}
               disabled={isClaiming || !canClaim}
