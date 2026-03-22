@@ -19,10 +19,11 @@ export async function claimTaskSlot(
   taskId:   string,
   workerId: string
 ): Promise<{
-  success:        boolean
-  reservationId?: string
-  timeoutAt?:     string
-  error?:         string
+  success:            boolean
+  reservationId?:     string
+  verificationCode?:  string
+  timeoutAt?:         string
+  error?:             string
 }> {
   const { data, error } = await supabaseAdmin
     .rpc('reserve_task_slot', {
@@ -36,10 +37,11 @@ export async function claimTaskSlot(
   }
 
   const result = data as {
-    success:        boolean
-    reservationId?: string
-    timeoutAt?:     string
-    error?:         string
+    success:            boolean
+    reservationId?:     string
+    verificationCode?:  string
+    timeoutAt?:         string
+    error?:             string
   }
 
   return result

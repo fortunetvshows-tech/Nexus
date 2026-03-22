@@ -62,6 +62,7 @@ export default function TaskDetailPage({
     submitError,
     agreedReward,
     timeoutAt,
+    verificationCode,
     claimSlot,
     submitProof,
   } = useSubmission(taskId ?? '', user?.piUid ?? '')
@@ -439,6 +440,51 @@ export default function TaskDetailPage({
                 ⏱ {timeLeft || 'Loading...'}
               </span>
             </div>
+
+            {/* Verification code display */}
+            {verificationCode && (
+              <div style={{
+                padding: '1rem',
+                background: 'rgba(99,102,241,0.06)',
+                border: '1px solid rgba(99,102,241,0.2)',
+                borderRadius: '8px',
+                marginBottom: '1.25rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '1rem',
+              }}>
+                <div>
+                  <div style={{
+                    fontSize: '0.7rem',
+                    fontWeight: '700',
+                    color: COLORS.textMuted,
+                    textTransform: 'uppercase' as const,
+                    letterSpacing: '0.1em',
+                    marginBottom: '0.5rem',
+                  }}>
+                    Include in your proof
+                  </div>
+                  <div style={{
+                    fontFamily: FONTS.mono,
+                    fontSize: '1.1rem',
+                    fontWeight: '800',
+                    color: COLORS.indigo,
+                    letterSpacing: '0.08em',
+                  }}>
+                    {verificationCode}
+                  </div>
+                </div>
+                <div style={{
+                  fontSize: '0.75rem',
+                  color: COLORS.textMuted,
+                  textAlign: 'right' as const,
+                  lineHeight: '1.4',
+                }}>
+                  Write this code somewhere visible in your proof
+                </div>
+              </div>
+            )}
 
             {/* Proof submission header */}
             <h3 style={{

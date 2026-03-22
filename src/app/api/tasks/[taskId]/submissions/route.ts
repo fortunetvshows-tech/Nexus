@@ -64,7 +64,8 @@ export async function GET(
           reputationScore,
           reputationLevel,
           kycLevel
-        )
+        ),
+        slotReservation:SlotReservation!inner(verificationCode)
       `)
       .eq('taskId', taskId)
       .order('submittedAt', { ascending: false })
@@ -78,7 +79,10 @@ export async function GET(
     }
 
     return NextResponse.json(
-      { success: true, submissions: submissions ?? [] },
+      { success: true, submissions: (submissions ?? []).map(sub => ({
+        ...sub,
+        verificationCode: sub.slotReservation?.[0]?.verificationCode ?? null,
+      })) },
       { status: 200 }
     )
 

@@ -7,17 +7,18 @@ import { Navigation } from '@/components/Navigation'
 import { COLORS, FONTS, RADII, SHADOWS, GRADIENTS, SPACING, statusStyle } from '@/lib/design/tokens'
 
 interface Submission {
-  id:              string
-  status:          string
-  proofContent:    string
-  proofFileUrl?:   string
-  submissionType:  string
-  agreedReward:    number
-  qualityRating?:  number
-  rejectionReason?: string
-  autoApproveAt:   string
-  submittedAt:     string
-  reviewedAt?:     string
+  id:                 string
+  status:             string
+  proofContent:       string
+  proofFileUrl?:      string
+  submissionType:     string
+  agreedReward:       number
+  qualityRating?:     number
+  rejectionReason?:   string
+  autoApproveAt:      string
+  submittedAt:        string
+  reviewedAt?:        string
+  verificationCode?:  string | null
   worker: {
     id:              string
     piUsername:      string
@@ -409,6 +410,50 @@ export default function ReviewPage({
               }}>
                 {sub.proofContent || 'No text content'}
               </div>
+
+              {/* Verification code check */}
+              {sub.verificationCode && (
+                <div style={{
+                  padding:      '0.75rem',
+                  background:   'rgba(99,102,241,0.06)',
+                  border:       '1px solid rgba(99,102,241,0.2)',
+                  borderRadius: '8px',
+                  marginBottom: '1rem',
+                  display:      'flex',
+                  alignItems:   'center',
+                  justifyContent: 'space-between',
+                }}>
+                  <div>
+                    <div style={{
+                      fontSize:       '0.65rem',
+                      color:          COLORS.textMuted,
+                      fontWeight:     '600',
+                      textTransform:  'uppercase' as const,
+                      letterSpacing:  '0.1em',
+                      marginBottom:   '2px',
+                    }}>
+                      Expected Verification Code
+                    </div>
+                    <div style={{
+                      fontFamily:     FONTS.mono,
+                      fontSize:       '1.1rem',
+                      fontWeight:     '800',
+                      color:          COLORS.indigo,
+                      letterSpacing:  '0.08em',
+                    }}>
+                      {sub.verificationCode}
+                    </div>
+                  </div>
+                  <div style={{
+                    fontSize:   '0.72rem',
+                    color:      COLORS.textMuted,
+                    maxWidth:   '140px',
+                    textAlign:  'right' as const,
+                  }}>
+                    Verify this code appears in the worker's proof
+                  </div>
+                </div>
+              )}
 
               {/* Reward */}
               <div style={{

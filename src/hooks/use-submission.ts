@@ -7,6 +7,7 @@ interface SlotState {
   isClaiming: boolean
   reservationId: string | null
   timeoutAt: string | null
+  verificationCode: string | null
   claimError: string | null
 }
 
@@ -25,6 +26,7 @@ export function useSubmission(taskId: string, piUid: string = '') {
     isClaiming: false,
     reservationId: null,
     timeoutAt: null,
+    verificationCode: null,
     claimError: null,
   })
 
@@ -66,6 +68,7 @@ export function useSubmission(taskId: string, piUid: string = '') {
         isClaiming: false,
         reservationId: data.reservationId,
         timeoutAt: data.timeoutAt,
+        verificationCode: data.verificationCode || null,
       }))
       return true
 
@@ -142,6 +145,7 @@ export function useSubmission(taskId: string, piUid: string = '') {
       isClaiming: false,
       reservationId: null,
       timeoutAt: null,
+      verificationCode: null,
       claimError: null,
     })
     setSubmitState({
@@ -160,6 +164,7 @@ export function useSubmission(taskId: string, piUid: string = '') {
     isClaiming: slotState.isClaiming,
     reservationId: slotState.reservationId,
     timeoutAt: slotState.timeoutAt,
+    verificationCode: slotState.verificationCode,
     claimError: slotState.claimError,
 
     // Submit state

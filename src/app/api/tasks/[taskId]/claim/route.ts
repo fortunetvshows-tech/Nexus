@@ -45,9 +45,10 @@ export async function POST(
 
     return NextResponse.json(
       {
-        success:       true,
-        reservationId: result.reservationId,
-        timeoutAt:     result.timeoutAt,
+        success:            true,
+        reservationId:      result.reservationId,
+        verificationCode:   result.verificationCode ?? null,
+        timeoutAt:          result.timeoutAt,
       },
       { status: 200 }
     )
