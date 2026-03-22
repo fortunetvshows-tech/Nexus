@@ -412,6 +412,36 @@ export default function ProfilePage() {
             </div>
           </>
         )}
+
+        {/* Logout section */}
+        <div style={{
+          marginTop: '2rem',
+          paddingTop: '1.5rem',
+          borderTop: `1px solid ${COLORS.border}`,
+        }}>
+          <button
+            onClick={() => {
+              // Clear Pi session and reload to landing
+              if (typeof window !== 'undefined') {
+                window.location.href = '/'
+              }
+            }}
+            style={{
+              width:        '100%',
+              padding:      '0.875rem',
+              background:   'transparent',
+              border:       `1px solid rgba(239,68,68,0.3)`,
+              borderRadius: RADII.md,
+              color:        '#EF4444',
+              fontSize:     '0.85rem',
+              fontWeight:   '600',
+              cursor:       'pointer',
+              fontFamily:   FONTS.sans,
+            }}
+          >
+            Sign Out
+          </button>
+        </div>
       </main>
     </div>
   )

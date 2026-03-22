@@ -48,10 +48,10 @@ export function Navigation({ currentPage }: NavigationProps) {
       {/* Main nav bar */}
       <nav style={{
         position:       'fixed',
-        top:            0,
+        top:            '60px',
         left:           0,
         right:          0,
-        height:         '60px',
+        height:         '56px',
         background:     scrolled
           ? 'rgba(15,23,42,0.95)'
           : 'rgba(15,23,42,0.85)',

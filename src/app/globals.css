@@ -439,7 +439,7 @@ section[id] {
 
 /* Sticky top bar height compensation */
 :root {
-  --topbar-height: 60px;
+  --topbar-height: 116px;
 }
 
 /* Page content max width — centered feed */
