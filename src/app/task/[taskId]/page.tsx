@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, use } from 'react'
 import Link from 'next/link'
+import { PLATFORM_CONFIG } from '@/lib/config/platform'
 import { usePiAuth }    from '@/hooks/use-pi-auth'
 import { useSubmission } from '@/hooks/use-submission'
 import { Navigation }   from '@/components/Navigation'
@@ -231,7 +232,7 @@ export default function TaskDetailPage({
                 letterSpacing: '-0.04em',
                 lineHeight:    1,
               }}>
-                {Math.max(0, task.piReward * 0.95 - 0.01).toFixed(2)}π
+                {Math.max(0, PLATFORM_CONFIG.workerNetPayout(task.piReward)).toFixed(2)}π
               </div>
               <div style={{
                 fontSize:   '0.78rem',
@@ -270,7 +271,7 @@ export default function TaskDetailPage({
                   fontSize:     '0.68rem',
                   color:        '#EF4444',
                 }}>
-                  5% platform fee
+                  {(PLATFORM_CONFIG.PLATFORM_FEE_RATE * 100).toFixed(0)}% platform fee
                 </span>
                 <span style={{
                   fontSize: '0.68rem',
@@ -284,7 +285,7 @@ export default function TaskDetailPage({
                   fontSize:     '0.68rem',
                   color:        '#EF4444',
                 }}>
-                  0.01π network fee
+                  {PLATFORM_CONFIG.NETWORK_FEE_PI}π network fee
                 </span>
               </div>
             </div>

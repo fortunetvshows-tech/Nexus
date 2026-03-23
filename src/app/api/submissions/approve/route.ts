@@ -1,4 +1,5 @@
 import { checkRateLimit }       from '@/lib/rate-limit'
+import { PLATFORM_CONFIG }       from '@/lib/config/platform'
 import { supabaseAdmin }         from '@/lib/supabase-admin'
 import { approveSubmission }     from '@/lib/services/escrow-service'
 import { payWorkerA2U }          from '@/lib/services/a2u-payment-service'
@@ -112,7 +113,9 @@ export async function POST(
     // A2U needs Pi UID (to identify user) AND wallet address (for Stellar tx)
     const workerPiUid = worker?.piUid ?? null
     const workerWallet = worker?.walletAddress ?? null
-    const netAmount = Number(submission.agreedReward) * 0.95 // 5% platform fee
+    const netAmount = PLATFORM_CONFIG.workerNetPayout(
+      Number(submission.agreedReward)
+    )
 
     if (!workerPiUid) {
       return NextResponse.json({
@@ -148,8 +151,10 @@ export async function POST(
     if (paymentResult.success) {
       try {
         const grossAmount = Number(submission.agreedReward)
-        const feeAmount = Number(submission.agreedReward) * 0.05
-        const networkFee = 0.01
+        const feeAmount = PLATFORM_CONFIG.platformFee(
+          Number(submission.agreedReward)
+        )
+        const networkFee = PLATFORM_CONFIG.NETWORK_FEE_PI
         const actualReceived = netAmount - networkFee
 
         await supabaseAdmin

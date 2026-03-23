@@ -97,10 +97,10 @@ export async function GET(req: NextRequest) {
       stats,
     }, { status: 200 })
 
-  } catch (err) {
-    console.error('[Nexus:ReferralRoute] Error:', err)
+  } catch (err: any) {
+    console.error('[Nexus:ReferralRoute] Error:', err?.message ?? err)
     return NextResponse.json(
-      { error: 'INTERNAL_ERROR', message: 'Internal server error' },
+      { error: 'INTERNAL_ERROR', message: err?.message ?? 'Internal server error' },
       { status: 500 }
     )
   }

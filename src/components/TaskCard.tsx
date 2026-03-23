@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { PLATFORM_CONFIG } from '@/lib/config/platform'
 import {
   COLORS, FONTS, RADII, SHADOWS, SPACING
 } from '@/lib/design/tokens'
@@ -159,7 +160,7 @@ export function TaskCard({
               letterSpacing: '-0.03em',
               lineHeight:    1,
             }}>
-              {Math.max(0, task.piReward * 0.95 - 0.01).toFixed(2)}π
+              {Math.max(0, PLATFORM_CONFIG.workerNetPayout(task.piReward)).toFixed(2)}π
             </div>
             <div style={{
               fontSize:   '0.68rem',
