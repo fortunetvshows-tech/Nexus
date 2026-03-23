@@ -149,11 +149,14 @@ export async function POST(
       try {
         const grossAmount = Number(submission.agreedReward)
         const feeAmount = Number(submission.agreedReward) * 0.05
+        const networkFee = 0.01
+        const actualReceived = netAmount - networkFee
+
         await supabaseAdmin
           .from('Notification')
           .update({
-            title: `You earned ${netAmount.toFixed(4)}π! 🎉`,
-            body: `Your work was approved! You earned ${netAmount.toFixed(4)}π (${grossAmount.toFixed(4)}π reward − ${feeAmount.toFixed(4)}π platform fee)`,
+            title: `You earned ${actualReceived.toFixed(2)}π! 🎉`,
+            body: `Your work was approved! You earned ${actualReceived.toFixed(2)}π (${grossAmount.toFixed(2)}π − ${feeAmount.toFixed(2)}π platform fee − 0.01π network fee)`,
           })
           .eq('userId', submission.workerId)
           .eq('type', 'task_approved')

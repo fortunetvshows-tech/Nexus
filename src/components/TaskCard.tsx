@@ -151,7 +151,7 @@ export function TaskCard({
           marginBottom:   SPACING.sm,
         }}>
           <div>
-            <span style={{
+            <div style={{
               fontFamily:    FONTS.mono,
               fontSize:      '2rem',
               fontWeight:    '800',
@@ -159,16 +159,16 @@ export function TaskCard({
               letterSpacing: '-0.03em',
               lineHeight:    1,
             }}>
-              {(task.piReward * 0.95).toFixed(2)}π
-            </span>
-            <span style={{
-              fontSize:   '0.72rem',
+              {Math.max(0, task.piReward * 0.95 - 0.01).toFixed(2)}π
+            </div>
+            <div style={{
+              fontSize:   '0.68rem',
               color:      COLORS.textMuted,
-              marginLeft: '6px',
-              fontFamily: FONTS.mono,
+              marginTop:  '2px',
+              fontFamily: FONTS.sans,
             }}>
-              (listed {task.piReward}π − 5% fee)
-            </span>
+              after fees · listed {task.piReward}π
+            </div>
           </div>
           <span style={{
             fontSize:   '0.82rem',

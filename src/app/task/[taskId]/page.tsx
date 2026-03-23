@@ -231,14 +231,61 @@ export default function TaskDetailPage({
                 letterSpacing: '-0.04em',
                 lineHeight:    1,
               }}>
-                {(task.piReward * 0.95).toFixed(2)}π
+                {Math.max(0, task.piReward * 0.95 - 0.01).toFixed(2)}π
               </div>
               <div style={{
                 fontSize:   '0.78rem',
                 color:      COLORS.textMuted,
-                marginTop:  '4px',
+                marginTop:  '6px',
               }}>
-                You receive this · Listed at {task.piReward}π · 5% platform fee
+                You receive this
+              </div>
+              <div style={{
+                display:        'flex',
+                alignItems:     'center',
+                justifyContent: 'center',
+                gap:            '8px',
+                marginTop:      '8px',
+                flexWrap:       'wrap' as const,
+              }}>
+                <span style={{
+                  padding:      '3px 8px',
+                  background:   COLORS.bgElevated,
+                  border:       `1px solid ${COLORS.border}`,
+                  borderRadius: RADII.full,
+                  fontSize:     '0.68rem',
+                  color:        COLORS.textMuted,
+                }}>
+                  Listed {task.piReward}π
+                </span>
+                <span style={{
+                  fontSize: '0.68rem',
+                  color:    COLORS.textMuted,
+                }}>−</span>
+                <span style={{
+                  padding:      '3px 8px',
+                  background:   'rgba(239,68,68,0.06)',
+                  border:       '1px solid rgba(239,68,68,0.15)',
+                  borderRadius: RADII.full,
+                  fontSize:     '0.68rem',
+                  color:        '#EF4444',
+                }}>
+                  5% platform fee
+                </span>
+                <span style={{
+                  fontSize: '0.68rem',
+                  color:    COLORS.textMuted,
+                }}>−</span>
+                <span style={{
+                  padding:      '3px 8px',
+                  background:   'rgba(239,68,68,0.06)',
+                  border:       '1px solid rgba(239,68,68,0.15)',
+                  borderRadius: RADII.full,
+                  fontSize:     '0.68rem',
+                  color:        '#EF4444',
+                }}>
+                  0.01π network fee
+                </span>
               </div>
             </div>
             <div style={{
@@ -246,7 +293,7 @@ export default function TaskDetailPage({
               color:      COLORS.textMuted,
               marginTop:  '6px',
             }}>
-              in ~{task.timeEstimateMin} minutes · paid on approval
+              in ~{task.timeEstimateMin} min · paid to your wallet on approval
             </div>
           </div>
 
