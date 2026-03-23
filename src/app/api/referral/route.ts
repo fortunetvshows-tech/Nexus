@@ -28,79 +28,103 @@ interface ReferralStats {
 
 export async function GET(req: NextRequest) {
   try {
-    const uid = req.headers.get('x-pi-uid')
-    if (!uid) {
-      return NextResponse.json(
-        { error: 'UNAUTHORIZED', message: 'Missing authentication' },
-        { status: 401 }
-      )
-    }
+    const piUid = req.headers.get('x-pi-uid')
+    if (!piUid) return NextResponse.json(
+      { error: 'UNAUTHORIZED' }, { status: 401 }
+    )
 
     // Get current user
     const { data: user, error: userError } = await supabaseAdmin
       .from('User')
-      .select('id, referralCode')
-      .eq('piUid', uid)
+      .select('id, referralCode, piUsername')
+      .eq('piUid', piUid)
       .single()
 
-    if (userError || !user) {
+    if (userError) {
+      console.error('[Nexus:Referral] User fetch error:', userError)
       return NextResponse.json(
-        { error: 'USER_NOT_FOUND', message: 'User not found' },
-        { status: 404 }
+        { error: userError.message }, { status: 500 }
       )
     }
+    if (!user) return NextResponse.json(
+      { error: 'NOT_FOUND' }, { status: 404 }
+    )
 
-    // Get referral records for this user (as referrer)
-    const { data: referralsData, error: refError } = await supabaseAdmin
-      .from('ReferralRecord')
-      .select(
-        'id, referredUserId, status, rewardAmount, createdAt, ' +
-        'referredUser:referredUserId(piUsername)'
-      )
-      .eq('referrerId', user.id)
-      .order('createdAt', { ascending: false })
+    // Ensure referral code exists
+    let referralCode = user.referralCode
+    if (!referralCode) {
+      referralCode = 'NX-' + user.piUsername
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, '')
+        .slice(0, 12)
+      await supabaseAdmin
+        .from('User')
+        .update({ referralCode })
+        .eq('id', user.id)
+    }
+
+    // Get users who were referred by this user
+    const { data: referredUsers, error: refError } = await supabaseAdmin
+      .from('User')
+      .select('id, piUsername, createdAt')
+      .eq('referredBy', user.id)
 
     if (refError) {
-      console.error('[Nexus:Referral] Failed to fetch referrals:', refError)
-      return NextResponse.json(
-        { error: 'DATABASE_ERROR', message: 'Failed to fetch referral data' },
-        { status: 500 }
-      )
+      console.error('[Nexus:Referral] Referred users error:', refError)
     }
 
-    const referrals = (referralsData || []) as unknown as ReferralRecord[]
+    // Get referral records for reward tracking
+    const { data: referralRecords, error: recordError } = await supabaseAdmin
+      .from('ReferralRecord')
+      .select('referredId, rewardPaid, qualifiedAt')
+      .eq('referrerId', user.id)
 
-    // Calculate stats
-    const totalReferred = referrals.length
-    const qualifiedCount = referrals.filter(r => r.status === 'qualified').length
-    const totalEarned = referrals.reduce((sum, r) => sum + (Number(r.rewardAmount) || 0), 0)
+    if (recordError) {
+      console.error('[Nexus:Referral] Records error:', recordError)
+    }
 
-    // Format referrals for response
-    const formattedReferrals = referrals.map(r => ({
-      id: r.id,
-      referredUsername: (r as any).referredUser?.piUsername ?? 'Unknown',
-      status: r.status,
-      rewardAmount: Number(r.rewardAmount),
-      createdAt: r.createdAt,
+    // Build lookup map
+    const recordMap: Record<string, {
+      rewardPaid:  number
+      qualifiedAt: string | null
+    }> = {}
+
+    for (const r of referralRecords ?? []) {
+      recordMap[r.referredId] = {
+        rewardPaid:  Number(r.rewardPaid ?? 0),
+        qualifiedAt: r.qualifiedAt ?? null,
+      }
+    }
+
+    // Build referrals list
+    const referrals = (referredUsers ?? []).map(u => ({
+      piUsername:  u.piUsername,
+      qualifiedAt: recordMap[u.id]?.qualifiedAt ?? null,
+      rewardPaid:  recordMap[u.id]?.rewardPaid  ?? 0,
     }))
 
-    const stats: ReferralStats = {
-      referralCode: user.referralCode || 'NOT_SET',
-      totalReferred,
-      qualifiedCount,
-      totalEarned: parseFloat(totalEarned.toFixed(4)),
-      referrals: formattedReferrals,
-    }
+    const totalEarned    = referrals.reduce(
+      (sum, r) => sum + r.rewardPaid, 0
+    )
+    const qualifiedCount = referrals.filter(
+      r => r.qualifiedAt !== null
+    ).length
 
     return NextResponse.json({
       success: true,
-      stats,
-    }, { status: 200 })
+      stats: {
+        referralCode,
+        totalReferred:  referrals.length,
+        qualifiedCount,
+        totalEarned,
+        referrals,
+      },
+    })
 
   } catch (err: any) {
-    console.error('[Nexus:ReferralRoute] Error:', err?.message ?? err)
+    console.error('[Nexus:Referral] Unhandled error:', err?.message ?? err)
     return NextResponse.json(
-      { error: 'INTERNAL_ERROR', message: err?.message ?? 'Internal server error' },
+      { error: err?.message ?? 'INTERNAL_ERROR' },
       { status: 500 }
     )
   }
