@@ -34,45 +34,6 @@ export function usePiPayment() {
         return
       }
 
-      // Check if payments scope is active in current session
-      try {
-        const rawScopes = sessionStorage.getItem('nexus_auth_scopes')
-        const scopes: string[] = rawScopes ? JSON.parse(rawScopes) : []
-        
-        if (!scopes.includes('payments')) {
-          // Re-authenticate to get payments scope
-          console.log('[Nexus:Payment] payments scope missing — re-authenticating')
-          
-          // Define incomplete payment handler
-          const handleIncompletePayment = async (payment: any) => {
-            console.log('[Nexus:Payment] Incomplete payment found during re-auth:', payment.identifier)
-            try {
-              await fetch(`${window.location.origin}/api/pi/cancel`, {
-                method:  'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify({ paymentId: payment.identifier }),
-              })
-            } catch (e) {
-              console.error('[Nexus:Payment] Failed to handle incomplete:', e)
-            }
-          }
-          
-          await window.Pi.authenticate(
-            ['username', 'wallet_address', 'payments'],
-            handleIncompletePayment
-          )
-          // Update scopes in session
-          sessionStorage.setItem(
-            'nexus_auth_scopes',
-            JSON.stringify(['username', 'wallet_address', 'payments'])
-          )
-          console.log('[Nexus:Payment] Re-authentication complete — payments scope granted')
-        }
-      } catch (scopeErr) {
-        console.warn('[Nexus:Payment] Scope check failed:', scopeErr)
-        // Continue anyway — Pi.createPayment will throw if scope missing
-      }
-
       setState(prev => ({
         ...prev,
         isProcessing: true,
