@@ -64,8 +64,8 @@ export default function ReferralPage() {
     fetchStats()
   }, [hasMounted, user])
 
-  const referralLink = user && stats
-    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/apply?ref=${stats.referralCode.replace('NX-', '')}`
+  const referralLink = hasMounted && stats
+    ? `${window.location.origin}/?ref=${stats.referralCode}`
     : ''
 
   const handleCopyLink = useCallback(() => {

@@ -29,7 +29,7 @@ export default function LandingPage() {
       const params = new URLSearchParams(window.location.search)
       const ref = params.get('ref')
       if (ref) {
-        sessionStorage.setItem('nexus_ref', `NX-${ref.toUpperCase()}`)
+        sessionStorage.setItem('nexus_ref', ref)
       }
     }
   }, [])
