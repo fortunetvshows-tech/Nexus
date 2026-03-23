@@ -48,10 +48,50 @@ export function FeeBreakdown({
             display: 'flex', justifyContent: 'space-between',
           }}>
             <span style={{ color: COLORS.textMuted }}>
-              Reward per slot
+              Listed reward per slot
             </span>
             <span style={{ color: COLORS.textPrimary }}>
               {rewardPi.toFixed(4)}π
+            </span>
+          </div>
+
+          <div style={{
+            display: 'flex', justifyContent: 'space-between',
+          }}>
+            <span style={{ color: COLORS.textMuted }}>
+              Platform fee ({(PLATFORM_CONFIG.PLATFORM_FEE_RATE * 100).toFixed(0)}%)
+            </span>
+            <span style={{ color: COLORS.red }}>
+              -{platformFee.toFixed(4)}π
+            </span>
+          </div>
+
+          <div style={{
+            display: 'flex', justifyContent: 'space-between',
+          }}>
+            <span style={{ color: COLORS.textMuted }}>
+              Network fee (blockchain)
+            </span>
+            <span style={{ color: COLORS.red }}>
+              -{PLATFORM_CONFIG.NETWORK_FEE_PI.toFixed(4)}π
+            </span>
+          </div>
+
+          <div style={{
+            borderTop:  `1px solid ${COLORS.border}`,
+            marginTop:  '0.4rem',
+            paddingTop: '0.4rem',
+            display:    'flex',
+            justifyContent: 'space-between',
+          }}>
+            <span style={{ color: COLORS.emerald, fontWeight: '600' }}>
+              Worker receives
+            </span>
+            <span style={{
+              color:      COLORS.emerald,
+              fontWeight: '700',
+            }}>
+              {workerNet.toFixed(4)}π
             </span>
           </div>
 
@@ -94,8 +134,14 @@ export function FeeBreakdown({
           fontSize:     '0.75rem',
           color:        COLORS.textMuted,
         }}>
-          Worker receives {workerGross.toFixed(4)}π per slot
-          {' '}(after {(PLATFORM_CONFIG.PLATFORM_FEE_RATE * 100).toFixed(0)}% platform fee)
+          <div style={{ marginBottom: '0.5rem' }}>
+            Total you pay: <span style={{ fontWeight: '700', color: COLORS.textPrimary }}>
+              {totalEscrow.toFixed(4)}π
+            </span>
+          </div>
+          <div style={{ fontSize: '0.7rem', color: COLORS.textMuted }}>
+            (Platform & network fees deducted from worker payment)
+          </div>
         </div>
 
         {!validation.valid && (
