@@ -302,6 +302,23 @@ export function Navigation({ currentPage }: NavigationProps) {
                       >
                         👤 Profile & Wallet
                       </Link>
+                      <Link
+                        href="/referral"
+                        onClick={() => setProfileOpen(false)}
+                        style={{
+                          display:        'flex',
+                          alignItems:     'center',
+                          gap:            '8px',
+                          padding:        '0.5rem 0.625rem',
+                          borderRadius:   '8px',
+                          fontSize:       '0.82rem',
+                          color:          COLORS.textSecondary,
+                          textDecoration: 'none',
+                          transition:     'background 0.15s',
+                        }}
+                      >
+                        🔗 Invite & Earn
+                      </Link>
 
                       {user?.isAdmin && (
                         <>

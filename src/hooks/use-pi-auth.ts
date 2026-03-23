@@ -162,6 +162,12 @@ export function usePiAuth() {
       const origin = typeof window !== 'undefined'
         ? window.location.origin
         : ''
+      
+      // Read referral code from sessionStorage
+      const refCode = typeof window !== 'undefined'
+        ? sessionStorage.getItem('nexus_ref') ?? undefined
+        : undefined
+
       const response = await fetch(`${origin}/api/auth`, {
         method: 'POST',
         headers: {
@@ -172,6 +178,7 @@ export function usePiAuth() {
           accessToken:   auth.accessToken,
           uid:           auth.user.uid,
           walletAddress: (auth.user as any).wallet_address ?? null,
+          refCode:       refCode,
         }),
       })
 
@@ -183,6 +190,11 @@ export function usePiAuth() {
 
       // Save to sessionStorage so all pages have user immediately
       saveUserToSession(data.user)
+
+      // Clear referral code from sessionStorage after successful auth
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('nexus_ref')
+      }
 
       setState({
         user:       data.user,

@@ -23,6 +23,17 @@ export default function LandingPage() {
 
   useEffect(() => { setHasMounted(true) }, [])
 
+  // Capture referral code from URL
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const ref = params.get('ref')
+      if (ref) {
+        sessionStorage.setItem('nexus_ref', `NX-${ref.toUpperCase()}`)
+      }
+    }
+  }, [])
+
   const handleLogin = useCallback(async () => {
     if (isAuthenticating || isLoading) return
     setIsAuthenticating(true)

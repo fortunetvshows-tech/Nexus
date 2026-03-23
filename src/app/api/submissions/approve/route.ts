@@ -162,6 +162,61 @@ export async function POST(
       } catch (err) {
         console.error('[Nexus:Approve] Failed to update notification:', err)
       }
+
+      // Handle referral reward if this is first approved submission
+      try {
+        // Count approved submissions for this worker
+        const { count: approvedCount } = await supabaseAdmin
+          .from('Submission')
+          .select('*', { count: 'exact', head: true })
+          .eq('workerId', submission.workerId)
+          .eq('status', 'APPROVED')
+
+        // If this is their first approval, check for referrer
+        if (approvedCount === 1) {
+          const { data: worker } = await supabaseAdmin
+            .from('User')
+            .select('id, referredBy')
+            .eq('id', submission.workerId)
+            .single()
+
+          if (worker?.referredBy) {
+            // Find referrer
+            const { data: referrer } = await supabaseAdmin
+              .from('User')
+              .select('id')
+              .eq('piUid', worker.referredBy)
+              .single()
+
+            if (referrer) {
+              // Create referral record
+              const referralReward = 0.5
+              await supabaseAdmin
+                .from('ReferralRecord')
+                .insert({
+                  referrerId: referrer.id,
+                  referredUserId: submission.workerId,
+                  status: 'qualified',
+                  rewardAmount: referralReward,
+                })
+
+              // Create notification for referrer
+              await supabaseAdmin
+                .from('Notification')
+                .insert({
+                  userId: referrer.id,
+                  type: 'referral_qualified',
+                  title: 'Your referral earned their first approval! 🎉',
+                  body: `You earned ${referralReward.toFixed(4)}π from your referral's first approved task!`,
+                  isRead: false,
+                })
+            }
+          }
+        }
+      } catch (refError) {
+        // Referral reward logic must never block the main payment flow
+        console.error('[Nexus:Approve] Referral reward failed:', refError)
+      }
     }
 
     return NextResponse.json({

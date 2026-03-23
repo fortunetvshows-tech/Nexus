@@ -33,6 +33,7 @@ interface AuthRequestBody {
   accessToken:   string
   uid:           string
   walletAddress: string | null
+  refCode?:      string
 }
 
 type UserRow = {
@@ -68,7 +69,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { accessToken, uid, walletAddress } = body
+    const { accessToken, uid, walletAddress, refCode } = body
 
     if (!accessToken || !uid) {
       return NextResponse.json(
@@ -189,21 +190,46 @@ export async function POST(req: NextRequest) {
       // Non-fatal — proceed to upsert
     }
 
+    // Generate referral code for new users
+    const referralCode = 'NX-' + piUser.username.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12)
+
+    // Build upsert object
+    const upsertObject: any = {
+      piUid:         piUser.uid,
+      piUsername:    piUser.username,
+      lastLoginAt:   new Date().toISOString(),
+      walletAddress: walletAddress ?? null,
+      referralCode:  referralCode,
+    }
+
+    // Check if refCode was provided and is valid
+    if (refCode && refCode.startsWith('NX-')) {
+      try {
+        // Find the referrer
+        const { data: referrer } = await supabaseAdmin
+          .from('User')
+          .select('id, piUid, piUsername')
+          .eq('referralCode', refCode)
+          .neq('piUid', piUser.uid) // Prevent self-referral
+          .single()
+
+        // If valid referrer found, set referredBy
+        if (referrer) {
+          upsertObject.referredBy = referrer.piUid
+        }
+      } catch (refError) {
+        // Invalid refCode — proceed with upsert anyway (non-blocking)
+        console.error('[Nexus:Auth] Invalid referral code:', { refCode, error: refError })
+      }
+    }
+
     // Upsert user record with explicit type assertion
     const upsertResult = await supabaseAdmin
       .from('User')
-      .upsert(
-        {
-          piUid:         piUser.uid,
-          piUsername:    piUser.username,
-          lastLoginAt:   new Date().toISOString(),
-          walletAddress: walletAddress ?? null,
-        },
-        {
-          onConflict:       'piUid',
-          ignoreDuplicates: false,
-        }
-      )
+      .upsert(upsertObject, {
+        onConflict:       'piUid',
+        ignoreDuplicates: false,
+      })
       .select(
         'id, piUid, piUsername, userRole, reputationScore, ' +
         'reputationLevel, kycLevel, accountStatus, isAdmin'
