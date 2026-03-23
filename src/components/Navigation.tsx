@@ -167,12 +167,17 @@ export function Navigation({ currentPage }: NavigationProps) {
                     fontFamily:    "'Fira Code', monospace",
                     fontSize:      '0.82rem',
                     fontWeight:    '700',
-                    color:         '#10B981',
+                    color:         earned > 0 ? '#10B981' : pending > 0 ? '#F59E0B' : '#6B7280',
                     letterSpacing: '-0.02em',
                   }}>
-                    {earned.toFixed(2)}π
+                    {earned > 0
+                      ? `${earned.toFixed(2)}π`
+                      : pending > 0
+                      ? `${pending.toFixed(2)}π`
+                      : '0.00π'
+                    }
                   </div>
-                  {pending > 0 && (
+                  {earned > 0 && pending > 0 && (
                     <div style={{
                       fontFamily: "'Fira Code', monospace",
                       fontSize:   '0.6rem',
@@ -180,6 +185,15 @@ export function Navigation({ currentPage }: NavigationProps) {
                       lineHeight: 1.2,
                     }}>
                       +{pending.toFixed(2)}π pending
+                    </div>
+                  )}
+                  {earned === 0 && pending === 0 && (
+                    <div style={{
+                      fontSize: '0.6rem',
+                      color:    '#6B7280',
+                      lineHeight: 1.2,
+                    }}>
+                      no earnings yet
                     </div>
                   )}
                 </div>
