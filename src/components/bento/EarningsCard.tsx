@@ -7,12 +7,14 @@ interface EarningsCardProps {
   totalEarned:     number
   thisWeekEarned:  number
   pendingAmount:   number
+  totalSpent?:     number
 }
 
 export function EarningsCard({
   totalEarned,
   thisWeekEarned,
   pendingAmount,
+  totalSpent = 0,
 }: EarningsCardProps) {
   const animatedTotal = useCountUp(totalEarned, 1200, 4)
 
@@ -101,6 +103,25 @@ export function EarningsCard({
             color:      COLORS.amber,
           }}>
             {pendingAmount.toFixed(4)}π
+          </div>
+        </div>
+        <div>
+          <div style={{
+            fontSize:      '0.65rem',
+            color:         COLORS.textMuted,
+            fontWeight:    '500',
+            marginBottom:  '3px',
+            letterSpacing: '0.05em',
+          }}>
+            SPENT
+          </div>
+          <div style={{
+            fontFamily: FONTS.mono,
+            fontSize:   '0.95rem',
+            fontWeight: '600',
+            color:      COLORS.red ?? '#EF4444',
+          }}>
+            {totalSpent.toFixed(2)}π
           </div>
         </div>
       </div>

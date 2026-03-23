@@ -76,6 +76,7 @@ export default function DashboardPage() {
       totalEarned:    number
       thisWeekEarned: number
       totalPending:   number
+      totalSpent:     number
     }
   } | null>(null)
 
@@ -157,6 +158,7 @@ export default function DashboardPage() {
   const totalEarned    = workerAnalytics?.summary?.totalEarned    ?? 0
   const thisWeekEarned = workerAnalytics?.summary?.thisWeekEarned ?? 0
   const pendingAmount  = workerAnalytics?.summary?.totalPending   ?? 0
+  const totalSpent     = workerAnalytics?.summary?.totalSpent     ?? 0
   const completedTasks = submissions.filter(s => s.status === 'APPROVED').length
   const pendingReview = submissions.filter(
     s => s.status === 'SUBMITTED'
@@ -366,6 +368,7 @@ export default function DashboardPage() {
                   totalEarned={totalEarned}
                   thisWeekEarned={thisWeekEarned}
                   pendingAmount={pendingAmount}
+                  totalSpent={totalSpent}
                 />
               ),
             },

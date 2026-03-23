@@ -83,6 +83,17 @@ export async function GET(req: NextRequest) {
       )
       .reduce((sum, t) => sum + Number(t.netAmount), 0)
 
+    // Also fetch employer spending (tasks posted)
+    const { data: employerTxs } = await supabaseAdmin
+      .from('Transaction')
+      .select('netAmount, amount, status')
+      .eq('senderId', user.id)
+      .eq('type', 'escrow_lock')
+      .eq('status', 'confirmed')
+
+    const totalSpent = (employerTxs ?? [])
+      .reduce((sum, t) => sum + Number(t.amount), 0)
+
     return NextResponse.json(
       {
         success: true,
@@ -90,6 +101,7 @@ export async function GET(req: NextRequest) {
           totalEarned,
           totalPending,
           thisWeekEarned,
+          totalSpent,
           confirmedCount,
           pendingCount,
           platformFeeRate: PLATFORM_CONFIG.PLATFORM_FEE_RATE,
