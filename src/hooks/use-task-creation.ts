@@ -127,10 +127,10 @@ export function useTaskCreation(piUid: string | null) {
   const initiatePayment = useCallback(async () => {
     if (!piUid) return
 
-    setState(prev => ({ ...prev, step: 'payment', error: null }))
-
     const cost = parseFloat(totalCost())
 
+    // Set payment step AFTER createPayment is called
+    // Setting state BEFORE causes re-render that resets Pi Browser iframe
     createPayment(
       {
         amount:   cost,
@@ -143,36 +143,42 @@ export function useTaskCreation(piUid: string | null) {
       },
       async (paymentId, txid) => {
         // Payment confirmed — now create the task
+        // Show payment step first then creating
+        setState(prev => ({ ...prev, step: 'payment' }))
+        await new Promise(resolve => setTimeout(resolve, 100))
         setState(prev => ({ ...prev, step: 'creating' }))
 
         try {
-          const res = await fetch('/api/tasks', {
-            method:  'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-pi-uid':     piUid,
-            },
-            body: JSON.stringify({
-              title:           form.title,
-              description:     form.description,
-              instructions:    form.instructions,
-              category:        form.category,
-              proofType:       form.proofType,
-              piReward:        parseFloat(form.piReward),
-              slotsAvailable:  parseInt(form.slotsAvailable),
-              timeEstimateMin: parseInt(form.timeEstimateMin),
-              deadlineHours:   parseInt(form.deadlineHours),
-              minReputation:   parseInt(form.minReputation),
-              minBadgeLevel:   form.minBadgeLevel,
-              targetKycLevel:  parseInt(form.targetKycLevel),
-              tags:            form.tags
-                                 .split(',')
-                                 .map(t => t.trim())
-                                 .filter(Boolean),
-              escrowTxid:      txid,
-              piPaymentId:     paymentId,
-            }),
-          })
+          const res = await fetch(
+            `${window.location.origin}/api/tasks`,
+            {
+              method:  'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'x-pi-uid':     piUid,
+              },
+              body: JSON.stringify({
+                title:           form.title,
+                description:     form.description,
+                instructions:    form.instructions,
+                category:        form.category,
+                proofType:       form.proofType,
+                piReward:        parseFloat(form.piReward),
+                slotsAvailable:  parseInt(form.slotsAvailable),
+                timeEstimateMin: parseInt(form.timeEstimateMin),
+                deadlineHours:   parseInt(form.deadlineHours),
+                minReputation:   parseInt(form.minReputation),
+                minBadgeLevel:   form.minBadgeLevel,
+                targetKycLevel:  parseInt(form.targetKycLevel),
+                tags:            form.tags
+                                   .split(',')
+                                   .map(t => t.trim())
+                                   .filter(Boolean),
+                escrowTxid:      txid,
+                piPaymentId:     paymentId,
+              }),
+            }
+          )
 
           const data = await res.json()
 
@@ -198,13 +204,12 @@ export function useTaskCreation(piUid: string | null) {
           })
         }
       },
-      (error) => {
-        setState({
-          step:   'error',
-          taskId: null,
-          txid:   null,
-          error:  error,
-        })
+      (error: string) => {
+        setState(prev => ({
+          ...prev,
+          step:  'review',
+          error: error,
+        }))
       }
     )
   }, [piUid, form, totalCost, createPayment])
