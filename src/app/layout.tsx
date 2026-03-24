@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { PiPaymentProvider } from '@/contexts/PiPaymentContext'
 
 export const metadata: Metadata = {
   title: 'Nexus',
@@ -109,7 +110,9 @@ export default function RootLayout({
         `}} />
       </head>
       <body>
-        {children}
+        <PiPaymentProvider>
+          {children}
+        </PiPaymentProvider>
       </body>
     </html>
   )

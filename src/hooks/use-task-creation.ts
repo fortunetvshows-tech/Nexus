@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { usePiPayment } from '@/hooks/use-pi-payment'
+import { usePiPaymentContext } from '@/contexts/PiPaymentContext'
 import { PLATFORM_CONFIG } from '@/lib/config/platform'
 
 export interface TaskFormData {
@@ -70,7 +70,7 @@ export function useTaskCreation(piUid: string | null) {
     error:  null,
   })
 
-  const { createPayment, isProcessing } = usePiPayment()
+  const { createPayment, isProcessing } = usePiPaymentContext()
 
   const updateField = useCallback(
     (field: keyof TaskFormData, value: string) => {
