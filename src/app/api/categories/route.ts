@@ -6,8 +6,8 @@ export async function GET() {
     const { data, error } = await supabaseAdmin
       .from('Category')
       .select('id, name, emoji, description, "isActive", "sortOrder"')
-      .eq('isActive', true)
-      .order('sortOrder', { ascending: true })
+      .eq('"isActive"', true)
+      .order('"sortOrder"', { ascending: true })
 
     if (error) {
       console.error('[Nexus:Categories] Fetch failed:', error)
