@@ -44,8 +44,8 @@ async function getValidCategories(): Promise<string[]> {
     const { data, error } = await supabaseAdmin
       .from('Category')
       .select('emoji, name')
-      .eq('isActive', true)
-      .order('sortOrder', { ascending: true })
+      .eq('"isActive"', true)
+      .order('"sortOrder"', { ascending: true })
 
     if (error || !data?.length) {
       console.warn('[Nexus:TasksRoute] Failed to fetch categories, using fallback:', error?.message)
