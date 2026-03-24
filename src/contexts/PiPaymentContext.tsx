@@ -30,11 +30,62 @@ export function PiPaymentProvider({
 }) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError]               = useState<string | null>(null)
+  const [isAuth, setIsAuth]             = useState(false)
 
   // Use refs for callbacks so they survive re-renders
   const onSuccessRef = useRef<((paymentId: string, txid: string) => void) | null>(null)
   const onErrorRef   = useRef<((error: string) => void) | null>(null)
   const inProgressRef = useRef(false)
+  const isAuthenticatingRef = useRef(false)
+
+  // Handle incomplete payments from previous crashes
+  const onIncompletePaymentFound = useCallback(async (payment: any) => {
+    console.warn('[Nexus:PiPaymentProvider] Incomplete payment found:', payment.identifier)
+    if (!payment?.identifier) return
+
+    const paymentId = payment.identifier
+    const txid      = payment.transaction?.txid ?? null
+
+    try {
+      if (txid) {
+        // Transaction exists on blockchain — complete it
+        await fetch('/api/pi/complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paymentId, txid }),
+        })
+        console.log('[Nexus:PiPaymentProvider] Incomplete payment recovered:', paymentId)
+      } else {
+        // No transaction — cancel it
+        await fetch('/api/pi/cancel', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paymentId }),
+        })
+        console.log('[Nexus:PiPaymentProvider] Incomplete payment cancelled:', paymentId)
+      }
+    } catch (err) {
+      console.error('[Nexus:PiPaymentProvider] Failed to handle incomplete payment:', err)
+    }
+  }, [])
+
+  // Authenticate at app level to get global payments scope
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.Pi || isAuthenticatingRef.current) {
+      return
+    }
+
+    isAuthenticatingRef.current = true
+
+    window.Pi.authenticate(['payments', 'username'], onIncompletePaymentFound)
+      .then(() => {
+        setIsAuth(true)
+        console.log('[Nexus:PiPaymentProvider] Global authentication successful')
+      })
+      .catch((err) => {
+        console.error('[Nexus:PiPaymentProvider] Global authentication failed:', err)
+      })
+  }, [onIncompletePaymentFound])
 
   const createPayment = useCallback((
     config:    PaymentConfig,
@@ -69,7 +120,7 @@ export function PiPaymentProvider({
         onReadyForServerApproval: async (paymentId: string) => {
           try {
             const res = await fetch(
-              `${window.location.origin}/api/pi/approve`,
+              '/api/pi/approve',
               {
                 method:  'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -89,7 +140,7 @@ export function PiPaymentProvider({
         onReadyForServerCompletion: async (paymentId: string, txid: string) => {
           try {
             const res = await fetch(
-              `${window.location.origin}/api/pi/complete`,
+              '/api/pi/complete',
               {
                 method:  'POST',
                 headers: { 'Content-Type': 'application/json' },

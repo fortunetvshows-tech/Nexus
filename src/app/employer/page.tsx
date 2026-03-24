@@ -53,15 +53,10 @@ export default function EmployerPage() {
   } = useTaskCreation(user?.piUid ?? null)
 
   const [dbCategories, setDbCategories] = useState<string[]>([])
-  const [hasMounted, setHasMounted] = useState(false)
 
   // Fetch categories from database
   useEffect(() => {
-    setHasMounted(true)
-  }, [])
-
-  useEffect(() => {
-    fetch(`${window.location.origin}/api/categories`)
+    fetch('/api/categories')
       .then(r => r.json())
       .then(data => {
         if (data.categories?.length) {
@@ -77,8 +72,6 @@ export default function EmployerPage() {
   }, [])
 
   const categoryList = dbCategories.length > 0 ? dbCategories : TASK_CATEGORIES
-
-  if (!hasMounted) return null
 
   if (!user) {
     return (
