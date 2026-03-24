@@ -8,8 +8,8 @@ import {
 import { PLATFORM_CONFIG }      from '@/lib/config/platform'
 import { NextRequest, NextResponse } from 'next/server'
 
-// Validation constants matching Master Architecture Document
-const VALID_CATEGORIES = [
+// Fallback categories if database fetch fails
+const FALLBACK_CATEGORIES = [
   '🤖 AI & Data Labeling',
   '📍 Local Verification',
   '🌐 Translation',
@@ -33,6 +33,32 @@ const VALID_BADGE_LEVELS = [
   'PROFICIENT',
   'EXPERT',
 ] as const
+
+/**
+ * Fetch valid categories from database.
+ * Constructs full category string as "${emoji} ${name}" to match frontend format.
+ * Falls back to hardcoded list if database fetch fails.
+ */
+async function getValidCategories(): Promise<string[]> {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('Category')
+      .select('emoji, name')
+      .eq('isActive', true)
+      .order('sortOrder', { ascending: true })
+
+    if (error || !data?.length) {
+      console.warn('[Nexus:TasksRoute] Failed to fetch categories, using fallback:', error?.message)
+      return FALLBACK_CATEGORIES as unknown as string[]
+    }
+
+    // Construct full category strings matching frontend format
+    return data.map(cat => `${cat.emoji} ${cat.name}`)
+  } catch (err) {
+    console.error('[Nexus:TasksRoute] Error fetching categories:', err)
+    return FALLBACK_CATEGORIES as unknown as string[]
+  }
+}
 
 // POST /api/tasks — create a new task
 // Called AFTER Pi payment is confirmed on-chain
@@ -151,13 +177,13 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    if (!VALID_CATEGORIES.includes(
-          category as typeof VALID_CATEGORIES[number]
-        )) {
+    // Validate category dynamically from database
+    const validCategories = await getValidCategories()
+    if (!validCategories.includes(category as string)) {
       return NextResponse.json(
         {
           error:   'VALIDATION_ERROR',
-          message: `Invalid category. Must be one of: ${VALID_CATEGORIES.join(', ')}`,
+          message: `Invalid category. Must be one of: ${validCategories.join(', ')}`,
         },
         { status: 400 }
       )
