@@ -30,34 +30,33 @@ export default function ProfilePage() {
   const [saveMessage,   setSaveMessage]   = useState<{
     type: 'success' | 'error', text: string
   } | null>(null)
-  const [hasMounted,    setHasMounted]    = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
-  useEffect(() => { setHasMounted(true) }, [])
-
+  // Fetch profile on mount (always runs when component mounts/remounts)
   useEffect(() => {
-    if (!user?.piUid || !hasMounted) return
-    fetchProfile()
-  }, [user?.piUid, hasMounted])
-
-  const fetchProfile = async () => {
-    setIsLoading(true)
-    try {
-      const res = await fetch(
-        `${window.location.origin}/api/profile`,
-        { headers: { 'x-pi-uid': user!.piUid } }
-      )
-      const data = await res.json()
-      if (data.profile) {
-        setProfile(data.profile)
-        setWalletInput(data.profile.walletAddress ?? '')
+    if (!user?.piUid) return
+    
+    const fetchProfile = async () => {
+      setIsLoading(true)
+      try {
+        const res = await fetch(
+          `${window.location.origin}/api/profile`,
+          { headers: { 'x-pi-uid': user.piUid } }
+        )
+        const data = await res.json()
+        if (data.profile) {
+          setProfile(data.profile)
+          setWalletInput(data.profile.walletAddress ?? '')
+        }
+      } catch (err) {
+        console.error('Failed to fetch profile:', err)
+      } finally {
+        setIsLoading(false)
       }
-    } catch (err) {
-      console.error('Failed to fetch profile:', err)
-    } finally {
-      setIsLoading(false)
     }
-  }
+
+    fetchProfile()
+  }, [user?.piUid])  // Only depends on user being authenticated
 
   const handleSaveWallet = async (walletToSave?: string) => {
     const wallet = walletToSave || walletInput // Allow modal to pass wallet directly
@@ -114,8 +113,6 @@ export default function ProfilePage() {
       setIsSaving(false)
     }
   }
-
-  if (!hasMounted) return null
 
   if (!user) {
     return (
