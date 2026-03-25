@@ -61,7 +61,9 @@ export default function EmployerPage() {
       .then(data => {
         if (data.categories?.length) {
           setDbCategories(
-            data.categories.map((c: any) => `${c.emoji} ${c.name}`)
+            data.categories.map((c: any) => 
+              `${(c.emoji || '').trim()} ${(c.name || '').trim()}`.trim()
+            )
           )
         }
       })

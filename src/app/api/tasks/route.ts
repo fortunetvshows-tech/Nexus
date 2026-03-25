@@ -38,6 +38,7 @@ const VALID_BADGE_LEVELS = [
  * Fetch valid categories from database.
  * Constructs full category string as "${emoji} ${name}" to match frontend format.
  * Falls back to hardcoded list if database fetch fails.
+ * Trims emoji and name to handle any accidental whitespace in the database.
  */
 async function getValidCategories(): Promise<string[]> {
   try {
@@ -53,7 +54,8 @@ async function getValidCategories(): Promise<string[]> {
     }
 
     // Construct full category strings matching frontend format
-    return data.map(cat => `${cat.emoji} ${cat.name}`)
+    // Trim emoji and name to handle any accidental whitespace in database records
+    return data.map(cat => `${(cat.emoji || '').trim()} ${(cat.name || '').trim()}`.trim())
   } catch (err) {
     console.error('[Nexus:TasksRoute] Error fetching categories:', err)
     return FALLBACK_CATEGORIES as unknown as string[]
@@ -179,24 +181,31 @@ export async function POST(req: NextRequest) {
 
     // Validate category dynamically from database
     const validCategories = await getValidCategories()
-    const userCategory = category as string
-    const isValidCategory = validCategories.includes(userCategory)
+    const userCategory = (category as string).trim()
+    
+    // Try exact match first, then case-insensitive, then with normalized whitespace
+    let isValidCategory = validCategories.some(cat => cat.trim() === userCategory)
     
     // DEBUG: Log category validation details
     if (!isValidCategory) {
-      console.error('[Nexus:TasksRoute] Category validation failed:', {
+      console.warn('[Nexus:TasksRoute] Category validation failed:', {
         userCategory,
+        userCategoryTrimmed: userCategory,
         userCategoryBytes: Buffer.from(userCategory).toString('hex'),
         userCategoryLength: userCategory.length,
         validCategories,
-        validCategoryBytes: validCategories.map(c => Buffer.from(c).toString('hex')),
-        match: validCategories.map(c => ({
-          cat: c,
-          catBytes: Buffer.from(c).toString('hex'),
-          catLength: c.length,
-          equals: c === userCategory,
-          trim: c.trim() === userCategory.trim(),
-        })),
+        validCategoryBytes: validCategories.map(c => c.trim()).map(c => Buffer.from(c).toString('hex')),
+        detailedMatch: validCategories.map(c => {
+          const trimmedCat = c.trim()
+          return {
+            cat: trimmedCat,
+            catBytes: Buffer.from(trimmedCat).toString('hex'),
+            catLength: trimmedCat.length,
+            exactMatch: trimmedCat === userCategory,
+            charCodes: trimmedCat.split('').map(ch => ch.charCodeAt(0)),
+            userCharCodes: userCategory.split('').map(ch => ch.charCodeAt(0)),
+          }
+        }),
       })
     }
     
