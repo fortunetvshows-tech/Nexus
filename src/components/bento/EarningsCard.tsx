@@ -67,13 +67,14 @@ export function EarningsCard({
         gap:     '1.5rem',
         marginTop: 'auto',
       }}>
-        <div>
+        <div title="Earnings confirmed and received this week">
           <div style={{
             fontSize:   '0.65rem',
             color:      COLORS.textMuted,
             fontWeight: '500',
             marginBottom: '3px',
             letterSpacing: '0.05em',
+            cursor:     'help',
           }}>
             THIS WEEK
           </div>
@@ -86,13 +87,14 @@ export function EarningsCard({
             {thisWeekEarned.toFixed(4)}π
           </div>
         </div>
-        <div>
+        <div title="Earnings approved but awaiting blockchain confirmation">
           <div style={{
             fontSize:   '0.65rem',
             color:      COLORS.textMuted,
             fontWeight: '500',
             marginBottom: '3px',
             letterSpacing: '0.05em',
+            cursor:     'help',
           }}>
             PENDING
           </div>
@@ -105,13 +107,14 @@ export function EarningsCard({
             {pendingAmount.toFixed(4)}π
           </div>
         </div>
-        <div>
+        <div title="Your Pi locked in escrow for tasks you posted as employer">
           <div style={{
             fontSize:      '0.65rem',
             color:         COLORS.textMuted,
             fontWeight:    '500',
             marginBottom:  '3px',
             letterSpacing: '0.05em',
+            cursor:        'help',
           }}>
             SPENT
           </div>

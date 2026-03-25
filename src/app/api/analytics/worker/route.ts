@@ -83,16 +83,17 @@ export async function GET(req: NextRequest) {
       )
       .reduce((sum, t) => sum + Number(t.netAmount), 0)
 
-    // Also fetch employer spending (tasks posted)
-    const { data: employerTxs } = await supabaseAdmin
-      .from('Transaction')
-      .select('netAmount, amount, status')
-      .eq('senderId', user.id)
-      .eq('type', 'escrow_lock')
-      .eq('status', 'confirmed')
+    // Also fetch tasks posted by this user (to calculate what they have escrowed)
+    const { data: userTasks } = await supabaseAdmin
+      .from('Task')
+      .select('piReward, slotsAvailable, taskStatus')
+      .eq('employerId', user.id)
+      .is('deletedAt', null)
 
-    const totalSpent = (employerTxs ?? [])
-      .reduce((sum, t) => sum + Number(t.amount), 0)
+    // Calculate total spent: sum of (piReward × slotsAvailable) for escrowed tasks
+    const totalSpent = (userTasks ?? [])
+      .filter(t => t.taskStatus === 'escrowed')
+      .reduce((sum, t) => sum + (Number(t.piReward) * t.slotsAvailable), 0)
 
     return NextResponse.json(
       {
