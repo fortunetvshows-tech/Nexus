@@ -61,7 +61,9 @@ export default function ProfilePage() {
 
   const handleSaveWallet = async (walletToSave?: string) => {
     const wallet = walletToSave || walletInput // Allow modal to pass wallet directly
-    if (!user?.piUid || !wallet.trim()) return
+    if (!user?.piUid || !wallet.trim()) {
+      throw new Error('Missing wallet or user ID')
+    }
     setIsSaving(true)
     setSaveMessage(null)
 
@@ -92,17 +94,22 @@ export default function ProfilePage() {
         )
         // Clear input after successful save
         setWalletInput('')
+        // Close modal will happen in EditWalletModal after onSave resolves
       } else {
+        const errorMsg = data.error ?? 'Failed to save wallet address'
         setSaveMessage({
           type: 'error',
-          text: data.error ?? 'Failed to save wallet address',
+          text: errorMsg,
         })
+        throw new Error(errorMsg)
       }
     } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Network error. Please try again.'
       setSaveMessage({
         type: 'error',
-        text: 'Network error. Please try again.',
+        text: errorMsg,
       })
+      throw err // Re-throw so modal knows to stay open
     } finally {
       setIsSaving(false)
     }
