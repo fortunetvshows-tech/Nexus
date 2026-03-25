@@ -75,10 +75,23 @@ export async function POST(req: NextRequest) {
 
       const task = (tx.submission as any)?.task
 
+      // Check if worker has wallet set before payment
+      if (!worker.walletAddress) {
+        results.push({
+          txId,
+          worker:  worker.piUsername,
+          amount:  Number(tx.netAmount),
+          success: false,
+          piTxid:  null,
+          error:   'Worker has not set their wallet address. Ask them to update their profile first.',
+        })
+        continue
+      }
+
       // Trigger A2U payment
       const payResult = await payWorkerA2U({
         workerPiUid,
-        workerWallet: worker.walletAddress ?? '',  // Pass stored wallet address
+        workerWallet: worker.walletAddress,  // Use stored wallet address
         amount:       Number(tx.netAmount),
         submissionId: tx.submissionId,
         taskId:       task?.id ?? '',
