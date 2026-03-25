@@ -57,8 +57,18 @@ export async function GET(req: NextRequest) {
       .eq('type', 'escrow_in')
       .order('createdAt', { ascending: false })
 
+    // Fetch employer payouts (worker_payout transactions paid by employer)
+    const { data: payouts } = await supabaseAdmin
+      .from('Transaction')
+      .select('amount, status, createdAt')
+      .eq('senderId', user.id)
+      .eq('type', 'worker_payout')
+      .eq('status', 'confirmed')
+      .order('createdAt', { ascending: false })
+
     const taskList = tasks ?? []
     const spendList = spend ?? []
+    const payoutList = payouts ?? []
 
     // Calculate summary
     const totalTasksPosted = taskList.length
@@ -69,6 +79,8 @@ export async function GET(req: NextRequest) {
       (sum, t) => sum + (t.slotsAvailable - t.slotsRemaining), 0
     )
     const totalEscrowed = spendList
+      .reduce((sum, t) => sum + Number(t.amount), 0)
+    const totalSpent = payoutList
       .reduce((sum, t) => sum + Number(t.amount), 0)
 
     return NextResponse.json(
@@ -82,6 +94,7 @@ export async function GET(req: NextRequest) {
             ? (totalSlotsFilled / totalSlotsPosted * 100).toFixed(1)
             : '0.0',
           totalEscrowed,
+          totalSpent,
         },
         tasks: taskList,
       },

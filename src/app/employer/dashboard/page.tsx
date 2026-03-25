@@ -38,6 +38,7 @@ interface EmployerSummary {
   totalSlotsFilled: number
   fillRate:         string
   totalEscrowed:    number
+  totalSpent:       number
 }
 
 // ── Animated fill bar component ────────────────────────────
@@ -290,6 +291,7 @@ export default function EmployerDashboardPage() {
   const activeTasks    = tasks.filter(t => t.taskStatus === 'escrowed')
   const completedTasks = tasks.filter(t => t.taskStatus === 'completed')
   const totalEscrowed  = summary?.totalEscrowed ?? 0
+  const totalSpent     = summary?.totalSpent ?? 0
   const fillRate       = summary?.fillRate ?? '0.0'
 
   return (
@@ -401,6 +403,18 @@ export default function EmployerDashboardPage() {
                     sub="locked in escrow"
                     color={COLORS.amber}
                     icon="🔒"
+                  />
+                ),
+              },
+              {
+                id:       'stat-spent',
+                children: (
+                  <EmployerStatCard
+                    label="Total Spent"
+                    value={`${totalSpent.toFixed(3)}π`}
+                    sub="paid to workers"
+                    color={COLORS.emerald}
+                    icon="💰"
                   />
                 ),
               },
