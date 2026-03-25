@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { usePiAuth }    from '@/hooks/use-pi-auth'
 import { Navigation }   from '@/components/Navigation'
+import { EditWalletModal } from '@/components/EditWalletModal'
 import {
   COLORS, FONTS, RADII, SPACING, SHADOWS
 } from '@/lib/design/tokens'
@@ -30,6 +31,7 @@ export default function ProfilePage() {
     type: 'success' | 'error', text: string
   } | null>(null)
   const [hasMounted,    setHasMounted]    = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   useEffect(() => { setHasMounted(true) }, [])
 
@@ -57,8 +59,9 @@ export default function ProfilePage() {
     }
   }
 
-  const handleSaveWallet = async () => {
-    if (!user?.piUid || !walletInput.trim()) return
+  const handleSaveWallet = async (walletToSave?: string) => {
+    const wallet = walletToSave || walletInput // Allow modal to pass wallet directly
+    if (!user?.piUid || !wallet.trim()) return
     setIsSaving(true)
     setSaveMessage(null)
 
@@ -72,7 +75,7 @@ export default function ProfilePage() {
             'x-pi-uid':     user.piUid,
           },
           body: JSON.stringify({
-            walletAddress: walletInput.trim(),
+            walletAddress: wallet.trim(),
           }),
         }
       )
@@ -84,9 +87,11 @@ export default function ProfilePage() {
           text: '✓ Wallet address saved. Future payments will go to this address.',
         })
         setProfile(prev => prev
-          ? { ...prev, walletAddress: walletInput.trim() }
+          ? { ...prev, walletAddress: wallet.trim() }
           : prev
         )
+        // Clear input after successful save
+        setWalletInput('')
       } else {
         setSaveMessage({
           type: 'error',
@@ -289,26 +294,86 @@ export default function ProfilePage() {
 
               {/* Current wallet status */}
               {profile?.walletAddress ? (
-                <div style={{
-                  padding:      SPACING.sm,
-                  background:   'rgba(16,185,129,0.08)',
-                  border:       '1px solid rgba(16,185,129,0.2)',
-                  borderRadius: RADII.md,
-                  marginBottom: SPACING.md,
-                  display:      'flex',
-                  alignItems:   'center',
-                  gap:          SPACING.sm,
-                }}>
-                  <span style={{ color: COLORS.emerald }}>✓</span>
-                  <span style={{
-                    fontSize:   '0.72rem',
-                    fontFamily: FONTS.mono,
-                    color:      COLORS.emerald,
-                    wordBreak:  'break-all' as const,
+                <>
+                  {/* Locked Wallet Display */}
+                  <div style={{
+                    padding:      SPACING.md,
+                    background:   'rgba(16,185,129,0.08)',
+                    border:       '1px solid rgba(16,185,129,0.2)',
+                    borderRadius: RADII.md,
+                    marginBottom: SPACING.md,
+                    display:      'flex',
+                    alignItems:   'flex-start',
+                    gap:          SPACING.md,
+                    justifyContent: 'space-between',
                   }}>
-                    {profile.walletAddress}
-                  </span>
-                </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{
+                        display:     'flex',
+                        alignItems:  'center',
+                        gap:         SPACING.xs,
+                        marginBottom: '0.5rem',
+                      }}>
+                        <span style={{ color: COLORS.emerald, fontSize: '1rem' }}>🔒</span>
+                        <span style={{
+                          fontSize:   '0.72rem',
+                          fontWeight: '600',
+                          color:      COLORS.emerald,
+                          textTransform: 'uppercase',
+                        }}>
+                          Protected Wallet
+                        </span>
+                      </div>
+                      <div style={{
+                        fontSize:   '0.78rem',
+                        fontFamily: FONTS.mono,
+                        color:      COLORS.emerald,
+                        wordBreak:  'break-all' as const,
+                        lineHeight: 1.4,
+                      }}>
+                        {profile.walletAddress}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setIsEditModalOpen(true)}
+                      style={{
+                        padding:      '0.5rem 1rem',
+                        background:   COLORS.indigo,
+                        border:       'none',
+                        borderRadius: RADII.md,
+                        color:        'white',
+                        fontSize:     '0.8rem',
+                        fontWeight:   '500',
+                        cursor:       'pointer',
+                        whiteSpace:   'nowrap',
+                        flexShrink:   0,
+                      }}
+                    >
+                      Edit
+                    </button>
+                  </div>
+
+                  {/* Message about new wallet set */}
+                  {saveMessage && (
+                    <div style={{
+                      padding:      `${SPACING.xs} ${SPACING.sm}`,
+                      background:   saveMessage.type === 'success'
+                        ? 'rgba(16,185,129,0.08)'
+                        : 'rgba(239,68,68,0.08)',
+                      border:       `1px solid ${saveMessage.type === 'success'
+                        ? 'rgba(16,185,129,0.2)'
+                        : 'rgba(239,68,68,0.2)'}`,
+                      borderRadius: RADII.md,
+                      marginBottom: SPACING.md,
+                      fontSize:     '0.8rem',
+                      color:        saveMessage.type === 'success'
+                        ? COLORS.emerald
+                        : COLORS.red,
+                    }}>
+                      {saveMessage.text}
+                    </div>
+                  )}
+                </>
               ) : (
                 <div style={{
                   padding:      SPACING.sm,
@@ -324,91 +389,103 @@ export default function ProfilePage() {
                 </div>
               )}
 
-              {/* Wallet input */}
-              <div style={{ marginBottom: SPACING.sm }}>
-                <label style={{
-                  display:      'block',
-                  fontSize:     '0.78rem',
-                  fontWeight:   '500',
-                  color:        COLORS.textSecondary,
-                  marginBottom: '6px',
-                }}>
-                  Pi Wallet Address
-                </label>
-                <input
-                  type="text"
-                  value={walletInput}
-                  onChange={e => setWalletInput(e.target.value)}
-                  placeholder="G... (starts with G, 56 characters)"
-                  style={{
-                    width:        '100%',
-                    padding:      '0.75rem',
-                    background:   COLORS.bgElevated,
-                    border:       `1px solid ${COLORS.borderAccent}`,
-                    borderRadius: RADII.md,
-                    color:        COLORS.textPrimary,
-                    fontSize:     '0.8rem',
-                    fontFamily:   FONTS.mono,
-                    outline:      'none',
-                    boxSizing:    'border-box' as const,
-                  }}
-                />
-                <p style={{
-                  margin:   '6px 0 0',
-                  fontSize: '0.72rem',
-                  color:    COLORS.textMuted,
-                }}>
-                  Find your wallet address in Pi Wallet → Settings →
-                  Wallet Address. It starts with G and is 56 characters long.
-                </p>
-              </div>
+              {/* Wallet input - only show if NO wallet set */}
+              {!profile?.walletAddress && (
+                <>
+                  <div style={{ marginBottom: SPACING.sm }}>
+                    <label style={{
+                      display:      'block',
+                      fontSize:     '0.78rem',
+                      fontWeight:   '500',
+                      color:        COLORS.textSecondary,
+                      marginBottom: '6px',
+                    }}>
+                      Pi Wallet Address
+                    </label>
+                    <input
+                      type="text"
+                      value={walletInput}
+                      onChange={e => setWalletInput(e.target.value)}
+                      placeholder="G... (starts with G, 56 characters)"
+                      style={{
+                        width:        '100%',
+                        padding:      '0.75rem',
+                        background:   COLORS.bgElevated,
+                        border:       `1px solid ${COLORS.borderAccent}`,
+                        borderRadius: RADII.md,
+                        color:        COLORS.textPrimary,
+                        fontSize:     '0.8rem',
+                        fontFamily:   FONTS.mono,
+                        outline:      'none',
+                        boxSizing:    'border-box' as const,
+                      }}
+                    />
+                    <p style={{
+                      margin:   '6px 0 0',
+                      fontSize: '0.72rem',
+                      color:    COLORS.textMuted,
+                    }}>
+                      Find your wallet address in Pi Wallet → Settings →
+                      Wallet Address. It starts with G and is 56 characters long.
+                    </p>
+                  </div>
 
-              {/* Save message */}
-              {saveMessage && (
-                <div style={{
-                  padding:      `${SPACING.xs} ${SPACING.sm}`,
-                  background:   saveMessage.type === 'success'
-                    ? 'rgba(16,185,129,0.08)'
-                    : 'rgba(239,68,68,0.08)',
-                  border:       `1px solid ${saveMessage.type === 'success'
-                    ? 'rgba(16,185,129,0.2)'
-                    : 'rgba(239,68,68,0.2)'}`,
-                  borderRadius: RADII.md,
-                  marginBottom: SPACING.sm,
-                  fontSize:     '0.8rem',
-                  color:        saveMessage.type === 'success'
-                    ? COLORS.emerald
-                    : COLORS.red,
-                }}>
-                  {saveMessage.text}
-                </div>
+                  {/* Save message */}
+                  {saveMessage && (
+                    <div style={{
+                      padding:      `${SPACING.xs} ${SPACING.sm}`,
+                      background:   saveMessage.type === 'success'
+                        ? 'rgba(16,185,129,0.08)'
+                        : 'rgba(239,68,68,0.08)',
+                      border:       `1px solid ${saveMessage.type === 'success'
+                        ? 'rgba(16,185,129,0.2)'
+                        : 'rgba(239,68,68,0.2)'}`,
+                      borderRadius: RADII.md,
+                      marginBottom: SPACING.sm,
+                      fontSize:     '0.8rem',
+                      color:        saveMessage.type === 'success'
+                        ? COLORS.emerald
+                        : COLORS.red,
+                    }}>
+                      {saveMessage.text}
+                    </div>
+                  )}
+
+                  {/* Save button */}
+                  <button
+                    onClick={() => handleSaveWallet()}
+                    disabled={
+                      isSaving ||
+                      !walletInput.trim()
+                    }
+                    style={{
+                      width:        '100%',
+                      padding:      '0.875rem',
+                      background:   isSaving ? COLORS.bgElevated
+                        : `linear-gradient(180deg, ${COLORS.indigo} 0%, ${COLORS.indigoDark ?? COLORS.indigo} 100%)`,
+                      border:       'none',
+                      borderRadius: RADII.md,
+                      color:        isSaving ? COLORS.textMuted : 'white',
+                      fontSize:     '0.9rem',
+                      fontWeight:   '600',
+                      cursor:       isSaving ? 'not-allowed' : 'pointer',
+                      fontFamily:   FONTS.sans,
+                      transition:   'all 0.15s ease',
+                    }}
+                  >
+                    {isSaving ? 'Saving...' : 'Save Wallet Address'}
+                  </button>
+                </>
               )}
 
-              {/* Save button */}
-              <button
-                onClick={handleSaveWallet}
-                disabled={
-                  isSaving ||
-                  !walletInput.trim() ||
-                  walletInput.trim() === profile?.walletAddress
-                }
-                style={{
-                  width:        '100%',
-                  padding:      '0.875rem',
-                  background:   isSaving ? COLORS.bgElevated
-                    : `linear-gradient(180deg, ${COLORS.indigo} 0%, ${COLORS.indigoDark ?? COLORS.indigo} 100%)`,
-                  border:       'none',
-                  borderRadius: RADII.md,
-                  color:        isSaving ? COLORS.textMuted : 'white',
-                  fontSize:     '0.9rem',
-                  fontWeight:   '600',
-                  cursor:       isSaving ? 'not-allowed' : 'pointer',
-                  fontFamily:   FONTS.sans,
-                  transition:   'all 0.15s ease',
-                }}
-              >
-                {isSaving ? 'Saving...' : 'Save Wallet Address'}
-              </button>
+              {/* Modal for editing wallet */}
+              <EditWalletModal
+                isOpen={isEditModalOpen}
+                currentWallet={profile?.walletAddress ?? null}
+                onClose={() => setIsEditModalOpen(false)}
+                onSave={handleSaveWallet}
+                isSaving={isSaving}
+              />
             </div>
           </>
         )}
