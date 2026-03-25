@@ -49,14 +49,6 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    // Fetch employer spend (escrow_in transactions sent by employer)
-    const { data: spend } = await supabaseAdmin
-      .from('Transaction')
-      .select('amount, platformFee, status, createdAt')
-      .eq('senderId', user.id)
-      .eq('type', 'escrow_in')
-      .order('createdAt', { ascending: false })
-
     // Fetch employer payouts (worker_payout transactions paid by employer)
     const { data: payouts } = await supabaseAdmin
       .from('Transaction')
@@ -67,7 +59,6 @@ export async function GET(req: NextRequest) {
       .order('createdAt', { ascending: false })
 
     const taskList = tasks ?? []
-    const spendList = spend ?? []
     const payoutList = payouts ?? []
 
     // Calculate summary
@@ -78,8 +69,12 @@ export async function GET(req: NextRequest) {
     const totalSlotsFilled = taskList.reduce(
       (sum, t) => sum + (t.slotsAvailable - t.slotsRemaining), 0
     )
-    const totalEscrowed = spendList
-      .reduce((sum, t) => sum + Number(t.amount), 0)
+    // Calculate total escrowed from tasks in 'escrowed' status
+    // Total escrowed = sum of (piReward × slotsAvailable) for each escrowed task
+    const totalEscrowed = taskList
+      .filter(t => t.taskStatus === 'escrowed')
+      .reduce((sum, t) => sum + (Number(t.piReward) * t.slotsAvailable), 0)
+    
     const totalSpent = payoutList
       .reduce((sum, t) => sum + Number(t.amount), 0)
 
