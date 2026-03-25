@@ -296,8 +296,21 @@ export default function ProfilePage() {
                 be recovered.
               </p>
 
-              {/* Current wallet status */}
-              {profile?.walletAddress ? (
+              {/* Wallet section with proper loading states */}
+              {isLoading ? (
+                <div style={{
+                  padding:      SPACING.md,
+                  background:   'rgba(99,102,241,0.08)',
+                  border:       `1px solid rgba(99,102,241,0.2)`,
+                  borderRadius: RADII.md,
+                  marginBottom: SPACING.md,
+                  fontSize:     '0.8rem',
+                  color:        COLORS.textMuted,
+                  textAlign:    'center' as const,
+                }}>
+                  Loading your wallet...
+                </div>
+              ) : profile?.walletAddress ? (
                 <>
                   {/* Locked Wallet Display */}
                   <div style={{
@@ -379,23 +392,20 @@ export default function ProfilePage() {
                   )}
                 </>
               ) : (
-                <div style={{
-                  padding:      SPACING.sm,
-                  background:   'rgba(245,158,11,0.08)',
-                  border:       '1px solid rgba(245,158,11,0.2)',
-                  borderRadius: RADII.md,
-                  marginBottom: SPACING.md,
-                  fontSize:     '0.82rem',
-                  color:        COLORS.amber,
-                }}>
-                  ⚠ No wallet address set. Payments cannot be processed
-                  until you add your Pi wallet address below.
-                </div>
-              )}
-
-              {/* Wallet input - only show if NO wallet set */}
-              {!profile?.walletAddress && (
                 <>
+                  {/* No wallet - show warning and input form */}
+                  <div style={{
+                    padding:      SPACING.sm,
+                    background:   'rgba(245,158,11,0.08)',
+                    border:       '1px solid rgba(245,158,11,0.2)',
+                    borderRadius: RADII.md,
+                    marginBottom: SPACING.md,
+                    fontSize:     '0.82rem',
+                    color:        COLORS.amber,
+                  }}>
+                    ⚠ No wallet address set. Payments cannot be processed
+                    until you add your Pi wallet address below.
+                  </div>
                   <div style={{ marginBottom: SPACING.sm }}>
                     <label style={{
                       display:      'block',
