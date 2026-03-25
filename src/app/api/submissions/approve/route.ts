@@ -135,12 +135,14 @@ export async function POST(
     // Trigger A2U payment from platform wallet to worker
     console.log('[Nexus:Approve] Triggering A2U payment:', {
       workerPiUid,
+      workerWallet,
       netAmount,
       submissionId,
     })
 
     const paymentResult = await payWorkerA2U({
       workerPiUid,
+      workerWallet,  // Pass stored wallet to avoid Pi scope errors
       amount: netAmount,
       submissionId,
       taskId: task.id,

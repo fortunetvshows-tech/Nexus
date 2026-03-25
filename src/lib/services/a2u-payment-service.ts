@@ -30,10 +30,11 @@ export interface A2UPaymentResult {
 
 // ── Step 1: Register payment with Pi Network ─────────────────
 async function createPiPayment(params: {
-  amount:       number
-  memo:         string
-  metadata:     Record<string, unknown>
-  uid:          string
+  amount:    number
+  memo:      string
+  metadata:  Record<string, unknown>
+  uid:       string
+  toAddress: string  // Worker's wallet address (Stellar public key)
 }): Promise<string> {
   const res = await fetch(`${PI_API_BASE}/v2/payments`, {
     method:  'POST',
@@ -43,10 +44,11 @@ async function createPiPayment(params: {
     },
     body: JSON.stringify({
       payment: {
-        amount:   params.amount,
-        memo:     params.memo,
-        metadata: params.metadata,
-        uid:      params.uid,
+        amount:     params.amount,
+        memo:       params.memo,
+        metadata:   params.metadata,
+        uid:        params.uid,
+        to_address: params.toAddress,  // Pass stored wallet to avoid scope errors
       },
     }),
   })
@@ -180,16 +182,17 @@ async function completePiPayment(
 // ── Main entry point ─────────────────────────────────────────
 export async function payWorkerA2U(params: {
   workerPiUid:  string
+  workerWallet: string  // Worker's Stellar wallet address (from User.walletAddress)
   amount:       number
   submissionId: string
   taskId:       string
   taskTitle:    string
 }): Promise<A2UPaymentResult> {
 
-  const { workerPiUid, amount, submissionId, taskId, taskTitle } = params
+  const { workerPiUid, workerWallet, amount, submissionId, taskId, taskTitle } = params
 
-  if (!workerPiUid || !amount || !submissionId) {
-    return { success: false, error: 'Missing required parameters', code: 'MISSING_PARAMS' }
+  if (!workerPiUid || !workerWallet || !amount || !submissionId) {
+    return { success: false, error: 'Missing required parameters (wallet required)', code: 'MISSING_PARAMS' }
   }
 
   if (amount <= 0) {
@@ -218,9 +221,10 @@ export async function payWorkerA2U(params: {
     // Step 1 — Create payment
     paymentId = await createPiPayment({
       amount,
-      memo:     `Nexus: ${taskTitle.slice(0, 40)}`,
-      metadata: { submissionId, taskId, type: 'worker_payout' },
-      uid:      workerPiUid,
+      memo:      `Nexus: ${taskTitle.slice(0, 40)}`,
+      metadata:  { submissionId, taskId, type: 'worker_payout' },
+      uid:       workerPiUid,
+      toAddress: workerWallet,  // Use stored wallet address instead of relying on scopes
     })
 
     console.log('[Nexus:A2U] Payment created:', paymentId)

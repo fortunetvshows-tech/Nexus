@@ -77,7 +77,8 @@ export async function POST(req: NextRequest) {
 
       // Trigger A2U payment
       const payResult = await payWorkerA2U({
-        workerPiUid,  // now uses walletAddress if available
+        workerPiUid,
+        workerWallet: worker.walletAddress ?? '',  // Pass stored wallet address
         amount:       Number(tx.netAmount),
         submissionId: tx.submissionId,
         taskId:       task?.id ?? '',
