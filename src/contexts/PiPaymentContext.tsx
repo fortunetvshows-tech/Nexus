@@ -5,6 +5,17 @@ import React, {
   useState, useCallback, useEffect
 } from 'react'
 
+interface NexusUser {
+  id: string
+  piUid: string
+  piUsername: string
+  userRole: 'worker' | 'employer' | 'admin'
+  reputationScore: number
+  reputationLevel: string
+  kycLevel: number
+  isAdmin: boolean
+}
+
 interface PaymentConfig {
   amount:   number
   memo:     string
@@ -19,6 +30,9 @@ interface PaymentContextValue {
   ) => void
   isProcessing: boolean
   error:        string | null
+  user:         NexusUser | null
+  isAuthenticated: boolean
+  isAuthenticating: boolean
 }
 
 const PiPaymentContext = createContext<PaymentContextValue | null>(null)
@@ -31,6 +45,7 @@ export function PiPaymentProvider({
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError]               = useState<string | null>(null)
   const [isAuth, setIsAuth]             = useState(false)
+  const [user, setUser]                 = useState<NexusUser | null>(null)
 
   // Use refs for callbacks so they survive re-renders
   const onSuccessRef = useRef<((paymentId: string, txid: string) => void) | null>(null)
@@ -69,7 +84,7 @@ export function PiPaymentProvider({
     }
   }, [])
 
-  // Authenticate at app level to get global payments scope
+  // Authenticate at app level to get global scopes including wallet
   useEffect(() => {
     if (typeof window === 'undefined' || !window.Pi || isAuthenticatingRef.current) {
       return
@@ -77,13 +92,51 @@ export function PiPaymentProvider({
 
     isAuthenticatingRef.current = true
 
-    window.Pi.authenticate(['payments', 'username'], onIncompletePaymentFound)
-      .then(() => {
-        setIsAuth(true)
-        console.log('[Nexus:PiPaymentProvider] Global authentication successful')
+    // Request all scopes: payments, username, wallet_address
+    window.Pi.authenticate(
+      ['payments', 'username', 'wallet_address'], 
+      onIncompletePaymentFound
+    )
+      .then(async (auth) => {
+        console.log('[Nexus:PiPaymentProvider] Global Pi authentication successful')
+        
+        // Call server to verify auth and get full user data
+        try {
+          const origin = typeof window !== 'undefined' ? window.location.origin : ''
+          const response = await fetch(`${origin}/api/auth`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-pi-uid': auth.user.uid,
+            },
+            body: JSON.stringify({
+              accessToken:   auth.accessToken,
+              uid:           auth.user.uid,
+              walletAddress: (auth.user as any).wallet_address ?? null,
+            }),
+          })
+
+          const data = await response.json()
+          
+          if (response.ok && data.user) {
+            setUser(data.user)
+            setIsAuth(true)
+            console.log('[Nexus:PiPaymentProvider] User authenticated:', data.user.piUsername)
+          } else {
+            console.error('[Nexus:PiPaymentProvider] Server auth failed:', data.message)
+            setIsAuth(false)
+          }
+        } catch (err) {
+          console.error('[Nexus:PiPaymentProvider] Server auth error:', err)
+          setIsAuth(false)
+        }
       })
       .catch((err) => {
         console.error('[Nexus:PiPaymentProvider] Global authentication failed:', err)
+        setIsAuth(false)
+      })
+      .finally(() => {
+        isAuthenticatingRef.current = false
       })
   }, [onIncompletePaymentFound])
 
@@ -180,7 +233,14 @@ export function PiPaymentProvider({
   }, [])
 
   return (
-    <PiPaymentContext.Provider value={{ createPayment, isProcessing, error }}>
+    <PiPaymentContext.Provider value={{
+      createPayment,
+      isProcessing,
+      error,
+      user,
+      isAuthenticated: isAuth,
+      isAuthenticating: isAuthenticatingRef.current,
+    }}>
       {children}
     </PiPaymentContext.Provider>
   )
@@ -188,6 +248,6 @@ export function PiPaymentProvider({
 
 export function usePiPaymentContext() {
   const ctx = useContext(PiPaymentContext)
-  if (!ctx) throw new Error('usePiPaymentContext must be used inside PiPaymentProvider')
+  if (!ctx) return null  // Allow graceful fallback if outside provider
   return ctx
 }

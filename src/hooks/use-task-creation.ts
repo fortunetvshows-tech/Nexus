@@ -70,7 +70,9 @@ export function useTaskCreation(piUid: string | null) {
     error:  null,
   })
 
-  const { createPayment, isProcessing } = usePiPaymentContext()
+  const paymentContext = usePiPaymentContext()
+  const createPayment = paymentContext?.createPayment
+  const isProcessing = paymentContext?.isProcessing ?? false
 
   const updateField = useCallback(
     (field: keyof TaskFormData, value: string) => {

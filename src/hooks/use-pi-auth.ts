@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useContext, useRef } from 'react'
+import { usePiPaymentContext } from '@/contexts/PiPaymentContext'
 
-interface NexusUser {
+export interface NexusUser {
   id: string
   piUid: string
   piUsername: string
@@ -59,16 +60,43 @@ function getAuthScopesFromSession(): string[] {
 }
 
 export function usePiAuth() {
-  const [state, setState] = useState<AuthState>(() => ({
-    user:       getUserFromSession(),
-    isLoading:  false,
-    error:      null,
-    isSdkReady: false,
-  }))
+  const contextProvider = usePiPaymentContext()
+  const hasContextProvider = useRef(false)
 
-  // Check for Pi SDK availability after mount
-  // window.Pi is injected by the Pi Browser environment
-  // It may not be available immediately on mount
+  const [state, setState] = useState<AuthState>(() => {
+    // If we have context provider with auth, use that user
+    if (contextProvider?.isAuthenticated && contextProvider?.user) {
+      hasContextProvider.current = true
+      return {
+        user: contextProvider.user,
+        isLoading: false,
+        error: null,
+        isSdkReady: true,
+      }
+    }
+    // Otherwise use local session
+    return {
+      user: getUserFromSession(),
+      isLoading: false,
+      error: null,
+      isSdkReady: false,
+    }
+  })
+
+  // Sync with context if available
+  useEffect(() => {
+    if (contextProvider?.isAuthenticated && contextProvider?.user) {
+      hasContextProvider.current = true
+      setState({
+        user: contextProvider.user,
+        isLoading: false,
+        error: null,
+        isSdkReady: true,
+      })
+    }
+  }, [contextProvider?.user, contextProvider?.isAuthenticated])
+
+  // Check for Pi SDK availability after mount (local fallback)
   useEffect(() => {
     const checkSdk = () => {
       if (typeof window !== 'undefined' && window.Pi) {
@@ -95,6 +123,12 @@ export function usePiAuth() {
   }, [])
 
   const authenticate = useCallback(async () => {
+    // If context already authenticated, skip local auth
+    if (hasContextProvider.current && contextProvider?.isAuthenticated) {
+      console.warn('[Nexus:usePiAuth] User already authenticated via global context')
+      return contextProvider.user
+    }
+
     setState(prev => ({ ...prev, isLoading: true, error: null }))
 
     try {
