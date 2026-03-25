@@ -179,7 +179,28 @@ export async function POST(req: NextRequest) {
 
     // Validate category dynamically from database
     const validCategories = await getValidCategories()
-    if (!validCategories.includes(category as string)) {
+    const userCategory = category as string
+    const isValidCategory = validCategories.includes(userCategory)
+    
+    // DEBUG: Log category validation details
+    if (!isValidCategory) {
+      console.error('[Nexus:TasksRoute] Category validation failed:', {
+        userCategory,
+        userCategoryBytes: Buffer.from(userCategory).toString('hex'),
+        userCategoryLength: userCategory.length,
+        validCategories,
+        validCategoryBytes: validCategories.map(c => Buffer.from(c).toString('hex')),
+        match: validCategories.map(c => ({
+          cat: c,
+          catBytes: Buffer.from(c).toString('hex'),
+          catLength: c.length,
+          equals: c === userCategory,
+          trim: c.trim() === userCategory.trim(),
+        })),
+      })
+    }
+    
+    if (!isValidCategory) {
       return NextResponse.json(
         {
           error:   'VALIDATION_ERROR',
