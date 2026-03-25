@@ -12,15 +12,7 @@ export default function ArbitrateDisputePage({
 }) {
   const resolvedParams = use(params)
   const disputeId      = resolvedParams?.disputeId
-  const { user, authenticate, isSdkReady } = usePiAuth()
-  const hasAutoAuthenticated = useRef(false)
-
-  useEffect(() => {
-    if (isSdkReady && !user && !hasAutoAuthenticated.current) {
-      hasAutoAuthenticated.current = true
-      authenticate()
-    }
-  }, [isSdkReady, user, authenticate])
+  const { user } = usePiAuth()
 
   const [dispute,     setDispute]     = useState<Record<string, unknown> | null>(null)
   const [submission,  setSubmission]  = useState<Record<string, unknown> | null>(null)

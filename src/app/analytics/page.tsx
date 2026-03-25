@@ -123,15 +123,7 @@ function StatCard({
 // ── Main Component ─────────────────────────────────────────────
 
 export default function AnalyticsPage() {
-  const { user, authenticate, isSdkReady } = usePiAuth()
-  const hasAutoAuthenticated = useRef(false)
-
-  useEffect(() => {
-    if (isSdkReady && !user && !hasAutoAuthenticated.current) {
-      hasAutoAuthenticated.current = true
-      authenticate()
-    }
-  }, [isSdkReady, user, authenticate])
+  const { user } = usePiAuth()
 
   // Worker data
   const [workerSummary, setWorkerSummary] =

@@ -35,15 +35,7 @@ export default function ReviewPage({
 }) {
   const resolvedParams  = use(params)
   const taskId          = resolvedParams?.taskId
-  const { user, authenticate, isSdkReady } = usePiAuth()
-  const hasAutoAuthenticated = useRef(false)
-
-  useEffect(() => {
-    if (isSdkReady && !user && !hasAutoAuthenticated.current) {
-      hasAutoAuthenticated.current = true
-      authenticate()
-    }
-  }, [isSdkReady, user, authenticate])
+  const { user }        = usePiAuth()
 
   const [submissions,  setSubmissions]  = useState<Submission[]>([])
   const [isLoading,    setIsLoading]    = useState(true)

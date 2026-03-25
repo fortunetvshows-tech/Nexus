@@ -131,6 +131,14 @@ export function useTaskCreation(piUid: string | null) {
 
     const cost = parseFloat(totalCost())
 
+    if (!createPayment) {
+      setState(prev => ({ 
+        ...prev, 
+        error: 'Payment system not ready. Please refresh and try again.' 
+      }))
+      return
+    }
+
     // Set payment step AFTER createPayment is called
     // Setting state BEFORE causes re-render that resets Pi Browser iframe
     createPayment(

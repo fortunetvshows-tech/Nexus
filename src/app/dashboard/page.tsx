@@ -53,19 +53,10 @@ interface WorkerDispute {
 export default function DashboardPage() {
   const {
     user,
-    authenticate,
-    isSdkReady,
     isAuthenticated,
+    isSdkReady,
+    authenticate,
   } = usePiAuth()
-
-  const hasAutoAuthenticated = useRef(false)
-
-  useEffect(() => {
-    if (isSdkReady && !user && !hasAutoAuthenticated.current) {
-      hasAutoAuthenticated.current = true
-      authenticate()
-    }
-  }, [isSdkReady, user, authenticate])
 
   // Worker data
   const [submissions,   setSubmissions]   = useState<Submission[]>([])

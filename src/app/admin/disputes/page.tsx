@@ -72,8 +72,7 @@ const STATUS_COLOR: Record<string, string> = {
 }
 
 export default function AdminDisputesPage() {
-  const { user, authenticate, isSdkReady } = usePiAuth()
-  const hasAutoAuth = useRef(false)
+  const { user } = usePiAuth()
 
   const [disputes,   setDisputes]   = useState<AdminDispute[]>([])
   const [isLoading,  setIsLoading]  = useState(true)
@@ -87,12 +86,7 @@ export default function AdminDisputesPage() {
   const [payoutResults,  setPayoutResults]  = useState<Record<string, PayoutResult>>({})
   const [cancelling,     setCancelling]     = useState<string | null>(null)
 
-  useEffect(() => {
-    if (isSdkReady && !user && !hasAutoAuth.current) {
-      hasAutoAuth.current = true
-      authenticate()
-    }
-  }, [isSdkReady, user, authenticate])
+  // Global authentication handled by PiPaymentProvider
 
   useEffect(() => {
     if (!user?.piUid) return

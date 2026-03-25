@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePiAuth }   from '@/hooks/use-pi-auth'
 import { Navigation }  from '@/components/Navigation'
@@ -20,15 +20,7 @@ interface ArbitrationItem {
 }
 
 export default function ArbitratePage() {
-  const { user, authenticate, isSdkReady } = usePiAuth()
-  const hasAutoAuthenticated = useRef(false)
-
-  useEffect(() => {
-    if (isSdkReady && !user && !hasAutoAuthenticated.current) {
-      hasAutoAuthenticated.current = true
-      authenticate()
-    }
-  }, [isSdkReady, user, authenticate])
+  const { user, isSdkReady } = usePiAuth()
 
   const [arbitrations, setArbitrations] = useState<ArbitrationItem[]>([])
   const [isLoading,    setIsLoading]    = useState(true)

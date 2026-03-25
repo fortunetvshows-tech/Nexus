@@ -69,8 +69,8 @@ export function usePiAuth() {
       hasContextProvider.current = true
       return {
         user: contextProvider.user,
-        isLoading: false,
-        error: null,
+        isLoading: contextProvider.isAuthenticating,
+        error: contextProvider.error,
         isSdkReady: true,
       }
     }

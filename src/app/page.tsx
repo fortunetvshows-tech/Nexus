@@ -17,7 +17,7 @@ const STATS = [
 
 
 export default function LandingPage() {
-  const { user, authenticate, isLoading, isSdkReady } = usePiAuth()
+  const { user, isLoading, isSdkReady } = usePiAuth()
   const [hasMounted, setHasMounted] = useState(false)
   const [isAuthenticating, setIsAuthenticating] = useState(false)
 
@@ -38,11 +38,19 @@ export default function LandingPage() {
     if (isAuthenticating || isLoading) return
     setIsAuthenticating(true)
     try {
-      await authenticate()
+      // Global auth via PiPaymentProvider handles authentication
+      // Navigate to dashboard if user is set
+      if (user) {
+        window.location.href = '/dashboard'
+      } else {
+        // Wait for global auth to complete, then reload
+        await new Promise(resolve => setTimeout(resolve, 500))
+        window.location.reload()
+      }
     } finally {
       setIsAuthenticating(false)
     }
-  }, [authenticate, isAuthenticating, isLoading])
+  }, [user, isAuthenticating, isLoading])
 
   if (!hasMounted) return null
 

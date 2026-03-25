@@ -174,13 +174,6 @@ export default function EmployerDashboardPage() {
   const [postedTasks, setPostedTasks] = useState<PostedTask[]>([])
 
   useEffect(() => {
-    if (isSdkReady && !user && !hasAutoAuthenticated.current) {
-      hasAutoAuthenticated.current = true
-      authenticate()
-    }
-  }, [isSdkReady, user, authenticate])
-
-  useEffect(() => {
     if (!user?.piUid) return
 
     const origin  = window.location.origin

@@ -10,7 +10,7 @@ import { COLORS, FONTS, RADII, SHADOWS, GRADIENTS, SPACING, statusStyle } from '
 
 export default function FeedPage() {
   const [claimedTaskId, setClaimedTaskId] = useState<string | null>(null)
-  const { user, authenticate, isLoading: authLoading } = usePiAuth()
+  const { user, isLoading: authLoading } = usePiAuth()
   const {
     tasks,
     pagination,
@@ -39,7 +39,7 @@ export default function FeedPage() {
           Sign in to see earning opportunities
         </p>
         <button
-          onClick={authenticate}
+          onClick={() => window.location.reload()}
           disabled={authLoading}
           style={{
             padding:       '0.75rem 2rem',

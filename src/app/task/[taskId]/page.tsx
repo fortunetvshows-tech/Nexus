@@ -38,17 +38,9 @@ export default function TaskDetailPage({
 }: {
   params: Promise<{ taskId: string }>
 }) {
-  const resolvedParams         = use(params)
-  const taskId                 = resolvedParams?.taskId
-  const { user, authenticate, isSdkReady } = usePiAuth()
-  const hasAutoAuthenticated   = useRef(false)
-
-  useEffect(() => {
-    if (isSdkReady && !user && !hasAutoAuthenticated.current) {
-      hasAutoAuthenticated.current = true
-      authenticate()
-    }
-  }, [isSdkReady, user, authenticate])
+  const resolvedParams = use(params)
+  const taskId         = resolvedParams?.taskId
+  const { user }       = usePiAuth()
 
   const [task,    setTask]    = useState<Task | null>(null)
   const [loading, setLoading] = useState(true)
