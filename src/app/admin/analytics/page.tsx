@@ -81,14 +81,14 @@ function StatCard({
       boxShadow: SHADOWS.card,
     }}>
       <div style={{
-        fontSize: FONTS.sm,
+        fontSize: '0.875rem',
         color: COLORS.textMuted,
         marginBottom: SPACING.xs,
       }}>
         {title}
       </div>
       <div style={{
-        fontSize: FONTS.xl,
+        fontSize: '1.5rem',
         fontWeight: '700',
         color: COLORS.textPrimary,
         marginBottom: subtitle ? SPACING.xs : 0,
@@ -97,7 +97,7 @@ function StatCard({
       </div>
       {subtitle && (
         <div style={{
-          fontSize: FONTS.xs,
+          fontSize: '0.75rem',
           color: COLORS.textMuted,
           marginTop: SPACING.xs,
         }}>
@@ -196,7 +196,7 @@ export default function AdminAnalyticsPage() {
             💰 Revenue Dashboard
           </h1>
           <p style={{
-            fontSize: FONTS.md,
+            fontSize: '1rem',
             color: COLORS.textMuted,
             margin: 0,
           }}>
@@ -296,7 +296,7 @@ export default function AdminAnalyticsPage() {
               boxShadow: SHADOWS.card,
             }}>
               <h2 style={{
-                fontSize: FONTS.lg,
+                fontSize: '1.125rem',
                 fontWeight: '700',
                 color: COLORS.textPrimary,
                 margin: `0 0 ${SPACING.md} 0`,
@@ -315,13 +315,13 @@ export default function AdminAnalyticsPage() {
                   borderRadius: RADII.md,
                   borderLeft: `4px solid ${COLORS.emerald}`,
                 }}>
-                  <div style={{ color: COLORS.textMuted, fontSize: FONTS.sm }}>
+                  <div style={{ color: COLORS.textMuted, fontSize: '0.875rem' }}>
                     Worker Share
                   </div>
-                  <div style={{ fontSize: FONTS.lg, fontWeight: '700', marginTop: SPACING.xs, color: COLORS.emerald }}>
+                  <div style={{ fontSize: '1.125rem', fontWeight: '700', marginTop: SPACING.xs, color: COLORS.emerald }}>
                     95%
                   </div>
-                  <div style={{ fontSize: FONTS.xs, color: COLORS.textMuted, marginTop: SPACING.xs }}>
+                  <div style={{ fontSize: '0.75rem', color: COLORS.textMuted, marginTop: SPACING.xs }}>
                     {formatPi(analytics.summary.totalPiPaidOut)}
                   </div>
                 </div>
@@ -332,13 +332,13 @@ export default function AdminAnalyticsPage() {
                   borderRadius: RADII.md,
                   borderLeft: `4px solid ${COLORS.indigo}`,
                 }}>
-                  <div style={{ color: COLORS.textMuted, fontSize: FONTS.sm }}>
+                  <div style={{ color: COLORS.textMuted, fontSize: '0.875rem' }}>
                     Platform Revenue
                   </div>
-                  <div style={{ fontSize: FONTS.lg, fontWeight: '700', marginTop: SPACING.xs, color: COLORS.indigo }}>
+                  <div style={{ fontSize: '1.125rem', fontWeight: '700', marginTop: SPACING.xs, color: COLORS.indigo }}>
                     5%
                   </div>
-                  <div style={{ fontSize: FONTS.xs, color: COLORS.textMuted, marginTop: SPACING.xs }}>
+                  <div style={{ fontSize: '0.75rem', color: COLORS.textMuted, marginTop: SPACING.xs }}>
                     {formatPi(analytics.summary.totalPlatformRevenue)}
                   </div>
                 </div>
@@ -349,13 +349,13 @@ export default function AdminAnalyticsPage() {
                   borderRadius: RADII.md,
                   borderLeft: `4px solid ${COLORS.amber}`,
                 }}>
-                  <div style={{ color: COLORS.textMuted, fontSize: FONTS.sm }}>
+                  <div style={{ color: COLORS.textMuted, fontSize: '0.875rem' }}>
                     Total Transaction Value
                   </div>
-                  <div style={{ fontSize: FONTS.lg, fontWeight: '700', marginTop: SPACING.xs, color: COLORS.amber }}>
+                  <div style={{ fontSize: '1.125rem', fontWeight: '700', marginTop: SPACING.xs, color: COLORS.amber }}>
                     {formatPi(analytics.summary.totalPiPaidOut / 0.95)}
                   </div>
-                  <div style={{ fontSize: FONTS.xs, color: COLORS.textMuted, marginTop: SPACING.xs }}>
+                  <div style={{ fontSize: '0.75rem', color: COLORS.textMuted, marginTop: SPACING.xs }}>
                     (before commission)
                   </div>
                 </div>
@@ -374,7 +374,7 @@ export default function AdminAnalyticsPage() {
                 overflowX: 'auto',
               }}>
                 <h2 style={{
-                  fontSize: FONTS.lg,
+                  fontSize: '1.125rem',
                   fontWeight: '700',
                   color: COLORS.textPrimary,
                   margin: `0 0 ${SPACING.md} 0`,
@@ -385,7 +385,7 @@ export default function AdminAnalyticsPage() {
                 <table style={{
                   width: '100%',
                   borderCollapse: 'collapse',
-                  fontSize: FONTS.sm,
+                  fontSize: '0.875rem',
                 }}>
                   <thead>
                     <tr style={{
@@ -465,7 +465,7 @@ export default function AdminAnalyticsPage() {
                             color: 'white',
                             padding: `${SPACING.xs} ${SPACING.sm}`,
                             borderRadius: RADII.sm,
-                            fontSize: FONTS.xs,
+                            fontSize: '0.75rem',
                             fontWeight: '600',
                           }}>
                             {tx.type === 'platform_fee' ? '💰 Fee' : tx.type === 'worker_payout' ? '💵 Payout' : '🔒 Escrow'}
@@ -489,7 +489,7 @@ export default function AdminAnalyticsPage() {
                             color: 'white',
                             padding: `${SPACING.xs} ${SPACING.sm}`,
                             borderRadius: RADII.sm,
-                            fontSize: FONTS.xs,
+                            fontSize: '0.75rem',
                             fontWeight: '600',
                           }}>
                             {tx.status === 'confirmed' ? '✓ Confirmed' : tx.status === 'pending' ? '⏳ Pending' : '✗ Failed'}
@@ -515,7 +515,7 @@ export default function AdminAnalyticsPage() {
                 boxShadow: SHADOWS.card,
               }}>
                 <h2 style={{
-                  fontSize: FONTS.lg,
+                  fontSize: '1.125rem',
                   fontWeight: '700',
                   color: COLORS.textPrimary,
                   margin: `0 0 ${SPACING.md} 0`,
@@ -556,14 +556,14 @@ export default function AdminAnalyticsPage() {
                         </div>
                         <div>
                           <div style={{
-                            fontSize: FONTS.md,
+                            fontSize: '1rem',
                             fontWeight: '600',
                             color: COLORS.textPrimary,
                           }}>
                             {user.piUsername}
                           </div>
                           <div style={{
-                            fontSize: FONTS.xs,
+                            fontSize: '0.75rem',
                             color: COLORS.textMuted,
                           }}>
                             {user.submissionsCount} submissions
@@ -577,13 +577,13 @@ export default function AdminAnalyticsPage() {
                         textAlign: 'center',
                       }}>
                         <div style={{
-                          fontSize: FONTS.xs,
+                          fontSize: '0.75rem',
                           color: COLORS.textMuted,
                         }}>
                           Reputation
                         </div>
                         <div style={{
-                          fontSize: FONTS.lg,
+                          fontSize: '1.125rem',
                           fontWeight: '700',
                           color: COLORS.amber,
                         }}>
