@@ -11,13 +11,13 @@ export async function GET(req: NextRequest) {
     const { data: user } = await supabaseAdmin
       .from('User')
       .select(`
+        id,
         piUsername,
         piUid,
         walletAddress,
         reputationScore,
         reputationLevel,
         kycLevel,
-        totalEarnings,
         totalTasksCompleted,
         createdAt
       `)
@@ -28,7 +28,25 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'NOT_FOUND' }, { status: 404 })
     }
 
-    return NextResponse.json({ success: true, profile: user })
+    // Calculate real-time earnings from confirmed worker_payout transactions
+    const { data: transactions } = await supabaseAdmin
+      .from('Transaction')
+      .select('netAmount, status')
+      .eq('receiverId', user.id)
+      .eq('type', 'worker_payout')
+
+    const transactions_list = transactions ?? []
+    const totalEarnings = transactions_list
+      .filter(t => t.status === 'confirmed')
+      .reduce((sum, t) => sum + Number(t.netAmount), 0)
+
+    return NextResponse.json({
+      success: true,
+      profile: {
+        ...user,
+        totalEarnings,
+      },
+    })
 
   } catch (err) {
     console.error('[Nexus:Profile] Error:', err)
