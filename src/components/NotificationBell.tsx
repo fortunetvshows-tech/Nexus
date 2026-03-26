@@ -240,9 +240,30 @@ export function NotificationBell({ piUid }: NotificationBellProps) {
                         </span>
                       )}
                     </div>
+                    {/* Fee Breakdown Display */}
+                    {notif.type === 'task_approved' && (notif.metadata as any)?.grossAmount && (
+                      <div style={{
+                        fontSize: '0.7rem',
+                        color: '#7aa3c0',
+                        marginTop: '0.5rem',
+                        padding: '0.5rem',
+                        backgroundColor: 'rgba(122, 163, 192, 0.08)',
+                        borderRadius: '4px',
+                        lineHeight: '1.4',
+                      }}>
+                        <div style={{ marginBottom: '0.25rem' }}>💰 <strong>Payment Breakdown:</strong></div>
+                        <div>Gross: {(notif.metadata as any).grossAmount?.toFixed(2)}π</div>
+                        <div>− Platform: {(notif.metadata as any).platformFee?.toFixed(2)}π</div>
+                        <div>− Network: {(notif.metadata as any).networkFee?.toFixed(2)}π</div>
+                        <div style={{ marginTop: '0.25rem', fontWeight: 'bold', color: '#10b981' }}>
+                          Net: {(notif.metadata as any).netAmount?.toFixed(2)}π
+                        </div>
+                      </div>
+                    )}
                     <div style={{
                       fontSize: '0.72rem',
                       color:    '#4b5563',
+                      marginTop: notif.type === 'task_approved' && (notif.metadata as any)?.grossAmount ? '0.35rem' : undefined,
                     }}>
                       {timeAgo(notif.createdAt)}
                     </div>

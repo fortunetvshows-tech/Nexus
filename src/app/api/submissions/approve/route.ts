@@ -149,28 +149,89 @@ export async function POST(
       taskTitle: task.title,
     })
 
-    // Update notification with actual earned amount
+    // Update notification with actual earned amount and fee breakdown
     if (paymentResult.success) {
-      try {
-        const grossAmount = Number(submission.agreedReward)
-        const feeAmount = PLATFORM_CONFIG.platformFee(
-          Number(submission.agreedReward)
-        )
-        const networkFee = PLATFORM_CONFIG.NETWORK_FEE_PI
-        const actualReceived = netAmount - networkFee
+      const grossAmount = Number(submission.agreedReward)
+      const feeAmount = PLATFORM_CONFIG.platformFee(grossAmount)
+      const networkFee = PLATFORM_CONFIG.NETWORK_FEE_PI
+      const actualReceived = netAmount - networkFee
 
-        await supabaseAdmin
+      // Build comprehensive notification with fee breakdown
+      const title = `You earned ${actualReceived.toFixed(2)}π! 🎉`
+      const body = `Your work was approved! You earned ${actualReceived.toFixed(2)}π (${grossAmount.toFixed(2)}π − ${feeAmount.toFixed(2)}π platform fee − ${networkFee.toFixed(2)}π network fee)`
+      const metadata = {
+        submissionId,
+        grossAmount,
+        platformFee: feeAmount,
+        networkFee,
+        netAmount: actualReceived,
+        status: 'approved',
+        timestamp: new Date().toISOString(),
+      }
+
+      try {
+        // Find notification by submissionId stored in metadata (reliable query)
+        const { data: existingNotif, error: fetchErr } = await supabaseAdmin
           .from('Notification')
-          .update({
-            title: `You earned ${actualReceived.toFixed(2)}π! 🎉`,
-            body: `Your work was approved! You earned ${actualReceived.toFixed(2)}π (${grossAmount.toFixed(2)}π − ${feeAmount.toFixed(2)}π platform fee − 0.01π network fee)`,
-          })
+          .select('id')
           .eq('userId', submission.workerId)
           .eq('type', 'task_approved')
-          .order('createdAt', { ascending: false })
-          .limit(1)
+          .filter('metadata->submissionId', 'eq', `"${submissionId}"`)
+          .maybeSingle()
+
+        if (fetchErr) {
+          console.error('[Nexus:Approve] Failed to find notification:', { submissionId, error: fetchErr })
+        }
+
+        if (existingNotif?.id) {
+          // Update with complete fee breakdown
+          const { error: updateErr } = await supabaseAdmin
+            .from('Notification')
+            .update({
+              title,
+              body,
+              metadata,
+            })
+            .eq('id', existingNotif.id)
+
+          if (updateErr) {
+            console.error('[Nexus:Approve] Failed to update notification with fee breakdown:', {
+              submissionId,
+              notificationId: existingNotif.id,
+              error: updateErr,
+            })
+          } else {
+            console.log('[Nexus:Approve] Successfully updated notification with fee breakdown:', {
+              submissionId,
+              grossAmount,
+              platformFee: feeAmount,
+              networkFee,
+              netAmount: actualReceived,
+            })
+          }
+        } else {
+          // Fallback: Create new notification if find failed (shouldn't happen normally)
+          console.warn('[Nexus:Approve] Original notification not found, creating new one:', { submissionId })
+          const { error: insertErr } = await supabaseAdmin
+            .from('Notification')
+            .insert({
+              userId: submission.workerId,
+              type: 'task_approved',
+              title,
+              body,
+              metadata,
+              isRead: false,
+            })
+
+          if (insertErr) {
+            console.error('[Nexus:Approve] Failed to create fallback notification:', { submissionId, error: insertErr })
+          }
+        }
       } catch (err) {
-        console.error('[Nexus:Approve] Failed to update notification:', err)
+        console.error('[Nexus:Approve] Unexpected error during notification update:', {
+          submissionId,
+          error: err instanceof Error ? err.message : String(err),
+        })
       }
 
       // Handle referral reward if this is first approved submission
