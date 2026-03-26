@@ -78,7 +78,7 @@ function StatCard({
       borderRadius: RADII.lg,
       padding: SPACING.lg,
       border: `1px solid ${COLORS.border}`,
-      boxShadow: SHADOWS.sm,
+      boxShadow: SHADOWS.card,
     }}>
       <div style={{
         fontSize: FONTS.sm,
@@ -293,7 +293,7 @@ export default function AdminAnalyticsPage() {
               padding: SPACING.lg,
               marginBottom: SPACING.xl,
               border: `1px solid ${COLORS.border}`,
-              boxShadow: SHADOWS.sm,
+              boxShadow: SHADOWS.card,
             }}>
               <h2 style={{
                 fontSize: FONTS.lg,
@@ -370,7 +370,7 @@ export default function AdminAnalyticsPage() {
                 padding: SPACING.lg,
                 marginBottom: SPACING.xl,
                 border: `1px solid ${COLORS.border}`,
-                boxShadow: SHADOWS.sm,
+                boxShadow: SHADOWS.card,
                 overflowX: 'auto',
               }}>
                 <h2 style={{
@@ -512,7 +512,7 @@ export default function AdminAnalyticsPage() {
                 borderRadius: RADII.lg,
                 padding: SPACING.lg,
                 border: `1px solid ${COLORS.border}`,
-                boxShadow: SHADOWS.sm,
+                boxShadow: SHADOWS.card,
               }}>
                 <h2 style={{
                   fontSize: FONTS.lg,
