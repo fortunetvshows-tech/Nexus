@@ -87,10 +87,10 @@ function StatCard({
       background:   COLORS.bgSurface,
       border:       `1px solid ${COLORS.border}`,
       borderRadius: RADII.lg,
-      padding:      '1.25rem',
+      padding:      'clamp(0.875rem, 2vw, 1.25rem)',
     }}>
       <div style={{
-        fontSize:   '0.75rem',
+        fontSize:   'clamp(0.65rem, 1.5vw, 0.75rem)',
         color:      COLORS.textMuted,
         fontWeight: '500',
         textTransform: 'uppercase' as const,
@@ -100,7 +100,7 @@ function StatCard({
         {label}
       </div>
       <div style={{
-        fontSize:   '1.5rem',
+        fontSize:   'clamp(1.1rem, 4vw, 1.5rem)',
         fontWeight: '700',
         color,
         lineHeight: 1,
@@ -109,7 +109,7 @@ function StatCard({
       </div>
       {sub && (
         <div style={{
-          fontSize:  '0.75rem',
+          fontSize:  'clamp(0.65rem, 1.5vw, 0.75rem)',
           color:     COLORS.textMuted,
           marginTop: '0.35rem',
         }}>
@@ -181,12 +181,12 @@ export default function AnalyticsPage() {
         <div style={{ marginBottom: '2rem' }}>
           <h1 style={{
             margin:     '0 0 0.25rem',
-            fontSize:   '1.5rem',
+            fontSize:   'clamp(1.25rem, 5vw, 1.5rem)',
             fontWeight: '700',
           }}>
             Analytics
           </h1>
-          <p style={{ margin: 0, color: COLORS.textMuted, fontSize: '0.875rem' }}>
+          <p style={{ margin: 0, color: COLORS.textMuted, fontSize: 'clamp(0.75rem, 2vw, 0.875rem)' }}>
             Your financial activity on Nexus
           </p>
         </div>
@@ -214,11 +214,11 @@ export default function AnalyticsPage() {
         {/* Worker analytics */}
         {!isLoading && (
           <div>
-            {/* Stats grid */}
+            {/* Stats grid - responsive columns */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap:     '0.75rem',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+              gap:     'clamp(0.5rem, 2vw, 0.75rem)',
               marginBottom: '2rem',
             }}>
               <StatCard
@@ -240,17 +240,18 @@ export default function AnalyticsPage() {
               />
             </div>
 
-            {/* Fee info */}
+            {/* Fee info - responsive flex with wrap */}
             <div style={{
               background:   COLORS.bgSurface,
               border:       `1px solid ${COLORS.border}`,
               borderRadius: RADII.lg,
-              padding:      '1rem 1.25rem',
+              padding:      'clamp(0.875rem, 2vw, 1.25rem)',
               marginBottom: '1.5rem',
-              fontSize:     '0.8rem',
+              fontSize:     'clamp(0.7rem, 2vw, 0.8rem)',
               color:        COLORS.textMuted,
               display:      'flex',
-              gap:          '1.5rem',
+              flexWrap:     'wrap',
+              gap:          'clamp(0.75rem, 3vw, 1.5rem)',
             }}>
               <span>
                 Platform fee: {(PLATFORM_CONFIG.PLATFORM_FEE_RATE * 100).toFixed(0)}%
