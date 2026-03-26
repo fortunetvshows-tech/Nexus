@@ -58,6 +58,7 @@ export function Navigation({ currentPage }: NavigationProps) {
 
   if (user?.isAdmin) {
     navItems.push({ href: '/admin/disputes', label: '⚖ Disputes', key: 'admin' })
+    navItems.push({ href: '/admin/analytics', label: '📊 Analytics', key: 'admin' })
   }
 
   return (
