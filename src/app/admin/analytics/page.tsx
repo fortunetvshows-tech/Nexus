@@ -455,9 +455,6 @@ export default function AdminAnalyticsPage() {
                       <tr key={tx.id || idx} style={{
                         borderBottom: `1px solid ${COLORS.border}`,
                         backgroundColor: idx % 2 === 0 ? COLORS.bgElevated : 'transparent',
-                        ':hover': {
-                          backgroundColor: COLORS.bg3,
-                        },
                       }}>
                         <td style={{ padding: SPACING.md, color: COLORS.textPrimary }}>
                           <span style={{
