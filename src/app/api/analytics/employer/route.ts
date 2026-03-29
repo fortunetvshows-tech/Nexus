@@ -38,7 +38,6 @@ export async function GET(req: NextRequest) {
         createdAt
       `)
       .eq('employerId', user.id)
-      .is('deletedAt', null)
       .order('createdAt', { ascending: false })
 
     if (tasksError) {

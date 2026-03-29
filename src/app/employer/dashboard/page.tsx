@@ -254,8 +254,14 @@ export default function EmployerDashboardPage() {
     const data = await res.json()
     if (data.success) {
       setActionMessage(`"${taskTitle}" archived successfully`)
-      // Remove from local list
-      setPostedTasks(prev => prev.filter(t => t.id !== taskId))
+      // Refresh analytics data to show archived task
+      const origin = window.location.origin
+      const headers = { 'x-pi-uid': user.piUid }
+      const analyticsRes = await fetch(`${origin}/api/analytics/employer`, { headers })
+      const analyticsData = await analyticsRes.json()
+      if (analyticsData.tasks) {
+        setTasks(analyticsData.tasks)
+      }
     } else {
       setActionMessage(`Error: ${data.error}`)
     }

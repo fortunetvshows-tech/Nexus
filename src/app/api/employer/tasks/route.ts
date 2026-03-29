@@ -38,7 +38,6 @@ export async function GET(req: NextRequest) {
         createdAt
       `)
       .eq('employerId', employer.id)
-      .is('deletedAt', null)
       .order('createdAt', { ascending: false })
       .limit(20)
 
