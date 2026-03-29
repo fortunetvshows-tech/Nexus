@@ -10,7 +10,7 @@ import { TASK_CATEGORIES } from '@/lib/config/categories'
 
 const STATS = [
   { value: '5',     label: 'Task Categories'    },
-  { value: '0.01π', label: 'Network Fee'        },
+  { value: '≤1hr',  label: 'Avg completion time' },
   { value: '< 30',  label: 'Minutes per task'   },
   { value: '100%',  label: 'Pi payments'        },
 ]

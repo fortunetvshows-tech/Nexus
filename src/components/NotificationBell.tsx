@@ -254,7 +254,6 @@ export function NotificationBell({ piUid }: NotificationBellProps) {
                         <div style={{ marginBottom: '0.25rem' }}>💰 <strong>Payment Breakdown:</strong></div>
                         <div>Gross: {(notif.metadata as any).grossAmount?.toFixed(2)}π</div>
                         <div>− Platform: {(notif.metadata as any).platformFee?.toFixed(2)}π</div>
-                        <div>− Network: {(notif.metadata as any).networkFee?.toFixed(2)}π</div>
                         <div style={{ marginTop: '0.25rem', fontWeight: 'bold', color: '#10b981' }}>
                           Net: {(notif.metadata as any).netAmount?.toFixed(2)}π
                         </div>

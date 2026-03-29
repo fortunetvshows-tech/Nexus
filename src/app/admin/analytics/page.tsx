@@ -24,7 +24,6 @@ interface AdminAnalytics {
     amount: number
     netAmount: number
     platformFee: number
-    networkFee: number
     status: string
     createdAt: string
   }>
@@ -422,14 +421,6 @@ export default function AdminAnalyticsPage() {
                         color: COLORS.textMuted,
                         fontWeight: '600',
                       }}>
-                        Network Fee
-                      </th>
-                      <th style={{
-                        padding: SPACING.md,
-                        textAlign: 'left',
-                        color: COLORS.textMuted,
-                        fontWeight: '600',
-                      }}>
                         Net Amount
                       </th>
                       <th style={{
@@ -473,9 +464,6 @@ export default function AdminAnalyticsPage() {
                         </td>
                         <td style={{ padding: SPACING.md, color: COLORS.red }}>
                           {formatPi(tx.platformFee)}
-                        </td>
-                        <td style={{ padding: SPACING.md, color: COLORS.amber }}>
-                          {formatPi(tx.networkFee)}
                         </td>
                         <td style={{ padding: SPACING.md, color: COLORS.emerald, fontWeight: '600' }}>
                           {formatPi(tx.netAmount)}

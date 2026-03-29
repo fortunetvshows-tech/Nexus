@@ -34,7 +34,8 @@ export const PLATFORM_CONFIG = {
   /**
    * Minimum reward per task slot (in Pi)
    * Must be high enough that worker payout after all fees is positive.
-   * Formula: NETWORK_FEE_PI / (1 - PLATFORM_FEE_RATE) + buffer
+   * Formula: MIN_TASK_REWARD_PI must be high enough that worker payout after platform fee is positive.
+   * Formula: (NETWORK_FEE_PI + buffer) / (1 - PLATFORM_FEE_RATE)
    * At current values: 0.01 / 0.95 = ~0.0105π minimum viable
    * We set 0.20π floor for healthy economics and user trust.
    *
@@ -69,7 +70,7 @@ export const PLATFORM_CONFIG = {
   },
 
   /**
-   * Calculate worker gross payout (after platform fee, before network fee)
+   * Calculate worker gross payout (after platform fee)
    */
   workerGrossPayout: (rewardPi: number): number => {
     return rewardPi * (1 - PLATFORM_CONFIG.PLATFORM_FEE_RATE)

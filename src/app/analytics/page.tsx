@@ -256,9 +256,6 @@ export default function AnalyticsPage() {
               <span>
                 Platform fee: {(PLATFORM_CONFIG.PLATFORM_FEE_RATE * 100).toFixed(0)}%
               </span>
-              <span>
-                Network fee: {PLATFORM_CONFIG.NETWORK_FEE_PI}π per payout
-              </span>
             </div>
 
             {/* Transaction history */}

@@ -265,20 +265,6 @@ export default function TaskDetailPage({
                 }}>
                   {(PLATFORM_CONFIG.PLATFORM_FEE_RATE * 100).toFixed(0)}% platform fee
                 </span>
-                <span style={{
-                  fontSize: '0.68rem',
-                  color:    COLORS.textMuted,
-                }}>−</span>
-                <span style={{
-                  padding:      '3px 8px',
-                  background:   'rgba(239,68,68,0.06)',
-                  border:       '1px solid rgba(239,68,68,0.15)',
-                  borderRadius: RADII.full,
-                  fontSize:     '0.68rem',
-                  color:        '#EF4444',
-                }}>
-                  {PLATFORM_CONFIG.NETWORK_FEE_PI}π network fee
-                </span>
               </div>
             </div>
             <div style={{

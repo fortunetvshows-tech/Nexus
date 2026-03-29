@@ -67,17 +67,6 @@ export function FeeBreakdown({
           </div>
 
           <div style={{
-            display: 'flex', justifyContent: 'space-between',
-          }}>
-            <span style={{ color: COLORS.textMuted }}>
-              Network fee (blockchain)
-            </span>
-            <span style={{ color: COLORS.red }}>
-              -{PLATFORM_CONFIG.NETWORK_FEE_PI.toFixed(4)}π
-            </span>
-          </div>
-
-          <div style={{
             borderTop:  `1px solid ${COLORS.border}`,
             marginTop:  '0.4rem',
             paddingTop: '0.4rem',
@@ -140,7 +129,7 @@ export function FeeBreakdown({
             </span>
           </div>
           <div style={{ fontSize: '0.7rem', color: COLORS.textMuted }}>
-            (Platform & network fees deducted from worker payment)
+            (Platform fee deducted from worker payment)
           </div>
         </div>
 
