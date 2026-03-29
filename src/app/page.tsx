@@ -17,7 +17,7 @@ const STATS = [
 
 
 export default function LandingPage() {
-  const { user, isLoading, isSdkReady } = usePiAuth()
+  const { user, isLoading, isSdkReady, authenticate } = usePiAuth()
   const [hasMounted, setHasMounted] = useState(false)
   const [isAuthenticating, setIsAuthenticating] = useState(false)
 
@@ -35,26 +35,23 @@ export default function LandingPage() {
   }, [])
 
   const handleLogin = useCallback(async () => {
-    if (isAuthenticating || isLoading) return
+    if (isAuthenticating || isLoading || !isSdkReady) return
     setIsAuthenticating(true)
     try {
-      // Global auth via PiPaymentProvider handles authentication
-      // Navigate to dashboard if user is set
-      if (user) {
+      const authUser = await authenticate()
+      if (authUser) {
+        // Auth succeeded — navigate to dashboard
         window.location.href = '/dashboard'
       } else {
-        // Wait for global auth to complete, then reload
-        await new Promise(resolve => setTimeout(resolve, 500))
-        window.location.reload()
+        setIsAuthenticating(false)
       }
-    } finally {
+    } catch (err) {
+      console.error('[Nexus:Landing] Auth error:', err)
       setIsAuthenticating(false)
     }
-  }, [user, isAuthenticating, isLoading])
+  }, [authenticate, isAuthenticating, isLoading, isSdkReady])
 
   if (!hasMounted) return null
-
-  const isButtonLoading = isAuthenticating || isLoading
 
   return (
     <div style={{
@@ -207,19 +204,19 @@ export default function LandingPage() {
           ) : (
             <button
               onClick={handleLogin}
-              disabled={isButtonLoading || !isSdkReady}
+              disabled={isAuthenticating || isLoading || !isSdkReady}
               style={{
                 padding:      '1rem 2.5rem',
-                background:   isButtonLoading
+                background:   isAuthenticating || isLoading
                   ? COLORS.bgElevated
                   : `linear-gradient(135deg, ${COLORS.indigo}, #4338CA)`,
-                color:        isButtonLoading ? COLORS.textMuted : 'white',
+                color:        isAuthenticating || isLoading ? COLORS.textMuted : 'white',
                 borderRadius: RADII.lg,
                 fontSize:     '1.1rem',
                 fontWeight:   '700',
                 border:       'none',
-                cursor:       isButtonLoading ? 'not-allowed' : 'pointer',
-                boxShadow:    isButtonLoading
+                cursor:       isAuthenticating || isLoading || !isSdkReady ? 'not-allowed' : 'pointer',
+                boxShadow:    isAuthenticating || isLoading
                   ? 'none'
                   : '0 0 40px rgba(99,102,241,0.5)',
                 transition:   'all 0.2s ease',
@@ -229,8 +226,10 @@ export default function LandingPage() {
                 gap:          '10px',
               }}
             >
-              {isButtonLoading ? (
-                'Connecting...'
+              {isAuthenticating ? (
+                'Authenticating...'
+              ) : isLoading || !isSdkReady ? (
+                'Loading Pi SDK...'
               ) : (
                 <>
                   <span>Start Earning Pi</span>
@@ -309,7 +308,12 @@ export default function LandingPage() {
         </p>
         <a
           href={user ? '/feed' : '#'}
-          onClick={!user ? (e) => { e.preventDefault(); handleLogin() } : undefined}
+          onClick={(e) => {
+            if (!user) {
+              e.preventDefault()
+              handleLogin()
+            }
+          }}
           style={{
             display:        'inline-flex',
             alignItems:     'center',
@@ -523,19 +527,19 @@ export default function LandingPage() {
         ) : (
           <button
             onClick={handleLogin}
-            disabled={isButtonLoading || !isSdkReady}
+            disabled={isAuthenticating || isLoading || !isSdkReady}
             style={{
               padding:      '1rem 2.5rem',
-              background:   isButtonLoading
+              background:   isAuthenticating || isLoading
                 ? COLORS.bgElevated
                 : `linear-gradient(135deg, ${COLORS.indigo}, #4338CA)`,
-              color:        isButtonLoading ? COLORS.textMuted : 'white',
+              color:        isAuthenticating || isLoading ? COLORS.textMuted : 'white',
               borderRadius: RADII.lg,
               fontSize:     '1.1rem',
               fontWeight:   '700',
               border:       'none',
-              cursor:       isButtonLoading ? 'not-allowed' : 'pointer',
-              boxShadow:    isButtonLoading
+              cursor:       isAuthenticating || isLoading || !isSdkReady ? 'not-allowed' : 'pointer',
+              boxShadow:    isAuthenticating || isLoading
                 ? 'none'
                 : '0 0 40px rgba(99,102,241,0.4)',
               fontFamily:   FONTS.sans,
@@ -544,7 +548,7 @@ export default function LandingPage() {
               gap:          '10px',
             }}
           >
-            {isButtonLoading ? 'Connecting...' : 'Start Earning Pi →'}
+            {isAuthenticating ? 'Authenticating...' : 'Start Earning Pi →'}
           </button>
         )}
       </section>
