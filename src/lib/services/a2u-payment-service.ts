@@ -275,6 +275,17 @@ export async function payWorkerA2U(params: {
       })
       .eq('piPaymentId', paymentId)
 
+    // Also confirm platform fee transaction
+    await supabaseAdmin
+      .from('Transaction')
+      .update({
+        status:      'confirmed',
+        updatedAt:   new Date().toISOString(),
+      })
+      .eq('submissionId', submissionId)
+      .eq('type', 'platform_fee')
+      .eq('status', 'pending')
+
     // Step 6 — Update EscrowLedger
     await supabaseAdmin.rpc('increment_released_amount', {
       p_task_id: taskId,
