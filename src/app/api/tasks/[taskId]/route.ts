@@ -192,6 +192,16 @@ export async function DELETE(
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
+    // Cancel all active slot reservations
+    await supabaseAdmin
+      .from('SlotReservation')
+      .update({
+        status:     'CANCELLED',
+        updatedAt:  new Date().toISOString(),
+      })
+      .eq('taskId', taskId)
+      .in('status', ['CLAIMED', 'ACTIVE', 'RESERVED'])
+
     console.log('[Nexus:TaskRoute] Task archived:', taskId)
     return NextResponse.json({
       success: true,

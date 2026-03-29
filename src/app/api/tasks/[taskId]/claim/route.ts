@@ -23,7 +23,7 @@ export async function POST(
 
     const { data: worker } = await supabaseAdmin
       .from('User')
-      .select('id, reputationScore, accountStatus')
+      .select('id, reputationScore, walletAddress, accountStatus')
       .eq('piUid', piUid)
       .single()
 
@@ -31,6 +31,50 @@ export async function POST(
       return NextResponse.json(
         { error: 'UNAUTHORIZED' },
         { status: 401 }
+      )
+    }
+
+    // Get task details for validation
+    const { data: task } = await supabaseAdmin
+      .from('Task')
+      .select('id, employerId, minReputation, deadlineAt, taskStatus')
+      .eq('id', taskId)
+      .single()
+
+    if (!task) return NextResponse.json(
+      { error: 'TASK_NOT_FOUND' }, { status: 404 }
+    )
+
+    // Check deadline
+    if (new Date(task.deadlineAt) < new Date()) {
+      return NextResponse.json(
+        { error: 'TASK_EXPIRED' }, { status: 400 }
+      )
+    }
+
+    // Check employer self-claim
+    if (task.employerId === worker.id) {
+      return NextResponse.json(
+        { error: 'CANNOT_CLAIM_OWN_TASK' }, { status: 400 }
+      )
+    }
+
+    // Check reputation
+    if (worker.reputationScore < (task.minReputation ?? 0)) {
+      return NextResponse.json(
+        { error: 'INSUFFICIENT_REPUTATION',
+          required: task.minReputation,
+          current: worker.reputationScore },
+        { status: 403 }
+      )
+    }
+
+    // Check wallet set
+    if (!worker.walletAddress) {
+      return NextResponse.json(
+        { error: 'WALLET_REQUIRED',
+          message: 'Please set your wallet address in Profile before claiming tasks' },
+        { status: 400 }
       )
     }
 
