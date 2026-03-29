@@ -314,6 +314,7 @@ export default function EmployerDashboardPage() {
   }
 
   const activeTasks    = tasks.filter(t => t.taskStatus === 'escrowed')
+  const archivedTasks  = tasks.filter(t => t.taskStatus === 'archived')
   const completedTasks = tasks.filter(t => t.taskStatus === 'completed')
   const totalEscrowed  = summary?.totalEscrowed ?? 0
   const totalSpent     = summary?.totalSpent ?? 0
@@ -508,7 +509,8 @@ export default function EmployerDashboardPage() {
                         flexDirection: 'column',
                         gap:           '0.875rem',
                       }}>
-                        {tasks.slice(0, 4).map((task, idx) => {
+                        {/* ── ACTIVE TASKS ── */}
+                        {activeTasks.length > 0 && activeTasks.slice(0, 4).map((task, idx) => {
                           const filled = task.slotsAvailable - task.slotsRemaining
                           return (
                             <div key={task.id}>
@@ -592,8 +594,73 @@ export default function EmployerDashboardPage() {
                                 >
                                   🗄 Archive
                                 </button>
-                                {task.taskStatus === 'archived' && 
-                                 task.slotsRemaining > 0 && (
+                              </div>
+
+                              <FillBar
+                                filled={filled}
+                                total={task.slotsAvailable}
+                                delay={idx * 150}
+                              />
+                            </div>
+                          )
+                        })}
+
+                        {/* ── ARCHIVED TASKS SEPARATOR ── */}
+                        {archivedTasks.length > 0 && (
+                          <div style={{
+                            fontSize:      '0.65rem',
+                            fontWeight:    '700',
+                            color:         COLORS.textMuted,
+                            textTransform: 'uppercase' as const,
+                            letterSpacing: '0.1em',
+                            marginTop:     SPACING.lg,
+                            marginBottom:  SPACING.sm,
+                            paddingTop:    SPACING.md,
+                            borderTop:     `1px solid ${COLORS.border}`,
+                          }}>
+                            📦 Archived — Pending Refund
+                          </div>
+                        )}
+
+                        {/* ── ARCHIVED TASKS ── */}
+                        {archivedTasks.slice(0, 4).map((task, idx) => {
+                          const filled = task.slotsAvailable - task.slotsRemaining
+                          return (
+                            <div key={task.id}>
+                              <div style={{
+                                display:        'flex',
+                                justifyContent: 'space-between',
+                                alignItems:     'center',
+                                marginBottom:   '6px',
+                              }}>
+                                <div style={{
+                                  fontSize:     '0.82rem',
+                                  fontWeight:   '500',
+                                  color:        COLORS.textMuted,
+                                  flex:         1,
+                                  overflow:     'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace:   'nowrap' as const,
+                                  marginRight:  '0.75rem',
+                                }}>
+                                  {task.title}
+                                </div>
+                                <span style={{
+                                  fontFamily: FONTS.mono,
+                                  fontSize:   '0.72rem',
+                                  color:      COLORS.textMuted,
+                                }}>
+                                  {filled}/{task.slotsAvailable}
+                                </span>
+                              </div>
+
+                              {/* Refund button for archived tasks */}
+                              {task.slotsRemaining > 0 && (
+                                <div style={{
+                                  display: 'flex',
+                                  gap:     '8px',
+                                  marginTop: '0.75rem',
+                                }}>
                                   <button
                                     onClick={() => handleRefund(task.id)}
                                     style={{
@@ -605,17 +672,31 @@ export default function EmployerDashboardPage() {
                                       fontSize:      '0.72rem',
                                       cursor:        'pointer',
                                       fontWeight:    '600',
+                                      flex:          1,
+                                      textAlign:     'center' as const,
                                     }}
                                   >
                                     💰 Refund {(task.piReward * task.slotsRemaining).toFixed(2)}π
                                   </button>
-                                )}
-                              </div>
+                                </div>
+                              )}
+
+                              {task.slotsRemaining === 0 && (
+                                <div style={{
+                                  fontSize:    '0.72rem',
+                                  color:       COLORS.textMuted,
+                                  fontStyle:   'italic',
+                                  marginTop:   '0.5rem',
+                                }}>
+                                  All slots claimed — no refund available
+                                </div>
+                              )}
 
                               <FillBar
                                 filled={filled}
                                 total={task.slotsAvailable}
                                 delay={idx * 150}
+                                color={COLORS.textMuted}
                               />
                             </div>
                           )
