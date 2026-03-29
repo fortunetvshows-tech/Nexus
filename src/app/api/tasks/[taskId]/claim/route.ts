@@ -14,6 +14,8 @@ export async function POST(
     const { taskId } = await context.params
     const piUid = req.headers.get('x-pi-uid')
 
+    console.log('[Nexus:ClaimSlot] START taskId:', taskId, 'piUid:', piUid ? 'present' : 'missing')
+
     if (!piUid) {
       return NextResponse.json(
         { error: 'UNAUTHORIZED' },
@@ -41,9 +43,21 @@ export async function POST(
       .eq('id', taskId)
       .single()
 
+    if (taskError) {
+      console.error('[Nexus:ClaimSlot] Query error for taskId', taskId, ':', taskError)
+    }
+    console.log('[Nexus:ClaimSlot] Task query result:', { taskFound: !!task, taskError: taskError?.message })
+
     if (taskError || !task) return NextResponse.json(
-      { error: 'TASK_NOT_FOUND' }, { status: 404 }
+      { error: 'TASK_NOT_FOUND', debug: taskError?.message || 'No task in result' }, { status: 404 }
     )
+
+    // Check if task is archived or in a non-claimable status
+    if (task.taskStatus === 'archived') {
+      return NextResponse.json(
+        { error: 'TASK_ARCHIVED_CANNOT_CLAIM' }, { status: 400 }
+      )
+    }
 
     // Check deadline
     if (new Date(task.deadlineAt) < new Date()) {
