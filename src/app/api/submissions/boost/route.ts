@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/client'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 
 interface WorkerBoostRequest {
   submissionId: string
@@ -15,10 +15,8 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Invalid request' }, { status: 400 })
     }
 
-    const supabase = createClient()
-
     // 1. Get user
-    const { data: user, error: userError } = await supabase
+    const { data: user, error: userError } = await supabaseAdmin
       .from('User')
       .select('id')
       .eq('piUid', piUid)
@@ -29,7 +27,7 @@ export async function POST(req: Request) {
     }
 
     // 2. Verify submission exists and belongs to user
-    const { data: submission, error: submissionError } = await supabase
+    const { data: submission, error: submissionError } = await supabaseAdmin
       .from('Submission')
       .select('id, workerId, taskId, status, agreedReward')
       .eq('id', submissionId)
@@ -44,7 +42,7 @@ export async function POST(req: Request) {
     }
 
     // 3. Check user has enough pulse
-    const { data: pulse } = await supabase
+    const { data: pulse } = await supabaseAdmin
       .from('PulseToken')
       .select('balance')
       .eq('userId', user.id)
@@ -55,7 +53,7 @@ export async function POST(req: Request) {
     }
 
     // 4. Create WorkerBoost record
-    const { data: boost, error: boostError } = await supabase
+    const { data: boost, error: boostError } = await supabaseAdmin
       .from('WorkerBoost')
       .insert([
         {
@@ -74,7 +72,7 @@ export async function POST(req: Request) {
     }
 
     // 5. Deduct pulse
-    const { error: deductError } = await supabase
+    const { error: deductError } = await supabaseAdmin
       .from('PulseToken')
       .update({ balance: pulse.balance - pulsePaid })
       .eq('userId', user.id)
@@ -84,7 +82,7 @@ export async function POST(req: Request) {
     }
 
     // 6. Log transaction
-    await supabase.from('PulseTransaction').insert([
+    await supabaseAdmin.from('PulseTransaction').insert([
       {
         userId: user.id,
         type: 'worker_boost_spent',
@@ -116,15 +114,13 @@ export async function GET(req: Request) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const supabase = createClient()
-
-    const { data: user } = await supabase
+    const { data: user } = await supabaseAdmin
       .from('User')
       .select('id')
       .eq('piUid', piUid)
       .single()
 
-    const { data: pulse } = await supabase
+    const { data: pulse } = await supabaseAdmin
       .from('PulseToken')
       .select('balance')
       .eq('userId', user?.id || '')

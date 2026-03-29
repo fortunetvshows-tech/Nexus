@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/client'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 
 interface BoostRequest {
   taskId: string
@@ -16,10 +16,8 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Invalid request' }, { status: 400 })
     }
 
-    const supabase = createClient()
-
     // 1. Verify task exists and user is employer
-    const { data: task, error: taskError } = await supabase
+    const { data: task, error: taskError } = await supabaseAdmin
       .from('Task')
       .select('id, employerId, title')
       .eq('id', taskId)
@@ -30,7 +28,7 @@ export async function POST(req: Request) {
     }
 
     // 2. Get user ID from piUid
-    const { data: user, error: userError } = await supabase
+    const { data: user, error: userError } = await supabaseAdmin
       .from('User')
       .select('id')
       .eq('piUid', piUid)
@@ -41,7 +39,7 @@ export async function POST(req: Request) {
     }
 
     // 3. Check user has enough pulse
-    const { data: pulse } = await supabase
+    const { data: pulse } = await supabaseAdmin
       .from('PulseToken')
       .select('balance')
       .eq('userId', user.id)
@@ -55,7 +53,7 @@ export async function POST(req: Request) {
     const startAt = new Date()
     const endAt = new Date(startAt.getTime() + durationDays * 24 * 60 * 60 * 1000)
 
-    const { data: boost, error: boostError } = await supabase
+    const { data: boost, error: boostError } = await supabaseAdmin
       .from('TaskBoost')
       .insert([
         {
@@ -75,7 +73,7 @@ export async function POST(req: Request) {
     }
 
     // 5. Deduct pulse
-    const { error: deductError } = await supabase
+    const { error: deductError } = await supabaseAdmin
       .from('PulseToken')
       .update({ balance: pulse.balance - pulsePaid })
       .eq('userId', user.id)
@@ -86,14 +84,14 @@ export async function POST(req: Request) {
 
     // 6. Mark task as featured if boost type is featured
     if (boostType === 'featured') {
-      await supabase
+      await supabaseAdmin
         .from('Task')
         .update({ isFeatured: true, featuredUntil: endAt, featuredPulsePaid: pulsePaid })
         .eq('id', taskId)
     }
 
     // 7. Log transaction
-    await supabase.from('PulseTransaction').insert([
+    await supabaseAdmin.from('PulseTransaction').insert([
       {
         userId: user.id,
         type: 'boost_spent',
@@ -127,10 +125,8 @@ export async function GET(req: Request) {
       return Response.json({ error: 'Missing parameters' }, { status: 400 })
     }
 
-    const supabase = createClient()
-
     // Get active boosts for task
-    const { data: boosts } = await supabase
+    const { data: boosts } = await supabaseAdmin
       .from('TaskBoost')
       .select('*, Task:taskId(title)')
       .eq('taskId', taskId)
@@ -138,13 +134,13 @@ export async function GET(req: Request) {
       .order('startAt', { ascending: false })
 
     // Get user's pulse balance
-    const { data: user } = await supabase
+    const { data: user } = await supabaseAdmin
       .from('User')
       .select('id')
       .eq('piUid', piUid)
       .single()
 
-    const { data: pulse } = await supabase
+    const { data: pulse } = await supabaseAdmin
       .from('PulseToken')
       .select('balance')
       .eq('userId', user?.id || '')
