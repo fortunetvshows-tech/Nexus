@@ -2,19 +2,8 @@
 
 import React, {
   createContext, useContext, useRef,
-  useState, useCallback, useEffect
+  useState, useCallback
 } from 'react'
-
-interface NexusUser {
-  id: string
-  piUid: string
-  piUsername: string
-  userRole: 'worker' | 'employer' | 'admin'
-  reputationScore: number
-  reputationLevel: string
-  kycLevel: number
-  isAdmin: boolean
-}
 
 interface PaymentConfig {
   amount:   number
@@ -30,9 +19,6 @@ interface PaymentContextValue {
   ) => void
   isProcessing: boolean
   error:        string | null
-  user:         NexusUser | null
-  isAuthenticated: boolean
-  isAuthenticating: boolean
 }
 
 const PiPaymentContext = createContext<PaymentContextValue | null>(null)
@@ -44,14 +30,11 @@ export function PiPaymentProvider({
 }) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError]               = useState<string | null>(null)
-  const [isAuth, setIsAuth]             = useState(false)
-  const [user, setUser]                 = useState<NexusUser | null>(null)
 
   // Use refs for callbacks so they survive re-renders
   const onSuccessRef = useRef<((paymentId: string, txid: string) => void) | null>(null)
   const onErrorRef   = useRef<((error: string) => void) | null>(null)
   const inProgressRef = useRef(false)
-  const isAuthenticatingRef = useRef(false)
 
   // Handle incomplete payments from previous crashes
   const onIncompletePaymentFound = useCallback(async (payment: any) => {
@@ -83,62 +66,6 @@ export function PiPaymentProvider({
       console.error('[Nexus:PiPaymentProvider] Failed to handle incomplete payment:', err)
     }
   }, [])
-
-  // Authenticate at app level to get global scopes including wallet
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.Pi || isAuthenticatingRef.current) {
-      return
-    }
-
-    isAuthenticatingRef.current = true
-
-    // Request all scopes: payments, username, wallet_address
-    window.Pi.authenticate(
-      ['payments', 'username', 'wallet_address'], 
-      onIncompletePaymentFound
-    )
-      .then(async (auth) => {
-        console.log('[Nexus:PiPaymentProvider] Global Pi authentication successful')
-        
-        // Call server to verify auth and get full user data
-        try {
-          const origin = typeof window !== 'undefined' ? window.location.origin : ''
-          const response = await fetch(`${origin}/api/auth`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-pi-uid': auth.user.uid,
-            },
-            body: JSON.stringify({
-              accessToken:   auth.accessToken,
-              uid:           auth.user.uid,
-              walletAddress: (auth.user as any).wallet_address ?? null,
-            }),
-          })
-
-          const data = await response.json()
-          
-          if (response.ok && data.user) {
-            setUser(data.user)
-            setIsAuth(true)
-            console.log('[Nexus:PiPaymentProvider] User authenticated:', data.user.piUsername)
-          } else {
-            console.error('[Nexus:PiPaymentProvider] Server auth failed:', data.message)
-            setIsAuth(false)
-          }
-        } catch (err) {
-          console.error('[Nexus:PiPaymentProvider] Server auth error:', err)
-          setIsAuth(false)
-        }
-      })
-      .catch((err) => {
-        console.error('[Nexus:PiPaymentProvider] Global authentication failed:', err)
-        setIsAuth(false)
-      })
-      .finally(() => {
-        isAuthenticatingRef.current = false
-      })
-  }, [onIncompletePaymentFound])
 
   const createPayment = useCallback((
     config:    PaymentConfig,
@@ -237,9 +164,6 @@ export function PiPaymentProvider({
       createPayment,
       isProcessing,
       error,
-      user,
-      isAuthenticated: isAuth,
-      isAuthenticating: isAuthenticatingRef.current,
     }}>
       {children}
     </PiPaymentContext.Provider>
