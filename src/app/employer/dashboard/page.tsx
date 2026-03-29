@@ -258,6 +258,31 @@ export default function EmployerDashboardPage() {
     }
   }
 
+  const handleRefund = async (taskId: string) => {
+    if (!user?.piUid) return
+    if (!confirm('Request refund for unused escrow on this task?')) return
+
+    try {
+      const res = await fetch(
+        `${window.location.origin}/api/tasks/${taskId}/refund-escrow`,
+        {
+          method:  'POST',
+          headers: { 'x-pi-uid': user.piUid },
+        }
+      )
+      const data = await res.json()
+      if (data.success) {
+        setActionMessage(`✅ ${data.message}`)
+        // Refresh task list
+        setTimeout(() => window.location.reload(), 1500)
+      } else {
+        setActionMessage(`❌ Refund failed: ${data.error}`)
+      }
+    } catch (err) {
+      setActionMessage('Refund request failed. Please try again.')
+    }
+  }
+
   const handleSaveEdit = async () => {
     if (!editingTask || !user?.piUid) return
     setIsSaving(true)
@@ -567,6 +592,24 @@ export default function EmployerDashboardPage() {
                                 >
                                   🗄 Archive
                                 </button>
+                                {task.taskStatus === 'archived' && 
+                                 task.slotsRemaining > 0 && (
+                                  <button
+                                    onClick={() => handleRefund(task.id)}
+                                    style={{
+                                      padding:       '4px 10px',
+                                      background:    'rgba(16,185,129,0.1)',
+                                      border:        '1px solid rgba(16,185,129,0.3)',
+                                      borderRadius:  RADII.md,
+                                      color:         COLORS.emerald,
+                                      fontSize:      '0.72rem',
+                                      cursor:        'pointer',
+                                      fontWeight:    '600',
+                                    }}
+                                  >
+                                    💰 Refund {(task.piReward * task.slotsRemaining).toFixed(2)}π
+                                  </button>
+                                )}
                               </div>
 
                               <FillBar
