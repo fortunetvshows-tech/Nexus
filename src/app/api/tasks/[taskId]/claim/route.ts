@@ -39,7 +39,7 @@ export async function POST(
     // Get task details for validation
     const { data: task, error: taskError } = await supabaseAdmin
       .from('Task')
-      .select('id, employerId, minReputation, deadlineAt, taskStatus')
+      .select('id, employerId, minReputationReq, deadlineAt, taskStatus')
       .eq('id', taskId)
       .single()
 
@@ -49,7 +49,7 @@ export async function POST(
     console.log('[Nexus:ClaimSlot] Task query result:', { taskFound: !!task, taskError: taskError?.message })
 
     if (taskError || !task) return NextResponse.json(
-      { error: 'TASK_NOT_FOUND', debug: taskError?.message || 'No task in result' }, { status: 404 }
+      { error: 'TASK_NOT_FOUND' }, { status: 404 }
     )
 
     // Check if task is archived or in a non-claimable status
@@ -74,10 +74,10 @@ export async function POST(
     }
 
     // Check reputation
-    if (worker.reputationScore < (task.minReputation ?? 0)) {
+    if (worker.reputationScore < (task.minReputationReq ?? 0)) {
       return NextResponse.json(
         { error: 'INSUFFICIENT_REPUTATION',
-          required: task.minReputation,
+          required: task.minReputationReq,
           current: worker.reputationScore },
         { status: 403 }
       )
