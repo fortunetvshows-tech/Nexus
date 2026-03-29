@@ -35,13 +35,13 @@ export async function POST(
     }
 
     // Get task details for validation
-    const { data: task } = await supabaseAdmin
+    const { data: task, error: taskError } = await supabaseAdmin
       .from('Task')
       .select('id, employerId, minReputation, deadlineAt, taskStatus')
       .eq('id', taskId)
       .single()
 
-    if (!task) return NextResponse.json(
+    if (taskError || !task) return NextResponse.json(
       { error: 'TASK_NOT_FOUND' }, { status: 404 }
     )
 

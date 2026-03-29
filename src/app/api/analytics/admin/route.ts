@@ -13,11 +13,11 @@ export async function GET(req: NextRequest) {
 
     const { data: user } = await supabaseAdmin
       .from('User')
-      .select('id, userRole')
+      .select('id, isAdmin')
       .eq('piUid', piUid)
       .single()
 
-    if (!user || user.userRole !== 'admin') {
+    if (!user || !user.isAdmin) {
       return NextResponse.json(
         { error: 'FORBIDDEN' },
         { status: 403 }
