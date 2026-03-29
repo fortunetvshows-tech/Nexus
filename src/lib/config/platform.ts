@@ -16,10 +16,10 @@ export const PLATFORM_CONFIG = {
   // ── Fee Structure ─────────────────────────────────────────────
 
   /**
-   * Platform fee taken from each approved payout (0.05 = 5%)
+   * Platform fee taken from each approved payout (0.10 = 10%)
    * Applied to worker payout: worker receives agreedReward * (1 - PLATFORM_FEE_RATE)
    */
-  PLATFORM_FEE_RATE: 0.05,
+  PLATFORM_FEE_RATE: 0.10,
 
   /**
    * Pi Network blockchain transaction fee per transfer (in Pi)
@@ -27,7 +27,7 @@ export const PLATFORM_CONFIG = {
    * Deducted from worker payout at withdrawal time.
    * Source: Pi Network documentation — update if Pi changes this.
    */
-  NETWORK_FEE_PI: 0.01,
+  NETWORK_FEE_PI: 0.00,
 
   // ── Task Economics ────────────────────────────────────────────
 
