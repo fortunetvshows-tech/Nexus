@@ -1,6 +1,18 @@
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { NextRequest, NextResponse } from 'next/server'
 
+// CORS headers for browser requests
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+}
+
+// Handle OPTIONS preflight requests
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders })
+}
+
 /**
  * Backfill missing EscrowLedger records for tasks
  * This fixes tasks that were created before EscrowLedger was implemented
@@ -19,7 +31,7 @@ export async function POST(req: NextRequest) {
     if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
       return NextResponse.json(
         { error: 'UNAUTHORIZED' },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       )
     }
 
@@ -34,7 +46,7 @@ export async function POST(req: NextRequest) {
     if (tasksError || !allTasks) {
       return NextResponse.json(
         { error: 'FETCH_TASKS_FAILED', details: tasksError?.message },
-        { status: 500 }
+        { status: 500, headers: corsHeaders }
       )
     }
 
@@ -56,7 +68,7 @@ export async function POST(req: NextRequest) {
         success: true,
         message: 'All tasks have EscrowLedger records',
         tasksProcessed: 0,
-      })
+      }, { headers: corsHeaders })
     }
 
     // Step 4: For each missing task, calculate released amount from transactions
@@ -99,7 +111,7 @@ export async function POST(req: NextRequest) {
         console.error('[Nexus:BackfillEscrow] Insert failed:', insertError)
         return NextResponse.json(
           { error: 'INSERT_FAILED', details: insertError.message },
-          { status: 500 }
+          { status: 500, headers: corsHeaders }
         )
       }
 
@@ -110,20 +122,20 @@ export async function POST(req: NextRequest) {
         message: `Backfilled ${inserted?.length ?? 0} EscrowLedger records`,
         tasksProcessed: inserted?.length ?? 0,
         ledgers: inserted,
-      })
+      }, { headers: corsHeaders })
     }
 
     return NextResponse.json({
       success: true,
       message: 'No ledgers needed creation',
       tasksProcessed: 0,
-    })
+    }, { headers: corsHeaders })
 
   } catch (err) {
     console.error('[Nexus:BackfillEscrow] Error:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR', details: String(err) },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     )
   }
 }
