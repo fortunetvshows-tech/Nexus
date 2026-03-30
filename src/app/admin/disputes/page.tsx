@@ -1454,7 +1454,7 @@ export default function AdminDisputesPage() {
                         fontFamily:   FONTS.mono,
                         letterSpacing: '0.03em',
                       }}>
-                        STUCK
+                        {payment.status === 'failed' ? '✗ FAILED' : '⏳ STUCK'}
                       </span>
                     </div>
                   </div>

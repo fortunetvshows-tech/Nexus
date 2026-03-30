@@ -54,10 +54,14 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'FORBIDDEN' }, { status: 403, headers: corsHeaders })
     }
 
-    // Get transactions that are pending and created more than 1 hour ago
+    // Get transactions that are:
+    // 1. Pending and created more than 1 hour ago (stuck payments)
+    // 2. Failed but created recently (<2 hours, available for retry)
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+    const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
 
-    const { data: stuckPayments, error } = await supabaseAdmin
+    // Fetch pending >1hour old
+    const { data: pendingStuck } = await supabaseAdmin
       .from('Transaction')
       .select(`
         id,
@@ -88,15 +92,43 @@ export async function GET(req: NextRequest) {
       .eq('type', 'worker_payout')
       .eq('status', 'pending')
       .lt('createdAt', oneHourAgo)
-      .order('createdAt', { ascending: false })
 
-    if (error) {
-      console.error('[Nexus:StuckPayments] Query error:', error)
-      return NextResponse.json(
-        { error: 'Failed to fetch stuck payments', detail: error.message },
-        { status: 500, headers: corsHeaders }
-      )
-    }
+    // Fetch failed <2 hours old (recently cleared/available for retry)
+    const { data: recentlyFailed } = await supabaseAdmin
+      .from('Transaction')
+      .select(`
+        id,
+        piPaymentId,
+        amount,
+        netAmount,
+        platformFee,
+        status,
+        createdAt,
+        receiverId,
+        taskId,
+        submissionId,
+        user:receiverId (
+          id,
+          piUsername,
+          piUid,
+          walletAddress
+        ),
+        task:taskId (
+          id,
+          title
+        ),
+        submission:submissionId (
+          id,
+          status
+        )
+      `)
+      .eq('type', 'worker_payout')
+      .eq('status', 'failed')
+      .gt('createdAt', twoHoursAgo)
+
+    // Combine and sort
+    const stuckPayments = [...(pendingStuck || []), ...(recentlyFailed || [])]
+      .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
     // Format response
     const formatted = (stuckPayments || []).map((tx: any) => ({
