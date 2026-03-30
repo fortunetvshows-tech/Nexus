@@ -184,7 +184,7 @@ export default function AdminDisputesPage() {
 
   const handleClearStuckPayments = async () => {
     if (!user?.piUid || selectedStuck.size === 0) return
-    if (!confirm(`Clear ${selectedStuck.size} stuck payment(s)? This will mark them as cancelled.`)) return
+    if (!confirm(`Clear ${selectedStuck.size} stuck payment(s)? This will mark them as failed.`)) return
 
     setClearingStuck(true)
     try {

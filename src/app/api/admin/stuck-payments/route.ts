@@ -158,11 +158,11 @@ export async function POST(req: NextRequest) {
     }
 
     if (action === 'clear_stuck') {
-      // Mark payments as cancelled
+      // Mark payments as failed (clears stuck payment)
       const { error: updateError } = await supabaseAdmin
         .from('Transaction')
         .update({
-          status: 'cancelled',
+          status: 'failed',
         })
         .in('id', paymentIds)
         .eq('status', 'pending')
