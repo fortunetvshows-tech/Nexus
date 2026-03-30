@@ -2,7 +2,7 @@
 
 import React, {
   createContext, useContext, useRef,
-  useState, useCallback
+  useState, useCallback, useEffect
 } from 'react'
 
 interface PaymentConfig {
@@ -35,6 +35,7 @@ export function PiPaymentProvider({
   const onSuccessRef = useRef<((paymentId: string, txid: string) => void) | null>(null)
   const onErrorRef   = useRef<((error: string) => void) | null>(null)
   const inProgressRef = useRef(false)
+  const authInitializedRef = useRef(false)
 
   // Handle incomplete payments from previous crashes
   const onIncompletePaymentFound = useCallback(async (payment: any) => {
@@ -66,6 +67,66 @@ export function PiPaymentProvider({
       console.error('[Nexus:PiPaymentProvider] Failed to handle incomplete payment:', err)
     }
   }, [])
+
+  // ─────────────────────────────────────────────────────────
+  // GLOBAL AUTHENTICATION: Acquire "payments" scope on app load
+  // ─────────────────────────────────────────────────────────
+  // This runs ONCE on mount to ensure the payments scope is available
+  // for all payment operations. No need to authenticate on every button click.
+  useEffect(() => {
+    if (authInitializedRef.current) return
+
+    const initializeAuth = async () => {
+      // Wait for Pi SDK to be available
+      let attempts = 0
+      let piAvailable = false
+
+      while (attempts < 50 && !piAvailable) {
+        if (typeof window !== 'undefined' && window.Pi) {
+          piAvailable = true
+          break
+        }
+        attempts++
+        await new Promise(resolve => setTimeout(resolve, 100))
+      }
+
+      if (!piAvailable) {
+        console.log('[Nexus:PiPaymentProvider] Pi SDK not available after 5s')
+        return
+      }
+
+      try {
+        console.log('[Nexus:PiPaymentProvider] Acquiring global "payments" scope...')
+        
+        // Authenticate with payments scope GLOBALLY on app load
+        // This ensures window.Pi.createPayment() will work without scope errors
+        const auth = await window.Pi.authenticate(
+          ['payments', 'username', 'wallet_address'],
+          onIncompletePaymentFound
+        )
+
+        console.log(
+          '[Nexus:PiPaymentProvider] ✅ Global authentication successful.',
+          'User:', auth.user.uid,
+          'Payments scope acquired'
+        )
+      } catch (err) {
+        // User not in Pi app or authentication not granted — this is OK
+        // Payment will still work when user explicitly logs in
+        const msg = err instanceof Error ? err.message : String(err)
+        
+        // Only log as warning if it's not a simple "user didn't authenticate" case
+        if (!msg.includes('authenticated') && !msg.includes('user')) {
+          console.warn('[Nexus:PiPaymentProvider] Global auth warning:', msg)
+        } else {
+          console.log('[Nexus:PiPaymentProvider] Global auth skipped (user not in Pi or declined):', msg)
+        }
+      }
+    }
+
+    authInitializedRef.current = true
+    initializeAuth()
+  }, [onIncompletePaymentFound])
 
   const createPayment = useCallback((
     config:    PaymentConfig,
