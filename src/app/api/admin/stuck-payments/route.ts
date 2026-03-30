@@ -198,7 +198,6 @@ export async function POST(req: NextRequest) {
           status: 'failed',
         })
         .in('id', paymentIds)
-        .eq('status', 'pending')
 
       if (updateError) {
         console.error('[Nexus:StuckPayments:POST] Update error:', {
@@ -218,8 +217,17 @@ export async function POST(req: NextRequest) {
         )
       }
 
+      // Verify the update by fetching the updated records
+      const { data: verified } = await supabaseAdmin
+        .from('Transaction')
+        .select('id, status')
+        .in('id', paymentIds)
+
+      const failedCount = verified?.filter((t: any) => t.status === 'failed').length || 0
+
       console.log('[Nexus:Admin] Cleared stuck payments:', {
-        count: paymentIds.length,
+        requestedCount: paymentIds.length,
+        verifiedFailedCount: failedCount,
         paymentIds,
         admin: piUid,
       })
@@ -259,12 +267,26 @@ export async function POST(req: NextRequest) {
             continue
           }
 
-          // Get worker details
+          console.log('[Nexus:RetryStuck] Transaction details:', {
+            transactionId: tx.id,
+            receiverId: tx.receiverId,
+            submissionWorkerId: (tx.submission as any).workerId,
+            submissionId: (tx.submission as any).id,
+          })
+
+          // Get worker details using receiverId (the actual recipient of the payment)
+          const workerId = tx.receiverId
           const { data: worker } = await supabaseAdmin
             .from('User')
             .select('id, piUid, piUsername, walletAddress')
-            .eq('id', (tx.submission as any).workerId)
+            .eq('id', workerId)
             .single()
+
+          console.log('[Nexus:RetryStuck] Fetched worker:', {
+            workerId,
+            worker: worker?.piUsername,
+            wallet: worker?.walletAddress,
+          })
 
           if (!worker?.piUid || !worker?.walletAddress) {
             results.push({
