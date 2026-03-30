@@ -1,4 +1,5 @@
 import { supabaseAdmin }         from '@/lib/supabase-admin'
+import { PLATFORM_CONFIG }       from '@/lib/config/platform'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
@@ -124,6 +125,50 @@ export async function POST(req: NextRequest) {
           p_task_id:   sub.taskId,
           p_worker_id: sub.workerId,
         })
+      }
+
+      // Auto-trigger A2U payment for worker
+      const { data: submission } = await supabaseAdmin
+        .from('Submission')
+        .select('workerId, agreedReward, taskId')
+        .eq('id', dispute.submissionId)
+        .single()
+
+      if (submission) {
+        // Get worker wallet
+        const { data: worker } = await supabaseAdmin
+          .from('User')
+          .select('piUid, piUsername, walletAddress')
+          .eq('id', submission.workerId)
+          .single()
+
+        // Get task title
+        const { data: task } = await supabaseAdmin
+          .from('Task')
+          .select('title')
+          .eq('id', submission.taskId)
+          .single()
+
+        if (worker?.walletAddress && submission.agreedReward) {
+          const { payWorkerA2U } = await import('@/lib/services/a2u-payment-service')
+          const netAmount = Number(submission.agreedReward) *
+            (1 - PLATFORM_CONFIG.PLATFORM_FEE_RATE)
+
+          const payResult = await payWorkerA2U({
+            workerPiUid:  worker.piUid,
+            workerWallet: worker.walletAddress,
+            amount:       netAmount,
+            submissionId: dispute.submissionId,
+            taskId:       submission.taskId,
+            taskTitle:    task?.title ?? 'Nexus task',
+          })
+
+          console.log('[Nexus:Dispute] Auto-payment after worker win:', {
+            worker:    worker.piUsername,
+            amount:    netAmount,
+            success:   payResult.success,
+          })
+        }
       }
     }
 
