@@ -54,6 +54,31 @@ interface PayoutResult {
   error:   string | null
 }
 
+interface StuckPayment {
+  id: string
+  piPaymentId: string
+  amount: number
+  netAmount: number
+  platformFee: number
+  status: string
+  createdAt: string
+  receiverId: string
+  worker: {
+    id: string
+    piUsername: string
+    piUid: string
+    walletAddress: string
+  } | null
+  task: {
+    id: string
+    title: string
+  } | null
+  submission: {
+    id: string
+    status: string
+  } | null
+}
+
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
   const hrs  = Math.floor(diff / 3600000)
@@ -79,12 +104,16 @@ export default function AdminDisputesPage() {
   const [resolving,  setResolving]  = useState<string | null>(null)
   const [error,      setError]      = useState<string | null>(null)
   const [filter,     setFilter]     = useState<'all' | 'active' | 'resolved'>('active')
-  const [activeTab,      setActiveTab]      = useState<'disputes' | 'payouts'>('disputes')
+  const [activeTab,      setActiveTab]      = useState<'disputes' | 'payouts' | 'stuck'>('disputes')
   const [payouts,        setPayouts]        = useState<AdminPayout[]>([])
   const [payoutsLoading, setPayoutsLoading] = useState(false)
   const [paying,         setPaying]         = useState<string | null>(null)
   const [payoutResults,  setPayoutResults]  = useState<Record<string, PayoutResult>>({})
   const [cancelling,     setCancelling]     = useState<string | null>(null)
+  const [stuckPayments,  setStuckPayments]  = useState<StuckPayment[]>([])
+  const [stuckLoading,   setStuckLoading]   = useState(false)
+  const [selectedStuck,  setSelectedStuck]  = useState<Set<string>>(new Set())
+  const [clearingStuck,  setClearingStuck]  = useState(false)
 
   // Global authentication handled by PiPaymentProvider
 
@@ -124,6 +153,72 @@ export default function AdminDisputesPage() {
       fetchPayouts()
     }
   }, [activeTab, user?.piUid])
+
+  const fetchStuckPayments = async () => {
+    if (!user?.piUid) return
+    setStuckLoading(true)
+    try {
+      const res = await fetch(
+        `${window.location.origin}/api/admin/stuck-payments`,
+        { headers: { 'x-pi-uid': user.piUid } }
+      )
+      const data = await res.json()
+      if (data.payments) {
+        setStuckPayments(data.payments)
+        setSelectedStuck(new Set())
+      }
+    } catch (err) {
+      console.error('[Admin:StuckPayments] Fetch error:', err)
+      setError('Failed to fetch stuck payments')
+    } finally {
+      setStuckLoading(false)
+    }
+  }
+
+  // Fetch stuck payments when tab switches to stuck
+  useEffect(() => {
+    if (activeTab === 'stuck' && user?.piUid) {
+      fetchStuckPayments()
+    }
+  }, [activeTab, user?.piUid])
+
+  const handleClearStuckPayments = async () => {
+    if (!user?.piUid || selectedStuck.size === 0) return
+    if (!confirm(`Clear ${selectedStuck.size} stuck payment(s)? This will mark them as cancelled.`)) return
+
+    setClearingStuck(true)
+    try {
+      const res = await fetch(
+        `${window.location.origin}/api/admin/stuck-payments`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-pi-uid': user.piUid,
+          },
+          body: JSON.stringify({
+            action: 'clear_stuck',
+            paymentIds: Array.from(selectedStuck),
+          }),
+        }
+      )
+      const data = await res.json()
+
+      if (data.success) {
+        setError(null)
+        // Refresh stuck payments
+        await fetchStuckPayments()
+        alert(`Cleared ${data.clearedCount} stuck payment(s)`)
+      } else {
+        setError(data.error ?? 'Failed to clear payments')
+      }
+    } catch (err) {
+      console.error('[Admin:ClearStuck] Error:', err)
+      setError('Network error')
+    } finally {
+      setClearingStuck(false)
+    }
+  }
 
   const handleResolve = async (disputeId: string, resolution: string) => {
     if (!user?.piUid) return
@@ -410,6 +505,12 @@ export default function AdminDisputesPage() {
               label: `💳 Payouts`,
               badge: payouts.filter(p => p.status === 'pending').length || null,
               color: COLORS.amber,
+            },
+            {
+              key:   'stuck',
+              label: `⚠ Stuck Payments`,
+              badge: stuckPayments.length || null,
+              color: COLORS.red,
             },
           ].map(tab => (
             <button
@@ -1004,6 +1105,319 @@ export default function AdminDisputesPage() {
                       TX: {payout.txid.slice(0, 20)}...
                     </div>
                   )}
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        </>
+        )}
+
+        {/* ── Stuck Payments tab content ────────────────── */}
+        {activeTab === 'stuck' && (
+        <>
+
+        {/* Stuck summary */}
+        <div style={{
+          display:             'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap:                 SPACING.sm,
+          marginBottom:        SPACING.lg,
+        }}>
+          {[
+            {
+              label: 'Stuck Payments',
+              value: `${stuckPayments.length}`,
+              sub:   `${stuckPayments.reduce((s, p) => s + Number(p.netAmount), 0).toFixed(3)}π total`,
+              color: COLORS.red,
+            },
+            {
+              label: 'Selected',
+              value: `${selectedStuck.size}`,
+              sub:   `${Array.from(selectedStuck).reduce((s, id) => {
+                const p = stuckPayments.find(payment => payment.id === id)
+                return s + (p ? Number(p.netAmount) : 0)
+              }, 0).toFixed(3)}π to clear`,
+              color: COLORS.amber,
+            },
+          ].map(stat => (
+            <div key={stat.label} className="nexus-card" style={{ padding: SPACING.md }}>
+              <div style={{
+                fontSize:      '0.62rem',
+                color:         COLORS.textMuted,
+                fontWeight:    '600',
+                textTransform: 'uppercase' as const,
+                letterSpacing: '0.1em',
+                marginBottom:  '4px',
+              }}>
+                {stat.label}
+              </div>
+              <div style={{
+                fontFamily:    FONTS.mono,
+                fontSize:      '1.4rem',
+                fontWeight:    '700',
+                color:         stat.color,
+                letterSpacing: '-0.02em',
+                lineHeight:    1,
+                marginBottom:  '3px',
+              }}>
+                {stat.value}
+              </div>
+              <div style={{ fontSize: '0.7rem', color: COLORS.textMuted }}>
+                {stat.sub}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Action buttons */}
+        {stuckPayments.length > 0 && (
+          <div style={{
+            display:     'flex',
+            gap:         SPACING.md,
+            marginBottom: SPACING.lg,
+          }}>
+            <button
+              onClick={() => setSelectedStuck(new Set(stuckPayments.map(p => p.id)))}
+              style={{
+                padding:      `${SPACING.sm} ${SPACING.md}`,
+                background:   'transparent',
+                border:       `1px solid ${COLORS.textMuted}30`,
+                borderRadius: RADII.md,
+                fontSize:     '0.85rem',
+                fontWeight:   '600',
+                color:        COLORS.textSecondary,
+                cursor:       'pointer',
+                fontFamily:   FONTS.sans,
+                transition:   'all 0.15s ease',
+              }}
+            >
+              Select All
+            </button>
+
+            <button
+              onClick={() => setSelectedStuck(new Set())}
+              style={{
+                padding:      `${SPACING.sm} ${SPACING.md}`,
+                background:   'transparent',
+                border:       `1px solid ${COLORS.textMuted}30`,
+                borderRadius: RADII.md,
+                fontSize:     '0.85rem',
+                fontWeight:   '600',
+                color:        COLORS.textSecondary,
+                cursor:       'pointer',
+                fontFamily:   FONTS.sans,
+                transition:   'all 0.15s ease',
+              }}
+            >
+              Deselect All
+            </button>
+
+            <button
+              onClick={handleClearStuckPayments}
+              disabled={selectedStuck.size === 0 || clearingStuck}
+              style={{
+                marginLeft:   'auto',
+                padding:      `${SPACING.sm} ${SPACING.md}`,
+                background:   selectedStuck.size === 0 || clearingStuck
+                  ? COLORS.bgElevated
+                  : `linear-gradient(180deg, ${COLORS.red} 0%, #dc2626 100%)`,
+                border:       'none',
+                borderRadius: RADII.md,
+                fontSize:     '0.85rem',
+                fontWeight:   '600',
+                color:        selectedStuck.size === 0 || clearingStuck ? COLORS.textMuted : 'white',
+                cursor:       selectedStuck.size === 0 || clearingStuck ? 'not-allowed' : 'pointer',
+                fontFamily:   FONTS.sans,
+                transition:   'all 0.15s ease',
+                boxShadow:    selectedStuck.size === 0 || clearingStuck ? 'none' : `0 0 12px rgba(239,68,68,0.3)`,
+              }}
+            >
+              {clearingStuck ? '⏳ Clearing...' : `🗑 Clear ${selectedStuck.size > 0 ? selectedStuck.size : ''}`}
+            </button>
+          </div>
+        )}
+
+        {/* Stuck payments list */}
+        {stuckLoading ? (
+          <div style={{
+            display:       'flex',
+            flexDirection: 'column',
+            gap:           SPACING.sm,
+          }}>
+            {[1, 2, 3].map(i => (
+              <div key={i} className="nexus-card" style={{ height: '80px' }} />
+            ))}
+          </div>
+        ) : stuckPayments.length === 0 ? (
+          <div style={{
+            padding:      `${SPACING.xxl} ${SPACING.xl}`,
+            textAlign:    'center' as const,
+            background:   COLORS.bgSurface,
+            border:       `1px solid ${COLORS.border}`,
+            borderRadius: RADII.xl,
+            color:        COLORS.textMuted,
+            fontSize:     '0.85rem',
+          }}>
+            <div style={{ fontSize: '2rem', marginBottom: SPACING.md, opacity: 0.4 }}>✓</div>
+            No stuck payments — great job!
+          </div>
+        ) : (
+          <div style={{
+            display:       'flex',
+            flexDirection: 'column',
+            gap:           SPACING.sm,
+          }}>
+            {stuckPayments.map((payment, idx) => {
+              const isSelected = selectedStuck.has(payment.id)
+              const timeStuck = Math.floor((Date.now() - new Date(payment.createdAt).getTime()) / 1000 / 60)
+
+              return (
+                <div
+                  key={payment.id}
+                  className="nexus-card"
+                  onClick={() => {
+                    const newSelected = new Set(selectedStuck)
+                    if (newSelected.has(payment.id)) {
+                      newSelected.delete(payment.id)
+                    } else {
+                      newSelected.add(payment.id)
+                    }
+                    setSelectedStuck(newSelected)
+                  }}
+                  style={{
+                    borderLeft:  `3px solid ${isSelected ? COLORS.amber : COLORS.red}`,
+                    background:  isSelected
+                      ? `linear-gradient(180deg, rgba(251,146,60,0.05) 0%, transparent 100%), ${COLORS.bgSurface}`
+                      : COLORS.bgSurface,
+                    cursor:      'pointer',
+                    transition:  'all 0.15s ease',
+                    opacity:     isSelected ? 1 : 0.8,
+                    boxShadow:   isSelected ? `0 0 12px rgba(251,146,60,0.2)` : 'none',
+                  }}
+                >
+                  <div style={{
+                    display:        'flex',
+                    justifyContent: 'space-between',
+                    alignItems:     'flex-start',
+                    gap:            SPACING.md,
+                  }}>
+                    {/* Checkbox */}
+                    <div style={{
+                      marginTop: '2px',
+                      flexShrink: 0,
+                    }}>
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => {}}
+                        style={{
+                          width: '18px',
+                          height: '18px',
+                          cursor: 'pointer',
+                          accentColor: COLORS.amber,
+                        }}
+                      />
+                    </div>
+
+                    {/* Left — worker + task info */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{
+                        display:      'flex',
+                        alignItems:   'center',
+                        gap:          SPACING.sm,
+                        marginBottom: '4px',
+                      }}>
+                        <div style={{
+                          width:          '28px',
+                          height:         '28px',
+                          borderRadius:   '8px',
+                          background:     `linear-gradient(135deg, ${COLORS.red}, ${COLORS.amber})`,
+                          display:        'flex',
+                          alignItems:     'center',
+                          justifyContent: 'center',
+                          fontSize:       '0.75rem',
+                          fontWeight:     '700',
+                          color:          'white',
+                          flexShrink:     0,
+                        }}>
+                          {payment.worker?.piUsername?.charAt(0).toUpperCase() ?? '?'}
+                        </div>
+                        <div>
+                          <div style={{
+                            fontSize:  '0.85rem',
+                            fontWeight: '600',
+                            color:     COLORS.textPrimary,
+                          }}>
+                            {payment.worker?.piUsername ?? 'Unknown'}
+                          </div>
+                          <div style={{
+                            fontSize:   '0.68rem',
+                            color:      COLORS.textMuted,
+                            fontFamily: FONTS.mono,
+                          }}>
+                            {payment.worker?.piUid?.slice(0, 8)}...
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style={{
+                        fontSize:     '0.75rem',
+                        color:        COLORS.textSecondary,
+                        overflow:     'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace:   'nowrap' as const,
+                        marginBottom: '4px',
+                      }}>
+                        {payment.task?.title ?? 'Unknown task'}
+                      </div>
+
+                      <div style={{
+                        fontSize:    '0.68rem',
+                        color:       COLORS.textMuted,
+                        display:     'flex',
+                        gap:         SPACING.sm,
+                        alignItems:  'center',
+                      }}>
+                        <span>Stuck {timeStuck} mins</span>
+                        <span>·</span>
+                        <span>ID: {payment.piPaymentId?.slice(0, 12)}...</span>
+                      </div>
+                    </div>
+
+                    {/* Right — amount */}
+                    <div style={{
+                      display:       'flex',
+                      flexDirection: 'column',
+                      alignItems:    'flex-end',
+                      gap:           SPACING.xs,
+                      flexShrink:    0,
+                    }}>
+                      <div style={{
+                        fontFamily:    FONTS.mono,
+                        fontSize:      '1.1rem',
+                        fontWeight:    '700',
+                        color:         COLORS.red,
+                        letterSpacing: '-0.02em',
+                      }}>
+                        {Number(payment.netAmount).toFixed(4)}π
+                      </div>
+                      <span style={{
+                        padding:      '2px 8px',
+                        background:   `${COLORS.red}18`,
+                        border:       `1px solid ${COLORS.red}40`,
+                        borderRadius: RADII.full,
+                        fontSize:     '0.65rem',
+                        fontWeight:   '700',
+                        color:        COLORS.red,
+                        fontFamily:   FONTS.mono,
+                        letterSpacing: '0.03em',
+                      }}>
+                        STUCK
+                      </span>
+                    </div>
+                  </div>
                 </div>
               )
             })}
