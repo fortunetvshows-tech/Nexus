@@ -114,6 +114,7 @@ export default function AdminDisputesPage() {
   const [stuckLoading,   setStuckLoading]   = useState(false)
   const [selectedStuck,  setSelectedStuck]  = useState<Set<string>>(new Set())
   const [clearingStuck,  setClearingStuck]  = useState(false)
+  const [retryingStuck,  setRetryingStuck]  = useState(false)
 
   // Global authentication handled by PiPaymentProvider
 
@@ -217,6 +218,44 @@ export default function AdminDisputesPage() {
       setError('Network error')
     } finally {
       setClearingStuck(false)
+    }
+  }
+
+  const handleRetryStuckPayments = async (paymentIds: string[]) => {
+    if (!user?.piUid || paymentIds.length === 0) return
+    if (!confirm(`Retry ${paymentIds.length} payment(s)?`)) return
+
+    setRetryingStuck(true)
+    try {
+      const res = await fetch(
+        `${window.location.origin}/api/admin/stuck-payments`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-pi-uid': user.piUid,
+          },
+          body: JSON.stringify({
+            action: 'retry_stuck',
+            paymentIds,
+          }),
+        }
+      )
+      const data = await res.json()
+
+      if (data.success) {
+        setError(null)
+        // Refresh stuck payments
+        await fetchStuckPayments()
+        alert(`Retried ${paymentIds.length} payment(s)`)
+      } else {
+        setError(data.error ?? 'Failed to retry payments')
+      }
+    } catch (err) {
+      console.error('[Admin:RetryStuck] Error:', err)
+      setError('Network error')
+    } finally {
+      setRetryingStuck(false)
     }
   }
 
@@ -1274,6 +1313,7 @@ export default function AdminDisputesPage() {
               const timeStuck = Math.floor((Date.now() - new Date(payment.createdAt).getTime()) / 1000 / 60)
 
               return (
+                <>
                 <div
                   key={payment.id}
                   className="nexus-card"
@@ -1419,6 +1459,33 @@ export default function AdminDisputesPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Retry button for failed payments */}
+                {payment.status === 'failed' && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleRetryStuckPayments([payment.id])
+                    }}
+                    disabled={retryingStuck}
+                    style={{
+                      marginTop: SPACING.sm,
+                      padding: `${SPACING.xs} ${SPACING.sm}`,
+                      background: COLORS.emerald,
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: RADII.sm,
+                      fontSize: '0.85rem',
+                      fontWeight: '600',
+                      cursor: retryingStuck ? 'not-allowed' : 'pointer',
+                      opacity: retryingStuck ? 0.6 : 1,
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    {retryingStuck ? '⏳ Retrying...' : '🔄 Retry Payment'}
+                  </button>
+                )}
+                </>
               )
             })}
           </div>

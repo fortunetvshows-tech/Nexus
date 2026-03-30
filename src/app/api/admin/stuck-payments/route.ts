@@ -1,6 +1,7 @@
 'use server'
 
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { payWorkerA2U } from '@/lib/services/a2u-payment-service'
 import { NextRequest, NextResponse } from 'next/server'
 
 const corsHeaders = {
@@ -196,6 +197,101 @@ export async function POST(req: NextRequest) {
           success: true,
           message: `Cleared ${paymentIds.length} stuck payment(s)`,
           clearedCount: paymentIds.length,
+        },
+        { headers: corsHeaders }
+      )
+    }
+
+    if (action === 'retry_stuck') {
+      // Retry failed/cleared payments by marking them as pending and attempting payout
+      const results = []
+
+      for (const paymentId of paymentIds) {
+        try {
+          // Fetch failed transaction details
+          const { data: tx } = await supabaseAdmin
+            .from('Transaction')
+            .select(`
+              id, status, netAmount, receiverId, submissionId,
+              submission:submissionId (
+                id, workerId, taskId,
+                task:taskId ( id, title )
+              )
+            `)
+            .eq('id', paymentId)
+            .eq('type', 'worker_payout')
+            .single()
+
+          if (!tx) {
+            results.push({ paymentId, success: false, error: 'NOT_FOUND' })
+            continue
+          }
+
+          // Get worker details
+          const { data: worker } = await supabaseAdmin
+            .from('User')
+            .select('id, piUid, piUsername, walletAddress')
+            .eq('id', (tx.submission as any).workerId)
+            .single()
+
+          if (!worker?.piUid || !worker?.walletAddress) {
+            results.push({
+              paymentId,
+              success: false,
+              error: 'Worker missing piUid or wallet',
+              worker: worker?.piUsername,
+            })
+            continue
+          }
+
+          // Mark as pending
+          await supabaseAdmin
+            .from('Transaction')
+            .update({ status: 'pending' })
+            .eq('id', paymentId)
+
+          // Attempt payment
+          const paymentResult = await payWorkerA2U({
+            workerPiUid: worker.piUid,
+            workerWallet: worker.walletAddress,
+            amount: Number(tx.netAmount),
+            submissionId: (tx.submission as any).id,
+            taskId: (tx.submission as any).task.id,
+            taskTitle: (tx.submission as any).task.title,
+          })
+
+          if (paymentResult.success) {
+            results.push({
+              paymentId,
+              success: true,
+              worker: worker.piUsername,
+              amount: Number(tx.netAmount),
+              piPaymentId: paymentResult.paymentId,
+            })
+          } else {
+            results.push({
+              paymentId,
+              success: false,
+              error: paymentResult.error,
+              worker: worker.piUsername,
+            })
+          }
+        } catch (err: any) {
+          results.push({
+            paymentId,
+            success: false,
+            error: err.message,
+          })
+        }
+      }
+
+      const successCount = results.filter((r: any) => r.success).length
+
+      return NextResponse.json(
+        {
+          success: successCount > 0,
+          message: `Retried ${paymentIds.length} payment(s): ${successCount} success`,
+          results,
         },
         { headers: corsHeaders }
       )
