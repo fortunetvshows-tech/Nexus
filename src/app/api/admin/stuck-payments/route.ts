@@ -56,9 +56,9 @@ export async function GET(req: NextRequest) {
 
     // Get transactions that are:
     // 1. Pending and created more than 1 hour ago (stuck payments)
-    // 2. Failed but created recently (<2 hours, available for retry)
+    // 2. Failed but created recently (<24 hours, available for retry)
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
-    const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
 
     // Fetch pending >1hour old
     const { data: pendingStuck } = await supabaseAdmin
@@ -93,7 +93,7 @@ export async function GET(req: NextRequest) {
       .eq('status', 'pending')
       .lt('createdAt', oneHourAgo)
 
-    // Fetch failed <2 hours old (recently cleared/available for retry)
+    // Fetch failed <24 hours old (recently cleared/available for retry)
     const { data: recentlyFailed } = await supabaseAdmin
       .from('Transaction')
       .select(`
@@ -124,7 +124,7 @@ export async function GET(req: NextRequest) {
       `)
       .eq('type', 'worker_payout')
       .eq('status', 'failed')
-      .gt('createdAt', twoHoursAgo)
+      .gt('createdAt', oneDayAgo)
 
     // Combine and sort
     const stuckPayments = [...(pendingStuck || []), ...(recentlyFailed || [])]
