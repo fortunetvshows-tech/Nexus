@@ -163,13 +163,24 @@ export async function POST(req: NextRequest) {
         .from('Transaction')
         .update({
           status: 'cancelled',
-          updatedAt: new Date().toISOString(),
         })
         .in('id', paymentIds)
+        .eq('status', 'pending')
 
       if (updateError) {
+        console.error('[Nexus:StuckPayments:POST] Update error:', {
+          error: updateError,
+          message: updateError.message,
+          details: updateError.details,
+          hint: updateError.hint,
+          code: updateError.code,
+        })
         return NextResponse.json(
-          { error: 'Failed to clear payments', detail: updateError.message },
+          { 
+            error: 'Failed to clear payments', 
+            detail: updateError.message,
+            code: updateError.code,
+          },
           { status: 500, headers: corsHeaders }
         )
       }
