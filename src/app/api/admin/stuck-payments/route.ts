@@ -1,7 +1,7 @@
 'use server'
 
 import { supabaseAdmin } from '@/lib/supabase-admin'
-import { payWorkerA2U } from '@/lib/services/a2u-payment-service'
+import { payWorkerA2U, cancelPiPayment } from '@/lib/services/a2u-payment-service'
 import { NextRequest, NextResponse } from 'next/server'
 
 const corsHeaders = {
@@ -283,7 +283,7 @@ export async function POST(req: NextRequest) {
             .eq('id', paymentId)
 
           // Attempt payment
-          const paymentResult = await payWorkerA2U({
+          let paymentResult = await payWorkerA2U({
             workerPiUid: worker.piUid,
             workerWallet: worker.walletAddress,
             amount: Number(tx.netAmount),
@@ -291,6 +291,42 @@ export async function POST(req: NextRequest) {
             taskId: (tx.submission as any).task.id,
             taskTitle: (tx.submission as any).task.title,
           })
+
+          // If ongoing_payment_found error, cancel the existing payment and retry
+          if (!paymentResult.success && paymentResult.error?.includes('ongoing_payment_found')) {
+            try {
+              // Extract existing payment ID from piPaymentId field in transaction
+              const { data: existingTx } = await supabaseAdmin
+                .from('Transaction')
+                .select('piPaymentId')
+                .eq('submissionId', (tx.submission as any).id)
+                .eq('type', 'worker_payout')
+                .neq('status', 'confirmed')
+                .order('createdAt', { ascending: false })
+                .limit(1)
+                .maybeSingle()
+
+              if (existingTx?.piPaymentId) {
+                console.log('[Nexus:Admin] Found existing payment, attempting to cancel:', existingTx.piPaymentId)
+                const cancelResult = await cancelPiPayment(existingTx.piPaymentId)
+
+                if (cancelResult.success) {
+                  console.log('[Nexus:Admin] Cancelled existing payment, retrying new one')
+                  // Retry the payment
+                  paymentResult = await payWorkerA2U({
+                    workerPiUid: worker.piUid,
+                    workerWallet: worker.walletAddress,
+                    amount: Number(tx.netAmount),
+                    submissionId: (tx.submission as any).id,
+                    taskId: (tx.submission as any).task.id,
+                    taskTitle: (tx.submission as any).task.title,
+                  })
+                }
+              }
+            } catch (cancelErr: any) {
+              console.error('[Nexus:Admin] Error during cancel+retry:', cancelErr.message)
+            }
+          }
 
           if (paymentResult.success) {
             results.push({

@@ -328,3 +328,35 @@ export async function payWorkerA2U(params: {
     return { success: false, error: message, code: 'PAYMENT_FAILED' }
   }
 }
+
+// ── Cancel an incomplete payment ──────────────────────────────
+export async function cancelPiPayment(paymentId: string): Promise<A2UPaymentResult> {
+  if (!PI_API_KEY) {
+    return { success: false, error: 'PI_API_KEY not configured', code: 'CONFIG_ERROR' }
+  }
+
+  try {
+    console.log('[Nexus:A2U] Cancelling payment:', paymentId)
+
+    const res = await fetch(`${PI_API_BASE}/v2/payments/${paymentId}/cancel`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Key ${PI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (!res.ok) {
+      const body = await res.text()
+      throw new Error(`Pi cancelPayment failed: ${res.status} — ${body}`)
+    }
+
+    console.log('[Nexus:A2U] Payment cancelled successfully:', paymentId)
+    return { success: true, paymentId }
+
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error'
+    console.error('[Nexus:A2U] Cancel failed:', { paymentId, error: message })
+    return { success: false, error: message, code: 'CANCEL_FAILED' }
+  }
+}
