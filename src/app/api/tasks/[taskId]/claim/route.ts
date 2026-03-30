@@ -39,7 +39,7 @@ export async function POST(
     // Get task details for validation
     const { data: task, error: taskError } = await supabaseAdmin
       .from('Task')
-      .select('id, employerId, minReputationReq, deadlineAt, taskStatus')
+      .select('id, employerId, minReputationReq, deadline, taskStatus')
       .eq('id', taskId)
       .single()
 
@@ -60,7 +60,7 @@ export async function POST(
     }
 
     // Check deadline
-    if (new Date(task.deadlineAt) < new Date()) {
+    if (new Date(task.deadline) < new Date()) {
       return NextResponse.json(
         { error: 'TASK_EXPIRED' }, { status: 400 }
       )
