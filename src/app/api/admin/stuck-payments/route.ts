@@ -3,6 +3,12 @@
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { NextRequest, NextResponse } from 'next/server'
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-pi-uid',
+}
+
 interface StuckPayment {
   id: string
   piPaymentId: string
@@ -28,10 +34,14 @@ interface StuckPayment {
   } | null
 }
 
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders })
+}
+
 export async function GET(req: NextRequest) {
   try {
     const piUid = req.headers.get('x-pi-uid')
-    if (!piUid) return NextResponse.json({ error: 'UNAUTHORIZED' }, { status: 401 })
+    if (!piUid) return NextResponse.json({ error: 'UNAUTHORIZED' }, { status: 401, headers: corsHeaders })
 
     const { data: admin } = await supabaseAdmin
       .from('User')
@@ -40,7 +50,7 @@ export async function GET(req: NextRequest) {
       .single()
 
     if (!admin?.isAdmin) {
-      return NextResponse.json({ error: 'FORBIDDEN' }, { status: 403 })
+      return NextResponse.json({ error: 'FORBIDDEN' }, { status: 403, headers: corsHeaders })
     }
 
     // Get transactions that are pending and created more than 1 hour ago
@@ -83,7 +93,7 @@ export async function GET(req: NextRequest) {
       console.error('[Nexus:StuckPayments] Query error:', error)
       return NextResponse.json(
         { error: 'Failed to fetch stuck payments', detail: error.message },
-        { status: 500 }
+        { status: 500, headers: corsHeaders }
       )
     }
 
@@ -109,21 +119,24 @@ export async function GET(req: NextRequest) {
       submission: tx.submission,
     }))
 
-    return NextResponse.json({
-      success: true,
-      count: formatted.length,
-      payments: formatted,
-    })
+    return NextResponse.json(
+      {
+        success: true,
+        count: formatted.length,
+        payments: formatted,
+      },
+      { headers: corsHeaders }
+    )
   } catch (err: any) {
     console.error('[Nexus:StuckPayments] Error:', err)
-    return NextResponse.json({ error: 'INTERNAL_SERVER_ERROR' }, { status: 500 })
+    return NextResponse.json({ error: 'INTERNAL_SERVER_ERROR' }, { status: 500, headers: corsHeaders })
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
     const piUid = req.headers.get('x-pi-uid')
-    if (!piUid) return NextResponse.json({ error: 'UNAUTHORIZED' }, { status: 401 })
+    if (!piUid) return NextResponse.json({ error: 'UNAUTHORIZED' }, { status: 401, headers: corsHeaders })
 
     const { data: admin } = await supabaseAdmin
       .from('User')
@@ -132,7 +145,7 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (!admin?.isAdmin) {
-      return NextResponse.json({ error: 'FORBIDDEN' }, { status: 403 })
+      return NextResponse.json({ error: 'FORBIDDEN' }, { status: 403, headers: corsHeaders })
     }
 
     const { action, paymentIds } = await req.json()
@@ -140,7 +153,7 @@ export async function POST(req: NextRequest) {
     if (!action || !paymentIds || paymentIds.length === 0) {
       return NextResponse.json(
         { error: 'Missing action or paymentIds' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       )
     }
 
@@ -157,7 +170,7 @@ export async function POST(req: NextRequest) {
       if (updateError) {
         return NextResponse.json(
           { error: 'Failed to clear payments', detail: updateError.message },
-          { status: 500 }
+          { status: 500, headers: corsHeaders }
         )
       }
 
@@ -167,16 +180,19 @@ export async function POST(req: NextRequest) {
         admin: piUid,
       })
 
-      return NextResponse.json({
-        success: true,
-        message: `Cleared ${paymentIds.length} stuck payment(s)`,
-        clearedCount: paymentIds.length,
-      })
+      return NextResponse.json(
+        {
+          success: true,
+          message: `Cleared ${paymentIds.length} stuck payment(s)`,
+          clearedCount: paymentIds.length,
+        },
+        { headers: corsHeaders }
+      )
     }
 
-    return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
+    return NextResponse.json({ error: 'Unknown action' }, { status: 400, headers: corsHeaders })
   } catch (err: any) {
     console.error('[Nexus:StuckPayments:POST] Error:', err)
-    return NextResponse.json({ error: 'INTERNAL_SERVER_ERROR' }, { status: 500 })
+    return NextResponse.json({ error: 'INTERNAL_SERVER_ERROR' }, { status: 500, headers: corsHeaders })
   }
 }
