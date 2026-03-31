@@ -157,7 +157,8 @@ export async function POST(
 
       // Build comprehensive notification with fee breakdown
       const title = `You earned ${actualReceived.toFixed(2)}π! 🎉`
-      const body = `Your work was approved! You earned ${actualReceived.toFixed(2)}π (${grossAmount.toFixed(2)}π − ${feeAmount.toFixed(2)}π platform fee)`
+      const networkFeeDisplay = PLATFORM_CONFIG.NETWORK_FEE_PI > 0 ? ` − ${PLATFORM_CONFIG.NETWORK_FEE_PI}π network fee` : ''
+      const body = `Your work was approved! You earned ${actualReceived.toFixed(2)}π (${grossAmount.toFixed(2)}π − ${feeAmount.toFixed(2)}π platform fee${networkFeeDisplay})`
       const metadata = {
         submissionId,
         grossAmount,
