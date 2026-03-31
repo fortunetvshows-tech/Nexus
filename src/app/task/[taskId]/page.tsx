@@ -463,7 +463,7 @@ export default function TaskDetailPage({
                 ? task.slotsRemaining === 0
                   ? 'All spots taken'
                   : `Need ${task.minReputationReq} reputation to unlock`
-                : `Start earning ${task.piReward}π now →`}
+                : `Start earning ${Math.max(0, PLATFORM_CONFIG.workerNetPayout(task.piReward)).toFixed(2)}π now →`}
             </button>
 
             <p style={{
@@ -490,7 +490,7 @@ export default function TaskDetailPage({
               <span style={{
                 fontSize: '0.85rem', color: '#9ca3af', fontWeight: '500',
               }}>
-                🔒 Spot secured — complete to earn {task.piReward}π
+                🔒 Spot secured — complete to earn {Math.max(0, PLATFORM_CONFIG.workerNetPayout(task.piReward)).toFixed(2)}π
               </span>
               <span style={{
                 fontSize: '0.85rem', fontWeight: '600',

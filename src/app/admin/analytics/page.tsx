@@ -232,7 +232,7 @@ export default function AdminAnalyticsPage() {
               <StatCard
                 title="💰 Total Platform Revenue"
                 value={formatPi(analytics.summary.totalPlatformRevenue)}
-                subtitle="All-time fees earned (5% commission)"
+                subtitle="All-time fees earned (10% commission)"
                 bgColor={COLORS.bgSurface}
               />
               <StatCard
@@ -318,7 +318,7 @@ export default function AdminAnalyticsPage() {
                     Worker Share
                   </div>
                   <div style={{ fontSize: '1.125rem', fontWeight: '700', marginTop: SPACING.xs, color: COLORS.emerald }}>
-                    95%
+                    90%
                   </div>
                   <div style={{ fontSize: '0.75rem', color: COLORS.textMuted, marginTop: SPACING.xs }}>
                     {formatPi(analytics.summary.totalPiPaidOut)}
@@ -335,7 +335,7 @@ export default function AdminAnalyticsPage() {
                     Platform Revenue
                   </div>
                   <div style={{ fontSize: '1.125rem', fontWeight: '700', marginTop: SPACING.xs, color: COLORS.indigo }}>
-                    5%
+                    10%
                   </div>
                   <div style={{ fontSize: '0.75rem', color: COLORS.textMuted, marginTop: SPACING.xs }}>
                     {formatPi(analytics.summary.totalPlatformRevenue)}
@@ -352,7 +352,7 @@ export default function AdminAnalyticsPage() {
                     Total Transaction Value
                   </div>
                   <div style={{ fontSize: '1.125rem', fontWeight: '700', marginTop: SPACING.xs, color: COLORS.amber }}>
-                    {formatPi(analytics.summary.totalPiPaidOut / 0.95)}
+                    {formatPi(analytics.summary.totalPiPaidOut / 0.90)}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: COLORS.textMuted, marginTop: SPACING.xs }}>
                     (before commission)
