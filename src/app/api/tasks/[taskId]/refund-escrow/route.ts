@@ -47,10 +47,10 @@ export async function POST(
 
     // Calculate refundable amount
     // slotsRemaining = slots that were never claimed and approved
-    const refundablePi = Number(task.piReward) *
+    const refundableGross = Number(task.piReward) *
       Number(task.slotsRemaining)
 
-    if (refundablePi <= 0) {
+    if (refundableGross <= 0) {
       return NextResponse.json({
         success: true,
         refunded: 0,
@@ -58,30 +58,39 @@ export async function POST(
       })
     }
 
-    // Get escrow ledger
+    // Get escrow ledger (fallback to Task calculation if doesn't exist)
+    // Old tasks created before EscrowLedger don't have records
     const { data: escrow } = await supabaseAdmin
       .from('EscrowLedger')
       .select('id, totalAmount, lockedAmount, releasedAmount')
       .eq('taskId', taskId)
-      .single()
+      .maybeSingle()
 
-    if (!escrow) return NextResponse.json(
-      { error: 'ESCROW_NOT_FOUND' }, { status: 404 }
-    )
+    // Calculate actual refundable amount
+    let actualRefundGross = refundableGross
 
-    // Calculate actual refundable from ledger
-    const actualRefund = Math.max(
-      0,
-      Number(escrow.lockedAmount) - Number(escrow.releasedAmount)
-    )
+    if (escrow) {
+      // Use escrow ledger data if available
+      actualRefundGross = Math.max(
+        0,
+        Number(escrow.lockedAmount) - Number(escrow.releasedAmount)
+      )
+    }
+    // Otherwise use Task.slotsRemaining calculation (fallback for old tasks)
 
-    if (actualRefund <= 0) {
+    if (actualRefundGross <= 0) {
       return NextResponse.json({
         success: true,
         refunded: 0,
         message: 'Escrow already fully released',
       })
     }
+
+    // Calculate platform fee deduction
+    // Platform keeps 10% as fee for listing service
+    // This amount is NOT returned to employer
+    const platformFeeAmount = PLATFORM_CONFIG.platformFee(actualRefundGross)
+    const netRefundToEmployer = Math.max(0, actualRefundGross - platformFeeAmount)
 
     // Get employer user record
     const { data: employer } = await supabaseAdmin
@@ -102,9 +111,9 @@ export async function POST(
         recipientId: employer.id,
         taskId:      taskId,
         type:        'escrow_release',
-        amount:      actualRefund,
-        netAmount:   actualRefund,
-        platformFee: 0,
+        amount:      actualRefundGross,
+        netAmount:   netRefundToEmployer,
+        platformFee: platformFeeAmount,
         networkFee:  0,
         status:      'confirmed',
         confirmedAt: new Date().toISOString(),
@@ -119,16 +128,18 @@ export async function POST(
       )
     }
 
-    // Update escrow ledger — mark refund amount
-    await supabaseAdmin
-      .from('EscrowLedger')
-      .update({
-        refundAmount: actualRefund,
-        lockedAmount: 0,
-        status:       'closed',
-        updatedAt:    new Date().toISOString(),
-      })
-      .eq('taskId', taskId)
+    // Update escrow ledger — mark refund amount (if it exists)
+    if (escrow) {
+      await supabaseAdmin
+        .from('EscrowLedger')
+        .update({
+          refundAmount: actualRefundGross,
+          lockedAmount: 0,
+          status:       'closed',
+          updatedAt:    new Date().toISOString(),
+        })
+        .eq('taskId', taskId)
+    }
 
     // Archive task if it was still escrowed
     if (task.taskStatus === 'escrowed') {
@@ -149,10 +160,12 @@ export async function POST(
         userId:   employer.id,
         type:     'task_approved',
         title:    '💰 Escrow refunded',
-        body:     `${actualRefund.toFixed(2)}π has been returned from your task "${task.title}". Unused slots have been released.`,
+        body:     `${netRefundToEmployer.toFixed(2)}π has been returned from your task "${task.title}". Unused slots released. (${actualRefundGross.toFixed(2)}π − ${platformFeeAmount.toFixed(2)}π platform fee)`,
         metadata: {
           taskId,
-          refundAmount: actualRefund,
+          refundAmountGross: actualRefundGross,
+          refundAmountNet: netRefundToEmployer,
+          platformFeeDeducted: platformFeeAmount,
           type: 'escrow_refund',
         },
       })
@@ -160,13 +173,17 @@ export async function POST(
     console.log('[Nexus:Refund] Escrow refunded:', {
       taskId,
       employer: piUid,
-      refundAmount: actualRefund,
+      refundAmountGross: actualRefundGross,
+      refundAmountNet: netRefundToEmployer,
+      platformFeeDeducted: platformFeeAmount,
     })
 
     return NextResponse.json({
-      success:      true,
-      refunded:     actualRefund,
-      message:      `${actualRefund.toFixed(2)}π refunded for ${task.slotsRemaining} unused slots`,
+      success:       true,
+      refundedNet:   netRefundToEmployer,
+      refundedGross: actualRefundGross,
+      platformFee:   platformFeeAmount,
+      message:       `${netRefundToEmployer.toFixed(2)}π refunded for ${task.slotsRemaining} unused slots (${actualRefundGross.toFixed(2)}π − ${platformFeeAmount.toFixed(2)}π platform fee)`,
     })
 
   } catch (err: any) {
