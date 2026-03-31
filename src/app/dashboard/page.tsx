@@ -12,6 +12,7 @@ import { LeaderboardCard }   from '@/components/bento/LeaderboardCard'
 import { RejectionCard }     from '@/components/bento/RejectionCard'
 import { DisputeTrackerCard } from '@/components/bento/DisputeTrackerCard'
 import { COLORS, FONTS, SPACING, RADII, SHADOWS, GRADIENTS, statusStyle, COMPONENT_STYLES } from '@/lib/design/tokens'
+import { PLATFORM_CONFIG }  from '@/lib/config/platform'
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -386,7 +387,7 @@ export default function DashboardPage() {
                     id:        sub.id,
                     status:    sub.status,
                     taskTitle: sub.task?.title ?? 'Unknown task',
-                    reward:    Number(sub.agreedReward ?? 0),
+                    reward:    Number(sub.agreedReward ?? 0) * (1 - PLATFORM_CONFIG.PLATFORM_FEE_RATE),
                     timeAgo:   sub.submittedAt
                       ? timeAgo(sub.submittedAt)
                       : 'recently',
@@ -737,7 +738,7 @@ export default function DashboardPage() {
                     fontFamily: FONTS.mono,
                     fontWeight: '500',
                   }}>
-                    {Number(sub.agreedReward ?? 0).toFixed(3)}π
+                    {(Number(sub.agreedReward ?? 0) * (1 - PLATFORM_CONFIG.PLATFORM_FEE_RATE)).toFixed(3)}π
                   </span>
                   <span style={{ color: COLORS.emerald }}>Payment processed</span>
                 </div>
