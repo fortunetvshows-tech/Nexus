@@ -86,15 +86,15 @@ export async function POST(request: NextRequest) {
     // For PDF/DOCX: already compressed format, just validate & store
     // Don't double-compress as modern PDFs/DOCX are already optimized
 
-    // Generate unique filename: {taskId}-instructions-{timestamp}-{random}
+    // Generate unique filename: instructions/{taskId}-{timestamp}-{random}
     const timestamp = Date.now()
     const random = Math.random().toString(36).substring(7)
     const ext = file.name.split('.').pop() || 'pdf'
-    const filename = `${taskId}-instructions-${timestamp}-${random}.${ext}`
+    const filename = `instructions/${taskId}-${timestamp}-${random}.${ext}`
 
-    // Upload to Supabase Storage
+    // Upload to nexus-proofs bucket (same bucket as work files, organized by prefix)
     const { data, error: uploadError } = await supabase.storage
-      .from('nexus-task-instructions')
+      .from('nexus-proofs')
       .upload(filename, bufferView, {
         contentType: file.type,
         upsert: false,
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
 
     // Get public URL
     const { data: publicUrlData } = supabase.storage
-      .from('nexus-task-instructions')
+      .from('nexus-proofs')
       .getPublicUrl(filename)
 
     const instructionUrl = publicUrlData?.publicUrl
