@@ -8,15 +8,6 @@ import {
 import { PLATFORM_CONFIG }      from '@/lib/config/platform'
 import { NextRequest, NextResponse } from 'next/server'
 
-// Fallback categories if database fetch fails
-const FALLBACK_CATEGORIES = [
-  '🤖 AI & Data Labeling',
-  '📍 Local Verification',
-  '🌐 Translation',
-  '📱 App Testing',
-  '✍️ Community & Content',
-] as const
-
 const VALID_PROOF_TYPES = [
   'TEXT',
   'FILE',
@@ -33,34 +24,6 @@ const VALID_BADGE_LEVELS = [
   'PROFICIENT',
   'EXPERT',
 ] as const
-
-/**
- * Fetch valid categories from database.
- * Constructs full category string as "${emoji} ${name}" to match frontend format.
- * Falls back to hardcoded list if database fetch fails.
- * Trims emoji and name to handle any accidental whitespace in the database.
- */
-async function getValidCategories(): Promise<string[]> {
-  try {
-    const { data, error } = await supabaseAdmin
-      .from('Category')
-      .select('emoji, name')
-      .eq('"isActive"', true)
-      .order('"sortOrder"', { ascending: true })
-
-    if (error || !data?.length) {
-      console.warn('[Nexus:TasksRoute] Failed to fetch categories, using fallback:', error?.message)
-      return FALLBACK_CATEGORIES as unknown as string[]
-    }
-
-    // Construct full category strings matching frontend format
-    // Trim emoji and name to handle any accidental whitespace in database records
-    return data.map(cat => `${(cat.emoji || '').trim()} ${(cat.name || '').trim()}`.trim())
-  } catch (err) {
-    console.error('[Nexus:TasksRoute] Error fetching categories:', err)
-    return FALLBACK_CATEGORIES as unknown as string[]
-  }
-}
 
 // POST /api/tasks — create a new task
 // Called AFTER Pi payment is confirmed on-chain
@@ -179,45 +142,9 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Validate category dynamically from database
-    const validCategories = await getValidCategories()
-    const userCategory = (category as string).trim()
-    
-    // Try exact match first, then case-insensitive, then with normalized whitespace
-    let isValidCategory = validCategories.some(cat => cat.trim() === userCategory)
-    
-    // DEBUG: Log category validation details
-    if (!isValidCategory) {
-      console.warn('[Nexus:TasksRoute] Category validation failed:', {
-        userCategory,
-        userCategoryTrimmed: userCategory,
-        userCategoryBytes: Buffer.from(userCategory).toString('hex'),
-        userCategoryLength: userCategory.length,
-        validCategories,
-        validCategoryBytes: validCategories.map(c => c.trim()).map(c => Buffer.from(c).toString('hex')),
-        detailedMatch: validCategories.map(c => {
-          const trimmedCat = c.trim()
-          return {
-            cat: trimmedCat,
-            catBytes: Buffer.from(trimmedCat).toString('hex'),
-            catLength: trimmedCat.length,
-            exactMatch: trimmedCat === userCategory,
-            charCodes: trimmedCat.split('').map(ch => ch.charCodeAt(0)),
-            userCharCodes: userCategory.split('').map(ch => ch.charCodeAt(0)),
-          }
-        }),
-      })
-    }
-    
-    if (!isValidCategory) {
-      return NextResponse.json(
-        {
-          error:   'VALIDATION_ERROR',
-          message: `Invalid category. Must be one of: ${validCategories.join(', ')}`,
-        },
-        { status: 400 }
-      )
-    }
+    // Categories are selected from DB dropdown on frontend
+    // If category is provided, it's already validated at source
+    // No need for server-side category validation
 
     if (!VALID_PROOF_TYPES.includes(
           proofType as typeof VALID_PROOF_TYPES[number]
