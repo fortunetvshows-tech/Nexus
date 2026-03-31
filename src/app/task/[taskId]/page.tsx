@@ -63,6 +63,10 @@ export default function TaskDetailPage({
   const [proofContent, setProofContent] = useState('')
   const [submissionStatus, setSubmissionStatus] = useState<string | null>(null)
   const [submissionId, setSubmissionId]         = useState<string | null>(null)
+  const [proofFileUrl, setProofFileUrl]         = useState<string | null>(null)
+  const [isUploadingFile, setIsUploadingFile]   = useState(false)
+  const [uploadError, setUploadError]           = useState<string | null>(null)
+  const fileInputRef                            = useRef<HTMLInputElement>(null)
 
   // Fetch task
   useEffect(() => {
@@ -611,47 +615,96 @@ export default function TaskDetailPage({
                 )
               }
 
-              // PHOTO / IMAGE proof — URL input + preview
+              // PHOTO / IMAGE proof — file upload with preview
               if (type === 'PHOTO' || type === 'IMAGE') {
                 return (
                   <div style={{ marginBottom: '1rem' }}>
-                    <div style={{
-                      padding:      '1.5rem',
-                      background:   COLORS.bgElevated,
-                      border:       `2px dashed ${COLORS.borderAccent}`,
-                      borderRadius: RADII.lg,
-                      textAlign:    'center',
-                      marginBottom: '0.75rem',
-                    }}>
-                      <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📷</div>
-                      <div style={{
-                        fontSize:   '0.82rem',
-                        color:      COLORS.textSecondary,
-                        marginBottom: '0.75rem',
-                      }}>
-                        Paste a photo URL or describe what you photographed
-                      </div>
-                    </div>
-                    <textarea
-                      value={proofContent}
-                      onChange={e => setProofContent(e.target.value)}
-                      placeholder="Paste image URL or describe the photo you took and where it can be verified..."
-                      rows={4}
-                      style={{
-                        width:        '100%',
-                        padding:      '0.875rem',
-                        background:   COLORS.bgElevated,
-                        border:       `1px solid ${COLORS.borderAccent}`,
-                        borderRadius: RADII.md,
-                        color:        COLORS.textPrimary,
-                        fontSize:     '0.9rem',
-                        resize:       'vertical' as const,
-                        outline:      'none',
-                        boxSizing:    'border-box' as const,
-                        lineHeight:   '1.6',
-                        fontFamily:   FONTS.sans,
+                    {/* File input (hidden) */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/gif,image/webp"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0]
+                        if (!file) return
+                        setUploadError(null)
+                        setIsUploadingFile(true)
+                        try {
+                          const formData = new FormData()
+                          formData.append('file', file)
+                          formData.append('submissionId', submissionId || `temp-${Date.now()}`)
+                          const res = await fetch('/api/proof/upload', {
+                            method: 'POST',
+                            headers: { 'x-pi-uid': user?.piUid || '' },
+                            body: formData,
+                          })
+                          const data = await res.json()
+                          if (!res.ok || !data.success) {
+                            setUploadError(data.error || 'Upload failed')
+                            setIsUploadingFile(false)
+                            return
+                          }
+                          setProofFileUrl(data.proofUrl)
+                          setProofContent(data.proofUrl)
+                          setIsUploadingFile(false)
+                        } catch (err) {
+                          setUploadError('Upload failed. Please try again.')
+                          setIsUploadingFile(false)
+                        }
                       }}
+                      style={{ display: 'none' }}
                     />
+                    {proofFileUrl ? (
+                      <div style={{
+                        marginBottom: '0.75rem',
+                        borderRadius: RADII.lg,
+                        overflow: 'hidden',
+                        border: `2px solid ${COLORS.emerald}`,
+                        background: COLORS.bgElevated,
+                      }}>
+                        <img src={proofFileUrl} alt="Proof preview" style={{
+                          width: '100%', maxHeight: '300px', objectFit: 'cover', display: 'block',
+                        }} />
+                        <button onClick={() => {
+                          setProofFileUrl(null)
+                          setProofContent('')
+                          setUploadError(null)
+                          if (fileInputRef.current) fileInputRef.current.value = ''
+                        }} style={{
+                          width: '100%', padding: '0.5rem', background: 'rgba(239,68,68,0.1)',
+                          border: 'none', color: COLORS.red, fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer',
+                        }}>
+                          ✕ Remove image
+                        </button>
+                      </div>
+                    ) : (
+                      <button onClick={() => fileInputRef.current?.click()} disabled={isUploadingFile} style={{
+                        width: '100%', padding: '1.5rem', background: COLORS.bgElevated,
+                        border: `2px dashed ${COLORS.borderAccent}`, borderRadius: RADII.lg,
+                        cursor: isUploadingFile ? 'not-allowed' : 'pointer', marginBottom: '0.75rem',
+                        textAlign: 'center' as const, transition: 'all 0.2s ease', opacity: isUploadingFile ? 0.6 : 1,
+                      }}
+                      >
+                        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
+                          {isUploadingFile ? '⏳' : '📷'}
+                        </div>
+                        <div style={{ fontSize: '0.82rem', color: COLORS.textSecondary }}>
+                          {isUploadingFile ? 'Uploading...' : 'Click to upload image'}
+                        </div>
+                        <div style={{ fontSize: '0.7rem', color: COLORS.textMuted, marginTop: '0.5rem' }}>
+                          JPG, PNG, GIF, WebP — max 5MB
+                        </div>
+                      </button>
+                    )}
+                    {uploadError && (
+                      <div style={{
+                        padding: '0.875rem', background: COLORS.redDim,
+                        border: `1px solid rgba(239,68,68,0.3)`, borderRadius: RADII.md,
+                        color: COLORS.red, fontSize: '0.875rem', marginBottom: '0.75rem',
+                      }}>
+                        {uploadError}
+                      </div>
+                    )}
                   </div>
                 )
               }

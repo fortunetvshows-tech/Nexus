@@ -392,7 +392,7 @@ export default function ReviewPage({
                 </div>
               )}
 
-              {/* Proof */}
+              {/* Proof — text + image/file */}
               <div style={{
                 background: '#0f172a', borderRadius: '8px',
                 padding: '1rem', marginBottom: '1rem',
@@ -400,7 +400,49 @@ export default function ReviewPage({
                 lineHeight: '1.6', whiteSpace: 'pre-wrap',
                 maxHeight: '200px', overflowY: 'auto',
               }}>
-                {sub.proofContent || 'No text content'}
+                {sub.proofFileUrl && (
+                  <div style={{ marginBottom: '1rem' }}>
+                    <div style={{
+                      fontSize: '0.65rem',
+                      fontWeight: '700',
+                      color: COLORS.textMuted,
+                      textTransform: 'uppercase' as const,
+                      letterSpacing: '0.1em',
+                      marginBottom: '0.5rem',
+                    }}>
+                      📷 Proof Image
+                    </div>
+                    <img
+                      src={sub.proofFileUrl}
+                      alt="Proof"
+                      style={{
+                        width: '100%',
+                        maxWidth: '400px',
+                        borderRadius: RADII.md,
+                        border: `1px solid ${COLORS.border}`,
+                        marginBottom: '0.5rem',
+                      }}
+                    />
+                  </div>
+                )}
+                {sub.proofContent && !sub.proofContent.startsWith('http') && (
+                  <div>
+                    <div style={{
+                      fontSize: '0.65rem',
+                      fontWeight: '700',
+                      color: COLORS.textMuted,
+                      textTransform: 'uppercase' as const,
+                      letterSpacing: '0.1em',
+                      marginBottom: '0.5rem',
+                    }}>
+                      💬 Notes
+                    </div>
+                    {sub.proofContent}
+                  </div>
+                )}
+                {!sub.proofFileUrl && !sub.proofContent && (
+                  <span style={{ color: COLORS.textMuted }}>No proof content</span>
+                )}
               </div>
 
               {/* Verification code check */}
