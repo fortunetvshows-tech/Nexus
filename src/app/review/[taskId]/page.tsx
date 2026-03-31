@@ -447,7 +447,7 @@ export default function ReviewPage({
                 )}
 
                 {/* Worker's submitted file */}
-                {sub.proofFileUrl && sub.proofFileUrl.includes('-work-') && (
+                {sub.proofFileUrl && sub.proofFileUrl.includes('work-') && (
                   <div style={{ marginBottom: '1rem' }}>
                     <div style={{
                       fontSize: '0.65rem',
@@ -491,7 +491,7 @@ export default function ReviewPage({
                 )}
 
                 {/* Proof image (if it's an image proof) */}
-                {sub.proofFileUrl && !sub.proofFileUrl.includes('-work-') && ['.jpg', '.png', '.gif', '.webp'].some(ext => sub.proofFileUrl!.toLowerCase().endsWith(ext)) && (
+                {sub.proofFileUrl && !sub.proofFileUrl.includes('work-') && !sub.proofFileUrl.includes('instr-') && ['.jpg', '.png', '.gif', '.webp'].some(ext => sub.proofFileUrl!.toLowerCase().endsWith(ext)) && (
                   <div style={{ marginBottom: '1rem' }}>
                     <div style={{
                       fontSize: '0.65rem',

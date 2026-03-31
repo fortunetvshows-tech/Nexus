@@ -67,11 +67,11 @@ export async function POST(request: NextRequest) {
     const buffer = await file.arrayBuffer()
     const bufferView = new Uint8Array(buffer)
 
-    // Generate unique filename: {submissionId}-work-{timestamp}-{random}
+    // Generate unique filename: work-{submissionId}-{timestamp}-{random}
     const timestamp = Date.now()
     const random = Math.random().toString(36).substring(7)
     const ext = file.name.split('.').pop() || 'pdf'
-    const filename = `${submissionId}-work-${timestamp}-${random}.${ext}`
+    const filename = `work-${submissionId}-${timestamp}-${random}.${ext}`
     console.log('[WorkFile Upload] Uploading to Supabase:', {
       filename,
       fileSize: file.size,

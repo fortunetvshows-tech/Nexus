@@ -94,11 +94,11 @@ export async function POST(request: NextRequest) {
     // For PDF/DOCX: already compressed format, just validate & store
     // Don't double-compress as modern PDFs/DOCX are already optimized
 
-    // Generate unique filename: instructions/{taskId}-{timestamp}-{random}
+    // Generate unique filename: instr-{taskId}-{timestamp}-{random}
     const timestamp = Date.now()
     const random = Math.random().toString(36).substring(7)
     const ext = file.name.split('.').pop() || 'pdf'
-    const filename = `instructions/${taskId}-${timestamp}-${random}.${ext}`
+    const filename = `instr-${taskId}-${timestamp}-${random}.${ext}`
 
     console.log('[Instructions Upload] Uploading to Supabase:', {
       filename,
