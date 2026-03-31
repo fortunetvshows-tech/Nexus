@@ -294,6 +294,9 @@ export default function EmployerPage() {
                         setInstructionFileUrl(data.instructionUrl)
                         setInstructionFileName(data.originalFileName)
                         setInstructionFile(file)
+                        // Also update form data so it gets passed to task creation API
+                        updateField('instructionFileUrl', data.instructionUrl)
+                        updateField('instructionFileName', data.originalFileName)
                         setIsUploadingInstruction(false)
                       } catch (err) {
                         setInstructionError('Upload failed. Please try again.')
@@ -327,6 +330,9 @@ export default function EmployerPage() {
                           setInstructionFile(null)
                           setInstructionFileName(null)
                           setInstructionError(null)
+                          // Clear from form data too
+                          updateField('instructionFileUrl', '')
+                          updateField('instructionFileName', '')
                           if (instructionFileInputRef.current) instructionFileInputRef.current.value = ''
                         }}
                         style={{

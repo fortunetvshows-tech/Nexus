@@ -15,6 +15,8 @@ export type TaskCreateInput = {
   minBadgeLevel:  string
   targetKycLevel: number
   tags:           string[]
+  instructionFileUrl?: string
+  instructionFileName?: string
 }
 
 export type TaskCreateResult = {
@@ -87,6 +89,22 @@ export async function createTaskWithEscrow(
       success: false,
       error:   result.error,
       code:    'TASK_CREATION_FAILED',
+    }
+  }
+
+  // If instruction file provided, update task with file URLs
+  if (input.instructionFileUrl && result.taskId) {
+    const { error: updateError } = await supabaseAdmin
+      .from('tasks')
+      .update({
+        instructionFileUrl: input.instructionFileUrl,
+        instructionFileName: input.instructionFileName || null,
+      })
+      .eq('id', result.taskId)
+
+    if (updateError) {
+      console.error('[Nexus:TaskService] Failed to update instruction URLs:', updateError)
+      // Don't fail the entire task creation if this fails, just log it
     }
   }
 

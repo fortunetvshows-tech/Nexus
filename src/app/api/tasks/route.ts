@@ -79,6 +79,8 @@ export async function POST(req: NextRequest) {
       minBadgeLevel    = 'UNVERIFIED',
       targetKycLevel   = 0,
       tags             = [],
+      instructionFileUrl,
+      instructionFileName,
       escrowTxid,
       piPaymentId,
     } = body as Record<string, unknown>
@@ -220,6 +222,8 @@ export async function POST(req: NextRequest) {
         minBadgeLevel:   minBadgeLevel as string,
         targetKycLevel:  targetKycLevel as number,
         tags:            tags as string[],
+        instructionFileUrl: instructionFileUrl as string | undefined,
+        instructionFileName: instructionFileName as string | undefined,
       },
       escrowTxid as string,
       piPaymentId as string

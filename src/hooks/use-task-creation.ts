@@ -18,6 +18,8 @@ export interface TaskFormData {
   minBadgeLevel:  string
   targetKycLevel: string
   tags:           string
+  instructionFileUrl?: string
+  instructionFileName?: string
 }
 
 export const INITIAL_FORM: TaskFormData = {
@@ -34,6 +36,8 @@ export const INITIAL_FORM: TaskFormData = {
   minBadgeLevel:   'UNVERIFIED',
   targetKycLevel:  '0',
   tags:            '',
+  instructionFileUrl: undefined,
+  instructionFileName: undefined,
 }
 
 
@@ -184,6 +188,8 @@ export function useTaskCreation(piUid: string | null) {
                                    .split(',')
                                    .map(t => t.trim())
                                    .filter(Boolean),
+                instructionFileUrl: form.instructionFileUrl,
+                instructionFileName: form.instructionFileName,
                 escrowTxid:      txid,
                 piPaymentId:     paymentId,
               }),
