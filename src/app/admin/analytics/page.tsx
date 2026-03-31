@@ -60,49 +60,105 @@ function formatPi(value: number | undefined): string {
   return `${value.toFixed(2)}π`
 }
 
-function StatCard({
-  title,
+function KPICard({
+  icon,
+  label,
   value,
-  subtitle,
-  bgColor = COLORS.bgSurface,
+  badge,
+  badgeColor = COLORS.indigo,
 }: {
-  title: string
+  icon: string
+  label: string
   value: string | number
-  subtitle?: string
-  bgColor?: string
+  badge?: string
+  badgeColor?: string
 }) {
+  const [isHovered, setIsHovered] = useState(false)
+
   return (
-    <div style={{
-      backgroundColor: bgColor,
-      borderRadius: RADII.lg,
-      padding: SPACING.lg,
-      border: `1px solid ${COLORS.border}`,
-      boxShadow: SHADOWS.card,
-    }}>
+    <div
+      style={{
+        backgroundColor: COLORS.bgSurface,
+        borderRadius: '16px',
+        padding: SPACING.lg,
+        border: `1px solid ${COLORS.borderAccent}`,
+        boxShadow: isHovered ? SHADOWS.cardHover : SHADOWS.card,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: SPACING.md,
+        position: 'relative',
+        overflow: 'hidden',
+        transition: 'all 0.2s ease',
+        transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
+        cursor: 'default',
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Top Accent Border */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '3px',
+          background: `linear-gradient(90deg, ${badgeColor}, ${badgeColor}80)`,
+        }}
+      />
+
       <div style={{
-        fontSize: '0.875rem',
-        color: COLORS.textMuted,
-        marginBottom: SPACING.xs,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
       }}>
-        {title}
+        <div style={{
+          padding: SPACING.sm,
+          backgroundColor: `${badgeColor}15`,
+          borderRadius: RADII.md,
+          fontSize: '1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minWidth: '48px',
+          minHeight: '48px',
+        }}>
+          {icon}
+        </div>
+        {badge && (
+          <div style={{
+            fontSize: '0.65rem',
+            fontWeight: '700',
+            color: badgeColor,
+            backgroundColor: `${badgeColor}20`,
+            padding: `${SPACING.xs} ${SPACING.sm}`,
+            borderRadius: RADII.full,
+            textTransform: 'uppercase',
+          }}>
+            {badge}
+          </div>
+        )}
       </div>
-      <div style={{
-        fontSize: '1.5rem',
-        fontWeight: '700',
-        color: COLORS.textPrimary,
-        marginBottom: subtitle ? SPACING.xs : 0,
-      }}>
-        {value}
-      </div>
-      {subtitle && (
+      <div>
         <div style={{
           fontSize: '0.75rem',
+          fontWeight: '600',
           color: COLORS.textMuted,
-          marginTop: SPACING.xs,
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+          marginBottom: SPACING.xs,
         }}>
-          {subtitle}
+          {label}
         </div>
-      )}
+        <div style={{
+          fontSize: '1.75rem',
+          fontWeight: '700',
+          color: COLORS.textPrimary,
+          fontFamily: FONTS.mono,
+        }}>
+          {value}
+        </div>
+      </div>
     </div>
   )
 }
@@ -222,66 +278,73 @@ export default function AdminAnalyticsPage() {
           </div>
         ) : analytics ? (
           <>
-            {/* Revenue Summary Cards */}
+            {/* KPI Grid - 4 Column */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-              gap: SPACING.md,
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: SPACING.lg,
               marginBottom: SPACING.xl,
             }}>
-              <StatCard
-                title="💰 Total Platform Revenue"
+              <KPICard
+                icon="💰"
+                label="Total Revenue"
                 value={formatPi(analytics.summary.totalPlatformRevenue)}
-                subtitle="All-time fees earned (10% commission)"
-                bgColor={COLORS.bgSurface}
+                badge="10% Fee"
+                badgeColor={COLORS.emerald}
               />
-              <StatCard
-                title="💸 Total Worker Payouts"
+              <KPICard
+                icon="💸"
+                label="Total Payouts"
                 value={formatPi(analytics.summary.totalPiPaidOut)}
-                subtitle="Confirmed payments sent"
-                bgColor={COLORS.bgSurface}
+                badge="90% Share"
+                badgeColor={COLORS.indigo}
               />
-              <StatCard
-                title="⏳ Pending Payouts"
-                value={formatPi(analytics.summary.totalPiPending)}
-                subtitle="Awaiting blockchain confirmation"
-                bgColor={COLORS.bgSurface}
+              <KPICard
+                icon="👥"
+                label="Total Users"
+                value={analytics.summary.totalUsers}
+                badgeColor={COLORS.amber}
               />
-              <StatCard
-                title="🔒 Total Escrowed"
-                value={formatPi(analytics.summary.totalPiEscrowed)}
-                subtitle="Pi locked in active tasks"
-                bgColor={COLORS.bgSurface}
+              <KPICard
+                icon="📋"
+                label="Active Tasks"
+                value={analytics.summary.activeTasks}
+                badge="100% Active"
+                badgeColor={COLORS.emerald}
               />
             </div>
 
-            {/* Platform Metrics */}
+            {/* Secondary KPIs */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-              gap: SPACING.md,
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: SPACING.lg,
               marginBottom: SPACING.xl,
             }}>
-              <StatCard
-                title="👥 Total Users"
-                value={analytics.summary.totalUsers}
-                bgColor={COLORS.bgSurface}
+              <KPICard
+                icon="⏳"
+                label="Pending Payouts"
+                value={formatPi(analytics.summary.totalPiPending)}
+                badge="Awaiting"
+                badgeColor={COLORS.amber}
               />
-              <StatCard
-                title="📋 Total Tasks"
-                value={analytics.summary.totalTasks}
-                bgColor={COLORS.bgSurface}
+              <KPICard
+                icon="🔒"
+                label="Escrowed"
+                value={formatPi(analytics.summary.totalPiEscrowed)}
+                badgeColor={COLORS.indigo}
               />
-              <StatCard
-                title="✔️ Active Tasks"
-                value={analytics.summary.activeTasks}
-                subtitle={`${analytics.summary.totalTasks > 0 ? Math.round((analytics.summary.activeTasks / analytics.summary.totalTasks) * 100) : 0}% of total`}
-                bgColor={COLORS.bgSurface}
-              />
-              <StatCard
-                title="📊 Transactions"
+              <KPICard
+                icon="📊"
+                label="Total Transactions"
                 value={analytics.summary.totalTransactions}
-                bgColor={COLORS.bgSurface}
+                badgeColor={COLORS.indigo}
+              />
+              <KPICard
+                icon="✔️"
+                label="Completion Rate"
+                value={`${analytics.summary.totalTasks > 0 ? Math.round((analytics.summary.activeTasks / analytics.summary.totalTasks) * 100) : 0}%`}
+                badgeColor={COLORS.emerald}
               />
             </div>
 
@@ -368,215 +431,326 @@ export default function AdminAnalyticsPage() {
                 borderRadius: RADII.lg,
                 padding: SPACING.lg,
                 marginBottom: SPACING.xl,
-                border: `1px solid ${COLORS.border}`,
+                border: `1px solid ${COLORS.borderAccent}`,
                 boxShadow: SHADOWS.card,
-                overflowX: 'auto',
               }}>
-                <h2 style={{
-                  fontSize: '1.125rem',
-                  fontWeight: '700',
-                  color: COLORS.textPrimary,
-                  margin: `0 0 ${SPACING.md} 0`,
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: SPACING.md,
                 }}>
-                  📝 Recent Transactions (Last 20)
-                </h2>
+                  <h2 style={{
+                    fontSize: '1.125rem',
+                    fontWeight: '700',
+                    color: COLORS.textPrimary,
+                    margin: 0,
+                  }}>
+                    📝 Recent Transactions
+                  </h2>
+                  <div style={{
+                    fontSize: '0.75rem',
+                    color: COLORS.textMuted,
+                  }}>
+                    Total Value: {(() => {
+                      const total = analytics.recentTransactions.reduce((sum, t) => sum + t.amount, 0)
+                      return formatPi(total)
+                    })()}
+                  </div>
+                </div>
 
-                <table style={{
-                  width: '100%',
-                  borderCollapse: 'collapse',
-                  fontSize: '0.875rem',
-                }}>
-                  <thead>
-                    <tr style={{
-                      borderBottom: `1px solid ${COLORS.border}`,
-                      backgroundColor: COLORS.bgElevated,
-                    }}>
-                      <th style={{
-                        padding: SPACING.md,
-                        textAlign: 'left',
-                        color: COLORS.textMuted,
-                        fontWeight: '600',
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{
+                    width: '100%',
+                    borderCollapse: 'collapse',
+                    fontSize: '0.875rem',
+                  }}>
+                    <thead>
+                      <tr style={{
+                        borderBottom: `1px solid ${COLORS.borderAccent}`,
+                        backgroundColor: COLORS.bgElevated,
                       }}>
-                        Type
-                      </th>
-                      <th style={{
-                        padding: SPACING.md,
-                        textAlign: 'left',
-                        color: COLORS.textMuted,
-                        fontWeight: '600',
-                      }}>
-                        Amount
-                      </th>
-                      <th style={{
-                        padding: SPACING.md,
-                        textAlign: 'left',
-                        color: COLORS.textMuted,
-                        fontWeight: '600',
-                      }}>
-                        Platform Fee
-                      </th>
-                      <th style={{
-                        padding: SPACING.md,
-                        textAlign: 'left',
-                        color: COLORS.textMuted,
-                        fontWeight: '600',
-                      }}>
-                        Net Amount
-                      </th>
-                      <th style={{
-                        padding: SPACING.md,
-                        textAlign: 'left',
-                        color: COLORS.textMuted,
-                        fontWeight: '600',
-                      }}>
-                        Status
-                      </th>
-                      <th style={{
-                        padding: SPACING.md,
-                        textAlign: 'left',
-                        color: COLORS.textMuted,
-                        fontWeight: '600',
-                      }}>
-                        Time
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {analytics.recentTransactions.map((tx, idx) => (
-                      <tr key={tx.id || idx} style={{
-                        borderBottom: `1px solid ${COLORS.border}`,
-                        backgroundColor: idx % 2 === 0 ? COLORS.bgElevated : 'transparent',
-                      }}>
-                        <td style={{ padding: SPACING.md, color: COLORS.textPrimary }}>
-                          <span style={{
-                            backgroundColor: tx.type === 'platform_fee' ? COLORS.indigo : tx.type === 'worker_payout' ? COLORS.emerald : COLORS.amber,
-                            color: 'white',
-                            padding: `${SPACING.xs} ${SPACING.sm}`,
-                            borderRadius: RADII.sm,
-                            fontSize: '0.75rem',
-                            fontWeight: '600',
-                          }}>
-                            {tx.type === 'platform_fee' ? '💰 Fee' : tx.type === 'worker_payout' ? '💵 Payout' : '🔒 Escrow'}
-                          </span>
-                        </td>
-                        <td style={{ padding: SPACING.md, color: COLORS.textPrimary }}>
-                          {formatPi(tx.amount)}
-                        </td>
-                        <td style={{ padding: SPACING.md, color: COLORS.red }}>
-                          {formatPi(tx.platformFee)}
-                        </td>
-                        <td style={{ padding: SPACING.md, color: COLORS.emerald, fontWeight: '600' }}>
-                          {formatPi(tx.netAmount)}
-                        </td>
-                        <td style={{ padding: SPACING.md }}>
-                          <span style={{
-                            backgroundColor: tx.status === 'confirmed' ? COLORS.emerald : tx.status === 'pending' ? COLORS.amber : COLORS.red,
-                            color: 'white',
-                            padding: `${SPACING.xs} ${SPACING.sm}`,
-                            borderRadius: RADII.sm,
-                            fontSize: '0.75rem',
-                            fontWeight: '600',
-                          }}>
-                            {tx.status === 'confirmed' ? '✓ Confirmed' : tx.status === 'pending' ? '⏳ Pending' : '✗ Failed'}
-                          </span>
-                        </td>
-                        <td style={{ padding: SPACING.md, color: COLORS.textMuted }}>
-                          {timeAgo(tx.createdAt)}
-                        </td>
+                        <th style={{
+                          padding: SPACING.md,
+                          textAlign: 'left',
+                          color: COLORS.textMuted,
+                          fontWeight: '700',
+                          fontSize: '0.7rem',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                        }}>
+                          Type
+                        </th>
+                        <th style={{
+                          padding: SPACING.md,
+                          textAlign: 'right',
+                          color: COLORS.textMuted,
+                          fontWeight: '700',
+                          fontSize: '0.7rem',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                        }}>
+                          Amount
+                        </th>
+                        <th style={{
+                          padding: SPACING.md,
+                          textAlign: 'right',
+                          color: COLORS.textMuted,
+                          fontWeight: '700',
+                          fontSize: '0.7rem',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                        }}>
+                          Fee
+                        </th>
+                        <th style={{
+                          padding: SPACING.md,
+                          textAlign: 'right',
+                          color: COLORS.textMuted,
+                          fontWeight: '700',
+                          fontSize: '0.7rem',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                        }}>
+                          Net
+                        </th>
+                        <th style={{
+                          padding: SPACING.md,
+                          textAlign: 'center',
+                          color: COLORS.textMuted,
+                          fontWeight: '700',
+                          fontSize: '0.7rem',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                        }}>
+                          Status
+                        </th>
+                        <th style={{
+                          padding: SPACING.md,
+                          textAlign: 'right',
+                          color: COLORS.textMuted,
+                          fontWeight: '700',
+                          fontSize: '0.7rem',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                        }}>
+                          Time
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {analytics.recentTransactions.map((tx, idx) => {
+                        const statusColor = tx.status === 'confirmed' ? COLORS.emerald : tx.status === 'pending' ? COLORS.amber : COLORS.red
+                        return (
+                          <tr key={tx.id || idx} style={{
+                            borderBottom: `1px solid ${COLORS.borderAccent}`,
+                            transition: 'background-color 0.2s ease',
+                            cursor: 'pointer',
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = COLORS.bgElevated)}
+                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                          >
+                            <td style={{ padding: SPACING.md, color: COLORS.textPrimary }}>
+                              <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: SPACING.sm,
+                              }}>
+                                <span style={{
+                                  fontSize: '1rem',
+                                }}>
+                                  {tx.type === 'platform_fee' ? '💰' : tx.type === 'worker_payout' ? '💵' : '🔒'}
+                                </span>
+                                <span style={{ fontWeight: '600' }}>
+                                  {tx.type === 'platform_fee' ? 'Fee' : tx.type === 'worker_payout' ? 'Payout' : 'Escrow'}
+                                </span>
+                              </div>
+                            </td>
+                            <td style={{
+                              padding: SPACING.md,
+                              textAlign: 'right',
+                              color: COLORS.textPrimary,
+                              fontFamily: FONTS.mono,
+                              fontWeight: '600',
+                            }}>
+                              {formatPi(tx.amount)}
+                            </td>
+                            <td style={{
+                              padding: SPACING.md,
+                              textAlign: 'right',
+                              color: COLORS.textMuted,
+                              fontFamily: FONTS.mono,
+                            }}>
+                              {formatPi(tx.platformFee)}
+                            </td>
+                            <td style={{
+                              padding: SPACING.md,
+                              textAlign: 'right',
+                              color: COLORS.emerald,
+                              fontFamily: FONTS.mono,
+                              fontWeight: '600',
+                            }}>
+                              {formatPi(tx.netAmount)}
+                            </td>
+                            <td style={{
+                              padding: SPACING.md,
+                              textAlign: 'center',
+                            }}>
+                              <span style={{
+                                backgroundColor: `${statusColor}20`,
+                                color: statusColor,
+                                padding: `${SPACING.xs} ${SPACING.sm}`,
+                                borderRadius: RADII.full,
+                                fontSize: '0.7rem',
+                                fontWeight: '700',
+                                textTransform: 'uppercase',
+                                textDecoration: 'none',
+                              }}>
+                                {tx.status === 'confirmed' ? '✓ Confirmed' : tx.status === 'pending' ? '⏳ Pending' : '✗ Failed'}
+                              </span>
+                            </td>
+                            <td style={{
+                              padding: SPACING.md,
+                              textAlign: 'right',
+                              color: COLORS.textMuted,
+                              fontSize: '0.8rem',
+                            }}>
+                              {timeAgo(tx.createdAt)}
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
 
-            {/* Top Users */}
+            {/* Top Users - Leaderboard Style */}
             {analytics.topUsers.length > 0 && (
               <div style={{
                 backgroundColor: COLORS.bgSurface,
                 borderRadius: RADII.lg,
                 padding: SPACING.lg,
-                border: `1px solid ${COLORS.border}`,
+                border: `1px solid ${COLORS.borderAccent}`,
                 boxShadow: SHADOWS.card,
               }}>
                 <h2 style={{
                   fontSize: '1.125rem',
                   fontWeight: '700',
                   color: COLORS.textPrimary,
-                  margin: `0 0 ${SPACING.md} 0`,
+                  margin: `0 0 ${SPACING.lg} 0`,
                 }}>
-                  ⭐ Top Users (Last 20)
+                  ⭐ Top Users Leaderboard
                 </h2>
 
                 <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                  display: 'flex',
+                  flexDirection: 'column',
                   gap: SPACING.md,
                 }}>
-                  {analytics.topUsers.map((user, idx) => (
-                    <div key={idx} style={{
-                      backgroundColor: COLORS.bgElevated,
-                      padding: SPACING.md,
-                      borderRadius: RADII.md,
-                      border: `1px solid ${COLORS.border}`,
-                    }}>
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        marginBottom: SPACING.md,
-                      }}>
+                  {analytics.topUsers.map((user, idx) => {
+                    // Calculate max reputation for progress bar (use highest score or default to 1000)
+                    const maxReputation = Math.max(
+                      analytics.topUsers[0]?.reputationScore || 1000,
+                      1000
+                    )
+                    const progressPercent = (user.reputationScore / maxReputation) * 100
+
+                    return (
+                      <div
+                        key={idx}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: SPACING.md,
+                          padding: SPACING.md,
+                          backgroundColor: COLORS.bgElevated,
+                          borderRadius: RADII.md,
+                          border: `1px solid ${COLORS.borderAccent}`,
+                          transition: 'all 0.2s ease',
+                          cursor: 'pointer',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateX(4px)'
+                          e.currentTarget.style.boxShadow = SHADOWS.card
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateX(0)'
+                          e.currentTarget.style.boxShadow = 'none'
+                        }}
+                      >
+                        {/* Rank Circle */}
                         <div style={{
-                          width: '32px',
-                          height: '32px',
+                          width: '40px',
+                          height: '40px',
                           borderRadius: '50%',
-                          backgroundColor: COLORS.indigo,
-                          color: 'white',
+                          backgroundColor: idx === 0 ? '#FFD700' : idx === 1 ? '#C0C0C0' : idx === 2 ? '#CD7F32' : COLORS.indigo,
+                          color: idx < 3 ? '#000' : 'white',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           fontWeight: '700',
-                          marginRight: SPACING.md,
-                        }}>
-                          {idx + 1}
-                        </div>
-                        <div>
-                          <div style={{
-                            fontSize: '1rem',
-                            fontWeight: '600',
-                            color: COLORS.textPrimary,
-                          }}>
-                            {user.piUsername}
-                          </div>
-                          <div style={{
-                            fontSize: '0.75rem',
-                            color: COLORS.textMuted,
-                          }}>
-                            {user.submissionsCount} submissions
-                          </div>
-                        </div>
-                      </div>
-                      <div style={{
-                        backgroundColor: COLORS.bgBase,
-                        padding: `${SPACING.xs} ${SPACING.sm}`,
-                        borderRadius: RADII.sm,
-                        textAlign: 'center',
-                      }}>
-                        <div style={{
-                          fontSize: '0.75rem',
-                          color: COLORS.textMuted,
-                        }}>
-                          Reputation
-                        </div>
-                        <div style={{
                           fontSize: '1.125rem',
-                          fontWeight: '700',
-                          color: COLORS.amber,
+                          flexShrink: 0,
                         }}>
-                          {user.reputationScore.toFixed(1)} ⭐
+                          {idx < 3 ? ['🥇', '🥈', '🥉'][idx] : `${idx + 1}`}
+                        </div>
+
+                        {/* User Info & Progress Bar */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            marginBottom: SPACING.xs,
+                          }}>
+                            <div>
+                              <div style={{
+                                fontWeight: '600',
+                                color: COLORS.textPrimary,
+                                fontSize: '0.95rem',
+                              }}>
+                                {user.piUsername}
+                              </div>
+                              <div style={{
+                                fontSize: '0.75rem',
+                                color: COLORS.textMuted,
+                              }}>
+                                {user.submissionsCount} submissions
+                              </div>
+                            </div>
+                            <div style={{
+                              fontFamily: FONTS.mono,
+                              fontWeight: '700',
+                              color: COLORS.amber,
+                              fontSize: '0.95rem',
+                            }}>
+                              {user.reputationScore.toFixed(1)} ⭐
+                            </div>
+                          </div>
+
+                          {/* Progress Bar */}
+                          <div style={{
+                            width: '100%',
+                            height: '6px',
+                            backgroundColor: COLORS.bgBase,
+                            borderRadius: RADII.full,
+                            overflow: 'hidden',
+                            marginTop: SPACING.sm,
+                          }}>
+                            <div style={{
+                              height: '100%',
+                              width: `${Math.min(progressPercent, 100)}%`,
+                              backgroundColor: COLORS.indigo,
+                              borderRadius: RADII.full,
+                              transition: 'width 0.3s ease',
+                            }} />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             )}
