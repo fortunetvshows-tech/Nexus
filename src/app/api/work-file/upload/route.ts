@@ -1,14 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 import { NextRequest, NextResponse } from 'next/server'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase config')
-}
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 export async function POST(request: NextRequest) {
   try {
@@ -78,7 +69,7 @@ export async function POST(request: NextRequest) {
       fileMime: file.type,
     })
     // Upload to nexus-proofs bucket (same bucket, organized by prefix)
-    const { data, error: uploadError } = await supabase.storage
+    const { data, error: uploadError } = await supabaseAdmin.storage
       .from('nexus-proofs')
       .upload(filename, bufferView, {
         contentType: file.type,
@@ -99,7 +90,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { data: publicUrlData } = supabase.storage
+    const { data: publicUrlData } = supabaseAdmin.storage
       .from('nexus-proofs')
       .getPublicUrl(filename)
 
