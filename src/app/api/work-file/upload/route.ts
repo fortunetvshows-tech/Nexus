@@ -21,6 +21,14 @@ export async function POST(request: NextRequest) {
     const file = formData.get('file') as File | null
     const submissionId = formData.get('submissionId') as string | null
 
+    console.log('[WorkFile Upload] Request received:', {
+      hasFile: !!file,
+      fileName: file?.name,
+      fileSize: file?.size,
+      fileMime: file?.type,
+      submissionId,
+    })
+
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
@@ -64,7 +72,11 @@ export async function POST(request: NextRequest) {
     const random = Math.random().toString(36).substring(7)
     const ext = file.name.split('.').pop() || 'pdf'
     const filename = `${submissionId}-work-${timestamp}-${random}.${ext}`
-
+    console.log('[WorkFile Upload] Uploading to Supabase:', {
+      filename,
+      fileSize: file.size,
+      fileMime: file.type,
+    })
     // Upload to nexus-proofs bucket (same bucket, organized by prefix)
     const { data, error: uploadError } = await supabase.storage
       .from('nexus-proofs')
@@ -74,9 +86,15 @@ export async function POST(request: NextRequest) {
       })
 
     if (uploadError) {
-      console.error('Upload error:', uploadError)
+      console.error('[WorkFile Upload] Supabase error:', {
+        message: uploadError.message,
+        error: uploadError,
+      })
       return NextResponse.json(
-        { error: 'Upload failed. Please try again.' },
+        { 
+          error: 'Upload failed. Please try again.',
+          debug: process.env.NODE_ENV === 'development' ? uploadError.message : undefined 
+        },
         { status: 500 }
       )
     }
@@ -104,9 +122,15 @@ export async function POST(request: NextRequest) {
       uploadedAt: new Date().toISOString(),
     })
   } catch (error) {
-    console.error('Work file upload error:', error)
+    console.error('[WorkFile Upload] Catch error:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    })
     return NextResponse.json(
-      { error: 'Server error during upload' },
+      { 
+        error: 'Server error during upload',
+        debug: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : String(error)) : undefined
+      },
       { status: 500 }
     )
   }

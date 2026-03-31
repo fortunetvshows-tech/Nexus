@@ -26,6 +26,14 @@ export async function POST(request: NextRequest) {
     const file = formData.get('file') as File | null
     const taskId = formData.get('taskId') as string | null
 
+    console.log('[Instructions Upload] Request received:', {
+      hasFile: !!file,
+      fileName: file?.name,
+      fileSize: file?.size,
+      fileMime: file?.type,
+      taskId,
+    })
+
     if (!file) {
       return NextResponse.json(
         { error: 'No file provided' },
@@ -92,6 +100,12 @@ export async function POST(request: NextRequest) {
     const ext = file.name.split('.').pop() || 'pdf'
     const filename = `instructions/${taskId}-${timestamp}-${random}.${ext}`
 
+    console.log('[Instructions Upload] Uploading to Supabase:', {
+      filename,
+      fileSize: file.size,
+      fileMime: file.type,
+    })
+
     // Upload to nexus-proofs bucket (same bucket as work files, organized by prefix)
     const { data, error: uploadError } = await supabase.storage
       .from('nexus-proofs')
@@ -101,9 +115,15 @@ export async function POST(request: NextRequest) {
       })
 
     if (uploadError) {
-      console.error('Upload error:', uploadError)
+      console.error('[Instructions Upload] Supabase error:', {
+        message: uploadError.message,
+        error: uploadError,
+      })
       return NextResponse.json(
-        { error: 'Upload failed. Please try again.' },
+        { 
+          error: 'Upload failed. Please try again.',
+          debug: process.env.NODE_ENV === 'development' ? uploadError.message : undefined 
+        },
         { status: 500 }
       )
     }
@@ -139,9 +159,15 @@ export async function POST(request: NextRequest) {
       uploadedAt: new Date().toISOString(),
     })
   } catch (error) {
-    console.error('Instructions upload error:', error)
+    console.error('[Instructions Upload] Catch error:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    })
     return NextResponse.json(
-      { error: 'Server error during upload' },
+      { 
+        error: 'Server error during upload',
+        debug: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : String(error)) : undefined
+      },
       { status: 500 }
     )
   }
