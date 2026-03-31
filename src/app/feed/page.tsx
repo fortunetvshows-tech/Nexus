@@ -127,7 +127,7 @@ export default function FeedPage() {
               }}>
                 Opportunities
               </h1>
-              {!isLoading && tasks.length > 0 && (
+              {!isLoading && pagination?.total && (
                 <span style={{
                   padding:      '2px 8px',
                   background:   'rgba(16,185,129,0.1)',
@@ -138,7 +138,7 @@ export default function FeedPage() {
                   color:        COLORS.emerald,
                   fontFamily:   FONTS.mono,
                 }}>
-                  {tasks.length} live
+                  {pagination.total} live
                 </span>
               )}
             </div>
