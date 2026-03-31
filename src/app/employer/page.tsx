@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 import { usePiAuth }        from '@/hooks/use-pi-auth'
 import { useTaskCreation, PROOF_TYPES, INITIAL_FORM } from '@/hooks/use-task-creation'
@@ -53,6 +53,12 @@ export default function EmployerPage() {
   } = useTaskCreation(user?.piUid ?? null)
 
   const [dbCategories, setDbCategories] = useState<string[]>([])
+  const [instructionFile, setInstructionFile] = useState<File | null>(null)
+  const [instructionFileUrl, setInstructionFileUrl] = useState<string | null>(null)
+  const [instructionFileName, setInstructionFileName] = useState<string | null>(null)
+  const [isUploadingInstruction, setIsUploadingInstruction] = useState(false)
+  const [instructionError, setInstructionError] = useState<string | null>(null)
+  const instructionFileInputRef = useRef<HTMLInputElement>(null)
 
   // Fetch categories from database
   useEffect(() => {
@@ -230,6 +236,151 @@ export default function EmployerPage() {
                   style={{ ...inputStyle, resize: 'vertical' }}
                 />
               </div>
+
+              {/* File upload section — show only when FILE proof type is selected */}
+              {form.proofType === 'FILE' && (
+                <div style={{
+                  marginTop: '1.25rem',
+                  padding: '1rem',
+                  background: COLORS.indigoDim,
+                  border: `1px solid rgba(99,102,241,0.3)`,
+                  borderRadius: RADII.lg,
+                }}>
+                  <label style={{...labelStyle, marginBottom: '1rem'}}>
+                    📋 Upload Instruction File
+                  </label>
+                  <div style={{
+                    fontSize: '0.8rem',
+                    color: COLORS.textSecondary,
+                    marginBottom: '0.75rem',
+                    lineHeight: '1.5',
+                  }}>
+                    Upload a PDF, DOCX, or image file that workers will download before starting.
+                    <br />
+                    This file will be locked after you publish the task (immutable for dispute protection).
+                  </div>
+
+                  {/* File input (hidden) */}
+                  <input
+                    ref={instructionFileInputRef}
+                    type="file"
+                    accept=".pdf,.docx,.doc,.jpg,.jpeg,.png,.gif,.webp"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0]
+                      if (!file) return
+
+                      setInstructionError(null)
+                      setIsUploadingInstruction(true)
+
+                      try {
+                        const formData = new FormData()
+                        formData.append('file', file)
+                        formData.append('taskId', 'draft')
+
+                        const res = await fetch('/api/instructions/upload', {
+                          method: 'POST',
+                          headers: { 'x-pi-uid': user?.piUid || '' },
+                          body: formData,
+                        })
+
+                        const data = await res.json()
+
+                        if (!res.ok || !data.success) {
+                          setInstructionError(data.error || 'Upload failed')
+                          setIsUploadingInstruction(false)
+                          return
+                        }
+
+                        setInstructionFileUrl(data.instructionUrl)
+                        setInstructionFileName(data.originalFileName)
+                        setInstructionFile(file)
+                        setIsUploadingInstruction(false)
+                      } catch (err) {
+                        setInstructionError('Upload failed. Please try again.')
+                        setIsUploadingInstruction(false)
+                      }
+                    }}
+                    style={{ display: 'none' }}
+                  />
+
+                  {/* Upload button or success state */}
+                  {instructionFileUrl ? (
+                    <div style={{
+                      padding: '0.75rem',
+                      background: COLORS.emeraldDim,
+                      border: `1px solid rgba(16,185,129,0.3)`,
+                      borderRadius: RADII.md,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                      <div style={{
+                        fontSize: '0.9rem',
+                        color: COLORS.emerald,
+                        fontWeight: '600',
+                      }}>
+                        ✓ {instructionFileName || 'File uploaded'}
+                      </div>
+                      <button
+                        onClick={() => {
+                          setInstructionFileUrl(null)
+                          setInstructionFile(null)
+                          setInstructionFileName(null)
+                          setInstructionError(null)
+                          if (instructionFileInputRef.current) instructionFileInputRef.current.value = ''
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: COLORS.red,
+                          cursor: 'pointer',
+                          fontSize: '0.85rem',
+                          fontWeight: '600',
+                        }}
+                      >
+                        ✕ Replace
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => instructionFileInputRef.current?.click()}
+                      disabled={isUploadingInstruction}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        background: isUploadingInstruction
+                          ? COLORS.bgElevated
+                          : `linear-gradient(180deg, ${COLORS.indigo} 0%, ${COLORS.indigoDark} 100%)`,
+                        color: isUploadingInstruction ? COLORS.textMuted : 'white',
+                        border: 'none',
+                        borderRadius: RADII.md,
+                        fontSize: '0.9rem',
+                        fontWeight: '600',
+                        cursor: isUploadingInstruction ? 'default' : 'pointer',
+                      }}
+                    >
+                      {isUploadingInstruction
+                        ? '📤 Uploading...'
+                        : '📤 Select Instruction File'}
+                    </button>
+                  )}
+
+                  {/* Error message */}
+                  {instructionError && (
+                    <div style={{
+                      marginTop: '0.5rem',
+                      padding: '0.75rem',
+                      background: 'rgba(239,68,68,0.1)',
+                      border: `1px solid ${COLORS.red}`,
+                      borderRadius: RADII.md,
+                      color: COLORS.red,
+                      fontSize: '0.85rem',
+                    }}>
+                      {instructionError}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Section: Economics */}
