@@ -26,6 +26,8 @@ interface Task {
   taskStatus:       string
   tags:             string[]
   isFeatured:       boolean
+  instructionFileUrl?: string
+  instructionFileName?: string
   employer: {
     piUsername:      string
     reputationScore: number
@@ -67,6 +69,10 @@ export default function TaskDetailPage({
   const [isUploadingFile, setIsUploadingFile]   = useState(false)
   const [uploadError, setUploadError]           = useState<string | null>(null)
   const fileInputRef                            = useRef<HTMLInputElement>(null)
+  const [workFileUrl, setWorkFileUrl]           = useState<string | null>(null)
+  const [isUploadingWorkFile, setIsUploadingWorkFile] = useState(false)
+  const [workFileError, setWorkFileError]       = useState<string | null>(null)
+  const workFileInputRef                        = useRef<HTMLInputElement>(null)
 
   // Fetch task
   useEffect(() => {
@@ -753,46 +759,222 @@ export default function TaskDetailPage({
                 )
               }
 
-              // FILE / DOCUMENT proof — URL input
+              // FILE / DOCUMENT proof — instruction download + work file upload
               if (type === 'FILE' || type === 'DOCUMENT') {
                 return (
                   <div style={{ marginBottom: '1rem' }}>
+                    {/* Instruction download section */}
+                    {task?.instructionFileUrl && (
+                      <div style={{
+                        padding: '1rem',
+                        background: COLORS.indigoDim,
+                        border: `1px solid rgba(99,102,241,0.3)`,
+                        borderRadius: RADII.lg,
+                        marginBottom: '1rem',
+                      }}>
+                        <div style={{
+                          fontSize: '0.75rem',
+                          fontWeight: '700',
+                          color: COLORS.textMuted,
+                          textTransform: 'uppercase' as const,
+                          letterSpacing: '0.1em',
+                          marginBottom: '0.5rem',
+                        }}>
+                          📋 Instructions
+                        </div>
+                        <div style={{
+                          fontSize: '0.9rem',
+                          color: COLORS.textSecondary,
+                          marginBottom: '0.75rem',
+                        }}>
+                          {task.instructionFileName || 'Download instructions'}
+                        </div>
+                        <a
+                          href={task.instructionFileUrl}
+                          download
+                          style={{
+                            display: 'inline-block',
+                            padding: '0.5rem 1rem',
+                            background: COLORS.indigo,
+                            color: 'white',
+                            borderRadius: RADII.md,
+                            textDecoration: 'none',
+                            fontSize: '0.85rem',
+                            fontWeight: '600',
+                            transition: 'opacity 0.2s ease',
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
+                          onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+                        >
+                          📥 Download Instructions
+                        </a>
+                      </div>
+                    )}
+
+                    {/* Work file upload */}
                     <div style={{
-                      padding:      '1.5rem',
-                      background:   COLORS.bgElevated,
-                      border:       `2px dashed ${COLORS.borderAccent}`,
+                      padding: '1.5rem',
+                      background: COLORS.bgElevated,
+                      border: `2px dashed ${COLORS.borderAccent}`,
                       borderRadius: RADII.lg,
-                      textAlign:    'center',
+                      textAlign: 'center' as const,
                       marginBottom: '0.75rem',
                     }}>
-                      <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📎</div>
+                      <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>
+                        {isUploadingWorkFile ? '⏳' : '📤'}
+                      </div>
                       <div style={{
                         fontSize: '0.82rem',
-                        color:    COLORS.textSecondary,
+                        color: COLORS.textSecondary,
+                        marginBottom: '0.75rem',
                       }}>
-                        Share a file link or document URL
+                        {isUploadingWorkFile ? 'Uploading...' : 'Upload your completed work'}
+                      </div>
+                      <div style={{
+                        fontSize: '0.7rem',
+                        color: COLORS.textMuted,
+                      }}>
+                        PDF, DOCX, JPG, PNG — max 10MB
                       </div>
                     </div>
-                    <textarea
-                      value={proofContent}
-                      onChange={e => setProofContent(e.target.value)}
-                      placeholder="Paste the URL to your file (Google Drive, Dropbox, OneDrive, etc.) — make sure sharing is enabled..."
-                      rows={3}
-                      style={{
-                        width:        '100%',
-                        padding:      '0.875rem',
-                        background:   COLORS.bgElevated,
-                        border:       `1px solid ${COLORS.borderAccent}`,
-                        borderRadius: RADII.md,
-                        color:        COLORS.textPrimary,
-                        fontSize:     '0.9rem',
-                        resize:       'vertical' as const,
-                        outline:      'none',
-                        boxSizing:    'border-box' as const,
-                        lineHeight:   '1.6',
-                        fontFamily:   FONTS.sans,
+
+                    {/* File input */}
+                    <input
+                      ref={workFileInputRef}
+                      type="file"
+                      accept=".pdf,.docx,.doc,.jpg,.jpeg,.png,.gif,.webp"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0]
+                        if (!file) return
+
+                        setWorkFileError(null)
+                        setIsUploadingWorkFile(true)
+
+                        try {
+                          const formData = new FormData()
+                          formData.append('file', file)
+                          formData.append('submissionId', submissionId || `temp-${Date.now()}`)
+
+                          const res = await fetch('/api/work-file/upload', {
+                            method: 'POST',
+                            headers: { 'x-pi-uid': user?.piUid || '' },
+                            body: formData,
+                          })
+
+                          const data = await res.json()
+
+                          if (!res.ok || !data.success) {
+                            setWorkFileError(data.error || 'Upload failed')
+                            setIsUploadingWorkFile(false)
+                            return
+                          }
+
+                          setWorkFileUrl(data.workFileUrl)
+                          setProofContent(data.workFileUrl)
+                          setIsUploadingWorkFile(false)
+                        } catch (err) {
+                          setWorkFileError('Upload failed. Please try again.')
+                          setIsUploadingWorkFile(false)
+                        }
                       }}
+                      style={{ display: 'none' }}
                     />
+
+                    {/* Upload button / preview */}
+                    {workFileUrl ? (
+                      <div style={{
+                        padding: '1rem',
+                        background: COLORS.emeraldDim,
+                        border: `1px solid rgba(16,185,129,0.3)`,
+                        borderRadius: RADII.lg,
+                        marginBottom: '0.75rem',
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          marginBottom: '0.5rem',
+                        }}>
+                          <div style={{
+                            fontSize: '0.9rem',
+                            color: COLORS.emerald,
+                            fontWeight: '600',
+                          }}>
+                            ✓ File uploaded
+                          </div>
+                          <button
+                            onClick={() => {
+                              setWorkFileUrl(null)
+                              setProofContent('')
+                              setWorkFileError(null)
+                              if (workFileInputRef.current) workFileInputRef.current.value = ''
+                            }}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: COLORS.red,
+                              cursor: 'pointer',
+                              fontSize: '0.85rem',
+                              fontWeight: '600',
+                            }}
+                          >
+                            ✕ Replace
+                          </button>
+                        </div>
+                        <div style={{
+                          fontSize: '0.75rem',
+                          color: COLORS.textMuted,
+                          wordBreak: 'break-all' as const,
+                        }}>
+                          Ready to submit
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => workFileInputRef.current?.click()}
+                        disabled={isUploadingWorkFile}
+                        style={{
+                          width: '100%',
+                          padding: '1rem',
+                          background: COLORS.bgBase,
+                          border: `1px solid ${COLORS.borderAccent}`,
+                          borderRadius: RADII.md,
+                          color: COLORS.textSecondary,
+                          cursor: isUploadingWorkFile ? 'not-allowed' : 'pointer',
+                          fontSize: '0.9rem',
+                          fontWeight: '500',
+                          transition: 'all 0.2s ease',
+                          opacity: isUploadingWorkFile ? 0.6 : 1,
+                          marginBottom: '0.75rem',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isUploadingWorkFile) {
+                            e.currentTarget.style.background = COLORS.bgElevated
+                            e.currentTarget.style.borderColor = COLORS.indigo
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = COLORS.bgBase
+                          e.currentTarget.style.borderColor = COLORS.borderAccent
+                        }}
+                      >
+                        {isUploadingWorkFile ? '⏳ Uploading...' : '📤 Click to upload'}
+                      </button>
+                    )}
+
+                    {workFileError && (
+                      <div style={{
+                        padding: '0.875rem',
+                        background: COLORS.redDim,
+                        border: `1px solid rgba(239,68,68,0.3)`,
+                        borderRadius: RADII.md,
+                        color: COLORS.red,
+                        fontSize: '0.875rem',
+                        marginBottom: '0.75rem',
+                      }}>
+                        {workFileError}
+                      </div>
+                    )}
                   </div>
                 )
               }

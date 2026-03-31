@@ -40,6 +40,7 @@ export default function ReviewPage({
   const [submissions,  setSubmissions]  = useState<Submission[]>([])
   const [isLoading,    setIsLoading]    = useState(true)
   const [taskTitle,    setTaskTitle]    = useState('')
+  const [taskInstructionUrl, setTaskInstructionUrl] = useState<string | null>(null)
   const [processing,   setProcessing]   = useState<string | null>(null)
   const [rating,       setRating]       = useState<Record<string, number>>({})
   const [rejectReason, setRejectReason] = useState<Record<string, string>>({})
@@ -64,7 +65,10 @@ export default function ReviewPage({
         headers: { 'x-pi-uid': user.piUid },
       }).then(r => r.json()),
     ]).then(([taskData, subData, disputeData]) => {
-      if (taskData.task) setTaskTitle(taskData.task.title)
+      if (taskData.task) {
+        setTaskTitle(taskData.task.title)
+        setTaskInstructionUrl(taskData.task.instructionFileUrl || null)
+      }
       if (subData.submissions) setSubmissions(subData.submissions)
       if (disputeData.disputes) {
         const lookup = disputeData.disputes.reduce((acc: any, d: any) => {
@@ -392,15 +396,102 @@ export default function ReviewPage({
                 </div>
               )}
 
-              {/* Proof — text + image/file */}
+              {/* Instructions + Proof — documents section */}
               <div style={{
                 background: '#0f172a', borderRadius: '8px',
                 padding: '1rem', marginBottom: '1rem',
-                fontSize: '0.875rem', color: '#d1d5db',
-                lineHeight: '1.6', whiteSpace: 'pre-wrap',
-                maxHeight: '200px', overflowY: 'auto',
               }}>
-                {sub.proofFileUrl && (
+                {/* Instruction file (reference) */}
+                {taskInstructionUrl && (
+                  <div style={{ marginBottom: '1rem' }}>
+                    <div style={{
+                      fontSize: '0.65rem',
+                      fontWeight: '700',
+                      color: COLORS.textMuted,
+                      textTransform: 'uppercase' as const,
+                      letterSpacing: '0.1em',
+                      marginBottom: '0.5rem',
+                    }}>
+                      📋 Original Instructions
+                    </div>
+                    <a
+                      href={taskInstructionUrl}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-block',
+                        padding: '0.5rem 1rem',
+                        background: COLORS.indigoDim,
+                        border: `1px solid rgba(99,102,241,0.3)`,
+                        color: COLORS.indigoLight,
+                        borderRadius: RADII.md,
+                        textDecoration: 'none',
+                        fontSize: '0.8rem',
+                        fontWeight: '600',
+                        transition: 'all 0.2s ease',
+                        marginBottom: '1rem',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = COLORS.indigo
+                        e.currentTarget.style.color = 'white'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = COLORS.indigoDim
+                        e.currentTarget.style.color = COLORS.indigoLight
+                      }}
+                    >
+                      📥 View Instructions
+                    </a>
+                  </div>
+                )}
+
+                {/* Worker's submitted file */}
+                {sub.proofFileUrl && sub.proofFileUrl.includes('-work-') && (
+                  <div style={{ marginBottom: '1rem' }}>
+                    <div style={{
+                      fontSize: '0.65rem',
+                      fontWeight: '700',
+                      color: COLORS.textMuted,
+                      textTransform: 'uppercase' as const,
+                      letterSpacing: '0.1em',
+                      marginBottom: '0.5rem',
+                    }}>
+                      📄 Worker's Submission
+                    </div>
+                    <a
+                      href={sub.proofFileUrl}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-block',
+                        padding: '0.5rem 1rem',
+                        background: COLORS.emeraldDim,
+                        border: `1px solid rgba(16,185,129,0.3)`,
+                        color: COLORS.emerald,
+                        borderRadius: RADII.md,
+                        textDecoration: 'none',
+                        fontSize: '0.8rem',
+                        fontWeight: '600',
+                        transition: 'all 0.2s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = COLORS.emerald
+                        e.currentTarget.style.color = 'white'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = COLORS.emeraldDim
+                        e.currentTarget.style.color = COLORS.emerald
+                      }}
+                    >
+                      📥 Download Work
+                    </a>
+                  </div>
+                )}
+
+                {/* Proof image (if it's an image proof) */}
+                {sub.proofFileUrl && !sub.proofFileUrl.includes('-work-') && ['.jpg', '.png', '.gif', '.webp'].some(ext => sub.proofFileUrl!.toLowerCase().endsWith(ext)) && (
                   <div style={{ marginBottom: '1rem' }}>
                     <div style={{
                       fontSize: '0.65rem',
@@ -425,8 +516,15 @@ export default function ReviewPage({
                     />
                   </div>
                 )}
-                {sub.proofContent && !sub.proofContent.startsWith('http') && (
-                  <div>
+
+                {/* Text content  */}
+                {sub.proofContent && !sub.proofContent.startsWith('http') && !sub.proofContent.includes('-work-') && (
+                  <div style={{
+                    fontSize: '0.875rem',
+                    color: '#d1d5db',
+                    lineHeight: '1.6',
+                    whiteSpace: 'pre-wrap' as const,
+                  }}>
                     <div style={{
                       fontSize: '0.65rem',
                       fontWeight: '700',
@@ -440,8 +538,9 @@ export default function ReviewPage({
                     {sub.proofContent}
                   </div>
                 )}
-                {!sub.proofFileUrl && !sub.proofContent && (
-                  <span style={{ color: COLORS.textMuted }}>No proof content</span>
+
+                {!taskInstructionUrl && !sub.proofFileUrl && !sub.proofContent && (
+                  <span style={{ color: COLORS.textMuted }}>No files or notes</span>
                 )}
               </div>
 
