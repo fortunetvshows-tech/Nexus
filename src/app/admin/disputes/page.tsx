@@ -2,8 +2,10 @@
 
 import { useEffect, useState, useRef } from 'react'
 import Link                             from 'next/link'
+import { toast, Toaster }               from 'sonner'
 import { usePiAuth }                    from '@/hooks/use-pi-auth'
 import { Navigation }                   from '@/components/Navigation'
+import { ConfirmDialog }                from '@/components/ConfirmDialog'
 import { COLORS, FONTS, SPACING, RADII, SHADOWS } from '@/lib/design/tokens'
 
 interface AdminDispute {
@@ -115,6 +117,12 @@ export default function AdminDisputesPage() {
   const [selectedStuck,  setSelectedStuck]  = useState<Set<string>>(new Set())
   const [clearingStuck,  setClearingStuck]  = useState(false)
   const [retryingStuck,  setRetryingStuck]  = useState(false)
+  const [confirmDialog,  setConfirmDialog]  = useState<{ isOpen: boolean; id: string; secondaryId?: string; type: 'clear' | 'retry' | 'cancel'; message: string }>({
+    isOpen: false,
+    id: '',
+    type: 'clear',
+    message: '',
+  })
 
   // Global authentication handled by PiPaymentProvider
 
@@ -185,7 +193,16 @@ export default function AdminDisputesPage() {
 
   const handleClearStuckPayments = async () => {
     if (!user?.piUid || selectedStuck.size === 0) return
-    if (!confirm(`Clear ${selectedStuck.size} stuck payment(s)? This will mark them as failed.`)) return
+    setConfirmDialog({
+      isOpen: true,
+      id: 'clear',
+      type: 'clear',
+      message: `Clear ${selectedStuck.size} stuck payment(s)? This will mark them as failed.`,
+    })
+  }
+
+  const confirmClearStuckPayments = async () => {
+    if (!user?.piUid || selectedStuck.size === 0) return
 
     setClearingStuck(true)
     try {
@@ -209,21 +226,33 @@ export default function AdminDisputesPage() {
         setError(null)
         // Refresh stuck payments
         await fetchStuckPayments()
-        alert(`Cleared ${data.clearedCount} stuck payment(s)`)
+        toast.success(`Cleared ${data.clearedCount} stuck payment(s)`)
       } else {
+        toast.error(data.error ?? 'Failed to clear payments')
         setError(data.error ?? 'Failed to clear payments')
       }
     } catch (err) {
       console.error('[Admin:ClearStuck] Error:', err)
+      toast.error('Network error clearing payments')
       setError('Network error')
     } finally {
       setClearingStuck(false)
+      setConfirmDialog({ isOpen: false, id: '', type: 'clear', message: '' })
     }
   }
 
   const handleRetryStuckPayments = async (paymentIds: string[]) => {
     if (!user?.piUid || paymentIds.length === 0) return
-    if (!confirm(`Retry ${paymentIds.length} payment(s)?`)) return
+    setConfirmDialog({
+      isOpen: true,
+      id: paymentIds.join(','),
+      type: 'retry',
+      message: `Retry ${paymentIds.length} payment(s)?`,
+    })
+  }
+
+  const confirmRetryStuckPayments = async (paymentIds: string[]) => {
+    if (!user?.piUid || paymentIds.length === 0) return
 
     setRetryingStuck(true)
     try {
@@ -247,15 +276,18 @@ export default function AdminDisputesPage() {
         setError(null)
         // Refresh stuck payments
         await fetchStuckPayments()
-        alert(`Retried ${paymentIds.length} payment(s)`)
+        toast.success(`Retried ${paymentIds.length} payment(s)`)
       } else {
+        toast.error(data.error ?? 'Failed to retry payments')
         setError(data.error ?? 'Failed to retry payments')
       }
     } catch (err) {
       console.error('[Admin:RetryStuck] Error:', err)
+      toast.error('Network error retrying payments')
       setError('Network error')
     } finally {
       setRetryingStuck(false)
+      setConfirmDialog({ isOpen: false, id: '', type: 'retry', message: '' })
     }
   }
 
@@ -350,7 +382,17 @@ export default function AdminDisputesPage() {
 
   const handleCancelPayment = async (transactionId: string, piPaymentId: string) => {
     if (!user?.piUid) return
-    if (!confirm('Cancel this payment on Pi Network? This cannot be undone.')) return
+    setConfirmDialog({
+      isOpen: true,
+      id: transactionId,
+      secondaryId: piPaymentId,
+      type: 'cancel',
+      message: 'Cancel this payment on Pi Network? This cannot be undone.',
+    })
+  }
+
+  const confirmCancelPayment = async (transactionId: string, piPaymentId: string) => {
+    if (!user?.piUid) return
     setCancelling(transactionId)
 
     try {
@@ -388,13 +430,15 @@ export default function AdminDisputesPage() {
             error:   'Cancelled by admin',
           },
         }))
+        toast.success('Payment cancelled successfully')
       } else {
-        alert(`Cancel failed: ${data.error}`)
+        toast.error(`Cancel failed: ${data.error}`)
       }
     } catch (err) {
-      alert('Network error cancelling payment')
+      toast.error('Network error cancelling payment')
     } finally {
       setCancelling(null)
+      setConfirmDialog({ isOpen: false, id: '', type: 'cancel', message: '' })
     }
   }
 
@@ -1493,6 +1537,49 @@ export default function AdminDisputesPage() {
 
         </>
         )}
+
+        {/* Confirmation Dialog */}
+        <ConfirmDialog
+          isOpen={confirmDialog.isOpen}
+          title={
+            confirmDialog.type === 'clear'
+              ? 'Clear Stuck Payments'
+              : confirmDialog.type === 'retry'
+              ? 'Retry Stuck Payments'
+              : 'Cancel Payment'
+          }
+          message={confirmDialog.message}
+          isDangerous={confirmDialog.type === 'cancel'}
+          confirmLabel={
+            confirmDialog.type === 'clear'
+              ? 'Clear'
+              : confirmDialog.type === 'retry'
+              ? 'Retry'
+              : 'Cancel Payment'
+          }
+          onConfirm={async () => {
+            if (confirmDialog.type === 'clear') {
+              await confirmClearStuckPayments()
+            } else if (confirmDialog.type === 'retry') {
+              const paymentIds = confirmDialog.id.split(',')
+              await confirmRetryStuckPayments(paymentIds)
+            } else if (confirmDialog.type === 'cancel') {
+              const transactionId = confirmDialog.id
+              const piPaymentId = confirmDialog.secondaryId || ''
+              await confirmCancelPayment(transactionId, piPaymentId)
+            }
+          }}
+          onCancel={() =>
+            setConfirmDialog({ isOpen: false, id: '', type: 'clear', message: '' })
+          }
+        />
+
+        {/* Toast Notifications */}
+        <Toaster
+          position="bottom-right"
+          richColors
+          theme="dark"
+        />
       </main>
     </div>
   )

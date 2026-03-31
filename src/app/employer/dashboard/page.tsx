@@ -2,9 +2,11 @@
 
 import { useEffect, useState, useRef } from 'react'
 import Link                             from 'next/link'
+import { toast, Toaster }               from 'sonner'
 import { usePiAuth }                    from '@/hooks/use-pi-auth'
 import { Navigation }                   from '@/components/Navigation'
 import { BentoGrid }                    from '@/components/BentoGrid'
+import { ConfirmDialog }                from '@/components/ConfirmDialog'
 import { COLORS, FONTS, SPACING, RADII, SHADOWS, GRADIENTS, statusStyle } from '@/lib/design/tokens'
 
 // ── Types ──────────────────────────────────────────────────
@@ -172,6 +174,13 @@ export default function EmployerDashboardPage() {
   const [editForm,    setEditForm]    = useState({ title: '', description: '', instructions: '', deadline: '' })
   const [isSaving,    setIsSaving]    = useState(false)
   const [actionMessage, setActionMessage] = useState<string | null>(null)
+  const [confirmDialog, setConfirmDialog] = useState<{ isOpen: boolean; id: string; type: 'archive' | 'refund'; title: string; message: string }>({
+    isOpen: false,
+    id: '',
+    type: 'archive',
+    title: '',
+    message: '',
+  })
   const [postedTasks, setPostedTasks] = useState<PostedTask[]>([])
   const [activeTab,   setActiveTab]   = useState<'active' | 'archived'>('active')
   const [activePage,  setActivePage]  = useState(0)
@@ -243,34 +252,59 @@ export default function EmployerDashboardPage() {
     )
   }
 
-  const handleArchive = async (taskId: string, taskTitle: string) => {
+  const handleArchive = (taskId: string, taskTitle: string) => {
     if (!user?.piUid) return
-    if (!confirm(`Archive "${taskTitle}"? Workers who already claimed slots can still submit and get paid. The task will be hidden from new workers.`)) return
-
-    const res = await fetch(`${window.location.origin}/api/tasks/${taskId}`, {
-      method:  'DELETE',
-      headers: { 'x-pi-uid': user.piUid },
+    setConfirmDialog({
+      isOpen: true,
+      id: taskId,
+      type: 'archive',
+      title: `Archive "${taskTitle}"?`,
+      message: 'Workers who already claimed slots can still submit and get paid. The task will be hidden from new workers.',
     })
-    const data = await res.json()
-    if (data.success) {
-      setActionMessage(`"${taskTitle}" archived successfully`)
-      // Refresh analytics data to show archived task
-      const origin = window.location.origin
-      const headers = { 'x-pi-uid': user.piUid }
-      const analyticsRes = await fetch(`${origin}/api/analytics/employer`, { headers })
-      const analyticsData = await analyticsRes.json()
-      if (analyticsData.tasks) {
-        setTasks(analyticsData.tasks)
+  }
+
+  const confirmArchive = async (taskId: string, taskTitle: string) => {
+    if (!user?.piUid) return
+    try {
+      const res = await fetch(`${window.location.origin}/api/tasks/${taskId}`, {
+        method:  'DELETE',
+        headers: { 'x-pi-uid': user.piUid },
+      })
+      const data = await res.json()
+      if (data.success) {
+        toast.success(`"${taskTitle}" archived successfully`)
+        // Refresh analytics data to show archived task
+        const origin = window.location.origin
+        const headers = { 'x-pi-uid': user.piUid }
+        const analyticsRes = await fetch(`${origin}/api/analytics/employer`, { headers })
+        const analyticsData = await analyticsRes.json()
+        if (analyticsData.tasks) {
+          setTasks(analyticsData.tasks)
+        }
+      } else {
+        toast.error(`Archive failed: ${data.error}`)
+        setActionMessage(`Error: ${data.error}`)
       }
-    } else {
-      setActionMessage(`Error: ${data.error}`)
+    } catch (err) {
+      toast.error('Archive request failed. Please try again.')
+    } finally {
+      setConfirmDialog({ isOpen: false, id: '', type: 'archive', title: '', message: '' })
     }
   }
 
-  const handleRefund = async (taskId: string) => {
+  const handleRefund = (taskId: string) => {
     if (!user?.piUid) return
-    if (!confirm('Request refund for unused escrow on this task?')) return
+    setConfirmDialog({
+      isOpen: true,
+      id: taskId,
+      type: 'refund',
+      title: 'Request Refund?',
+      message: 'Request a refund for unused escrow on this task.',
+    })
+  }
 
+  const confirmRefund = async (taskId: string) => {
+    if (!user?.piUid) return
     try {
       const res = await fetch(
         `${window.location.origin}/api/tasks/${taskId}/refund-escrow`,
@@ -281,14 +315,19 @@ export default function EmployerDashboardPage() {
       )
       const data = await res.json()
       if (data.success) {
+        toast.success('Refund processed successfully')
         setActionMessage(`✅ ${data.message}`)
         // Refresh task list
         setTimeout(() => window.location.reload(), 1500)
       } else {
+        toast.error(`Refund failed: ${data.error}`)
         setActionMessage(`❌ Refund failed: ${data.error}`)
       }
     } catch (err) {
+      toast.error('Refund request failed. Please try again.')
       setActionMessage('Refund request failed. Please try again.')
+    } finally {
+      setConfirmDialog({ isOpen: false, id: '', type: 'refund', title: '', message: '' })
     }
   }
 
@@ -1112,6 +1151,33 @@ export default function EmployerDashboardPage() {
           {actionMessage}
         </div>
       )}
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        isDangerous={confirmDialog.type === 'archive'}
+        confirmLabel={confirmDialog.type === 'archive' ? '🗄 Archive' : '💰 Refund'}
+        onConfirm={async () => {
+          if (confirmDialog.type === 'archive') {
+            const taskTitle = tasks.find(t => t.id === confirmDialog.id)?.title || 'Task'
+            await confirmArchive(confirmDialog.id, taskTitle)
+          } else if (confirmDialog.type === 'refund') {
+            await confirmRefund(confirmDialog.id)
+          }
+        }}
+        onCancel={() =>
+          setConfirmDialog({ isOpen: false, id: '', type: 'archive', title: '', message: '' })
+        }
+      />
+
+      {/* Toast Notifications */}
+      <Toaster
+        position="bottom-right"
+        richColors
+        theme="dark"
+      />
     </div>
   )
 }
