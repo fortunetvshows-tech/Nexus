@@ -52,6 +52,8 @@ export async function GET(
         taskStatus,
         tags,
         isFeatured,
+        instructionFileUrl,
+        instructionFileName,
         employer:employerId (
           piUsername,
           reputationScore,

@@ -1,111 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 /* ============================================================
-   PROOFGRID DESIGN TOKENS — Single source of truth
+   PROOFGRID DESIGN SYSTEM — ProofGrid Void Black Palette
    All values mirror src/lib/design/tokens.ts
    ============================================================ */
 
 :root {
-  /* Backgrounds */
-  --proofgrid-bg-base:      #0F172A;
-  --proofgrid-bg-surface:   #1E293B;
-  --proofgrid-bg-elevated:  #263348;
-  --proofgrid-bg-overlay:   #2D3D56;
+  /* BACKGROUNDS HIERARCHY */
+  --proofgrid-bg-void:         #080A0F;
+  --proofgrid-bg-base:         #0A0C10;
+  --proofgrid-bg-surface:      #0E1118;
+  --proofgrid-bg-card:         #121620;
+  --proofgrid-bg-card-hover:   #161B26;
+  --proofgrid-bg-raised:       #1A2030;
+  --proofgrid-bg-glass:        rgba(14, 17, 24, 0.85);
 
-  /* Borders */
-  --proofgrid-border:       rgba(148, 163, 184, 0.1);
-  --proofgrid-border-accent: rgba(148, 163, 184, 0.2);
-  --proofgrid-border-focus: #6366F1;
+  /* PRIMARY ACCENT - SAPPHIRE BLUE */
+  --proofgrid-accent:          #0096FF;
+  --proofgrid-accent-bright:   #3DB8FF;
+  --proofgrid-accent-dim:      rgba(0, 150, 255, 0.15);
+  --proofgrid-accent-glow:     rgba(0, 150, 255, 0.08);
 
-  /* Indigo — primary accent */
-  --proofgrid-indigo:       #6366F1;
-  --proofgrid-indigo-dark:  #4F46E5;
-  --proofgrid-indigo-light: #818CF8;
-  --proofgrid-indigo-dim:   rgba(99, 102, 241, 0.15);
+  /* STATUS COLORS */
+  --proofgrid-green:           #00D68F;
+  --proofgrid-green-dim:       rgba(0, 214, 143, 0.12);
+  --proofgrid-amber:           #FFB020;
+  --proofgrid-amber-dim:       rgba(255, 176, 32, 0.12);
+  --proofgrid-red:             #FF4757;
+  --proofgrid-red-dim:         rgba(255, 71, 87, 0.12);
+  --proofgrid-purple:          #A78BFA;
+  --proofgrid-purple-dim:      rgba(167, 139, 250, 0.12);
+  --proofgrid-cyan:            #00E5E5;
 
-  /* Emerald — earned Pi */
-  --proofgrid-emerald:      #10B981;
-  --proofgrid-emerald-dark: #059669;
-  --proofgrid-emerald-dim:  rgba(16, 185, 129, 0.15);
+  /* TEXT HIERARCHY */
+  --proofgrid-text-primary:    #F0F4FF;
+  --proofgrid-text-secondary:  #8892A4;
+  --proofgrid-text-tertiary:   #4A5568;
+  --proofgrid-text-muted:      #2D3748;
 
-  /* Status */
-  --proofgrid-amber:        #F59E0B;
-  --proofgrid-amber-dim:    rgba(245, 158, 11, 0.15);
-  --proofgrid-red:          #EF4444;
-  --proofgrid-red-dim:      rgba(239, 68, 68, 0.15);
-  --proofgrid-blue:         #3B82F6;
-  --proofgrid-blue-dim:     rgba(59, 130, 246, 0.15);
+  /* BORDERS & SEPARATORS */
+  --proofgrid-border:          rgba(255, 255, 255, 0.06);
+  --proofgrid-border-accent:   rgba(0, 150, 255, 0.25);
+  --proofgrid-border-strong:   rgba(255, 255, 255, 0.12);
 
-  /* Text */
-  --proofgrid-text-primary:   #F1F5F9;
-  --proofgrid-text-secondary: #94A3B8;
-  --proofgrid-text-muted:     #64748B;
-  --proofgrid-text-inverse:   #0F172A;
+  /* SHADOWS */
+  --proofgrid-shadow-card:     0 4px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 150, 255, 0.1);
+  --proofgrid-shadow-accent:   0 0 20px rgba(0, 150, 255, 0.4);
 
-  /* Shadows */
-  --proofgrid-shadow-card:   0 4px 24px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
-  --proofgrid-shadow-indigo: 0 0 24px rgba(99,102,241,0.4);
-  --proofgrid-shadow-emerald: 0 0 20px rgba(16,185,129,0.3);
-
-  /* Typography */
-  --proofgrid-font-sans: 'Inter', system-ui, sans-serif;
-  --proofgrid-font-mono: 'Fira Code', monospace;
+  /* TYPOGRAPHY — FONTS */
+  --proofgrid-font-ui: 'Space Grotesk', system-ui, sans-serif;
+  --proofgrid-font-display: 'Barlow Condensed', system-ui, sans-serif;
+  --proofgrid-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
 /* ============================================================
    TAILWIND v4 THEME EXTENSION
-   Exposes CSS vars as Tailwind utility classes:
-   bg-proofgrid-base, text-proofgrid-indigo, border-proofgrid-border, etc.
+   Exposes CSS vars as Tailwind utility classes
    ============================================================ */
 
 @theme inline {
-  --color-proofgrid-base:           var(--proofgrid-bg-base);
-  --color-proofgrid-surface:        var(--proofgrid-bg-surface);
-  --color-proofgrid-elevated:       var(--proofgrid-bg-elevated);
-  --color-proofgrid-overlay:        var(--proofgrid-bg-overlay);
+  --color-proofgrid-bg-void:         var(--proofgrid-bg-void);
+  --color-proofgrid-bg-base:         var(--proofgrid-bg-base);
+  --color-proofgrid-bg-surface:      var(--proofgrid-bg-surface);
+  --color-proofgrid-bg-card:         var(--proofgrid-bg-card);
+  --color-proofgrid-bg-raised:       var(--proofgrid-bg-raised);
 
-  --color-proofgrid-indigo:         var(--proofgrid-indigo);
-  --color-proofgrid-indigo-dark:    var(--proofgrid-indigo-dark);
-  --color-proofgrid-indigo-light:   var(--proofgrid-indigo-light);
-  --color-proofgrid-indigo-dim:     var(--proofgrid-indigo-dim);
+  --color-proofgrid-accent:          var(--proofgrid-accent);
+  --color-proofgrid-accent-bright:   var(--proofgrid-accent-bright);
+  
+  --color-proofgrid-green:           var(--proofgrid-green);
+  --color-proofgrid-amber:           var(--proofgrid-amber);
+  --color-proofgrid-red:             var(--proofgrid-red);
+  --color-proofgrid-purple:          var(--proofgrid-purple);
 
-  --color-proofgrid-emerald:        var(--proofgrid-emerald);
-  --color-proofgrid-emerald-dark:   var(--proofgrid-emerald-dark);
-  --color-proofgrid-emerald-dim:    var(--proofgrid-emerald-dim);
+  --color-proofgrid-text-primary:    var(--proofgrid-text-primary);
+  --color-proofgrid-text-secondary:  var(--proofgrid-text-secondary);
 
-  --color-proofgrid-amber:          var(--proofgrid-amber);
-  --color-proofgrid-red:            var(--proofgrid-red);
-  --color-proofgrid-blue:           var(--proofgrid-blue);
-
-  --color-proofgrid-text-primary:   var(--proofgrid-text-primary);
-  --color-proofgrid-text-secondary: var(--proofgrid-text-secondary);
-  --color-proofgrid-text-muted:     var(--proofgrid-text-muted);
-
-  --font-sans: var(--proofgrid-font-sans);
-  --font-mono: var(--proofgrid-font-mono);
+  --font-ui:      var(--proofgrid-font-ui);
+  --font-display: var(--proofgrid-font-display);
+  --font-mono:    var(--proofgrid-font-mono);
 }
 
 /* ============================================================
-   GLOBAL RESET
+   GLOBAL RESET & BASE STYLES
    ============================================================ */
+
+html, body {
+  margin:  0;
+  padding: 0;
+  height: 100%;
+}
 
 *, *::before, *::after {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background:              var(--proofgrid-bg-base);
+  background-color:        var(--proofgrid-bg-void);
   color:                   var(--proofgrid-text-primary);
-  font-family:             var(--proofgrid-font-sans);
+  font-family:             var(--proofgrid-font-ui);
+  font-size:               14px;
+  line-height:             1.5;
   -webkit-font-smoothing:  antialiased;
   -moz-osx-font-smoothing: grayscale;
-  margin:  0;
-  padding: 0;
+  overflow-x:              hidden;
 }
 
-/* ============================================================
-   ANIMATION KEYFRAMES — Used by Marquee and Shiny Button
-   ============================================================ */
+/* HEX MESH BACKGROUND PATTERN */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(0,150,255,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(0,150,255,0.03) 0%, transparent 50%),
+    url("data:image/svg+xml,%3Csvg width='60' height='52' viewBox='0 0 60 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 2L58 17v18L30 50 2 35V17z' fill='none' stroke='rgba(255,255,255,0.022)' stroke-width='0.5'/%3E%3C/svg%3E");
+  background-size: auto, auto, 60px 52px;
+}
+
+/* ANIMATION KEYFRAMES */
 
 @keyframes marquee {
   from { transform: translateX(0); }
@@ -128,8 +145,8 @@ body {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 12px rgba(99,102,241,0.3); }
-  50%       { box-shadow: 0 0 24px rgba(99,102,241,0.6); }
+  0%, 100% { box-shadow: 0 0 12px rgba(0,150,255,0.3); }
+  50%       { box-shadow: 0 0 24px rgba(0,150,255,0.6); }
 }
 
 @keyframes fade-up {
@@ -137,45 +154,83 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes screen-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-slot {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; border-color: var(--proofgrid-accent); }
+}
+
+@keyframes rocket-launch {
+  0% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-20px) scale(1.2); }
+  60% { transform: translateY(-40px) scale(0.9); opacity: 0.5; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes flicker {
+  0%, 100% { transform: scale(1) rotate(-2deg); }
+  50% { transform: scale(1.1) rotate(2deg); }
+}
+
 /* ============================================================
-   COMPONENT CLASSES — Reusable Tailwind-compatible patterns
+   COMPONENT CLASSES — ProofGrid Design System
    ============================================================ */
 
 .proofgrid-card {
-  background:    linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%),
-                 var(--proofgrid-bg-surface);
+  background:    var(--proofgrid-bg-card);
   border:        1px solid var(--proofgrid-border);
-  border-top:    0.5px solid rgba(255,255,255,0.1);
-  border-radius: 14px;
-  box-shadow:    var(--proofgrid-shadow-card),
-                 inset 0 1px 0 rgba(255,255,255,0.05);
+  border-radius: 16px;
+  padding:       16px;
+  box-shadow:    var(--proofgrid-shadow-card);
+  transition:    all 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+.proofgrid-card:hover {
+  background:    var(--proofgrid-bg-card-hover);
+  border-color:  var(--proofgrid-border-strong);
 }
 
 .proofgrid-btn-primary {
-  background:    linear-gradient(180deg, var(--proofgrid-indigo) 0%, var(--proofgrid-indigo-dark) 100%);
+  background:    linear-gradient(90deg, var(--proofgrid-accent), var(--proofgrid-accent-bright));
   color:         white;
   border:        none;
   border-radius: 10px;
-  font-family:   var(--proofgrid-font-sans);
+  padding:       12px 24px;
+  font-family:   var(--proofgrid-font-ui);
   font-weight:   600;
+  font-size:     14px;
   cursor:        pointer;
-  box-shadow:    var(--proofgrid-shadow-indigo);
-  transition:    all 0.15s ease;
+  box-shadow:    var(--proofgrid-shadow-accent);
+  transition:    all 0.2s cubic-bezier(0.4,0,0.2,1);
 }
 
 .proofgrid-btn-primary:hover {
   transform:  translateY(-1px);
-  box-shadow: 0 0 32px rgba(99,102,241,0.5);
+  box-shadow: 0 0 30px rgba(0,150,255,0.5);
 }
 
 .proofgrid-btn-primary:active {
   transform: scale(0.98);
 }
 
+.proofgrid-glass-header {
+  background: linear-gradient(135deg, rgba(0,150,255,0.08), rgba(167,139,250,0.05));
+  border: 1px solid var(--proofgrid-border-accent);
+  border-radius: 22px;
+  padding: 20px 16px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
 /* Focus ring */
 :focus-visible {
   outline:       none;
-  box-shadow:    0 0 0 3px rgba(99,102,241,0.4);
+  box-shadow:    0 0 0 3px rgba(0,150,255,0.3);
   border-radius: 6px;
 }
 
