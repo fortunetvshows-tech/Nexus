@@ -98,9 +98,11 @@ export function Navigation({ currentPage }: NavigationProps) {
           gap:            '8px',
         }}>
           <img src="/images/logo.png" alt="ProofGrid" style={{
-            height: '32px',
-            width: 'auto',
+            height: '40px',
+            width: '40px',
             objectFit: 'contain',
+            display: 'block',
+            flexShrink: 0,
           }}
           />
           <span className="hide-mobile" style={{ marginLeft: '4px' }}>ProofGrid</span>
