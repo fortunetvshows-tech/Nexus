@@ -101,13 +101,14 @@ export default function EmployerPage() {
           disabled={authLoading}
           style={{
             padding:      '0.75rem 2rem',
-            background:   GRADIENTS.indigo,
-            color:        COLORS.textPrimary,
-            border:       'none',
+            background:   `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
+            color:        'white',
+            border:       `1px solid ${COLORS.cyan}`,
             borderRadius: RADII.lg,
             fontSize:     '1rem',
             fontWeight:   '600',
             cursor:       authLoading ? 'not-allowed' : 'pointer',
+            boxShadow:    authLoading ? 'none' : SHADOWS.cyanGlow,
           }}
         >
           {authLoading ? 'Connecting...' : 'Connect with Pi'}
@@ -169,7 +170,7 @@ export default function EmployerPage() {
                 margin:       '0 0 1.25rem',
                 fontSize:     '0.95rem',
                 fontWeight:   '600',
-                color:        COLORS.indigoLight,
+                color:        COLORS.sapphireLight,
               }}>
                 Task Details
               </h3>
@@ -242,7 +243,7 @@ export default function EmployerPage() {
                 <div style={{
                   marginTop: '1.25rem',
                   padding: '1rem',
-                  background: COLORS.indigoDim,
+                  background: COLORS.sapphireDim,
                   border: `1px solid rgba(99,102,241,0.3)`,
                   borderRadius: RADII.lg,
                 }}>
@@ -356,7 +357,7 @@ export default function EmployerPage() {
                         padding: '0.75rem',
                         background: isUploadingInstruction
                           ? COLORS.bgElevated
-                          : `linear-gradient(180deg, ${COLORS.indigo} 0%, ${COLORS.indigoDark} 100%)`,
+                          : `linear-gradient(135deg, ${COLORS.sapphire} 0%, ${COLORS.sapphireDark} 100%)`,
                         color: isUploadingInstruction ? COLORS.textMuted : 'white',
                         border: 'none',
                         borderRadius: RADII.md,
@@ -401,7 +402,7 @@ export default function EmployerPage() {
                 margin:     '0 0 1.25rem',
                 fontSize:   '0.95rem',
                 fontWeight: '600',
-                color:        COLORS.indigoLight,
+                color:        COLORS.sapphireLight,
               }}>
                 Economics
               </h3>
@@ -500,7 +501,7 @@ export default function EmployerPage() {
                   <div style={{
                     fontSize:    '1.75rem',
                     fontWeight:  '700',
-                    background:  GRADIENTS.indigo,
+                    background:  `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor:  'transparent',
                   }}>
@@ -602,14 +603,15 @@ export default function EmployerPage() {
               style={{
                 width:        '100%',
                 padding:      '1rem',
-                background:   GRADIENTS.indigo,
-                color:        COLORS.textPrimary,
-                border:       'none',
+                background:   `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
+                color:        'white',
+                border:       `1px solid ${COLORS.cyan}`,
                 borderRadius: RADII.lg,
                 fontSize:     '1rem',
                 fontWeight:   '600',
                 cursor:       'pointer',
                 marginTop:    '0.5rem',
+                boxShadow:    SHADOWS.cyanGlow,
               }}
             >
               Preview & Publish →
@@ -676,7 +678,7 @@ export default function EmployerPage() {
               }}>
                 <span style={{ color: COLORS.textSecondary }}>Total escrow</span>
                 <span style={{
-                  background:          GRADIENTS.indigo,
+                  background:          `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor:  'transparent',
                   fontSize:            '1.3rem',
@@ -708,13 +710,14 @@ export default function EmployerPage() {
                 style={{
                   flex:         2,
                   padding:      '0.875rem',
-                  background:   GRADIENTS.indigo,
-                  color:        COLORS.textPrimary,
-                  border:       'none',
+                  background:   `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
+                  color:        'white',
+                  border:       `1px solid ${COLORS.cyan}`,
                   borderRadius: RADII.lg,
                   fontSize:     '0.9rem',
                   fontWeight:   '600',
                   cursor:       isProcessing ? 'not-allowed' : 'pointer',
+                  boxShadow:    isProcessing ? 'none' : SHADOWS.cyanGlow,
                 }}
               >
                 Pay {totalCost()}π & Publish →
@@ -733,12 +736,13 @@ export default function EmployerPage() {
               width:       '60px',
               height:      '60px',
               borderRadius: RADII.full,
-              background:  GRADIENTS.indigo,
+              background:  `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
               margin:      '0 auto 1.5rem',
               display:     'flex',
               alignItems:  'center',
               justifyContent: 'center',
               fontSize:    '1.5rem',
+              boxShadow:   SHADOWS.cyanGlow,
             }}>
               {step === 'payment' ? '💳' : '⚡'}
             </div>
@@ -812,13 +816,15 @@ export default function EmployerPage() {
                   flex:           1,
                   display:        'block',
                   padding:        '0.875rem',
-                  background:     GRADIENTS.indigo,
-                  color:          COLORS.textPrimary,
+                  background:     `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
+                  color:          'white',
                   textDecoration: 'none',
                   fontSize:       '0.9rem',
                   fontWeight:     '600',
                   textAlign:      'center',
                   borderRadius:   RADII.lg,
+                  boxShadow:      SHADOWS.cyanGlow,
+                  border:         `1px solid ${COLORS.cyan}`,
                 }}
               >
                 Review submissions →
@@ -903,13 +909,14 @@ export default function EmployerPage() {
               onClick={reset}
               style={{
                 padding:      '0.875rem 2rem',
-                background:   GRADIENTS.indigo,
-                color:        COLORS.textPrimary,
-                border:       'none',
+                background:   `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
+                color:        'white',
+                border:       `1px solid ${COLORS.cyan}`,
                 borderRadius: RADII.lg,
                 fontSize:     '0.9rem',
                 fontWeight:   '600',
                 cursor:       'pointer',
+                boxShadow:    SHADOWS.cyanGlow,
               }}
             >
               Try again

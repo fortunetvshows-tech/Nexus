@@ -1,46 +1,69 @@
 /**
- * Nexus Design System — High-Trust Minimalism
+ * Nexus Design System — ProofGrid Color Palette
  *
- * Stripe meets Pi Network.
- * Consumer-grade. Trustworthy. Effortless.
+ * Logo Energy: Sapphire & Electric Cyan
+ * Layout Philosophy: Bento Grid (20px radius masterpiece)
+ * Color Rule: 60% Dark Neutrals, 30% Sapphire, 10% Cyan Accents
+ *
+ * Stripe meets Pi Network meets 2026 design standards.
  */
 
 export const COLORS = {
-  // Backgrounds — deep navy slate, not cold black
-  bgBase:      '#0F172A',
-  bgSurface:   '#1E293B',
-  bgElevated:  '#263348',
+  // ── 60% Dark Neutrals (Backgrounds) ──────────────────────
+  // Obsidian Blue — Main app background
+  bgBase:      '#081A33',
+  // Glass Navy — Dashboard cards and containers
+  bgSurface:   '#122647',
+  bgElevated:  '#1A3352',
   bgOverlay:   '#2D3D56',
 
-  // Borders — soft, not harsh
-  border:      'rgba(148, 163, 184, 0.1)',
-  borderAccent: 'rgba(148, 163, 184, 0.2)',
-  borderFocus: '#6366F1',
+  // ── Text Colors ──────────────────────────────────────────
+  // Snow White — Main headings and body text
+  textPrimary:   '#F4F6FA',
+  // Steel Gray — Secondary info and labels
+  textSecondary: '#A7B8C7',
+  textMuted:     '#7A8FA3',
+  textInverse:   '#081A33',
 
-  // Primary accent — Electric Indigo (Stripe-adjacent)
-  indigo:      '#6366F1',
-  indigoDark:  '#4F46E5',
-  indigoLight: '#818CF8',
-  indigoDim:   'rgba(99, 102, 241, 0.15)',
+  // ── 30% Sapphire (Primary Brand) ────────────────────────
+  // Sapphire Deep — Buttons, Active States, Headers
+  sapphire:      '#0F52BA',
+  sapphireDark:  '#0D3B87',
+  sapphireLight: '#1E6FE8',
+  sapphireDim:   'rgba(15, 82, 186, 0.12)',
 
-  // Secondary accent — Soft Emerald (earned Pi)
-  emerald:     '#10B981',
+  // Aliases for existing code compatibility
+  indigo:      '#0F52BA',      // Sapphire replaces indigo
+  indigoDark:  '#0D3B87',      // Sapphire Dark
+  indigoLight: '#1E6FE8',      // Sapphire Light
+  indigoDim:   'rgba(15, 82, 186, 0.12)',
+
+  // ── 10% Cyan Accents (Highlights & Verification) ─────────
+  // Electric Cyan — Progress bars, Verified badges, Glows
+  cyan:        '#00E5E5',
+  cyanDark:    '#00B8B8',
+  cyanLight:   '#1FFFFF',
+  cyanDim:     'rgba(0, 229, 229, 0.15)',
+
+  // ── Status Colors ───────────────────────────────────────
+  emerald:     '#10B981',      // Success (earned Pi)
   emeraldDark: '#059669',
   emeraldDim:  'rgba(16, 185, 129, 0.15)',
 
-  // Status
-  amber:       '#F59E0B',
+  amber:       '#F59E0B',      // Pending
   amberDim:    'rgba(245, 158, 11, 0.15)',
-  red:         '#EF4444',
-  redDim:      'rgba(239, 68, 68, 0.15)',
-  blue:        '#3B82F6',
-  blueDim:     'rgba(59, 130, 246, 0.15)',
 
-  // Text — warm slate, not cold white
-  textPrimary:   '#F1F5F9',
-  textSecondary: '#94A3B8',
-  textMuted:     '#64748B',
-  textInverse:   '#0F172A',
+  red:         '#EF4444',      // Error/Rejected
+  redDim:      'rgba(239, 68, 68, 0.15)',
+
+  blue:        '#0F52BA',      // Info (use sapphire)
+  blueDim:     'rgba(15, 82, 186, 0.12)',
+
+  // ── Borders ──────────────────────────────────────────────
+  border:      'rgba(167, 184, 199, 0.08)',     // Steel Gray @ 8%
+  borderAccent: 'rgba(167, 184, 199, 0.15)',    // Steel Gray @ 15%
+  borderFocus: '#0F52BA',                       // Sapphire focus
+  borderCyan:  'rgba(0, 229, 229, 0.2)',        // Cyan for highlights
 } as const
 
 export const FONTS = {
@@ -51,42 +74,62 @@ export const FONTS = {
 } as const
 
 export const RADII = {
-  sm:   '6px',
-  md:   '10px',
-  lg:   '14px',
-  xl:   '18px',
+  sm:   '8px',
+  md:   '12px',
+  lg:   '16px',
+  xl:   '20px',     // The "Masterpiece" Bento Grid curve
   xxl:  '24px',
+  bento: '20px',    // Explicit Bento Grid radius
   full: '9999px',
 } as const
 
 export const SHADOWS = {
-  // Floating card — the core of the layer rule
-  card:     '0 4px 24px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2)',
-  cardHover: '0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2)',
-  // Elevated elements
-  elevated: '0 8px 40px rgba(0, 0, 0, 0.35)',
-  // Glow effects for key CTAs
-  indigoGlow: '0 0 24px rgba(99, 102, 241, 0.4)',
+  // ── Bento Grid Cards (Glassmorphism) ─────────────────────
+  // Subtle cyan glow for active tasks
+  card:     '0 4px 24px rgba(8, 26, 51, 0.4), 0 0 20px rgba(0, 229, 229, 0.08)',
+  cardHover: '0 8px 40px rgba(8, 26, 51, 0.5), 0 0 30px rgba(0, 229, 229, 0.12)',
+  
+  // ── Elevated Elements ────────────────────────────────────
+  elevated: '0 8px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 229, 229, 0.08)',
+  
+  // ── Glow Effects (Cyan Accents) ──────────────────────────
+  // Luminous Hexagon — Cyan outer glow on primary button
+  cyanGlow: '0 0 20px rgba(0, 229, 229, 0.25), 0 0 40px rgba(0, 229, 229, 0.12)',
+  cyanGlowSubtle: '0 0 12px rgba(0, 229, 229, 0.15)',
+  
+  // Legacy name for compatibility
+  indigoGlow: '0 0 24px rgba(15, 82, 186, 0.3)',
   emeraldGlow: '0 0 20px rgba(16, 185, 129, 0.3)',
-  // Subtle inner highlight
-  inset: 'inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+  
+  // ── Glassmorphism (Digital Crystal) ──────────────────────
+  // Subtle inner highlight on cards
+  inset: 'inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+  insetGlass: 'inset 0 1px 2px rgba(0, 229, 229, 0.1)',
 } as const
 
 export const GRADIENTS = {
-  // Micro-gradients for buttons — the pressable rule
-  indigo:  'linear-gradient(180deg, #6366F1 0%, #4F46E5 100%)',
-  emerald: 'linear-gradient(180deg, #10B981 0%, #059669 100%)',
-  danger:  'linear-gradient(180deg, #EF4444 0%, #DC2626 100%)',
+  // ── Button Gradients (Sapphire Dominant) ────────────────
+  sapphire:  'linear-gradient(180deg, #0F52BA 0%, #0D3B87 100%)',
+  // Legacy compatibility
+  indigo:    'linear-gradient(180deg, #0F52BA 0%, #0D3B87 100%)',
+  
+  emerald:   'linear-gradient(180deg, #10B981 0%, #059669 100%)',
+  danger:    'linear-gradient(180deg, #EF4444 0%, #DC2626 100%)',
 
-  // Card backgrounds — adds depth
-  card:    'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%)',
-  surface: 'linear-gradient(180deg, #1E293B 0%, #1A2536 100%)',
-
-  // Hero mesh gradient for landing page
-  hero:    `
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.3) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(16,185,129,0.15) 0%, transparent 50%)
+  // ── Bento Grid Card Backgrounds (Glassmorphism) ─────────
+  // Subtle glass effect with cyan hint
+  card:      'linear-gradient(180deg, rgba(0,229,229,0.04) 0%, rgba(255,255,255,0.02) 100%)',
+  surface:   'linear-gradient(180deg, #122647 0%, #0F3D53 100%)',
+  
+  // ── Hero & Accent Gradients ────────────────────────────
+  // Sapphire & Cyan mesh for landing page
+  hero:      `
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(15, 82, 186, 0.25) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0, 229, 229, 0.15) 0%, transparent 50%)
   `,
+  
+  // Cyan-accented for verified/active states
+  cyanAccent: 'linear-gradient(135deg, rgba(0,229,229,0.1) 0%, rgba(0,229,229,0.05) 100%)',
 } as const
 
 export const SPACING = {

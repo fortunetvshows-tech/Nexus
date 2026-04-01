@@ -201,13 +201,14 @@ export default function DashboardPage() {
             onClick={authenticate}
             style={{
               padding:      '0.75rem 2rem',
-              background:   GRADIENTS.indigo,
+              background:   `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
               color:        'white',
-              border:       'none',
+              border:       `1px solid ${COLORS.cyan}`,
               borderRadius: RADII.lg,
               fontSize:     '1rem',
               fontWeight:   '600',
               cursor:       'pointer',
+              boxShadow:    SHADOWS.cyanGlow,
             }}
           >
             Connect with Pi
@@ -244,7 +245,7 @@ export default function DashboardPage() {
             <div>
               <div style={{
                 fontSize:   '0.78rem',
-                color:      COLORS.textMuted,
+                color:      COLORS.cyan,
                 marginBottom: '2px',
               }}>
                 Welcome back
@@ -291,12 +292,13 @@ export default function DashboardPage() {
             style={{
               display:        'block',
               padding:        '1rem 1.5rem',
-              background:     `linear-gradient(135deg, ${COLORS.indigo}, #4338CA)`,
+              background:     `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
               borderRadius:   RADII.xl,
               textDecoration: 'none',
-              boxShadow:      '0 0 30px rgba(99,102,241,0.3)',
+              boxShadow:      SHADOWS.cyanGlow,
               position:       'relative' as const,
               overflow:       'hidden',
+              border:         `1px solid ${COLORS.cyan}`,
             }}
           >
             {/* Background shimmer */}
@@ -419,11 +421,17 @@ export default function DashboardPage() {
         alignItems: 'center',
         gap:        '0.75rem',
         margin:     `${SPACING.xxl} 0 ${SPACING.lg}`,
+        padding:    `${SPACING.md} ${SPACING.lg}`,
+        background: `linear-gradient(135deg, rgba(15, 82, 186, 0.05), transparent), ${COLORS.bgSurface}`,
+        borderRadius: RADII.lg,
+        border:     `1px solid ${COLORS.cyan}`,
+        boxShadow:  '0 4px 24px rgba(8, 26, 51, 0.2), 0 0 20px rgba(0, 229, 229, 0.06)',
+        backdropFilter: 'blur(10px)',
       }}>
         <div style={{
           fontSize:      '0.65rem',
           fontWeight:    '600',
-          color:         COLORS.textMuted,
+          color:         COLORS.cyan,
           textTransform: 'uppercase' as const,
           letterSpacing: '0.1em',
           whiteSpace:    'nowrap' as const,
@@ -433,14 +441,14 @@ export default function DashboardPage() {
         <div style={{
           height:     '1px',
           flex:       1,
-          background: COLORS.border,
+          background: `linear-gradient(90deg, transparent, ${COLORS.cyan}, transparent)`,
         }} />
         {/* Rejected alert badge */}
         {rejectedCount > 0 && (
           <div style={{
             padding:      '2px 8px',
             background:   COLORS.redDim,
-            border:       `1px solid rgba(239,68,68,0.3)`,
+            border:       `1px solid ${COLORS.red}`,
             borderRadius: RADII.full,
             fontSize:     '0.68rem',
             fontWeight:   '700',
@@ -460,10 +468,12 @@ export default function DashboardPage() {
           display:      'flex',
           gap:          '0.375rem',
           marginBottom: SPACING.lg,
-          background:   COLORS.bgElevated,
+          background:   `linear-gradient(135deg, rgba(15, 82, 186, 0.04), transparent), ${COLORS.bgSurface}`,
           borderRadius: RADII.lg,
           padding:      '0.3rem',
-          border:       `1px solid ${COLORS.border}`,
+          border:       `1px solid ${COLORS.cyan}`,
+          boxShadow:    '0 4px 24px rgba(8, 26, 51, 0.2), 0 0 12px rgba(0, 229, 229, 0.08)',
+          backdropFilter: 'blur(10px)',
         }}>
           {[
             {
@@ -535,12 +545,14 @@ export default function DashboardPage() {
             href="/feed"
             style={{
               padding:        `${SPACING.sm} ${SPACING.xl}`,
-              background:     `linear-gradient(180deg, ${COLORS.indigo} 0%, ${COLORS.indigoDark} 100%)`,
+              background:     `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
               color:          'white',
               borderRadius:   RADII.md,
               fontSize:       '0.875rem',
               fontWeight:     '600',
               textDecoration: 'none',
+              boxShadow:      SHADOWS.cyanGlow,
+              border:         `1px solid ${COLORS.cyan}`,
             }}
           >
             Browse Tasks
@@ -760,11 +772,17 @@ export default function DashboardPage() {
             alignItems: 'center',
             gap:        '0.75rem',
             margin:     `${SPACING.xxl} 0 ${SPACING.lg}`,
+            padding:    `${SPACING.md} ${SPACING.lg}`,
+            background: `linear-gradient(135deg, rgba(15, 82, 186, 0.05), transparent), ${COLORS.bgSurface}`,
+            borderRadius: RADII.lg,
+            border:     `1px solid ${COLORS.cyan}`,
+            boxShadow:  '0 4px 24px rgba(8, 26, 51, 0.2), 0 0 20px rgba(0, 229, 229, 0.06)',
+            backdropFilter: 'blur(10px)',
           }}>
             <div style={{
               fontSize:      '0.65rem',
               fontWeight:    '600',
-              color:         COLORS.textMuted,
+              color:         COLORS.cyan,
               textTransform: 'uppercase' as const,
               letterSpacing: '0.1em',
               whiteSpace:    'nowrap' as const,
@@ -774,18 +792,18 @@ export default function DashboardPage() {
             <div style={{
               height:     '1px',
               flex:       1,
-              background: COLORS.border,
+              background: `linear-gradient(90deg, transparent, ${COLORS.cyan}, transparent)`,
             }} />
             {/* Active disputes badge */}
             {workerDisputes.some(d => !['resolved_worker', 'resolved_employer', 'closed_no_action'].includes(d.status)) && (
               <div style={{
                 padding:      '2px 8px',
-                background:   COLORS.indigoDim,
-                border:       `1px solid rgba(99,102,241,0.3)`,
+                background:   COLORS.sapphireDim,
+                border:       `1px solid ${COLORS.sapphire}`,
                 borderRadius: RADII.full,
                 fontSize:     '0.68rem',
                 fontWeight:   '700',
-                color:        COLORS.indigo,
+                color:        COLORS.sapphire,
                 whiteSpace:   'nowrap' as const,
                 fontFamily:   FONTS.mono,
               }}>
