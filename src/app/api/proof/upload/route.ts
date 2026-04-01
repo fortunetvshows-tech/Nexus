@@ -1,110 +1,106 @@
-import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase config')
-}
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
-
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    // Get auth header
-    const piUid = request.headers.get('x-pi-uid')
-    if (!piUid) {
+    const piUid = req.headers.get('x-pi-uid')
+    if (!piUid) return NextResponse.json(
+      { error: 'UNAUTHORIZED' }, { status: 401 }
+    )
+
+    const { data: user } = await supabaseAdmin
+      .from('User')
+      .select('id')
+      .eq('piUid', piUid)
+      .single()
+
+    if (!user) return NextResponse.json(
+      { error: 'USER_NOT_FOUND' }, { status: 404 }
+    )
+
+    const formData = await req.formData()
+    const file     = formData.get('file') as File
+    const context  = formData.get('context') as string // 'task' | 'submission'
+    const contextId = formData.get('contextId') as string
+
+    if (!file || !context || !contextId) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
+        { error: 'MISSING_FIELDS' }, { status: 400 }
       )
     }
 
-    // Get form data
-    const formData = await request.formData()
-    const file = formData.get('file') as File | null
-    const submissionId = formData.get('submissionId') as string | null
-
-    if (!file) {
+    // Validate file size (50MB max)
+    if (file.size > 50 * 1024 * 1024) {
       return NextResponse.json(
-        { error: 'No file provided' },
+        { error: 'FILE_TOO_LARGE', maxMB: 50 }, { status: 400 }
+      )
+    }
+
+    // Validate file type
+    const allowedTypes = [
+      'image/jpeg', 'image/png', 'image/webp', 'image/gif',
+      'video/mp4', 'video/webm',
+      'audio/mpeg', 'audio/wav', 'audio/ogg',
+      'application/pdf',
+      'text/plain',
+    ]
+    if (!allowedTypes.includes(file.type)) {
+      return NextResponse.json(
+        { error: 'INVALID_FILE_TYPE', allowed: allowedTypes },
         { status: 400 }
       )
     }
 
-    if (!submissionId) {
-      return NextResponse.json(
-        { error: 'No submissionId provided' },
-        { status: 400 }
-      )
-    }
-
-    // Validate file type (image only)
-    const validMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
-    if (!validMimes.includes(file.type)) {
-      return NextResponse.json(
-        { error: 'Invalid file type. Only JPG, PNG, GIF, WebP allowed.' },
-        { status: 400 }
-      )
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json(
-        { error: 'File too large. Max 5MB.' },
-        { status: 400 }
-      )
-    }
-
-    // Generate unique filename: {submissionId}-{timestamp}-{random}
+    const buffer    = Buffer.from(await file.arrayBuffer())
+    const ext       = file.name.split('.').pop() ?? 'bin'
     const timestamp = Date.now()
-    const random = Math.random().toString(36).substring(7)
-    const ext = file.name.split('.').pop() || 'jpg'
-    const filename = `${submissionId}-${timestamp}-${random}.${ext}`
-
-    // Convert file to buffer
-    const buffer = await file.arrayBuffer()
+    const storagePath = `${context}/${contextId}/${user.id}/${timestamp}.${ext}`
 
     // Upload to Supabase Storage
-    const { data, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabaseAdmin
+      .storage
       .from('proofgrid-proofs')
-      .upload(filename, buffer, {
-        contentType: file.type,
-        upsert: false,
+      .upload(storagePath, buffer, {
+        contentType:  file.type,
+        cacheControl: '3600',
+        upsert:       false,
       })
 
     if (uploadError) {
-      console.error('Upload error:', uploadError)
+      console.error('[ProofGrid:Proof] Upload error:', uploadError)
       return NextResponse.json(
-        { error: 'Upload failed. Please try again.' },
+        { error: 'UPLOAD_FAILED', detail: uploadError.message },
         { status: 500 }
       )
     }
 
-    // Get public URL
-    const { data: publicUrlData } = supabase.storage
-      .from('proofgrid-proofs')
-      .getPublicUrl(filename)
-
-    const proofUrl = publicUrlData?.publicUrl
-
-    if (!proofUrl) {
-      return NextResponse.json(
-        { error: 'Failed to generate public URL' },
-        { status: 500 }
-      )
+    // Update submission with storage key if context is submission
+    if (context === 'submission') {
+      await supabaseAdmin
+        .from('Submission')
+        .update({
+          proofStorageKey: storagePath,
+          proofFileSize:   file.size,
+          proofMimeType:   file.type,
+          updatedAt:       new Date().toISOString(),
+        })
+        .eq('id', contextId)
     }
+
+    console.log('[ProofGrid:Proof] Uploaded:', storagePath)
 
     return NextResponse.json({
-      success: true,
-      proofUrl,
-      filename,
+      success:     true,
+      storagePath,
+      fileName:    file.name,
+      fileSize:    file.size,
+      mimeType:    file.type,
     })
-  } catch (error) {
-    console.error('Proof upload error:', error)
+
+  } catch (err: any) {
+    console.error('[ProofGrid:Proof] Error:', err?.message ?? err)
     return NextResponse.json(
-      { error: 'Server error during upload' },
+      { error: err?.message ?? 'INTERNAL_ERROR' },
       { status: 500 }
     )
   }
