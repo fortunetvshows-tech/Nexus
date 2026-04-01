@@ -107,7 +107,7 @@ export function Navigation({ currentPage }: NavigationProps) {
           />
           <span className="hide-mobile" style={{ marginLeft: '4px' }}>ProofGrid</span>
           <span className="show-mobile">PG</span>
-          <span style={{
+          <span className="hide-mobile" style={{
             fontSize:     '0.55rem',
             fontWeight:   '500',
             color:        COLORS.indigo,

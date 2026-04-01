@@ -26,7 +26,7 @@ export function BentoGrid({ items, columns = 3, gap = '0.875rem' }: BentoGridPro
         <div
           key={item.id}
           className={[
-            'nexus-card',
+            'proofgrid-card',
             item.colSpan ? `bento-col-${item.colSpan}` : 'bento-col-1',
             item.className ?? '',
           ].join(' ')}
