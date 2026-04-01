@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { usePiAuth }   from '@/hooks/use-pi-auth'
 import { Navigation }  from '@/components/Navigation'
 import {
-  COLORS, FONTS, RADII, SPACING
+  COLORS, FONTS, RADII, SPACING, SHADOWS
 } from '@/lib/design/tokens'
 
 interface Category {
@@ -211,12 +211,16 @@ export default function AdminCategoriesPage() {
             onClick={handleAdd}
             disabled={isAdding || !newName.trim() || !newEmoji.trim()}
             style={{
-              padding: `${SPACING.sm} ${SPACING.lg}`,
-              background: COLORS.indigo, border: 'none',
-              borderRadius: RADII.md, color: 'white',
-              fontSize: '0.85rem', fontWeight: '600',
-              cursor: isAdding ? 'not-allowed' : 'pointer',
-              fontFamily: FONTS.sans,
+              padding:      `${SPACING.sm} ${SPACING.lg}`,
+              background:   `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
+              border:       `1px solid ${COLORS.cyan}`,
+              borderRadius: RADII.md,
+              color:        'white',
+              fontSize:     '0.85rem',
+              fontWeight:   '600',
+              cursor:       isAdding ? 'not-allowed' : 'pointer',
+              fontFamily:   FONTS.sans,
+              boxShadow:    isAdding ? 'none' : SHADOWS.cyanGlow,
             }}
           >
             {isAdding ? 'Adding...' : '+ Add Category'}

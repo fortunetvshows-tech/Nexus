@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePiAuth } from '@/hooks/use-pi-auth'
 import { Navigation } from '@/components/Navigation'
 import {
-  COLORS, FONTS, RADII, SPACING, GRADIENTS
+  COLORS, FONTS, RADII, SPACING, GRADIENTS, SHADOWS
 } from '@/lib/design/tokens'
 
 interface ReferralStats {
@@ -133,11 +133,12 @@ export default function ReferralPage() {
         {/* Referral Link Section */}
         {stats && (
           <div style={{
-            background: GRADIENTS.indigo,
+            background:   `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
             borderRadius: RADII.lg,
-            padding: SPACING.xl,
+            padding:      SPACING.xl,
             marginBottom: SPACING.xl,
-            border: `1px solid rgba(99,102,241,0.2)`,
+            border:       `1px solid ${COLORS.cyan}`,
+            boxShadow:    SHADOWS.cyanGlow,
           }}>
             <p style={{
               fontSize: '0.875rem',
@@ -174,15 +175,16 @@ export default function ReferralPage() {
               <button
                 onClick={handleCopyLink}
                 style={{
-                  padding: `${SPACING.sm} ${SPACING.lg}`,
-                  background: COLORS.indigo,
-                  color: 'white',
-                  border: 'none',
+                  padding:      `${SPACING.sm} ${SPACING.lg}`,
+                  background:   COLORS.sapphire,
+                  color:        'white',
+                  border:       `1px solid ${COLORS.cyan}`,
                   borderRadius: RADII.md,
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'opacity 0.2s ease',
-                  opacity: 0.9,
+                  fontWeight:   '600',
+                  cursor:       'pointer',
+                  transition:   'opacity 0.2s ease',
+                  opacity:      0.9,
+                  boxShadow:    SHADOWS.cyanGlow,
                 }}
                 onMouseEnter={e => {
                   (e.target as HTMLButtonElement).style.opacity = '1'
@@ -230,9 +232,9 @@ export default function ReferralPage() {
                 Invited
               </p>
               <p style={{
-                fontSize: '2.5rem',
+                fontSize:   '2.5rem',
                 fontWeight: '700',
-                color: COLORS.indigo,
+                color:      COLORS.sapphire,
                 marginBottom: SPACING.sm,
               }}>
                 {stats.totalReferred}
@@ -418,14 +420,14 @@ export default function ReferralPage() {
 
         {/* Info Section */}
         <div style={{
-          marginTop: SPACING.xl,
-          padding: `${SPACING.lg} ${SPACING.lg}`,
-          background: 'rgba(99,102,241,0.05)',
-          border: `1px solid ${COLORS.indigoDim}`,
+          marginTop:   SPACING.xl,
+          padding:     `${SPACING.lg} ${SPACING.lg}`,
+          background:  `linear-gradient(135deg, rgba(15, 82, 186, 0.05), transparent)`,
+          border:      `1px solid ${COLORS.cyan}`,
           borderRadius: RADII.lg,
-          color: COLORS.textSecondary,
-          fontSize: '0.875rem',
-          lineHeight: '1.6',
+          color:      COLORS.textSecondary,
+          fontSize:    '0.875rem',
+          lineHeight:  '1.6',
         }}>
           <p style={{
             marginBottom: SPACING.sm,

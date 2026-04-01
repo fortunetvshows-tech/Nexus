@@ -411,13 +411,14 @@ export default function EmployerDashboardPage() {
             href="/employer"
             style={{
               padding:        `${SPACING.sm} ${SPACING.lg}`,
-              background:     GRADIENTS.indigo,
+              background:     `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
               color:          'white',
               borderRadius:   RADII.md,
               fontSize:       '0.85rem',
               fontWeight:     '600',
               textDecoration: 'none',
-              boxShadow:      SHADOWS.indigoGlow,
+              boxShadow:      SHADOWS.cyanGlow,
+              border:         `1px solid ${COLORS.cyan}`,
               whiteSpace:     'nowrap' as const,
               flexShrink:     0,
             }}
@@ -538,8 +539,8 @@ export default function EmployerDashboardPage() {
                             cursor:       'pointer',
                             fontSize:     '0.85rem',
                             fontWeight:   activeTab === 'active' ? '700' : '600',
-                            color:        activeTab === 'active' ? COLORS.indigo : COLORS.textMuted,
-                            borderBottom: activeTab === 'active' ? `2px solid ${COLORS.indigo}` : 'none',
+                            color:        activeTab === 'active' ? COLORS.sapphire : COLORS.textMuted,
+                            borderBottom: activeTab === 'active' ? `2px solid ${COLORS.sapphire}` : 'none',
                             fontFamily:   FONTS.sans,
                             paddingBottom: '4px',
                           }}
@@ -625,8 +626,8 @@ export default function EmployerDashboardPage() {
                                           href={`/review/${task.id}`}
                                           style={{
                                             padding:        '2px 8px',
-                                            background:     COLORS.indigoDim,
-                                            color:          COLORS.indigoLight,
+                                            background:     COLORS.sapphireDim,
+                                            color:          COLORS.sapphireLight,
                                             borderRadius:   '6px',
                                             fontSize:       '0.68rem',
                                             fontWeight:     '600',
@@ -1116,7 +1117,7 @@ export default function EmployerDashboardPage() {
                 style={{
                   flex:         2,
                   padding:      '0.875rem',
-                  background:   COLORS.indigo,
+                  background:   COLORS.sapphire,
                   border:       'none',
                   borderRadius: RADII.md,
                   color:        'white',

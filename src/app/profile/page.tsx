@@ -196,7 +196,7 @@ export default function ProfilePage() {
                   width:          '56px',
                   height:         '56px',
                   borderRadius:   RADII.lg,
-                  background:     `linear-gradient(135deg, ${COLORS.indigo}, ${COLORS.indigoLight})`,
+                  background:     `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireLight})`,
                   display:        'flex',
                   alignItems:     'center',
                   justifyContent: 'center',
@@ -204,6 +204,7 @@ export default function ProfilePage() {
                   fontWeight:     '700',
                   color:          'white',
                   flexShrink:     0,
+                  boxShadow:      SHADOWS.cyanGlow,
                 }}>
                   {user.piUsername.charAt(0).toUpperCase()}
                 </div>
@@ -351,12 +352,12 @@ export default function ProfilePage() {
                         {profile.walletAddress}
                       </div>
                     </div>
-                    <button
+                      <button
                       onClick={() => setIsEditModalOpen(true)}
                       style={{
                         padding:      '0.5rem 1rem',
-                        background:   COLORS.indigo,
-                        border:       'none',
+                        background:   COLORS.sapphire,
+                        border:       `1px solid ${COLORS.cyan}`,
                         borderRadius: RADII.md,
                         color:        'white',
                         fontSize:     '0.8rem',
@@ -364,6 +365,7 @@ export default function ProfilePage() {
                         cursor:       'pointer',
                         whiteSpace:   'nowrap',
                         flexShrink:   0,
+                        boxShadow:    SHADOWS.cyanGlow,
                       }}
                     >
                       Edit
@@ -476,8 +478,8 @@ export default function ProfilePage() {
                       width:        '100%',
                       padding:      '0.875rem',
                       background:   isSaving ? COLORS.bgElevated
-                        : `linear-gradient(180deg, ${COLORS.indigo} 0%, ${COLORS.indigoDark ?? COLORS.indigo} 100%)`,
-                      border:       'none',
+                        : `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
+                      border:       isSaving ? 'none' : `1px solid ${COLORS.cyan}`,
                       borderRadius: RADII.md,
                       color:        isSaving ? COLORS.textMuted : 'white',
                       fontSize:     '0.9rem',
@@ -485,6 +487,7 @@ export default function ProfilePage() {
                       cursor:       isSaving ? 'not-allowed' : 'pointer',
                       fontFamily:   FONTS.sans,
                       transition:   'all 0.15s ease',
+                      boxShadow:    isSaving ? 'none' : SHADOWS.cyanGlow,
                     }}
                   >
                     {isSaving ? 'Saving...' : 'Save Wallet Address'}

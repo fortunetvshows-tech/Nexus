@@ -65,7 +65,7 @@ function KPICard({
   label,
   value,
   badge,
-  badgeColor = COLORS.indigo,
+  badgeColor = COLORS.sapphire,
 }: {
   icon: string
   label: string
@@ -207,7 +207,7 @@ export default function AdminAnalyticsPage() {
       }}>
         <div style={{ fontSize: '2rem' }}>🔒</div>
         <div>Admin access required</div>
-        <Link href="/dashboard" style={{ color: COLORS.indigo, textDecoration: 'none', fontSize: '0.85rem' }}>
+        <Link href="/dashboard" style={{ color: COLORS.sapphire, textDecoration: 'none', fontSize: '0.85rem' }}>
           ← Back to Dashboard
         </Link>
       </div>

@@ -230,7 +230,7 @@ export default function AnalyticsPage() {
               <StatCard
                 label="This Week"
                 value={formatPi(workerSummary?.thisWeekEarned ?? 0)}
-                color={COLORS.indigoLight}
+                color={COLORS.sapphireLight}
               />
               <StatCard
                 label="Pending"

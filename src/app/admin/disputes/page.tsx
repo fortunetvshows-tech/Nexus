@@ -91,7 +91,7 @@ function timeAgo(dateStr: string): string {
 const STATUS_COLOR: Record<string, string> = {
   raised:            COLORS.amber,
   tier1_review:      COLORS.amber,
-  tier2_review:      COLORS.indigo,
+  tier2_review:      COLORS.sapphire,
   tier3_review:      COLORS.red,
   resolved_worker:   COLORS.emerald,
   resolved_employer: COLORS.textMuted,
@@ -483,7 +483,7 @@ export default function AdminDisputesPage() {
       }}>
         <div style={{ fontSize: '2rem' }}>🔒</div>
         <div>Admin access required</div>
-        <Link href="/dashboard" style={{ color: COLORS.indigo, textDecoration: 'none', fontSize: '0.85rem' }}>
+        <Link href="/dashboard" style={{ color: COLORS.sapphire, textDecoration: 'none', fontSize: '0.85rem' }}>
           ← Back to Dashboard
         </Link>
       </div>
@@ -581,7 +581,7 @@ export default function AdminDisputesPage() {
               key:   'disputes',
               label: `⚖ Disputes`,
               badge: activeDisputes.length > 0 ? activeDisputes.length : null,
-              color: COLORS.indigo,
+              color: COLORS.sapphire,
             },
             {
               key:   'payouts',
@@ -1022,7 +1022,7 @@ export default function AdminDisputesPage() {
                           width:          '28px',
                           height:         '28px',
                           borderRadius:   '8px',
-                          background:     `linear-gradient(135deg, ${COLORS.indigo}, ${COLORS.indigoLight || '#a78bfa'})`,
+                          background:     `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireLight})`,
                           display:        'flex',
                           alignItems:     'center',
                           justifyContent: 'center',

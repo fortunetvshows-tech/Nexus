@@ -43,13 +43,14 @@ export default function FeedPage() {
           disabled={authLoading}
           style={{
             padding:       '0.75rem 2rem',
-            background:    GRADIENTS.indigo,
-            color:         COLORS.textPrimary,
-            border:        'none',
+            background:    `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
+            color:         'white',
+            border:        `1px solid ${COLORS.cyan}`,
             borderRadius:  RADII.lg,
             fontSize:      '1rem',
             fontWeight:    '600',
             cursor:        authLoading ? 'not-allowed' : 'pointer',
+            boxShadow:     authLoading ? 'none' : SHADOWS.cyanGlow,
           }}
         >
           {authLoading ? 'Connecting...' : 'Connect with Pi'}
