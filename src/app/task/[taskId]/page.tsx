@@ -67,6 +67,8 @@ export default function TaskDetailPage({
   const [proofStoragePath, setProofStoragePath] = useState<string | null>(null)
   const [submissionStatus, setSubmissionStatus] = useState<string | null>(null)
   const [submissionId, setSubmissionId]         = useState<string | null>(null)
+  const [walletAddress, setWalletAddress]       = useState<string | null>(null)
+  const [showWalletModal, setShowWalletModal]   = useState(false)
   const [proofFileUrl, setProofFileUrl]         = useState<string | null>(null)
   const [isUploadingFile, setIsUploadingFile]   = useState(false)
   const [uploadError, setUploadError]           = useState<string | null>(null)
@@ -109,6 +111,22 @@ export default function TaskDetailPage({
       })
       .catch(() => setLoading(false))
   }, [taskId, user?.piUid])
+
+  // Fetch wallet address
+  useEffect(() => {
+    if (!user?.piUid) return
+
+    fetch(`/api/profile`, {
+      headers: { 'x-pi-uid': user.piUid },
+    })
+      .then(r => r.json())
+      .then(d => {
+        if (d.profile) {
+          setWalletAddress(d.profile.walletAddress ?? null)
+        }
+      })
+      .catch(() => {})
+  }, [user?.piUid])
 
   // Countdown timer
   useEffect(() => {
@@ -431,32 +449,30 @@ export default function TaskDetailPage({
               </div>
             )}
 
-            <div style={{
-              padding:      SPACING.md,
-              background:   'rgba(245,158,11,0.08)',
-              border:       '1px solid rgba(245,158,11,0.25)',
-              borderRadius: RADII.md,
-              marginBottom: SPACING.md,
-              fontSize:     '0.82rem',
-              color:        '#F59E0B',
-              lineHeight:   1.5,
-            }}>
-              ⚠️ Set your wallet address before claiming.
-              Without it your payment cannot be sent.{' '}
-              <Link
-                href="/profile"
-                style={{
-                  color:          COLORS.indigo,
-                  fontWeight:     '600',
-                  textDecoration: 'none',
-                }}
-              >
-                Go to Profile →
-              </Link>
-            </div>
+            {!walletAddress && (
+              <div style={{
+                padding:      SPACING.md,
+                background:   'rgba(245,158,11,0.08)',
+                border:       '1px solid rgba(245,158,11,0.25)',
+                borderRadius: RADII.md,
+                marginBottom: SPACING.md,
+                fontSize:     '0.82rem',
+                color:        '#F59E0B',
+                lineHeight:   1.5,
+              }}>
+                ⚠️ Set your wallet address to claim tasks.
+                Tap below to add it in seconds. {' '}
+              </div>
+            )}
 
             <button
-              onClick={() => claimSlot()}
+              onClick={() => {
+                if (!walletAddress) {
+                  setShowWalletModal(true)
+                  return
+                }
+                claimSlot()
+              }}
               disabled={isClaiming || !canClaim}
               style={{
                 width: '100%', padding: '1rem',
@@ -1249,6 +1265,206 @@ export default function TaskDetailPage({
             submissionId={submissionId}
             piUid={user?.piUid ?? ''}
           />
+        )}
+
+        {/* Modern Wallet Modal */}
+        {showWalletModal && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.7)',
+            display: 'flex',
+            alignItems: 'flex-end',
+            zIndex: 9999,
+            animation: 'slideUp 0.3s ease-out',
+          }}>
+            <style>{`
+              @keyframes slideUp {
+                from { transform: translateY(100%); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+              }
+            `}</style>
+            <div style={{
+              width: '100%',
+              maxWidth: '500px',
+              background: '#0f172a',
+              borderTopLeftRadius: '20px',
+              borderTopRightRadius: '20px',
+              padding: '2rem 1.5rem 1.5rem',
+              border: `1px solid ${COLORS.border}`,
+              borderBottom: 'none',
+            }}>
+              {/* Close button */}
+              <button
+                onClick={() => setShowWalletModal(false)}
+                style={{
+                  position: 'absolute',
+                  top: '1rem',
+                  right: '1rem',
+                  background: 'none',
+                  border: 'none',
+                  color: COLORS.textMuted,
+                  fontSize: '1.5rem',
+                  cursor: 'pointer',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                ✕
+              </button>
+
+              {/* Header */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                marginBottom: '1rem',
+              }}>
+                <div style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '12px',
+                  background: 'rgba(16, 185, 129, 0.2)',
+                  border: `2px solid ${COLORS.emerald}`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.5rem',
+                }}>
+                  💳
+                </div>
+                <div>
+                  <h2 style={{
+                    margin: 0,
+                    fontSize: '1.25rem',
+                    fontWeight: '700',
+                    color: COLORS.textPrimary,
+                  }}>
+                    Add Your Wallet
+                  </h2>
+                  <p style={{
+                    margin: '0.25rem 0 0',
+                    fontSize: '0.85rem',
+                    color: COLORS.textMuted,
+                  }}>
+                    Required to receive Pi earnings
+                  </p>
+                </div>
+              </div>
+
+              {/* Description */}
+              <p style={{
+                margin: '0 0 1.5rem',
+                fontSize: '0.9rem',
+                color: COLORS.textSecondary,
+                lineHeight: '1.6',
+              }}>
+                When you complete a task and your work is approved, we'll send your Pi directly to your wallet address.
+              </p>
+
+              {/* Info boxes */}
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+                marginBottom: '1.5rem',
+              }}>
+                <div style={{
+                  padding: '0.75rem 1rem',
+                  background: 'rgba(99, 102, 241, 0.1)',
+                  border: `1px solid rgba(99, 102, 241, 0.2)`,
+                  borderRadius: RADII.md,
+                  fontSize: '0.8rem',
+                  color: COLORS.indigoLight,
+                }}>
+                  ✓ Your wallet address is encrypted and secure
+                </div>
+                <div style={{
+                  padding: '0.75rem 1rem',
+                  background: 'rgba(16, 185, 129, 0.1)',
+                  border: `1px solid rgba(16, 185, 129, 0.2)`,
+                  borderRadius: RADII.md,
+                  fontSize: '0.8rem',
+                  color: COLORS.emerald,
+                }}>
+                  ✓ Payments are automated and instant
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <div style={{
+                display: 'flex',
+                gap: '0.75rem',
+                flexDirection: 'column',
+              }}>
+                <Link
+                  href="/profile"
+                  style={{
+                    display: 'block',
+                    padding: '1rem',
+                    background: `linear-gradient(135deg, ${COLORS.emerald}, #10b981)`,
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: RADII.lg,
+                    fontSize: '0.95rem',
+                    fontWeight: '700',
+                    textDecoration: 'none',
+                    textAlign: 'center' as const,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.filter = 'brightness(1.1)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.filter = 'brightness(1)'
+                  }}
+                >
+                  Set Wallet Address →
+                </Link>
+                <button
+                  onClick={() => setShowWalletModal(false)}
+                  style={{
+                    padding: '1rem',
+                    background: 'transparent',
+                    border: `1px solid ${COLORS.border}`,
+                    borderRadius: RADII.lg,
+                    color: COLORS.textSecondary,
+                    fontSize: '0.95rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = COLORS.bgElevated
+                    e.currentTarget.style.color = COLORS.textPrimary
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent'
+                    e.currentTarget.style.color = COLORS.textSecondary
+                  }}
+                >
+                  Not now
+                </button>
+              </div>
+
+              {/* Footer note */}
+              <p style={{
+                margin: '1rem 0 0',
+                fontSize: '0.75rem',
+                color: COLORS.textMuted,
+                textAlign: 'center',
+              }}>
+                You can always add your wallet later in your profile settings
+              </p>
+            </div>
+          </div>
         )}
 
       </main>
