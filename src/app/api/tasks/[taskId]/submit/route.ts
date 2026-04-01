@@ -35,9 +35,9 @@ export async function POST(
     }
 
     const body = await req.json()
-    const { proofContent, proofFileUrl, submissionType } = body
+    const { proofContent, proofFileUrl, submissionType, proofStoragePath } = body
 
-    if (!proofContent && !proofFileUrl) {
+    if (!proofContent && !proofFileUrl && !proofStoragePath) {
       return NextResponse.json(
         { error: 'MISSING_PROOF' },
         { status: 400 }
@@ -49,7 +49,8 @@ export async function POST(
       worker.id,
       proofContent || '',
       proofFileUrl,
-      submissionType
+      submissionType,
+      proofStoragePath
     )
 
     if (!result.success) {

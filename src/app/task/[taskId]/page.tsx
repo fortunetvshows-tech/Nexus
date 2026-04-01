@@ -7,6 +7,7 @@ import { usePiAuth }    from '@/hooks/use-pi-auth'
 import { useSubmission } from '@/hooks/use-submission'
 import { Navigation }   from '@/components/Navigation'
 import { DisputeSection } from '@/components/DisputeSection'
+import { ProofUploader } from '@/components/ProofUploader'
 import { COLORS, FONTS, RADII, SHADOWS, GRADIENTS, SPACING, statusStyle } from '@/lib/design/tokens'
 
 interface Task {
@@ -63,6 +64,7 @@ export default function TaskDetailPage({
   } = useSubmission(taskId ?? '', user?.piUid ?? '')
 
   const [proofContent, setProofContent] = useState('')
+  const [proofStoragePath, setProofStoragePath] = useState<string | null>(null)
   const [submissionStatus, setSubmissionStatus] = useState<string | null>(null)
   const [submissionId, setSubmissionId]         = useState<string | null>(null)
   const [proofFileUrl, setProofFileUrl]         = useState<string | null>(null)
@@ -590,6 +592,20 @@ export default function TaskDetailPage({
               <span>proof required</span>
             </div>
 
+            {/* Proof uploader component — for file-based proofs */}
+            {user?.piUid && (
+              <div style={{ marginBottom: '1.25rem' }}>
+                <ProofUploader
+                  piUid={user.piUid}
+                  context="submission"
+                  contextId={submissionId || taskId}
+                  onUploaded={(storagePath) => {
+                    setProofStoragePath(storagePath)
+                  }}
+                />
+              </div>
+            )}
+
             {/* Conditional proof input based on proofType */}
             {(() => {
               const type = (task.proofType ?? 'TEXT').toUpperCase()
@@ -1081,25 +1097,25 @@ export default function TaskDetailPage({
 
             {/* Submit button */}
             <button
-              onClick={() => submitProof(proofContent, '', task.proofType)}
-              disabled={isSubmitting || proofContent.trim().length < 10}
+              onClick={() => submitProof(proofContent, '', task.proofType, proofStoragePath || undefined)}
+              disabled={isSubmitting || (proofContent.trim().length < 10 && !proofStoragePath)}
               style={{
                 width:        '100%',
                 padding:      '1rem',
-                background:   isSubmitting || proofContent.trim().length < 10
+                background:   isSubmitting || (proofContent.trim().length < 10 && !proofStoragePath)
                   ? COLORS.bgElevated
                   : `linear-gradient(180deg, ${COLORS.indigo} 0%, ${COLORS.indigoDark} 100%)`,
-                color:        isSubmitting || proofContent.trim().length < 10
+                color:        isSubmitting || (proofContent.trim().length < 10 && !proofStoragePath)
                   ? COLORS.textMuted
                   : 'white',
                 border:       'none',
                 borderRadius: RADII.lg,
                 fontSize:     '1rem',
                 fontWeight:   '600',
-                cursor:       isSubmitting || proofContent.trim().length < 10
+                cursor:       isSubmitting || (proofContent.trim().length < 10 && !proofStoragePath)
                   ? 'not-allowed'
                   : 'pointer',
-                boxShadow:    isSubmitting || proofContent.trim().length < 10
+                boxShadow:    isSubmitting || (proofContent.trim().length < 10 && !proofStoragePath)
                   ? 'none'
                   : SHADOWS.indigoGlow,
                 fontFamily:   FONTS.sans,

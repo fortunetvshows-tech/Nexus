@@ -87,7 +87,8 @@ export function useSubmission(taskId: string, piUid: string = '') {
     async (
       proofContent: string,
       proofFileUrl?: string,
-      submissionType: string = 'text'
+      submissionType: string = 'text',
+      proofStoragePath?: string
     ) => {
       setSubmitState(prev => ({ ...prev, isSubmitting: true, submitError: null }))
 
@@ -102,6 +103,7 @@ export function useSubmission(taskId: string, piUid: string = '') {
             proofContent,
             proofFileUrl,
             submissionType,
+            proofStoragePath,
           }),
         })
 

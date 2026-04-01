@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, use } from 'react'
 import Link from 'next/link'
 import { usePiAuth }  from '@/hooks/use-pi-auth'
 import { Navigation } from '@/components/Navigation'
+import { ProofViewer } from '@/components/ProofViewer'
 import { COLORS, FONTS, RADII, SHADOWS, GRADIENTS, SPACING, statusStyle } from '@/lib/design/tokens'
 
 interface Submission {
@@ -19,6 +20,7 @@ interface Submission {
   submittedAt:        string
   reviewedAt?:        string
   verificationCode?:  string | null
+  proofStorageKey?:   string | null
   worker: {
     id:              string
     piUsername:      string
@@ -443,6 +445,26 @@ export default function ReviewPage({
                     >
                       📥 View Instructions
                     </a>
+                  </div>
+                )}
+
+                {/* Proof storage (using ProofViewer component) */}
+                {sub.proofStorageKey && user?.piUid && (
+                  <div style={{ marginBottom: '1rem' }}>
+                    <div style={{
+                      fontSize: '0.65rem',
+                      fontWeight: '700',
+                      color: COLORS.textMuted,
+                      textTransform: 'uppercase' as const,
+                      letterSpacing: '0.1em',
+                      marginBottom: '0.5rem',
+                    }}>
+                      📎 Uploaded Proof File
+                    </div>
+                    <ProofViewer
+                      storagePath={sub.proofStorageKey}
+                      piUid={user.piUid}
+                    />
                   </div>
                 )}
 

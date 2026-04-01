@@ -52,17 +52,18 @@ export async function claimTaskSlot(
  * Calls submit_task_proof RPC atomically.
  */
 export async function submitTaskProof(
-  taskId:         string,
-  workerId:       string,
-  proofContent:   string,
-  proofFileUrl:   string,
-  submissionType: string
+  taskId:          string,
+  workerId:        string,
+  proofContent:    string,
+  proofFileUrl:    string,
+  submissionType:  string,
+  proofStoragePath?: string
 ): Promise<SubmissionResult> {
 
-  if (!proofContent && !proofFileUrl) {
+  if (!proofContent && !proofFileUrl && !proofStoragePath) {
     return {
       success: false,
-      error:   'Proof content or file is required',
+      error:   'Proof content, file, or storage path is required',
       code:    'MISSING_PROOF',
     }
   }
@@ -94,6 +95,19 @@ export async function submitTaskProof(
       success: false,
       error:   result.error,
       code:    'SUBMISSION_FAILED',
+    }
+  }
+
+  // If proofStoragePath provided, update the Submission record with proofStorageKey
+  if (proofStoragePath && result.submissionId) {
+    const { error: updateError } = await supabaseAdmin
+      .from('Submission')
+      .update({ proofStorageKey: proofStoragePath })
+      .eq('id', result.submissionId)
+
+    if (updateError) {
+      console.warn('[ProofGrid:Submission] Failed to update proofStorageKey:', updateError)
+      // Don't fail the submission, just log the warning
     }
   }
 
