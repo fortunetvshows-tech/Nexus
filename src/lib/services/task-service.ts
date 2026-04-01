@@ -95,7 +95,7 @@ export async function createTaskWithEscrow(
   // If instruction file provided, update task with file URLs
   if (input.instructionFileUrl && result.taskId) {
     const { error: updateError } = await supabaseAdmin
-      .from('tasks')
+      .from('Task')
       .update({
         instructionFileUrl: input.instructionFileUrl,
         instructionFileName: input.instructionFileName || null,
