@@ -103,127 +103,245 @@ export default function FeedPage() {
 
       <main className="page-main">
 
-        {/* Header */}
+        {/* HERO SECTION — Earning Potential + Stats */}
         <div style={{
-          display:        'flex',
-          justifyContent: 'space-between',
-          alignItems:     'center',
-          marginBottom:   '1.5rem',
+          background:     GRADIENTS.card,
+          border:         `1px solid ${COLORS.borderAccent}`,
+          borderRadius:   RADII.xl,
+          padding:        SPACING.xl,
+          marginBottom:   SPACING.xxxl,
+          position:       'relative',
+          overflow:       'hidden',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)' as any,
         }}>
+          {/* Decorative grid background */}
           <div style={{
-            marginBottom: SPACING.lg,
-          }}>
+            position:  'absolute',
+            inset:     0,
+            opacity:   0.4,
+            background: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h60v60H0z' fill='%23080A0F'/%3E%3Cpath d='M0 0L60 60M60 0L0 60' stroke='rgba(0,150,255,0.08)' stroke-width='0.5'/%3E%3C/svg%3E")`,
+            pointerEvents: 'none',
+          }} />
+
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            {/* Top row: Title + Live count */}
             <div style={{
-              display:      'flex',
-              alignItems:   'center',
-              gap:          SPACING.sm,
-              marginBottom: '4px',
+              display:        'flex',
+              justifyContent: 'space-between',
+              alignItems:     'flex-start',
+              marginBottom:   SPACING.xl,
             }}>
-              <h1 style={{
-                margin:        0,
-                fontSize:      '1.4rem',
-                fontWeight:    '800',
-                color:         COLORS.textPrimary,
-                letterSpacing: '-0.02em',
-              }}>
-                Opportunities
-              </h1>
-              {!isLoading && pagination?.total && (
-                <span style={{
-                  padding:      '2px 8px',
-                  background:   'rgba(16,185,129,0.1)',
-                  border:       '1px solid rgba(16,185,129,0.2)',
-                  borderRadius: RADII.full,
-                  fontSize:     '0.72rem',
-                  fontWeight:   '700',
-                  color:        COLORS.emerald,
-                  fontFamily:   FONTS.mono,
+              <div>
+                <h1 style={{
+                  margin:       0,
+                  fontSize:     '2rem',
+                  fontWeight:   '800',
+                  color:        COLORS.textPrimary,
+                  letterSpacing: '-0.03em',
+                  fontFamily:   FONTS.display,
                 }}>
-                  {pagination.total} live
-                </span>
+                  Earn Pi Today
+                </h1>
+                <p style={{
+                  margin:   SPACING.sm + ' 0 0',
+                  fontSize: '0.9rem',
+                  color:    COLORS.textSecondary,
+                }}>
+                  Complete verified work · Get paid instantly
+                </p>
+              </div>
+              {!isLoading && pagination?.total && (
+                <div style={{
+                  padding:      SPACING.md + ' ' + SPACING.lg,
+                  background:   COLORS.accent.glow,
+                  border:       `1px solid ${COLORS.accent.dim}`,
+                  borderRadius: RADII.md,
+                  textAlign:    'center',
+                }}>
+                  <div style={{
+                    fontSize:   '1.5rem',
+                    fontWeight: '800',
+                    color:      COLORS.accent.bright,
+                    fontFamily: FONTS.mono,
+                  }}>
+                    {pagination.total}
+                  </div>
+                  <div style={{
+                    fontSize:  '0.7rem',
+                    color:     COLORS.textMuted,
+                    marginTop: '2px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}>
+                    Live Now
+                  </div>
+                </div>
               )}
             </div>
-            <p style={{
-              margin:   0,
-              fontSize: '0.85rem',
-              color:    COLORS.textMuted,
+
+            {/* Quick stats row */}
+            <div style={{
+              display:       'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+              gap:           SPACING.lg,
+              marginBottom:  SPACING.xl,
             }}>
-              Pick a task, complete it, earn Pi instantly
-            </p>
+              {[
+                { label: 'Avg. Reward', value: '5-50 Pi' },
+                { label: 'Quickest Task', value: '5 min' },
+                { label: 'Your Streak', value: user?.streakDays || 0 + ' days' },
+              ].map((stat, i) => (
+                <div key={i} style={{
+                  padding:    SPACING.md,
+                  background: `rgba(0,150,255,0.05)`,
+                  border:     `1px solid rgba(0,150,255,0.1)`,
+                  borderRadius: RADII.md,
+                }}>
+                  <div style={{
+                    fontSize:   '0.75rem',
+                    color:      COLORS.textMuted,
+                    marginBottom: '4px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}>
+                    {stat.label}
+                  </div>
+                  <div style={{
+                    fontSize:   '1.1rem',
+                    fontWeight: '700',
+                    color:      COLORS.accent.bright,
+                    fontFamily: FONTS.mono,
+                  }}>
+                    {stat.value}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <button
+              onClick={refresh}
+              disabled={isLoading}
+              style={{
+                width:         '100%',
+                padding:       SPACING.lg,
+                background:    GRADIENTS.primary,
+                color:         'white',
+                border:        'none',
+                borderRadius:  RADII.lg,
+                fontSize:      '1rem',
+                fontWeight:    '700',
+                cursor:        isLoading ? 'not-allowed' : 'pointer',
+                boxShadow:     SHADOWS.accentGlow,
+                transition:    'all 0.2s ease',
+                fontFamily:    FONTS.sans,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)'
+                e.currentTarget.style.boxShadow = SHADOWS.cardHover
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)'
+                e.currentTarget.style.boxShadow = SHADOWS.accentGlow
+              }}
+            >
+              {isLoading ? '⟳ Loading...' : '↻ Refresh Opportunities'}
+            </button>
           </div>
-          <button
-            onClick={refresh}
-            disabled={isLoading}
-            style={{
-              padding:      '0.5rem 1rem',
-              background:   COLORS.bgSurface,
-              border:       `1px solid ${COLORS.border}`,
-              borderRadius: RADII.md,
-              color:        COLORS.textSecondary,
-              fontSize:     '0.8rem',
-              cursor:       isLoading ? 'not-allowed' : 'pointer',
-            }}
-          >
-            ↺ Refresh
-          </button>
         </div>
 
-        {/* Search and filters */}
-        <TaskFilters
-          filters={filters}
-          onFilter={setFilters}
-          onReset={resetFilters}
-          resultCount={pagination?.total ?? 0}
-          isLoading={isLoading}
-        />
+        {/* FILTERING SECTION */}
+        <div style={{
+          marginBottom: SPACING.xxl,
+        }}>
+          <h2 style={{
+            fontSize:   '0.9rem',
+            fontWeight: '700',
+            color:      COLORS.textMuted,
+            margin:     `0 0 ${SPACING.md} 0`,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            fontFamily: FONTS.sans,
+          }}>
+            Filter & Discover
+          </h2>
+          <TaskFilters
+            filters={filters}
+            onFilter={setFilters}
+            onReset={resetFilters}
+            resultCount={pagination?.total ?? 0}
+            isLoading={isLoading}
+          />
+        </div>
 
-        {/* Loading state */}
+        {/* LOADING STATE — Skeleton cards with glassmorphism */}
         {isLoading && tasks.length === 0 && (
           <div style={{
-            display:        'flex',
-            flexDirection:  'column',
-            gap:            '1rem',
+            display:       'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+            gap:           SPACING.lg,
+            marginBottom:  SPACING.xxl,
           }}>
-            {[1, 2, 3].map(i => (
+            {[1, 2, 3, 4, 5, 6].map(i => (
               <div key={i} style={{
-                background:   COLORS.bgSurface,
+                background:   COLORS.bgCard,
                 border:       `1px solid ${COLORS.border}`,
-                borderRadius: RADII.xl,
-                height:       '180px',
+                borderRadius: RADII.lg,
+                height:       '240px',
                 animation:    'pulse 2s infinite',
+                backdropFilter: 'blur(10px)',
               }} />
             ))}
           </div>
         )}
 
-        {/* Empty state */}
+        {/* EMPTY STATE — Motivational messaging */}
         {!isLoading && tasks.length === 0 && (
           <div style={{
             textAlign:    'center',
-            padding:      '4rem 2rem',
-            background:   COLORS.bgSurface,
+            padding:      `${SPACING.xxxl} ${SPACING.xl}`,
+            background:   COLORS.bgCard,
             borderRadius: RADII.xl,
-            border:       `1px solid ${COLORS.border}`,
+            border:       `1px dashed ${COLORS.borderAccent}`,
+            marginBottom: SPACING.xxl,
           }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
+            <div style={{
+              fontSize:      '3rem',
+              marginBottom:  SPACING.lg,
+              animation:     'pulse 2s infinite',
+            }}>
               🔍
             </div>
-            <h3 style={{ margin: '0 0 0.5rem', color: COLORS.textPrimary }}>
-              No opportunities right now
+            <h3 style={{
+              margin:       `0 0 ${SPACING.md} 0`,
+              fontSize:     '1.2rem',
+              color:        COLORS.textPrimary,
+              fontFamily:   FONTS.display,
+              fontWeight:   '700',
+            }}>
+              No tasks match right now
             </h3>
-            <p style={{ color: COLORS.textMuted, margin: '0', fontSize: '0.875rem' }}>
-              New tasks are posted daily. Check back soon or adjust your filters.
+            <p style={{
+              color:       COLORS.textSecondary,
+              margin:      0,
+              fontSize:    '0.9rem',
+              maxWidth:    '400px',
+              marginLeft:  'auto',
+              marginRight: 'auto',
+            }}>
+              New opportunities post every hour. Adjust your filters or check back soon. Workers with higher badges unlock premium tasks.
             </p>
           </div>
         )}
 
-        {/* Task list */}
+        {/* TASK GRID — Bento-style card layout */}
         {tasks.length > 0 && (
           <div style={{
-            display:       'flex',
-            flexDirection: 'column',
-            gap:           '1rem',
-            marginBottom:  '1.5rem',
+            display:       'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+            gap:           SPACING.lg,
+            marginBottom:  SPACING.xxl,
           }}>
             {tasks.map((task: any) => (
               <TaskCard
@@ -235,19 +353,22 @@ export default function FeedPage() {
           </div>
         )}
 
-        {/* Load more */}
+        {/* LOAD MORE */}
         {pagination?.hasMore && (
           <button
             onClick={loadMore}
             disabled={isLoading}
             style={{
               width:        '100%',
-              padding:      '0.875rem',
+              padding:      SPACING.lg,
               background:   'transparent',
               border:       `1px solid ${COLORS.borderAccent}`,
               borderRadius: RADII.lg,
-              color:        COLORS.textSecondary,
-              fontSize:     '0.875rem',
+              color:        COLORS.accent.bright,
+              fontSize:     '0.95rem',
+              fontWeight:   '600',
+              cursor:       isLoading ? 'not-allowed' : 'pointer',
+              transition:   'all 0.2s ease',
               cursor:       isLoading ? 'not-allowed' : 'pointer',
               marginTop:    '1rem',
             }}
