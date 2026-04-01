@@ -133,6 +133,9 @@ export async function getTaskSubmissions(
       status,
       proofContent,
       proofFileUrl,
+      proofStorageKey,
+      proofFileSize,
+      proofMimeType,
       submissionType,
       agreedReward,
       qualityRating,
@@ -141,6 +144,7 @@ export async function getTaskSubmissions(
       autoApproveAt,
       submittedAt,
       reviewedAt,
+      verificationCode,
       worker:workerId (
         id,
         piUsername,
