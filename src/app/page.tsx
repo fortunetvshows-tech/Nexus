@@ -29,7 +29,7 @@ export default function LandingPage() {
       const params = new URLSearchParams(window.location.search)
       const ref = params.get('ref')
       if (ref) {
-        sessionStorage.setItem('nexus_ref', ref)
+        sessionStorage.setItem('proofgrid_ref', ref)
       }
     }
   }, [])
@@ -563,7 +563,7 @@ export default function LandingPage() {
       }}>
         <div style={{ marginBottom: SPACING.sm }}>
           <span style={{ fontWeight: '700', color: COLORS.textSecondary }}>
-            Nexus
+            ProofGrid
           </span>
           {' '}· Pi Network Labor Marketplace
         </div>
@@ -578,7 +578,7 @@ export default function LandingPage() {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.4; }
         }
-        .nexus-card:hover {
+        .proofgrid-card:hover {
           transform: translateY(-2px);
         }
       `}</style>

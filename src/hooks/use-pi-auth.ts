@@ -166,7 +166,7 @@ export function usePiAuth() {
       
       // Read referral code from sessionStorage
       const refCode = typeof window !== 'undefined'
-        ? sessionStorage.getItem('nexus_ref') ?? undefined
+        ? sessionStorage.getItem('proofgrid_ref') ?? undefined
         : undefined
 
       const response = await fetch(`${origin}/api/auth`, {
@@ -194,7 +194,7 @@ export function usePiAuth() {
 
       // Clear referral code from sessionStorage after successful auth
       if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('nexus_ref')
+        sessionStorage.removeItem('proofgrid_ref')
       }
 
       setState({
