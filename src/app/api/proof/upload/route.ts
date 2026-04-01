@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
 
     // Upload to Supabase Storage
     const { data, error: uploadError } = await supabase.storage
-      .from('nexus-proofs')
+      .from('proofgrid-proofs')
       .upload(filename, buffer, {
         contentType: file.type,
         upsert: false,
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
 
     // Get public URL
     const { data: publicUrlData } = supabase.storage
-      .from('nexus-proofs')
+      .from('proofgrid-proofs')
       .getPublicUrl(filename)
 
     const proofUrl = publicUrlData?.publicUrl
@@ -109,3 +109,4 @@ export async function POST(request: NextRequest) {
     )
   }
 }
+

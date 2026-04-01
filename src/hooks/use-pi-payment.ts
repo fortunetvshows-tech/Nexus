@@ -105,7 +105,7 @@ export function usePiPayment() {
             },
 
             onCancel: (paymentId: string) => {
-              console.log('[Nexus:Payment] Cancelled:', paymentId)
+              console.log('[ProofGrid:Payment] Cancelled:', paymentId)
               setState(prev => ({
                 ...prev,
                 isProcessing: false,
@@ -115,7 +115,7 @@ export function usePiPayment() {
             },
 
             onError: (error: Error) => {
-              console.error('[Nexus:Payment] Error:', error)
+              console.error('[ProofGrid:Payment] Error:', error)
               setState(prev => ({
                 ...prev,
                 isProcessing: false,
@@ -148,3 +148,4 @@ export function usePiPayment() {
     paymentId:    state.paymentId,
   }
 }
+

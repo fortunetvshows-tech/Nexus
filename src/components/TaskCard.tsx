@@ -69,7 +69,7 @@ export function TaskCard({
       }}
     >
       <div
-        className="nexus-card"
+        className="proofgrid-card"
         style={{
           borderLeft:  `4px solid ${color}`,
           padding:     SPACING.lg,
@@ -233,3 +233,4 @@ export function TaskCard({
     </Link>
   )
 }
+

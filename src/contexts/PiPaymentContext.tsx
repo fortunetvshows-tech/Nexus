@@ -39,7 +39,7 @@ export function PiPaymentProvider({
 
   // Handle incomplete payments from previous crashes
   const onIncompletePaymentFound = useCallback(async (payment: any) => {
-    console.warn('[Nexus:PiPaymentProvider] Incomplete payment found:', payment.identifier)
+    console.warn('[ProofGrid:PiPaymentProvider] Incomplete payment found:', payment.identifier)
     if (!payment?.identifier) return
 
     const paymentId = payment.identifier
@@ -53,7 +53,7 @@ export function PiPaymentProvider({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ paymentId, txid }),
         })
-        console.log('[Nexus:PiPaymentProvider] Incomplete payment recovered:', paymentId)
+        console.log('[ProofGrid:PiPaymentProvider] Incomplete payment recovered:', paymentId)
       } else {
         // No transaction — cancel it
         await fetch('/api/pi/cancel', {
@@ -61,10 +61,10 @@ export function PiPaymentProvider({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ paymentId }),
         })
-        console.log('[Nexus:PiPaymentProvider] Incomplete payment cancelled:', paymentId)
+        console.log('[ProofGrid:PiPaymentProvider] Incomplete payment cancelled:', paymentId)
       }
     } catch (err) {
-      console.error('[Nexus:PiPaymentProvider] Failed to handle incomplete payment:', err)
+      console.error('[ProofGrid:PiPaymentProvider] Failed to handle incomplete payment:', err)
     }
   }, [])
 
@@ -91,12 +91,12 @@ export function PiPaymentProvider({
       }
 
       if (!piAvailable) {
-        console.log('[Nexus:PiPaymentProvider] Pi SDK not available after 5s')
+        console.log('[ProofGrid:PiPaymentProvider] Pi SDK not available after 5s')
         return
       }
 
       try {
-        console.log('[Nexus:PiPaymentProvider] Acquiring global "payments" scope...')
+        console.log('[ProofGrid:PiPaymentProvider] Acquiring global "payments" scope...')
         
         // Authenticate with payments scope GLOBALLY on app load
         // This ensures window.Pi.createPayment() will work without scope errors
@@ -106,7 +106,7 @@ export function PiPaymentProvider({
         )
 
         console.log(
-          '[Nexus:PiPaymentProvider] ✅ Global authentication successful.',
+          '[ProofGrid:PiPaymentProvider] ✅ Global authentication successful.',
           'User:', auth.user.uid,
           'Payments scope acquired'
         )
@@ -117,9 +117,9 @@ export function PiPaymentProvider({
         
         // Only log as warning if it's not a simple "user didn't authenticate" case
         if (!msg.includes('authenticated') && !msg.includes('user')) {
-          console.warn('[Nexus:PiPaymentProvider] Global auth warning:', msg)
+          console.warn('[ProofGrid:PiPaymentProvider] Global auth warning:', msg)
         } else {
-          console.log('[Nexus:PiPaymentProvider] Global auth skipped (user not in Pi or declined):', msg)
+          console.log('[ProofGrid:PiPaymentProvider] Global auth skipped (user not in Pi or declined):', msg)
         }
       }
     }
@@ -236,3 +236,4 @@ export function usePiPaymentContext() {
   if (!ctx) return null  // Allow graceful fallback if outside provider
   return ctx
 }
+

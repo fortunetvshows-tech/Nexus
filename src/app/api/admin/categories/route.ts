@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: true, categories: data ?? [] })
 
   } catch (err) {
-    console.error('[Nexus:AdminCategories] GET Error:', err)
+    console.error('[ProofGrid:AdminCategories] GET Error:', err)
     return NextResponse.json({ error: 'INTERNAL_ERROR' }, { status: 500 })
   }
 }
@@ -63,14 +63,14 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (error) {
-      console.error('[Nexus:AdminCategories] Insert Error:', error)
+      console.error('[ProofGrid:AdminCategories] Insert Error:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     return NextResponse.json({ success: true, category: data })
 
   } catch (err) {
-    console.error('[Nexus:AdminCategories] POST Error:', err)
+    console.error('[ProofGrid:AdminCategories] POST Error:', err)
     return NextResponse.json({ error: 'INTERNAL_ERROR' }, { status: 500 })
   }
 }
@@ -102,14 +102,14 @@ export async function PATCH(req: NextRequest) {
       .single()
 
     if (error) {
-      console.error('[Nexus:AdminCategories] Update Error:', error)
+      console.error('[ProofGrid:AdminCategories] Update Error:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     return NextResponse.json({ success: true, category: data })
 
   } catch (err) {
-    console.error('[Nexus:AdminCategories] PATCH Error:', err)
+    console.error('[ProofGrid:AdminCategories] PATCH Error:', err)
     return NextResponse.json({ error: 'INTERNAL_ERROR' }, { status: 500 })
   }
 }
@@ -133,14 +133,15 @@ export async function DELETE(req: NextRequest) {
       .eq('id', id)
 
     if (error) {
-      console.error('[Nexus:AdminCategories] Delete Error:', error)
+      console.error('[ProofGrid:AdminCategories] Delete Error:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     return NextResponse.json({ success: true })
 
   } catch (err) {
-    console.error('[Nexus:AdminCategories] DELETE Error:', err)
+    console.error('[ProofGrid:AdminCategories] DELETE Error:', err)
     return NextResponse.json({ error: 'INTERNAL_ERROR' }, { status: 500 })
   }
 }
+

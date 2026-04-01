@@ -435,7 +435,7 @@ export default function EmployerDashboardPage() {
             gap:           '0.875rem',
           }}>
             {[1, 2, 3].map(i => (
-              <div key={i} className="nexus-card" style={{ height: '100px' }} />
+              <div key={i} className="proofgrid-card" style={{ height: '100px' }} />
             ))}
           </div>
         ) : (
@@ -1182,3 +1182,4 @@ export default function EmployerDashboardPage() {
     </div>
   )
 }
+

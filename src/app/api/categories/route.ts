@@ -10,7 +10,7 @@ export async function GET() {
       .order('"sortOrder"', { ascending: true })
 
     if (error) {
-      console.error('[Nexus:Categories] Fetch failed:', error)
+      console.error('[ProofGrid:Categories] Fetch failed:', error)
       return NextResponse.json(
         { error: 'Failed to fetch categories' },
         { status: 500 }
@@ -20,7 +20,8 @@ export async function GET() {
     return NextResponse.json({ success: true, categories: data ?? [] })
 
   } catch (err) {
-    console.error('[Nexus:Categories] Error:', err)
+    console.error('[ProofGrid:Categories] Error:', err)
     return NextResponse.json({ error: 'INTERNAL_ERROR' }, { status: 500 })
   }
 }
+

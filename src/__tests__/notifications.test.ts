@@ -75,3 +75,4 @@ describe('Notifications API', () => {
     expect(new Date(oneHourAgo) > new Date(oneDayAgo)).toBe(true)
   })
 })
+

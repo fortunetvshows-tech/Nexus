@@ -35,18 +35,19 @@ export async function POST(req: NextRequest) {
       .eq('piUid', piUid)
 
     if (error) {
-      console.error('[Nexus:Profile] Wallet update failed:', error)
+      console.error('[ProofGrid:Profile] Wallet update failed:', error)
       return NextResponse.json(
         { error: 'Failed to update wallet address' },
         { status: 500 }
       )
     }
 
-    console.log('[Nexus:Profile] Wallet updated for:', piUid)
+    console.log('[ProofGrid:Profile] Wallet updated for:', piUid)
     return NextResponse.json({ success: true })
 
   } catch (err) {
-    console.error('[Nexus:Profile] Error:', err)
+    console.error('[ProofGrid:Profile] Error:', err)
     return NextResponse.json({ error: 'INTERNAL_ERROR' }, { status: 500 })
   }
 }
+

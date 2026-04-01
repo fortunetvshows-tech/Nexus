@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
       .single()
 
     if (userError) {
-      console.error('[Nexus:Referral] User fetch error:', userError)
+      console.error('[ProofGrid:Referral] User fetch error:', userError)
       return NextResponse.json(
         { error: userError.message }, { status: 500 }
       )
@@ -70,7 +70,7 @@ export async function GET(req: NextRequest) {
       .eq('referredBy', user.id)
 
     if (refError) {
-      console.error('[Nexus:Referral] Referred users error:', refError)
+      console.error('[ProofGrid:Referral] Referred users error:', refError)
     }
 
     // Get referral records for reward tracking
@@ -80,7 +80,7 @@ export async function GET(req: NextRequest) {
       .eq('referrerId', user.id)
 
     if (recordError) {
-      console.error('[Nexus:Referral] Records error:', recordError)
+      console.error('[ProofGrid:Referral] Records error:', recordError)
     }
 
     // Build lookup map
@@ -122,10 +122,11 @@ export async function GET(req: NextRequest) {
     })
 
   } catch (err: any) {
-    console.error('[Nexus:Referral] Unhandled error:', err?.message ?? err)
+    console.error('[ProofGrid:Referral] Unhandled error:', err?.message ?? err)
     return NextResponse.json(
       { error: err?.message ?? 'INTERNAL_ERROR' },
       { status: 500 }
     )
   }
 }
+

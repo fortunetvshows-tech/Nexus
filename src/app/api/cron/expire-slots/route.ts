@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
       .rpc('expire_timed_out_slots')
 
     if (error) {
-      console.error('[Nexus:Cron:ExpireSlots] RPC error:', error)
+      console.error('[ProofGrid:Cron:ExpireSlots] RPC error:', error)
       return NextResponse.json(
         { error: error.message },
         { status: 500 }
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     }
 
     const count = data as number
-    console.log(`[Nexus:Cron:ExpireSlots] Expired ${count} slots`)
+    console.log(`[ProofGrid:Cron:ExpireSlots] Expired ${count} slots`)
 
     // Auto-refund expired tasks with unused escrow
     const { data: expiredTasks } = await supabaseAdmin
@@ -101,12 +101,12 @@ export async function GET(req: NextRequest) {
             },
           })
 
-        console.log('[Nexus:Cron] Auto-refunded expired task:', {
+        console.log('[ProofGrid:Cron] Auto-refunded expired task:', {
           taskId: task.id,
           refundAmount,
         })
       } catch (err) {
-        console.error('[Nexus:Cron] Auto-refund failed for task:', task.id, err)
+        console.error('[ProofGrid:Cron] Auto-refund failed for task:', task.id, err)
       }
     }
 
@@ -116,10 +116,11 @@ export async function GET(req: NextRequest) {
     )
 
   } catch (err) {
-    console.error('[Nexus:Cron:ExpireSlots] Error:', err)
+    console.error('[ProofGrid:Cron:ExpireSlots] Error:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR' },
       { status: 500 }
     )
   }
 }
+

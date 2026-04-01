@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     const txid       = payment.transaction?.txid ?? null
     const isVerified = payment.transaction?.verified ?? false
 
-    console.log('[Nexus:Incomplete] Handling incomplete payment:', {
+    console.log('[ProofGrid:Incomplete] Handling incomplete payment:', {
       paymentId,
       direction,
       txid,
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
           }
         )
         const data = await res.json()
-        console.log('[Nexus:Incomplete] U2A completed:', data)
+        console.log('[ProofGrid:Incomplete] U2A completed:', data)
         return NextResponse.json({ success: true, action: 'completed', paymentId })
       } else {
         // No transaction yet — cancel it
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
           }
         )
         const data = await res.json()
-        console.log('[Nexus:Incomplete] U2A cancelled:', data)
+        console.log('[ProofGrid:Incomplete] U2A cancelled:', data)
         return NextResponse.json({ success: true, action: 'cancelled', paymentId })
       }
     }
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
           }
         )
         const data = await res.json()
-        console.log('[Nexus:Incomplete] A2U completed:', data)
+        console.log('[ProofGrid:Incomplete] A2U completed:', data)
         return NextResponse.json({ success: true, action: 'completed', paymentId })
       } else {
         // Cancel it
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
           }
         )
         const data = await res.json()
-        console.log('[Nexus:Incomplete] A2U cancelled:', data)
+        console.log('[ProofGrid:Incomplete] A2U cancelled:', data)
         return NextResponse.json({ success: true, action: 'cancelled', paymentId })
       }
     }
@@ -101,7 +101,8 @@ export async function POST(req: NextRequest) {
 
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
-    console.error('[Nexus:Incomplete] Error:', message)
+    console.error('[ProofGrid:Incomplete] Error:', message)
     return NextResponse.json({ success: false, error: message })
   }
 }
+

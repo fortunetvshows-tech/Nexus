@@ -68,7 +68,7 @@ export async function createTaskWithEscrow(
     })
 
   if (error) {
-    console.error('[Nexus:TaskService] RPC failed:', error)
+    console.error('[ProofGrid:TaskService] RPC failed:', error)
     return {
       success: false,
       error:   error.message,
@@ -103,7 +103,7 @@ export async function createTaskWithEscrow(
       .eq('id', result.taskId)
 
     if (updateError) {
-      console.error('[Nexus:TaskService] Failed to update instruction URLs:', updateError)
+      console.error('[ProofGrid:TaskService] Failed to update instruction URLs:', updateError)
       // Don't fail the entire task creation if this fails, just log it
     }
   }
@@ -244,10 +244,11 @@ export async function getActiveTasks(
   const { data: tasks, error, count } = await query
 
   if (error) {
-    console.error('[Nexus:TaskService] Feed query failed:', error)
+    console.error('[ProofGrid:TaskService] Feed query failed:', error)
     return { tasks: [], total: 0, error: error.message }
   }
 
   return { tasks: tasks ?? [], total: count ?? 0, error: null }
 }
+
 

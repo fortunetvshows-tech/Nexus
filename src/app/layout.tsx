@@ -3,7 +3,7 @@ import './globals.css'
 import { PiPaymentProvider } from '@/contexts/PiPaymentContext'
 
 export const metadata: Metadata = {
-  title: 'Nexus',
+  title: 'ProofGrid',
   description: 'Earn Pi for real work. The Pi Network labor marketplace.',
 }
 
@@ -19,7 +19,7 @@ export default function RootLayout({
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Nexus</title>
+        <title>ProofGrid</title>
         <meta name="description" content="Earn Pi for real work. The Pi Network labor marketplace." />
         <link rel="icon" href="/favicon.ico" sizes="256x256" type="image/x-icon" />
         
@@ -31,9 +31,9 @@ export default function RootLayout({
             __html: `
               try {
                 Pi.init({ version: "2.0", sandbox: ${isSandbox} });
-                console.log('[Nexus] Pi SDK initialized. Sandbox: ${isSandbox}');
+                console.log('[ProofGrid] Pi SDK initialized. Sandbox: ${isSandbox}');
               } catch(e) {
-                console.warn('[Nexus] Pi SDK init failed:', e.message);
+                console.warn('[ProofGrid] Pi SDK init failed:', e.message);
               }
             `,
           }}
@@ -117,3 +117,4 @@ export default function RootLayout({
     </html>
   )
 }
+

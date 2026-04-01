@@ -21,7 +21,7 @@ async function countEligibleArbitrators(
     .eq('reputationLevel', 'Sovereign')
 
   if (error) {
-    console.error('[Nexus:DisputeService] Failed to count arbitrators:', error)
+    console.error('[ProofGrid:DisputeService] Failed to count arbitrators:', error)
     return 0
   }
 
@@ -65,7 +65,7 @@ export async function fileDispute(
     })
 
   if (error) {
-    console.error('[Nexus:DisputeService] file_dispute error:', error)
+    console.error('[ProofGrid:DisputeService] file_dispute error:', error)
     return {
       success: false,
       error:   error.message,
@@ -102,7 +102,7 @@ export async function fileDispute(
       .eq('id', result.disputeId)
 
     if (escalateError) {
-      console.error('[Nexus:DisputeService] Failed to escalate to tier3:', escalateError)
+      console.error('[ProofGrid:DisputeService] Failed to escalate to tier3:', escalateError)
     }
 
     // Create notification for admins
@@ -118,7 +118,7 @@ export async function fileDispute(
       })
 
     if (notifyError) {
-      console.warn('[Nexus:DisputeService] Failed to create admin notification:', notifyError)
+      console.warn('[ProofGrid:DisputeService] Failed to create admin notification:', notifyError)
     }
 
     return {
@@ -136,7 +136,7 @@ export async function fileDispute(
   if (tier1Result.resolution === 'ESCALATE_TO_TIER2' && result.disputeId) {
     const arbResult = await selectArbitrators(result.disputeId)
     if (!arbResult.success && arbResult.code !== 'NO_ELIGIBLE_ARBITRATORS') {
-      console.error('[Nexus:DisputeService] Failed to select arbitrators:', arbResult.error)
+      console.error('[ProofGrid:DisputeService] Failed to select arbitrators:', arbResult.error)
     }
   }
 
@@ -162,7 +162,7 @@ export async function runTier1Resolution(
     })
 
   if (error) {
-    console.error('[Nexus:DisputeService] tier1 error:', error)
+    console.error('[ProofGrid:DisputeService] tier1 error:', error)
     return {
       success: false,
       error:   error.message,
@@ -217,3 +217,4 @@ export async function getDisputeForSubmission(
 
   return { dispute: data, error: null }
 }
+

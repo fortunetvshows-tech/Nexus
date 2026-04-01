@@ -160,7 +160,7 @@ export default function AdminCategoriesPage() {
         )}
 
         {/* Add new category */}
-        <div className="nexus-card" style={{ marginBottom: SPACING.lg }}>
+        <div className="proofgrid-card" style={{ marginBottom: SPACING.lg }}>
           <div style={{
             fontSize: '0.65rem', fontWeight: '600', color: COLORS.textMuted,
             textTransform: 'uppercase' as const, letterSpacing: '0.1em',
@@ -228,7 +228,7 @@ export default function AdminCategoriesPage() {
         </div>
 
         {/* Categories list */}
-        <div className="nexus-card">
+        <div className="proofgrid-card">
           <div style={{
             fontSize: '0.65rem', fontWeight: '600', color: COLORS.textMuted,
             textTransform: 'uppercase' as const, letterSpacing: '0.1em',
@@ -326,3 +326,4 @@ export default function AdminCategoriesPage() {
     </div>
   )
 }
+

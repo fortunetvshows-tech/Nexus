@@ -97,8 +97,8 @@ export function Navigation({ currentPage }: NavigationProps) {
           alignItems:     'center',
           gap:            '8px',
         }}>
-          <span className="hide-mobile">Nexus</span>
-          <span className="show-mobile">NX</span>
+          <span className="hide-mobile">ProofGrid</span>
+          <span className="show-mobile">PG</span>
           <span style={{
             fontSize:     '0.55rem',
             fontWeight:   '500',
@@ -570,3 +570,4 @@ export function Navigation({ currentPage }: NavigationProps) {
     </>
   )
 }
+

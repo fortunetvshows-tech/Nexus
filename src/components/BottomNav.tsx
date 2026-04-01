@@ -158,3 +158,4 @@ export function BottomNav({ currentPage }: BottomNavProps) {
     </>
   )
 }
+

@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
       .limit(20)
 
     if (error) {
-      console.error('[Nexus:Notifications] Fetch error:', error)
+      console.error('[ProofGrid:Notifications] Fetch error:', error)
       return NextResponse.json(
         { error: 'FETCH_FAILED' },
         { status: 500 }
@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
     )
 
   } catch (err) {
-    console.error('[Nexus:Notifications] Error:', err)
+    console.error('[ProofGrid:Notifications] Error:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR' },
       { status: 500 }
@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
     const { error } = await query
 
     if (error) {
-      console.error('[Nexus:Notifications] Mark read error:', error)
+      console.error('[ProofGrid:Notifications] Mark read error:', error)
       return NextResponse.json(
         { error: 'UPDATE_FAILED' },
         { status: 500 }
@@ -117,10 +117,11 @@ export async function POST(req: NextRequest) {
     )
 
   } catch (err) {
-    console.error('[Nexus:Notifications] POST error:', err)
+    console.error('[ProofGrid:Notifications] POST error:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR' },
       { status: 500 }
     )
   }
 }
+

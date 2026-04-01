@@ -80,7 +80,7 @@ export function useTaskSearch(piUid: string | undefined): UseTaskSearchReturn {
           setPagination(data.pagination ?? null)
         }
       } catch (err) {
-        console.error('[Nexus:TaskSearch] Fetch error:', err)
+        console.error('[ProofGrid:TaskSearch] Fetch error:', err)
       } finally {
         setIsLoading(false)
       }
@@ -136,3 +136,4 @@ export function useTaskSearch(piUid: string | undefined): UseTaskSearchReturn {
     refresh,
   }
 }
+

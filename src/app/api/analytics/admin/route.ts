@@ -87,10 +87,11 @@ export async function GET(req: NextRequest) {
     )
 
   } catch (err) {
-    console.error('[Nexus:Analytics:Admin] Unhandled:', err)
+    console.error('[ProofGrid:Analytics:Admin] Unhandled:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR' },
       { status: 500 }
     )
   }
 }
+

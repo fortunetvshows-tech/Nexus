@@ -161,7 +161,7 @@ export async function GET(req: NextRequest) {
       { headers: corsHeaders }
     )
   } catch (err: any) {
-    console.error('[Nexus:StuckPayments] Error:', err)
+    console.error('[ProofGrid:StuckPayments] Error:', err)
     return NextResponse.json({ error: 'INTERNAL_SERVER_ERROR' }, { status: 500, headers: corsHeaders })
   }
 }
@@ -200,7 +200,7 @@ export async function POST(req: NextRequest) {
         .in('id', paymentIds)
 
       if (updateError) {
-        console.error('[Nexus:StuckPayments:POST] Update error:', {
+        console.error('[ProofGrid:StuckPayments:POST] Update error:', {
           error: updateError,
           message: updateError.message,
           details: updateError.details,
@@ -225,7 +225,7 @@ export async function POST(req: NextRequest) {
 
       const failedCount = verified?.filter((t: any) => t.status === 'failed').length || 0
 
-      console.log('[Nexus:Admin] Cleared stuck payments:', {
+      console.log('[ProofGrid:Admin] Cleared stuck payments:', {
         requestedCount: paymentIds.length,
         verifiedFailedCount: failedCount,
         paymentIds,
@@ -267,7 +267,7 @@ export async function POST(req: NextRequest) {
             continue
           }
 
-          console.log('[Nexus:RetryStuck] Transaction details:', {
+          console.log('[ProofGrid:RetryStuck] Transaction details:', {
             transactionId: tx.id,
             receiverId: tx.receiverId,
             submissionWorkerId: (tx.submission as any).workerId,
@@ -282,7 +282,7 @@ export async function POST(req: NextRequest) {
             .eq('id', workerId)
             .single()
 
-          console.log('[Nexus:RetryStuck] Fetched worker:', {
+          console.log('[ProofGrid:RetryStuck] Fetched worker:', {
             workerId,
             worker: worker?.piUsername,
             wallet: worker?.walletAddress,
@@ -329,11 +329,11 @@ export async function POST(req: NextRequest) {
                 .maybeSingle()
 
               if (existingTx?.piPaymentId) {
-                console.log('[Nexus:Admin] Found existing payment, attempting to cancel:', existingTx.piPaymentId)
+                console.log('[ProofGrid:Admin] Found existing payment, attempting to cancel:', existingTx.piPaymentId)
                 const cancelResult = await cancelPiPayment(existingTx.piPaymentId)
 
                 if (cancelResult.success) {
-                  console.log('[Nexus:Admin] Cancelled existing payment, retrying new one')
+                  console.log('[ProofGrid:Admin] Cancelled existing payment, retrying new one')
                   // Retry the payment
                   paymentResult = await payWorkerA2U({
                     workerPiUid: worker.piUid,
@@ -346,7 +346,7 @@ export async function POST(req: NextRequest) {
                 }
               }
             } catch (cancelErr: any) {
-              console.error('[Nexus:Admin] Error during cancel+retry:', cancelErr.message)
+              console.error('[ProofGrid:Admin] Error during cancel+retry:', cancelErr.message)
             }
           }
 
@@ -389,7 +389,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ error: 'Unknown action' }, { status: 400, headers: corsHeaders })
   } catch (err: any) {
-    console.error('[Nexus:StuckPayments:POST] Error:', err)
+    console.error('[ProofGrid:StuckPayments:POST] Error:', err)
     return NextResponse.json({ error: 'INTERNAL_SERVER_ERROR' }, { status: 500, headers: corsHeaders })
   }
 }
+

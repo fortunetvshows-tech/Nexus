@@ -41,3 +41,4 @@ describe('Cron route authorization', () => {
     expect(res.status).toBe(401)
   })
 })
+

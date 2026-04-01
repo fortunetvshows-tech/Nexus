@@ -173,7 +173,7 @@ export default function ProfilePage() {
         ) : (
           <>
             {/* Identity Card */}
-            <div className="nexus-card" style={{ marginBottom: SPACING.lg }}>
+            <div className="proofgrid-card" style={{ marginBottom: SPACING.lg }}>
               <div style={{
                 fontSize:      '0.65rem',
                 fontWeight:    '600',
@@ -274,7 +274,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Wallet Address Card */}
-            <div className="nexus-card">
+            <div className="proofgrid-card">
               <div style={{
                 fontSize:      '0.65rem',
                 fontWeight:    '600',
@@ -540,3 +540,4 @@ export default function ProfilePage() {
     </div>
   )
 }
+

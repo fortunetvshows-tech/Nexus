@@ -6,13 +6,13 @@ import { NextRequest, NextResponse } from 'next/server'
 // This appears in Vercel function logs and confirms
 // which variables are missing
 if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-  console.error('[Nexus:Auth] MISSING: NEXT_PUBLIC_SUPABASE_URL')
+  console.error('[ProofGrid:Auth] MISSING: NEXT_PUBLIC_SUPABASE_URL')
 }
 if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-  console.error('[Nexus:Auth] MISSING: SUPABASE_SERVICE_ROLE_KEY')
+  console.error('[ProofGrid:Auth] MISSING: SUPABASE_SERVICE_ROLE_KEY')
 }
 if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-  console.error('[Nexus:Auth] MISSING: NEXT_PUBLIC_SUPABASE_ANON_KEY')
+  console.error('[ProofGrid:Auth] MISSING: NEXT_PUBLIC_SUPABASE_ANON_KEY')
 }
 
 const PI_API_BASE = 'https://api.minepi.com'
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
 
       if (!piResponse.ok) {
         const errorBody = await piResponse.text()
-        console.error('[Nexus:Auth] Pi /me API rejected token:', {
+        console.error('[ProofGrid:Auth] Pi /me API rejected token:', {
           status: piResponse.status,
           body: errorBody,
         })
@@ -106,13 +106,13 @@ export async function POST(req: NextRequest) {
       }
 
       piUser = await piResponse.json()
-      console.log('[Nexus:Auth] Pi /me verified:', {
+      console.log('[ProofGrid:Auth] Pi /me verified:', {
         uid: piUser.uid,
         username: piUser.username,
       })
 
     } catch (fetchError) {
-      console.error('[Nexus:Auth] Pi API fetch failed:', fetchError)
+      console.error('[ProofGrid:Auth] Pi API fetch failed:', fetchError)
       return NextResponse.json(
         {
           error: 'PI_API_UNREACHABLE',
@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
 
     // Cross-check uid
     if (piUser.uid !== uid) {
-      console.warn('[Nexus:Auth] UID mismatch detected:', {
+      console.warn('[ProofGrid:Auth] UID mismatch detected:', {
         clientUid: uid,
         serverUid: piUser.uid,
       })
@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
         }
       } catch (logError) {
         // Log failure must never crash the auth route
-        console.error('[Nexus:Auth] Failed to log uid mismatch:', logError)
+        console.error('[ProofGrid:Auth] Failed to log uid mismatch:', logError)
       }
 
       return NextResponse.json(
@@ -186,7 +186,7 @@ export async function POST(req: NextRequest) {
         )
       }
     } catch (banCheckError) {
-      console.error('[Nexus:Auth] Ban check failed:', banCheckError)
+      console.error('[ProofGrid:Auth] Ban check failed:', banCheckError)
       // Non-fatal — proceed to upsert
     }
 
@@ -219,7 +219,7 @@ export async function POST(req: NextRequest) {
         }
       } catch (refError) {
         // Invalid refCode — proceed with upsert anyway (non-blocking)
-        console.error('[Nexus:Auth] Invalid referral code:', { refCode, error: refError })
+        console.error('[ProofGrid:Auth] Invalid referral code:', { refCode, error: refError })
       }
     }
 
@@ -242,7 +242,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (upsertError || !user) {
-      console.error('[Nexus:Auth] User upsert failed:', {
+      console.error('[ProofGrid:Auth] User upsert failed:', {
         code:    upsertError?.code || 'UNKNOWN',
         message: upsertError?.message || 'No data returned',
         details: upsertError?.details,
@@ -256,7 +256,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    console.log('[Nexus:Auth] Authentication successful:', {
+    console.log('[ProofGrid:Auth] Authentication successful:', {
       id:       user.id,
       piUid:    user.piUid,
       username: user.piUsername,
@@ -283,7 +283,7 @@ export async function POST(req: NextRequest) {
   } catch (unhandledError) {
     // This catches anything that escaped the inner try/catch blocks
     // Log the full error for diagnosis
-    console.error('[Nexus:Auth] UNHANDLED ERROR:', unhandledError)
+    console.error('[ProofGrid:Auth] UNHANDLED ERROR:', unhandledError)
     return NextResponse.json(
       {
         error:   'INTERNAL_ERROR',
@@ -293,3 +293,4 @@ export async function POST(req: NextRequest) {
     )
   }
 }
+

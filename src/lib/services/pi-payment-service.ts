@@ -15,7 +15,7 @@ export async function approvePiPayment(
 ): Promise<{ success: boolean; error?: string }> {
 
   if (!PI_API_KEY) {
-    console.error('[Nexus:PiPayment] PI_API_KEY not configured')
+    console.error('[ProofGrid:PiPayment] PI_API_KEY not configured')
     return { success: false, error: 'PI_API_KEY not configured' }
   }
 
@@ -33,7 +33,7 @@ export async function approvePiPayment(
 
     if (!response.ok) {
       const body = await response.text()
-      console.error('[Nexus:PiPayment] Approval failed:', {
+      console.error('[ProofGrid:PiPayment] Approval failed:', {
         paymentId,
         status: response.status,
         body,
@@ -41,11 +41,11 @@ export async function approvePiPayment(
       return { success: false, error: `Pi API error: ${response.status}` }
     }
 
-    console.log('[Nexus:PiPayment] Payment approved:', paymentId)
+    console.log('[ProofGrid:PiPayment] Payment approved:', paymentId)
     return { success: true }
 
   } catch (err) {
-    console.error('[Nexus:PiPayment] Network error during approval:', err)
+    console.error('[ProofGrid:PiPayment] Network error during approval:', err)
     return { success: false, error: 'Network error' }
   }
 }
@@ -79,7 +79,7 @@ export async function completePiPayment(
 
     if (!response.ok) {
       const body = await response.text()
-      console.error('[Nexus:PiPayment] Completion failed:', {
+      console.error('[ProofGrid:PiPayment] Completion failed:', {
         paymentId,
         txid,
         status: response.status,
@@ -98,11 +98,12 @@ export async function completePiPayment(
       })
       .eq('piPaymentId', paymentId)
 
-    console.log('[Nexus:PiPayment] Payment completed:', { paymentId, txid })
+    console.log('[ProofGrid:PiPayment] Payment completed:', { paymentId, txid })
     return { success: true }
 
   } catch (err) {
-    console.error('[Nexus:PiPayment] Network error during completion:', err)
+    console.error('[ProofGrid:PiPayment] Network error during completion:', err)
     return { success: false, error: 'Network error' }
   }
 }
+

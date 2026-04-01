@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
       .limit(20)
 
     if (error) {
-      console.error('[Nexus:WorkerSubmissions] Error:', error)
+      console.error('[ProofGrid:WorkerSubmissions] Error:', error)
       return NextResponse.json(
         { error: 'FETCH_FAILED' },
         { status: 500 }
@@ -63,10 +63,11 @@ export async function GET(req: NextRequest) {
     )
 
   } catch (err) {
-    console.error('[Nexus:WorkerSubmissions] Unhandled error:', err)
+    console.error('[ProofGrid:WorkerSubmissions] Unhandled error:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR' },
       { status: 500 }
     )
   }
 }
+

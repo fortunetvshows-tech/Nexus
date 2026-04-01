@@ -250,7 +250,7 @@ export async function POST(req: NextRequest) {
     )
 
   } catch (err) {
-    console.error('[Nexus:TasksRoute] Unhandled error:', err)
+    console.error('[ProofGrid:TasksRoute] Unhandled error:', err)
     return NextResponse.json(
       {
         error:   'INTERNAL_ERROR',
@@ -353,11 +353,12 @@ export async function GET(req: NextRequest) {
     }, { status: 200 })
 
   } catch (err) {
-    console.error('[Nexus:TasksRoute] Unhandled GET error:', err)
+    console.error('[ProofGrid:TasksRoute] Unhandled GET error:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR', message: 'An unexpected error occurred' },
       { status: 500 }
     )
   }
 }
+
 

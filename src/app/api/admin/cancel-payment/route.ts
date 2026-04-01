@@ -54,7 +54,8 @@ export async function POST(req: NextRequest) {
 
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
-    console.error('[Nexus:CancelPayment] Error:', message)
+    console.error('[ProofGrid:CancelPayment] Error:', message)
     return NextResponse.json({ success: false, error: message })
   }
 }
+

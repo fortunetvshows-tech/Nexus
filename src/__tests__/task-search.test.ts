@@ -79,3 +79,4 @@ describe('useTaskSearch filters', () => {
     expect(validSorts).toContain(DEFAULT_FILTERS.sort)
   })
 })
+

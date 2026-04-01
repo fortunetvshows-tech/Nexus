@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
       .limit(50)
 
     if (error) {
-      console.error('[Nexus:Analytics:Worker] Error:', error)
+      console.error('[ProofGrid:Analytics:Worker] Error:', error)
       return NextResponse.json(
         { error: 'FETCH_FAILED' },
         { status: 500 }
@@ -114,10 +114,11 @@ export async function GET(req: NextRequest) {
     )
 
   } catch (err) {
-    console.error('[Nexus:Analytics:Worker] Unhandled:', err)
+    console.error('[ProofGrid:Analytics:Worker] Unhandled:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR' },
       { status: 500 }
     )
   }
 }
+

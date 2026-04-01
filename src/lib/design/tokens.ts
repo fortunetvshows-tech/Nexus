@@ -1,5 +1,5 @@
 /**
- * Nexus Design System — ProofGrid Color Palette
+ * ProofGrid Design System — ProofGrid Color Palette
  *
  * Logo Energy: Sapphire & Electric Cyan
  * Layout Philosophy: Bento Grid (20px radius masterpiece)
@@ -338,3 +338,4 @@ export const COMPONENT_STYLES = {
   } as React.CSSProperties,
 
 } as const
+

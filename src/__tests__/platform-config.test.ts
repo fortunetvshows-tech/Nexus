@@ -47,3 +47,4 @@ describe('PLATFORM_CONFIG', () => {
     expect(netPayout).toBeGreaterThan(0)
   })
 })
+

@@ -24,17 +24,18 @@ export async function POST(req: NextRequest) {
 
     if (!res.ok) {
       const body = await res.text()
-      console.error('[Nexus:Cancel] Failed:', { paymentId, status: res.status, body })
+      console.error('[ProofGrid:Cancel] Failed:', { paymentId, status: res.status, body })
       return NextResponse.json({ success: false, error: body }, { status: res.status })
     }
 
     const data = await res.json()
-    console.log('[Nexus:Cancel] Payment cancelled:', paymentId)
+    console.log('[ProofGrid:Cancel] Payment cancelled:', paymentId)
     return NextResponse.json({ success: true, cancelled: data.status?.cancelled })
 
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
-    console.error('[Nexus:Cancel] Error:', message)
+    console.error('[ProofGrid:Cancel] Error:', message)
     return NextResponse.json({ success: false, error: message }, { status: 500 })
   }
 }
+

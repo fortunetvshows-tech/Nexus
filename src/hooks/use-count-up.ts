@@ -41,3 +41,4 @@ export function useCountUp(
 
   return current.toFixed(decimals)
 }
+

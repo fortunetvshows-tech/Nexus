@@ -191,3 +191,4 @@ export function BoostCard({ title, currentBalance, boostOptions, onBoost, isLoad
     </div>
   )
 }
+

@@ -133,7 +133,7 @@ export async function POST(
     }
 
     // Trigger A2U payment from platform wallet to worker
-    console.log('[Nexus:Approve] Triggering A2U payment:', {
+    console.log('[ProofGrid:Approve] Triggering A2U payment:', {
       workerPiUid,
       workerWallet,
       netAmount,
@@ -179,7 +179,7 @@ export async function POST(
           .maybeSingle()
 
         if (fetchErr) {
-          console.error('[Nexus:Approve] Failed to find notification:', { submissionId, error: fetchErr })
+          console.error('[ProofGrid:Approve] Failed to find notification:', { submissionId, error: fetchErr })
         }
 
         if (existingNotif?.id) {
@@ -194,13 +194,13 @@ export async function POST(
             .eq('id', existingNotif.id)
 
           if (updateErr) {
-            console.error('[Nexus:Approve] Failed to update notification with fee breakdown:', {
+            console.error('[ProofGrid:Approve] Failed to update notification with fee breakdown:', {
               submissionId,
               notificationId: existingNotif.id,
               error: updateErr,
             })
           } else {
-            console.log('[Nexus:Approve] Successfully updated notification with fee breakdown:', {
+            console.log('[ProofGrid:Approve] Successfully updated notification with fee breakdown:', {
               submissionId,
               grossAmount,
               platformFee: feeAmount,
@@ -209,7 +209,7 @@ export async function POST(
           }
         } else {
           // Fallback: Create new notification if find failed (shouldn't happen normally)
-          console.warn('[Nexus:Approve] Original notification not found, creating new one:', { submissionId })
+          console.warn('[ProofGrid:Approve] Original notification not found, creating new one:', { submissionId })
           const { error: insertErr } = await supabaseAdmin
             .from('Notification')
             .insert({
@@ -222,11 +222,11 @@ export async function POST(
             })
 
           if (insertErr) {
-            console.error('[Nexus:Approve] Failed to create fallback notification:', { submissionId, error: insertErr })
+            console.error('[ProofGrid:Approve] Failed to create fallback notification:', { submissionId, error: insertErr })
           }
         }
       } catch (err) {
-        console.error('[Nexus:Approve] Unexpected error during notification update:', {
+        console.error('[ProofGrid:Approve] Unexpected error during notification update:', {
           submissionId,
           error: err instanceof Error ? err.message : String(err),
         })
@@ -284,7 +284,7 @@ export async function POST(
         }
       } catch (refError) {
         // Referral reward logic must never block the main payment flow
-        console.error('[Nexus:Approve] Referral reward failed:', refError)
+        console.error('[ProofGrid:Approve] Referral reward failed:', refError)
       }
     }
 
@@ -300,10 +300,11 @@ export async function POST(
     }, { status: 200 })
 
   } catch (err) {
-    console.error('[Nexus:ApproveRoute] Error:', err)
+    console.error('[ProofGrid:ApproveRoute] Error:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR' },
       { status: 500 }
     )
   }
 }
+

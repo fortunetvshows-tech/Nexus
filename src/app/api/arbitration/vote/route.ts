@@ -66,7 +66,8 @@ export async function POST(req: NextRequest) {
     )
 
   } catch (err) {
-    console.error('[Nexus:ArbitrationVoteRoute] Error:', err)
+    console.error('[ProofGrid:ArbitrationVoteRoute] Error:', err)
     return NextResponse.json({ error: 'INTERNAL_ERROR' }, { status: 500 })
   }
 }
+

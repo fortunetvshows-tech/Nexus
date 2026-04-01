@@ -46,7 +46,7 @@ export default function LandingPage() {
         setIsAuthenticating(false)
       }
     } catch (err) {
-      console.error('[Nexus:Landing] Auth error:', err)
+      console.error('[ProofGrid:Landing] Auth error:', err)
       setIsAuthenticating(false)
     }
   }, [authenticate, isAuthenticating, isLoading, isSdkReady])
@@ -585,3 +585,4 @@ export default function LandingPage() {
     </div>
   )
 }
+

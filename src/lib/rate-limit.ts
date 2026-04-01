@@ -18,7 +18,7 @@ const redis = isConfigured ? Redis.fromEnv() : null
 
 if (!isConfigured) {
   console.warn(
-    '[Nexus:RateLimit] Upstash Redis not configured. ' +
+    '[ProofGrid:RateLimit] Upstash Redis not configured. ' +
     'Rate limiting is DISABLED. ' +
     'Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN ' +
     'to enable in production.'
@@ -132,3 +132,4 @@ export async function checkRateLimit(
 
   return null
 }
+

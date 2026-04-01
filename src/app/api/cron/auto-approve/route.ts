@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
       .rpc('auto_approve_submissions')
 
     if (error) {
-      console.error('[Nexus:Cron:AutoApprove] RPC error:', error)
+      console.error('[ProofGrid:Cron:AutoApprove] RPC error:', error)
       return NextResponse.json(
         { error: error.message },
         { status: 500 }
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     }
 
     const count = data as number
-    console.log(`[Nexus:Cron:AutoApprove] Approved ${count} submissions`)
+    console.log(`[ProofGrid:Cron:AutoApprove] Approved ${count} submissions`)
 
     return NextResponse.json(
       { success: true, approved: count },
@@ -34,10 +34,11 @@ export async function GET(req: NextRequest) {
     )
 
   } catch (err) {
-    console.error('[Nexus:Cron:AutoApprove] Error:', err)
+    console.error('[ProofGrid:Cron:AutoApprove] Error:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR' },
       { status: 500 }
     )
   }
 }
+

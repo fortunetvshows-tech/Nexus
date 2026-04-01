@@ -79,7 +79,8 @@ export async function GET(req: NextRequest) {
     })
 
   } catch (err) {
-    console.error('[Nexus:AdminPayouts] Error:', err)
+    console.error('[ProofGrid:AdminPayouts] Error:', err)
     return NextResponse.json({ error: 'INTERNAL_ERROR' }, { status: 500 })
   }
 }
+

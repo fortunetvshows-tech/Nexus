@@ -5,7 +5,7 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 if (!supabaseUrl) {
   console.error(
-    '[Nexus:Supabase] CRITICAL: NEXT_PUBLIC_SUPABASE_URL is not set. ' +
+    '[ProofGrid:Supabase] CRITICAL: NEXT_PUBLIC_SUPABASE_URL is not set. ' +
     'All database operations will fail. ' +
     'Check Vercel environment variables.'
   )
@@ -13,7 +13,7 @@ if (!supabaseUrl) {
 
 if (!supabaseServiceKey) {
   console.error(
-    '[Nexus:Supabase] CRITICAL: SUPABASE_SERVICE_ROLE_KEY is not set. ' +
+    '[ProofGrid:Supabase] CRITICAL: SUPABASE_SERVICE_ROLE_KEY is not set. ' +
     'All database operations will fail. ' +
     'Check Vercel environment variables.'
   )
@@ -35,3 +35,4 @@ export const supabaseAdmin = createClient(
     },
   }
 )
+

@@ -32,7 +32,7 @@ export async function claimTaskSlot(
     })
 
   if (error) {
-    console.error('[Nexus:Submission] Slot claim failed:', error)
+    console.error('[ProofGrid:Submission] Slot claim failed:', error)
     return { success: false, error: error.message }
   }
 
@@ -77,7 +77,7 @@ export async function submitTaskProof(
     })
 
   if (error) {
-    console.error('[Nexus:Submission] Proof submission failed:', error)
+    console.error('[ProofGrid:Submission] Proof submission failed:', error)
     return { success: false, error: error.message, code: 'RPC_FAILED' }
   }
 
@@ -139,7 +139,7 @@ export async function getTaskSubmissions(
     .order('submittedAt', { ascending: false })
 
   if (error) {
-    console.error('[Nexus:Submission] Fetch submissions failed:', error)
+    console.error('[ProofGrid:Submission] Fetch submissions failed:', error)
     return { submissions: [], error: error.message }
   }
 
@@ -165,3 +165,4 @@ export async function getSlotReservation(
 }
 
 export { approveSubmission, rejectSubmission }
+

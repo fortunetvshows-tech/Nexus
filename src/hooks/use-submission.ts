@@ -73,7 +73,7 @@ export function useSubmission(taskId: string, piUid: string = '') {
       return true
 
     } catch (err) {
-      console.error('[Nexus:useSubmission] claimSlot error:', err)
+      console.error('[ProofGrid:useSubmission] claimSlot error:', err)
       setSlotState(prev => ({
         ...prev,
         isClaiming: false,
@@ -127,7 +127,7 @@ export function useSubmission(taskId: string, piUid: string = '') {
         return true
 
       } catch (err) {
-        console.error('[Nexus:useSubmission] submitProof error:', err)
+        console.error('[ProofGrid:useSubmission] submitProof error:', err)
         setSubmitState(prev => ({
           ...prev,
           isSubmitting: false,
@@ -171,7 +171,7 @@ export function useSubmission(taskId: string, piUid: string = '') {
           }
         }
       })
-      .catch(err => console.error('[Nexus:useSubmission] Mount check error:', err))
+      .catch(err => console.error('[ProofGrid:useSubmission] Mount check error:', err))
   }, [taskId, piUid])
 
   const reset = useCallback(() => {
@@ -216,3 +216,4 @@ export function useSubmission(taskId: string, piUid: string = '') {
     reset,
   }
 }
+

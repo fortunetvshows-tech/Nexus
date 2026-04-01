@@ -211,7 +211,7 @@ export async function payWorkerA2U(params: {
   let txid:      string | null = null
 
   try {
-    console.log('[Nexus:A2U] Starting payment:', {
+    console.log('[ProofGrid:A2U] Starting payment:', {
       workerPiUid,
       amount,
       submissionId,
@@ -227,7 +227,7 @@ export async function payWorkerA2U(params: {
       toAddress: workerWallet,  // Use stored wallet address instead of relying on scopes
     })
 
-    console.log('[Nexus:A2U] Payment created:', paymentId)
+    console.log('[ProofGrid:A2U] Payment created:', paymentId)
 
     // Store paymentId immediately — prevents double payment
     await supabaseAdmin
@@ -243,7 +243,7 @@ export async function payWorkerA2U(params: {
     // Check if already submitted
     if (paymentDetails.transaction?.txid) {
       txid = paymentDetails.transaction.txid
-      console.log('[Nexus:A2U] Payment already has txid:', txid)
+      console.log('[ProofGrid:A2U] Payment already has txid:', txid)
     } else {
       // Step 3 — Build, sign and submit Stellar transaction
       txid = await submitStellarTransaction({
@@ -252,7 +252,7 @@ export async function payWorkerA2U(params: {
         from_address: paymentDetails.from_address,
         to_address:   paymentDetails.to_address,
       })
-      console.log('[Nexus:A2U] Transaction submitted:', txid)
+      console.log('[ProofGrid:A2U] Transaction submitted:', txid)
     }
 
     // Store txid immediately
@@ -263,7 +263,7 @@ export async function payWorkerA2U(params: {
 
     // Step 4 — Complete payment on Pi Network
     await completePiPayment(paymentId, txid)
-    console.log('[Nexus:A2U] Payment completed:', { paymentId, txid })
+    console.log('[ProofGrid:A2U] Payment completed:', { paymentId, txid })
 
     // Step 5 — Mark confirmed in database
     await supabaseAdmin
@@ -292,7 +292,7 @@ export async function payWorkerA2U(params: {
       p_amount:  amount,
     })
 
-    console.log('[Nexus:A2U] Worker paid successfully:', {
+    console.log('[ProofGrid:A2U] Worker paid successfully:', {
       workerPiUid, amount, txid,
     })
 
@@ -301,7 +301,7 @@ export async function payWorkerA2U(params: {
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
 
-    console.error('[Nexus:A2U] Payment failed:', {
+    console.error('[ProofGrid:A2U] Payment failed:', {
       workerPiUid, amount, submissionId,
       paymentId, txid, error: message,
     })
@@ -322,7 +322,7 @@ export async function payWorkerA2U(params: {
           },
         })
     } catch (logErr) {
-      console.error('[Nexus:A2U] Failed to log AdminAction:', logErr)
+      console.error('[ProofGrid:A2U] Failed to log AdminAction:', logErr)
     }
 
     return { success: false, error: message, code: 'PAYMENT_FAILED' }
@@ -336,7 +336,7 @@ export async function cancelPiPayment(paymentId: string): Promise<A2UPaymentResu
   }
 
   try {
-    console.log('[Nexus:A2U] Cancelling payment:', paymentId)
+    console.log('[ProofGrid:A2U] Cancelling payment:', paymentId)
 
     const res = await fetch(`${PI_API_BASE}/v2/payments/${paymentId}/cancel`, {
       method: 'POST',
@@ -351,12 +351,13 @@ export async function cancelPiPayment(paymentId: string): Promise<A2UPaymentResu
       throw new Error(`Pi cancelPayment failed: ${res.status} — ${body}`)
     }
 
-    console.log('[Nexus:A2U] Payment cancelled successfully:', paymentId)
+    console.log('[ProofGrid:A2U] Payment cancelled successfully:', paymentId)
     return { success: true, paymentId }
 
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
-    console.error('[Nexus:A2U] Cancel failed:', { paymentId, error: message })
+    console.error('[ProofGrid:A2U] Cancel failed:', { paymentId, error: message })
     return { success: false, error: message, code: 'CANCEL_FAILED' }
   }
 }
+

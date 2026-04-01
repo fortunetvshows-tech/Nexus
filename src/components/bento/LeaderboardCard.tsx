@@ -240,3 +240,4 @@ export function LeaderboardCard({ piUid, username }: LeaderboardCardProps) {
     </div>
   )
 }
+

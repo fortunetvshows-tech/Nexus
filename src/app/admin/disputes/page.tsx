@@ -686,7 +686,7 @@ export default function AdminDisputesPage() {
             gap:           SPACING.sm,
           }}>
             {[1, 2, 3].map(i => (
-              <div key={i} className="nexus-card" style={{ height: '120px' }} />
+              <div key={i} className="proofgrid-card" style={{ height: '120px' }} />
             ))}
           </div>
         ) : filteredDisputes.length === 0 ? (
@@ -716,7 +716,7 @@ export default function AdminDisputesPage() {
               return (
                 <div
                   key={dispute.id}
-                  className="nexus-card"
+                  className="proofgrid-card"
                   style={{
                     borderLeft:  `3px solid ${statusColor}`,
                     animation:   `fade-up 0.3s ease ${idx * 0.06}s both`,
@@ -929,7 +929,7 @@ export default function AdminDisputesPage() {
               color: COLORS.textSecondary,
             },
           ].map(stat => (
-            <div key={stat.label} className="nexus-card" style={{ padding: SPACING.md }}>
+            <div key={stat.label} className="proofgrid-card" style={{ padding: SPACING.md }}>
               <div style={{
                 fontSize:      '0.62rem',
                 color:         COLORS.textMuted,
@@ -966,7 +966,7 @@ export default function AdminDisputesPage() {
             gap:           SPACING.sm,
           }}>
             {[1, 2, 3].map(i => (
-              <div key={i} className="nexus-card" style={{ height: '80px' }} />
+              <div key={i} className="proofgrid-card" style={{ height: '80px' }} />
             ))}
           </div>
         ) : payouts.length === 0 ? (
@@ -998,7 +998,7 @@ export default function AdminDisputesPage() {
               return (
                 <div
                   key={payout.id}
-                  className="nexus-card"
+                  className="proofgrid-card"
                   style={{
                     borderLeft: `3px solid ${statusColor}`,
                   }}
@@ -1225,7 +1225,7 @@ export default function AdminDisputesPage() {
               color: COLORS.amber,
             },
           ].map(stat => (
-            <div key={stat.label} className="nexus-card" style={{ padding: SPACING.md }}>
+            <div key={stat.label} className="proofgrid-card" style={{ padding: SPACING.md }}>
               <div style={{
                 fontSize:      '0.62rem',
                 color:         COLORS.textMuted,
@@ -1330,7 +1330,7 @@ export default function AdminDisputesPage() {
             gap:           SPACING.sm,
           }}>
             {[1, 2, 3].map(i => (
-              <div key={i} className="nexus-card" style={{ height: '80px' }} />
+              <div key={i} className="proofgrid-card" style={{ height: '80px' }} />
             ))}
           </div>
         ) : stuckPayments.length === 0 ? (
@@ -1360,7 +1360,7 @@ export default function AdminDisputesPage() {
                 <>
                 <div
                   key={payment.id}
-                  className="nexus-card"
+                  className="proofgrid-card"
                   onClick={() => {
                     const newSelected = new Set(selectedStuck)
                     if (newSelected.has(payment.id)) {
@@ -1584,3 +1584,4 @@ export default function AdminDisputesPage() {
     </div>
   )
 }
+

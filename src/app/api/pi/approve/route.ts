@@ -25,10 +25,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true }, { status: 200 })
 
   } catch (err) {
-    console.error('[Nexus:PiApprove] Error:', err)
+    console.error('[ProofGrid:PiApprove] Error:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR' },
       { status: 500 }
     )
   }
 }
+

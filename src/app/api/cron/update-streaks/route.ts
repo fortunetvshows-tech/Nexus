@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
       .rpc('update_worker_streaks')
 
     if (error) {
-      console.error('[Nexus:Cron:Streaks] RPC error:', error)
+      console.error('[ProofGrid:Cron:Streaks] RPC error:', error)
       return NextResponse.json(
         { error: error.message },
         { status: 500 }
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     }
 
     const count = data as number
-    console.log(`[Nexus:Cron:Streaks] Updated ${count} worker streaks`)
+    console.log(`[ProofGrid:Cron:Streaks] Updated ${count} worker streaks`)
 
     return NextResponse.json(
       { success: true, updated: count },
@@ -33,10 +33,11 @@ export async function GET(req: NextRequest) {
     )
 
   } catch (err) {
-    console.error('[Nexus:Cron:Streaks] Error:', err)
+    console.error('[ProofGrid:Cron:Streaks] Error:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR' },
       { status: 500 }
     )
   }
 }
+

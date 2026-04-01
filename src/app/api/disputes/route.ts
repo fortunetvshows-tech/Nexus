@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
     )
 
   } catch (err) {
-    console.error('[Nexus:DisputeRoute] Error:', err)
+    console.error('[ProofGrid:DisputeRoute] Error:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR' },
       { status: 500 }
@@ -159,10 +159,11 @@ export async function GET(req: NextRequest) {
     )
 
   } catch (err) {
-    console.error('[Nexus:DisputeRoute] GET error:', err)
+    console.error('[ProofGrid:DisputeRoute] GET error:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR' },
       { status: 500 }
     )
   }
 }
+

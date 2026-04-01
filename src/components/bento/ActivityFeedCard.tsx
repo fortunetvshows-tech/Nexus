@@ -153,3 +153,4 @@ export function ActivityFeedCard({ submissions }: ActivityFeedCardProps) {
     </div>
   )
 }
+

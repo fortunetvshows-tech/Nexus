@@ -42,7 +42,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: true, disputes: disputes ?? [] })
 
   } catch (err) {
-    console.error('[Nexus:DisputeWorker] Error:', err)
+    console.error('[ProofGrid:DisputeWorker] Error:', err)
     return NextResponse.json({ error: 'INTERNAL_ERROR' }, { status: 500 })
   }
 }
+

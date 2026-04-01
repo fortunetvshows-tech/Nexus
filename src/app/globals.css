@@ -1,88 +1,88 @@
 @import "tailwindcss";
 
 /* ============================================================
-   NEXUS DESIGN TOKENS — Single source of truth
+   PROOFGRID DESIGN TOKENS — Single source of truth
    All values mirror src/lib/design/tokens.ts
    ============================================================ */
 
 :root {
   /* Backgrounds */
-  --nexus-bg-base:      #0F172A;
-  --nexus-bg-surface:   #1E293B;
-  --nexus-bg-elevated:  #263348;
-  --nexus-bg-overlay:   #2D3D56;
+  --proofgrid-bg-base:      #0F172A;
+  --proofgrid-bg-surface:   #1E293B;
+  --proofgrid-bg-elevated:  #263348;
+  --proofgrid-bg-overlay:   #2D3D56;
 
   /* Borders */
-  --nexus-border:       rgba(148, 163, 184, 0.1);
-  --nexus-border-accent: rgba(148, 163, 184, 0.2);
-  --nexus-border-focus: #6366F1;
+  --proofgrid-border:       rgba(148, 163, 184, 0.1);
+  --proofgrid-border-accent: rgba(148, 163, 184, 0.2);
+  --proofgrid-border-focus: #6366F1;
 
   /* Indigo — primary accent */
-  --nexus-indigo:       #6366F1;
-  --nexus-indigo-dark:  #4F46E5;
-  --nexus-indigo-light: #818CF8;
-  --nexus-indigo-dim:   rgba(99, 102, 241, 0.15);
+  --proofgrid-indigo:       #6366F1;
+  --proofgrid-indigo-dark:  #4F46E5;
+  --proofgrid-indigo-light: #818CF8;
+  --proofgrid-indigo-dim:   rgba(99, 102, 241, 0.15);
 
   /* Emerald — earned Pi */
-  --nexus-emerald:      #10B981;
-  --nexus-emerald-dark: #059669;
-  --nexus-emerald-dim:  rgba(16, 185, 129, 0.15);
+  --proofgrid-emerald:      #10B981;
+  --proofgrid-emerald-dark: #059669;
+  --proofgrid-emerald-dim:  rgba(16, 185, 129, 0.15);
 
   /* Status */
-  --nexus-amber:        #F59E0B;
-  --nexus-amber-dim:    rgba(245, 158, 11, 0.15);
-  --nexus-red:          #EF4444;
-  --nexus-red-dim:      rgba(239, 68, 68, 0.15);
-  --nexus-blue:         #3B82F6;
-  --nexus-blue-dim:     rgba(59, 130, 246, 0.15);
+  --proofgrid-amber:        #F59E0B;
+  --proofgrid-amber-dim:    rgba(245, 158, 11, 0.15);
+  --proofgrid-red:          #EF4444;
+  --proofgrid-red-dim:      rgba(239, 68, 68, 0.15);
+  --proofgrid-blue:         #3B82F6;
+  --proofgrid-blue-dim:     rgba(59, 130, 246, 0.15);
 
   /* Text */
-  --nexus-text-primary:   #F1F5F9;
-  --nexus-text-secondary: #94A3B8;
-  --nexus-text-muted:     #64748B;
-  --nexus-text-inverse:   #0F172A;
+  --proofgrid-text-primary:   #F1F5F9;
+  --proofgrid-text-secondary: #94A3B8;
+  --proofgrid-text-muted:     #64748B;
+  --proofgrid-text-inverse:   #0F172A;
 
   /* Shadows */
-  --nexus-shadow-card:   0 4px 24px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
-  --nexus-shadow-indigo: 0 0 24px rgba(99,102,241,0.4);
-  --nexus-shadow-emerald: 0 0 20px rgba(16,185,129,0.3);
+  --proofgrid-shadow-card:   0 4px 24px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+  --proofgrid-shadow-indigo: 0 0 24px rgba(99,102,241,0.4);
+  --proofgrid-shadow-emerald: 0 0 20px rgba(16,185,129,0.3);
 
   /* Typography */
-  --nexus-font-sans: 'Inter', system-ui, sans-serif;
-  --nexus-font-mono: 'Fira Code', monospace;
+  --proofgrid-font-sans: 'Inter', system-ui, sans-serif;
+  --proofgrid-font-mono: 'Fira Code', monospace;
 }
 
 /* ============================================================
    TAILWIND v4 THEME EXTENSION
    Exposes CSS vars as Tailwind utility classes:
-   bg-nexus-base, text-nexus-indigo, border-nexus-border, etc.
+   bg-proofgrid-base, text-proofgrid-indigo, border-proofgrid-border, etc.
    ============================================================ */
 
 @theme inline {
-  --color-nexus-base:           var(--nexus-bg-base);
-  --color-nexus-surface:        var(--nexus-bg-surface);
-  --color-nexus-elevated:       var(--nexus-bg-elevated);
-  --color-nexus-overlay:        var(--nexus-bg-overlay);
+  --color-proofgrid-base:           var(--proofgrid-bg-base);
+  --color-proofgrid-surface:        var(--proofgrid-bg-surface);
+  --color-proofgrid-elevated:       var(--proofgrid-bg-elevated);
+  --color-proofgrid-overlay:        var(--proofgrid-bg-overlay);
 
-  --color-nexus-indigo:         var(--nexus-indigo);
-  --color-nexus-indigo-dark:    var(--nexus-indigo-dark);
-  --color-nexus-indigo-light:   var(--nexus-indigo-light);
-  --color-nexus-indigo-dim:     var(--nexus-indigo-dim);
+  --color-proofgrid-indigo:         var(--proofgrid-indigo);
+  --color-proofgrid-indigo-dark:    var(--proofgrid-indigo-dark);
+  --color-proofgrid-indigo-light:   var(--proofgrid-indigo-light);
+  --color-proofgrid-indigo-dim:     var(--proofgrid-indigo-dim);
 
-  --color-nexus-emerald:        var(--nexus-emerald);
-  --color-nexus-emerald-dark:   var(--nexus-emerald-dark);
-  --color-nexus-emerald-dim:    var(--nexus-emerald-dim);
+  --color-proofgrid-emerald:        var(--proofgrid-emerald);
+  --color-proofgrid-emerald-dark:   var(--proofgrid-emerald-dark);
+  --color-proofgrid-emerald-dim:    var(--proofgrid-emerald-dim);
 
-  --color-nexus-amber:          var(--nexus-amber);
-  --color-nexus-red:            var(--nexus-red);
-  --color-nexus-blue:           var(--nexus-blue);
+  --color-proofgrid-amber:          var(--proofgrid-amber);
+  --color-proofgrid-red:            var(--proofgrid-red);
+  --color-proofgrid-blue:           var(--proofgrid-blue);
 
-  --color-nexus-text-primary:   var(--nexus-text-primary);
-  --color-nexus-text-secondary: var(--nexus-text-secondary);
-  --color-nexus-text-muted:     var(--nexus-text-muted);
+  --color-proofgrid-text-primary:   var(--proofgrid-text-primary);
+  --color-proofgrid-text-secondary: var(--proofgrid-text-secondary);
+  --color-proofgrid-text-muted:     var(--proofgrid-text-muted);
 
-  --font-sans: var(--nexus-font-sans);
-  --font-mono: var(--nexus-font-mono);
+  --font-sans: var(--proofgrid-font-sans);
+  --font-mono: var(--proofgrid-font-mono);
 }
 
 /* ============================================================
@@ -94,9 +94,9 @@
 }
 
 body {
-  background:              var(--nexus-bg-base);
-  color:                   var(--nexus-text-primary);
-  font-family:             var(--nexus-font-sans);
+  background:              var(--proofgrid-bg-base);
+  color:                   var(--proofgrid-text-primary);
+  font-family:             var(--proofgrid-font-sans);
   -webkit-font-smoothing:  antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin:  0;
@@ -141,34 +141,34 @@ body {
    COMPONENT CLASSES — Reusable Tailwind-compatible patterns
    ============================================================ */
 
-.nexus-card {
+.proofgrid-card {
   background:    linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%),
-                 var(--nexus-bg-surface);
-  border:        1px solid var(--nexus-border);
+                 var(--proofgrid-bg-surface);
+  border:        1px solid var(--proofgrid-border);
   border-top:    0.5px solid rgba(255,255,255,0.1);
   border-radius: 14px;
-  box-shadow:    var(--nexus-shadow-card),
+  box-shadow:    var(--proofgrid-shadow-card),
                  inset 0 1px 0 rgba(255,255,255,0.05);
 }
 
-.nexus-btn-primary {
-  background:    linear-gradient(180deg, var(--nexus-indigo) 0%, var(--nexus-indigo-dark) 100%);
+.proofgrid-btn-primary {
+  background:    linear-gradient(180deg, var(--proofgrid-indigo) 0%, var(--proofgrid-indigo-dark) 100%);
   color:         white;
   border:        none;
   border-radius: 10px;
-  font-family:   var(--nexus-font-sans);
+  font-family:   var(--proofgrid-font-sans);
   font-weight:   600;
   cursor:        pointer;
-  box-shadow:    var(--nexus-shadow-indigo);
+  box-shadow:    var(--proofgrid-shadow-indigo);
   transition:    all 0.15s ease;
 }
 
-.nexus-btn-primary:hover {
+.proofgrid-btn-primary:hover {
   transform:  translateY(-1px);
   box-shadow: 0 0 32px rgba(99,102,241,0.5);
 }
 
-.nexus-btn-primary:active {
+.proofgrid-btn-primary:active {
   transform: scale(0.98);
 }
 
@@ -181,12 +181,12 @@ body {
 
 /* Scrollbar */
 ::-webkit-scrollbar       { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--nexus-bg-base); }
-::-webkit-scrollbar-thumb { background: var(--nexus-bg-elevated); border-radius: 3px; }
+::-webkit-scrollbar-track { background: var(--proofgrid-bg-base); }
+::-webkit-scrollbar-thumb { background: var(--proofgrid-bg-elevated); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #334155; }
 
 /* Bento card hover */
-.nexus-card:hover {
+.proofgrid-card:hover {
   transform:  translateY(-2px);
   box-shadow: 0 8px 32px rgba(0,0,0,0.4),
               0 2px 4px rgba(0,0,0,0.2),
@@ -303,7 +303,7 @@ body {
 
 /* ── Card responsive ───────────────────────────────────────── */
 @media (max-width: 480px) {
-  .nexus-card {
+  .proofgrid-card {
     padding: var(--card-padding) !important;
   }
 }
@@ -335,7 +335,7 @@ body {
 
 /* ── Button responsive ─────────────────────────────────────── */
 @media (max-width: 480px) {
-  .nexus-btn-primary {
+  .proofgrid-btn-primary {
     width:      100%;
     min-width:  unset !important;
     padding:    0.875rem 1rem !important;
@@ -412,7 +412,7 @@ section[id] {
 
 /* Prevent cards stretching on small screens */
 @media (max-width: 480px) {
-  .nexus-card {
+  .proofgrid-card {
     min-width: 0 !important;
     width: 100% !important;
     box-sizing: border-box !important;
@@ -450,7 +450,7 @@ section[id] {
 }
 
 /* Glass card effect */
-.nexus-card {
+.proofgrid-card {
   background:    rgba(17, 24, 39, 0.8) !important;
   border:        1px solid rgba(255, 255, 255, 0.06) !important;
   border-radius: 20px !important;
@@ -461,7 +461,7 @@ section[id] {
   transition:    transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 
-.nexus-card:hover {
+.proofgrid-card:hover {
   transform:  translateY(-2px) !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
               0 1px 0 rgba(255,255,255,0.08) inset !important;

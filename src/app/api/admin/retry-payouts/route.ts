@@ -124,7 +124,8 @@ export async function POST(req: NextRequest) {
     })
 
   } catch (err) {
-    console.error('[Nexus:RetryPayouts] Error:', err)
+    console.error('[ProofGrid:RetryPayouts] Error:', err)
     return NextResponse.json({ error: 'INTERNAL_ERROR' }, { status: 500 })
   }
 }
+

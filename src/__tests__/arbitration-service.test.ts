@@ -72,3 +72,4 @@ describe('castVote', () => {
     expect(result.resolved).toBe(true)
   })
 })
+

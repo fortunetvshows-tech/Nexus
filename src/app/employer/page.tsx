@@ -534,7 +534,7 @@ export default function EmployerPage() {
                 margin:     '0 0 1.25rem',
                 fontSize:   '0.95rem',
                 fontWeight: '600',
-                color:      COLORS.indigoLight,
+                color:      COLORS.sapphireLight,
               }}>
                 Worker Requirements
               </h3>
@@ -802,7 +802,7 @@ export default function EmployerPage() {
               </div>
               <code style={{
                 fontSize:  '0.8rem',
-                color:     COLORS.indigoLight,
+                color:     COLORS.sapphireLight,
                 wordBreak: 'break-all',
               }}>
                 {taskId}
@@ -928,3 +928,4 @@ export default function EmployerPage() {
     </div>
   )
 }
+

@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    console.log('[Nexus:BackfillEscrow] Starting escrow ledger backfill...')
+    console.log('[ProofGrid:BackfillEscrow] Starting escrow ledger backfill...')
 
     // Step 1: Get all tasks
     const { data: allTasks, error: tasksError } = await supabaseAdmin
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    console.log(`[Nexus:BackfillEscrow] Found ${allTasks.length} tasks`)
+    console.log(`[ProofGrid:BackfillEscrow] Found ${allTasks.length} tasks`)
 
     // Step 2: Get all existing EscrowLedgers
     const { data: existingLedgers } = await supabaseAdmin
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
 
     // Step 3: Find tasks missing ledgers
     const missingTasks = allTasks.filter(t => !ledgerTaskIds.has(t.id))
-    console.log(`[Nexus:BackfillEscrow] Found ${missingTasks.length} tasks missing EscrowLedger`)
+    console.log(`[ProofGrid:BackfillEscrow] Found ${missingTasks.length} tasks missing EscrowLedger`)
 
     if (missingTasks.length === 0) {
       return NextResponse.json({
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
         updatedAt: new Date().toISOString(),
       })
 
-      console.log(`[Nexus:BackfillEscrow] Task ${task.id}: locked=${lockedAmount}, released=${releasedAmount}`)
+      console.log(`[ProofGrid:BackfillEscrow] Task ${task.id}: locked=${lockedAmount}, released=${releasedAmount}`)
     }
 
     // Step 5: Insert all missing ledgers
@@ -108,14 +108,14 @@ export async function POST(req: NextRequest) {
         .select()
 
       if (insertError) {
-        console.error('[Nexus:BackfillEscrow] Insert failed:', insertError)
+        console.error('[ProofGrid:BackfillEscrow] Insert failed:', insertError)
         return NextResponse.json(
           { error: 'INSERT_FAILED', details: insertError.message },
           { status: 500, headers: corsHeaders }
         )
       }
 
-      console.log(`[Nexus:BackfillEscrow] Successfully created ${inserted?.length ?? 0} EscrowLedger records`)
+      console.log(`[ProofGrid:BackfillEscrow] Successfully created ${inserted?.length ?? 0} EscrowLedger records`)
 
       return NextResponse.json({
         success: true,
@@ -132,10 +132,11 @@ export async function POST(req: NextRequest) {
     }, { headers: corsHeaders })
 
   } catch (err) {
-    console.error('[Nexus:BackfillEscrow] Error:', err)
+    console.error('[ProofGrid:BackfillEscrow] Error:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR', details: String(err) },
       { status: 500, headers: corsHeaders }
     )
   }
 }
+

@@ -72,3 +72,4 @@ describe('Analytics helpers', () => {
     expect(labels['platform_fee']).toBe('Fee')
   })
 })
+

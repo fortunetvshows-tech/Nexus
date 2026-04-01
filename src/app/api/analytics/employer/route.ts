@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
       .order('createdAt', { ascending: false })
 
     if (tasksError) {
-      console.error('[Nexus:Analytics:Employer] Tasks error:', tasksError)
+      console.error('[ProofGrid:Analytics:Employer] Tasks error:', tasksError)
       return NextResponse.json(
         { error: 'FETCH_FAILED' },
         { status: 500 }
@@ -96,10 +96,11 @@ export async function GET(req: NextRequest) {
     )
 
   } catch (err) {
-    console.error('[Nexus:Analytics:Employer] Unhandled:', err)
+    console.error('[ProofGrid:Analytics:Employer] Unhandled:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR' },
       { status: 500 }
     )
   }
 }
+

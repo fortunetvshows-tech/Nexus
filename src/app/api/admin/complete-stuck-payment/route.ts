@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const keypair = StellarSdk.Keypair.fromSecret(WALLET_PRIVATE_SEED)
     const horizon = new StellarSdk.Horizon.Server(PI_HORIZON_URL)
 
-    console.log('[Nexus:StuckPayment] Attempting to complete:', {
+    console.log('[ProofGrid:StuckPayment] Attempting to complete:', {
       paymentId, toAddress, fromAddress,
       ourPublicKey: keypair.publicKey(),
       match: fromAddress === keypair.publicKey(),
@@ -62,10 +62,10 @@ export async function POST(req: NextRequest) {
     try {
       const txResponse = await horizon.submitTransaction(transaction)
       txid = (txResponse as any).id ?? (txResponse as any).hash
-      console.log('[Nexus:StuckPayment] Transaction submitted:', txid)
+      console.log('[ProofGrid:StuckPayment] Transaction submitted:', txid)
     } catch (stellarErr: any) {
       const detail = stellarErr?.response?.data?.extras?.result_codes ?? stellarErr?.message
-      console.error('[Nexus:StuckPayment] Stellar error:', detail)
+      console.error('[ProofGrid:StuckPayment] Stellar error:', detail)
       return NextResponse.json({
         success: false,
         error:   'Stellar submission failed',
@@ -118,7 +118,8 @@ export async function POST(req: NextRequest) {
 
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
-    console.error('[Nexus:StuckPayment] Error:', message)
+    console.error('[ProofGrid:StuckPayment] Error:', message)
     return NextResponse.json({ success: false, error: message })
   }
 }
+

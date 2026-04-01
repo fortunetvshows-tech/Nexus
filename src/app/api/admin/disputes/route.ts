@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: true, disputes: disputes ?? [] })
 
   } catch (err) {
-    console.error('[Nexus:AdminDisputes] Error:', err)
+    console.error('[ProofGrid:AdminDisputes] Error:', err)
     return NextResponse.json({ error: 'INTERNAL_ERROR' }, { status: 500 })
   }
 }
@@ -163,7 +163,7 @@ export async function POST(req: NextRequest) {
             taskTitle:    task?.title ?? 'Nexus task',
           })
 
-          console.log('[Nexus:Dispute] Auto-payment after worker win:', {
+          console.log('[ProofGrid:Dispute] Auto-payment after worker win:', {
             worker:    worker.piUsername,
             amount:    netAmount,
             success:   payResult.success,
@@ -190,7 +190,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true })
 
   } catch (err) {
-    console.error('[Nexus:AdminDisputes:Resolve] Error:', err)
+    console.error('[ProofGrid:AdminDisputes:Resolve] Error:', err)
     return NextResponse.json({ error: 'INTERNAL_ERROR' }, { status: 500 })
   }
 }
+

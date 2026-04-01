@@ -49,7 +49,8 @@ export async function POST(req: NextRequest) {
     )
 
   } catch (err) {
-    console.error('[Nexus:ArbitrationRoute] Error:', err)
+    console.error('[ProofGrid:ArbitrationRoute] Error:', err)
     return NextResponse.json({ error: 'INTERNAL_ERROR' }, { status: 500 })
   }
 }
+

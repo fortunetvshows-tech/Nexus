@@ -97,9 +97,9 @@ export async function POST(request: NextRequest) {
       fileMime: file.type,
     })
 
-    // Upload to nexus-proofs bucket (same bucket as work files, organized by prefix)
+    // Upload to proofgrid-proofs bucket (same bucket as work files, organized by prefix)
     const { data, error: uploadError } = await supabaseAdmin.storage
-      .from('nexus-proofs')
+      .from('proofgrid-proofs')
       .upload(filename, bufferView, {
         contentType: file.type,
         upsert: false,
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
 
     // Get public URL
     const { data: publicUrlData } = supabaseAdmin.storage
-      .from('nexus-proofs')
+      .from('proofgrid-proofs')
       .getPublicUrl(filename)
 
     const instructionUrl = publicUrlData?.publicUrl
@@ -163,3 +163,4 @@ export async function POST(request: NextRequest) {
     )
   }
 }
+

@@ -89,10 +89,11 @@ export async function POST(
     )
 
   } catch (err) {
-    console.error('[Nexus:RejectRoute] Error:', err)
+    console.error('[ProofGrid:RejectRoute] Error:', err)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR' },
       { status: 500 }
     )
   }
 }
+

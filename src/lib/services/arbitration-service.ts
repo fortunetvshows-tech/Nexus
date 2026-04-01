@@ -28,7 +28,7 @@ export async function selectArbitrators(
     })
 
   if (error) {
-    console.error('[Nexus:Arbitration] select_arbitrators error:', error)
+    console.error('[ProofGrid:Arbitration] select_arbitrators error:', error)
     return { success: false, error: error.message, code: 'RPC_FAILED' }
   }
 
@@ -83,7 +83,7 @@ export async function castVote(
     })
 
   if (error) {
-    console.error('[Nexus:Arbitration] cast_arbitration_vote error:', error)
+    console.error('[ProofGrid:Arbitration] cast_arbitration_vote error:', error)
     return { success: false, error: error.message, code: 'RPC_FAILED' }
   }
 
@@ -148,7 +148,7 @@ export async function getPendingArbitrations(
     .order('createdAt', { ascending: true })
 
   if (error) {
-    console.error('[Nexus:Arbitration] getPendingArbitrations error:', error)
+    console.error('[ProofGrid:Arbitration] getPendingArbitrations error:', error)
     return { arbitrations: [], error: error.message }
   }
 
@@ -165,3 +165,4 @@ export async function getPendingArbitrations(
     }
   }>, error: null }
 }
+
