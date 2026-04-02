@@ -204,9 +204,9 @@ export default function TaskDetailPage({
   return (
     <div style={{
       minHeight:  '100vh',
-      background: '#0f0f0f',
-      fontFamily: 'system-ui, sans-serif',
-      color:      '#ffffff',
+      background: COLORS.bgBase,
+      fontFamily: FONTS.sans,
+      color:      COLORS.textPrimary,
     }}>
       <Navigation currentPage="feed" />
 
@@ -220,174 +220,213 @@ export default function TaskDetailPage({
           ← Back to opportunities
         </Link>
 
-        {/* Task header — earning-first layout */}
+        {/* ═══════════════════════════════════════════════════════════
+            HERO SECTION — WINNING MOMENT
+            ═══════════════════════════════════════════════════════════ */}
         <div style={{
-          background:   COLORS.bgSurface,
-          border:       `1px solid ${COLORS.border}`,
-          borderRadius: RADII.xl,
-          padding:      SPACING.xl,
-          marginBottom: SPACING.md,
+          background:     GRADIENTS.card,
+          border:         `1px solid ${COLORS.borderAccent}`,
+          borderRadius:   RADII.xl,
+          padding:        SPACING.xxl,
+          marginBottom:   SPACING.xxxl,
+          position:       'relative',
+          overflow:       'hidden',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)' as any,
         }}>
-          {/* Reward — hero element */}
+          {/* Animated background grid */}
           <div style={{
-            textAlign:    'center' as const,
-            marginBottom: SPACING.lg,
-            paddingBottom: SPACING.lg,
-            borderBottom: `1px solid ${COLORS.border}`,
-          }}>
+            position:  'absolute',
+            inset:     0,
+            opacity:   0.3,
+            background: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h80v80H0z' fill='%23080A0F'/%3E%3Cpath d='M0 0h80M0 20h80M0 40h80M0 60h80M0 80h80M0 0v80M20 0v80M40 0v80M60 0v80M80 0v80' stroke='rgba(0,150,255,0.06)' stroke-width='0.5'/%3E%3C/svg%3E")`,
+            pointerEvents: 'none',
+          }} />
+
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            {/* THE EARN MOMENT — Hero Typography */}
             <div style={{
-              fontSize:      '0.72rem',
-              fontWeight:    '700',
-              color:         COLORS.emerald,
-              textTransform: 'uppercase' as const,
-              letterSpacing: '0.15em',
-              marginBottom:  '8px',
+              textAlign:    'center',
+              marginBottom: SPACING.xxxl,
+              paddingBottom: SPACING.xxl,
+              borderBottom: `1px solid ${COLORS.borderAccent}`,
             }}>
-              You will earn
-            </div>
-            <div>
               <div style={{
-                fontFamily:    FONTS.mono,
-                fontSize:      'clamp(3rem, 10vw, 4rem)',
-                fontWeight:    '800',
-                color:         COLORS.emerald,
-                letterSpacing: '-0.04em',
-                lineHeight:    1,
+                fontSize:      '0.8rem',
+                fontWeight:    '700',
+                color:         COLORS.accent.primary,
+                textTransform: 'uppercase',
+                letterSpacing: '0.15em',
+                marginBottom:  SPACING.lg,
+                fontFamily:    FONTS.sans,
               }}>
-                {Math.max(0, PLATFORM_CONFIG.workerNetPayout(task.piReward)).toFixed(2)}π
+                ✓ Complete this task
               </div>
+
+              {/* BIG EARNING NUMBER */}
               <div style={{
-                fontSize:   '0.78rem',
-                color:      COLORS.textMuted,
-                marginTop:  '6px',
+                marginBottom: SPACING.lg,
               }}>
-                You receive this
+                <div style={{
+                  fontFamily:    FONTS.mono,
+                  fontSize:      'clamp(2.5rem, 15vw, 5rem)',
+                  fontWeight:    '900',
+                  color:         COLORS.accent.primary,
+                  letterSpacing: '-0.05em',
+                  lineHeight:    1,
+                  textShadow:    `0 0 40px ${COLORS.accent.glow}`,
+                }}>
+                  {Math.max(0, PLATFORM_CONFIG.workerNetPayout(task.piReward)).toFixed(2)}π
+                </div>
+                <div style={{
+                  fontSize:      '1rem',
+                  color:         COLORS.accent.bright,
+                  marginTop:     SPACING.md,
+                  fontWeight:    '600',
+                  fontFamily:    FONTS.display,
+                }}>
+                  Earn instantly on approval
+                </div>
               </div>
+
+              {/* Fee breakdown badges */}
               <div style={{
                 display:        'flex',
                 alignItems:     'center',
                 justifyContent: 'center',
-                gap:            '8px',
-                marginTop:      '8px',
-                flexWrap:       'wrap' as const,
+                gap:            SPACING.md,
+                marginBottom:   SPACING.lg,
+                flexWrap:       'wrap',
+                fontSize:       '0.8rem',
               }}>
                 <span style={{
-                  padding:      '3px 8px',
-                  background:   COLORS.bgElevated,
-                  border:       `1px solid ${COLORS.border}`,
-                  borderRadius: RADII.full,
-                  fontSize:     '0.68rem',
-                  color:        COLORS.textMuted,
+                  padding:        SPACING.sm + ' ' + SPACING.md,
+                  background:     `rgba(0,150,255,0.08)`,
+                  border:         `1px solid ${COLORS.accent.dim}`,
+                  borderRadius:   RADII.md,
+                  color:          COLORS.accent.bright,
+                  fontFamily:     FONTS.mono,
                 }}>
-                  Listed {task.piReward}π
+                  Listed: {task.piReward}π
                 </span>
+                <span style={{ color: COLORS.textMuted }}>−</span>
                 <span style={{
-                  fontSize: '0.68rem',
-                  color:    COLORS.textMuted,
-                }}>−</span>
-                <span style={{
-                  padding:      '3px 8px',
-                  background:   'rgba(239,68,68,0.06)',
-                  border:       '1px solid rgba(239,68,68,0.15)',
-                  borderRadius: RADII.full,
-                  fontSize:     '0.68rem',
-                  color:        '#EF4444',
+                  padding:        SPACING.sm + ' ' + SPACING.md,
+                  background:     `rgba(255,71,87,0.08)`,
+                  border:         '1px solid rgba(255,71,87,0.2)',
+                  borderRadius:   RADII.md,
+                  color:          COLORS.status.red,
+                  fontFamily:     FONTS.mono,
                 }}>
-                  {(PLATFORM_CONFIG.PLATFORM_FEE_RATE * 100).toFixed(0)}% platform fee
+                  Fee: {(PLATFORM_CONFIG.PLATFORM_FEE_RATE * 100).toFixed(0)}%
                 </span>
               </div>
-            </div>
-            <div style={{
-              fontSize:   '0.85rem',
-              color:      COLORS.textMuted,
-              marginTop:  '6px',
-            }}>
-              in ~{task.timeEstimateMin} min · paid to your wallet on approval
-            </div>
+
+              {/* Time & status */}
+              <div style={{
+                fontSize:   '0.9rem',
+                color:      COLORS.textSecondary,
+              }}>
+                ~{task.timeEstimateMin} min to complete · paid to wallet on approval
+              </div>
           </div>
 
-          {/* Title */}
-          <h1 style={{
-            margin:        `0 0 ${SPACING.md}`,
-            fontSize:      '1.15rem',
-            fontWeight:    '600',
-            color:         COLORS.textPrimary,
-            lineHeight:    1.4,
-          }}>
-            {task.title}
-          </h1>
-
-          {/* Urgency bar */}
-          <div style={{
-            display:        'flex',
-            gap:            SPACING.sm,
-            flexWrap:       'wrap' as const,
-            marginBottom:   SPACING.lg,
-          }}>
-            <span style={{
-              padding:      '4px 10px',
-              background:   task.slotsRemaining <= 2
-                ? 'rgba(239,68,68,0.1)'
-                : 'rgba(16,185,129,0.1)',
-              border:       `1px solid ${task.slotsRemaining <= 2
-                ? 'rgba(239,68,68,0.2)'
-                : 'rgba(16,185,129,0.2)'}`,
-              borderRadius: RADII.full,
-              fontSize:     '0.72rem',
-              fontWeight:   '700',
-              color:        task.slotsRemaining <= 2
-                ? '#EF4444'
-                : COLORS.emerald,
-            }}>
-              {task.slotsRemaining === 0
-                ? '✗ No spots left'
-                : task.slotsRemaining === 1
-                ? '🔥 Last spot!'
-                : `⚡ ${task.slotsRemaining} spots left`
-              }
-            </span>
-            <span style={{
-              padding:      '4px 10px',
-              background:   COLORS.bgElevated,
-              border:       `1px solid ${COLORS.border}`,
-              borderRadius: RADII.full,
-              fontSize:     '0.72rem',
-              color:        COLORS.textMuted,
-            }}>
-              ⏱ {deadlineLabel}
-            </span>
-            <span style={{
-              padding:      '4px 10px',
-              background:   COLORS.bgElevated,
-              border:       `1px solid ${COLORS.border}`,
-              borderRadius: RADII.full,
-              fontSize:     '0.72rem',
-              color:        COLORS.textMuted,
-            }}>
-              {task.category}
-            </span>
-          </div>
-
-          {/* What you need to do */}
-          <div style={{ marginBottom: SPACING.md }}>
+            {/* TASK META */}
             <div style={{
-              fontSize:      '0.68rem',
-              fontWeight:    '700',
-              color:         COLORS.textMuted,
-              textTransform: 'uppercase' as const,
-              letterSpacing: '0.1em',
-              marginBottom:  SPACING.sm,
+              marginBottom: SPACING.xxl,
             }}>
-              What you need to do
+              <h1 style={{
+                margin:        `0 0 ${SPACING.lg}`,
+                fontSize:      SPACING.xl,
+                fontWeight:    '700',
+                color:         COLORS.textPrimary,
+                lineHeight:    1.3,
+                fontFamily:    FONTS.display,
+              }}>
+                {task.title}
+              </h1>
+
+              {/* Status badges */}
+              <div style={{
+                display:        'flex',
+                gap:            SPACING.md,
+                flexWrap:       'wrap',
+                marginBottom:   SPACING.lg,
+              }}>
+                <div style={{
+                  padding:        SPACING.sm + ' ' + SPACING.md,
+                  background:     task.slotsRemaining <= 2
+                    ? 'rgba(255,71,87,0.1)'
+                    : 'rgba(0,214,143,0.1)',
+                  border:         `1px solid ${task.slotsRemaining <= 2
+                    ? 'rgba(255,71,87,0.3)'
+                    : 'rgba(0,214,143,0.3)'}`,
+                  borderRadius:   RADII.md,
+                  fontSize:       '0.75rem',
+                  fontWeight:     '700',
+                  color:          task.slotsRemaining <= 2
+                    ? COLORS.status.red
+                    : COLORS.status.green,
+                  textTransform:  'uppercase',
+                  letterSpacing:  '0.05em',
+                }}>
+                  {task.slotsRemaining === 0
+                    ? '✗ Full'
+                    : task.slotsRemaining === 1
+                    ? '🔥 LAST SPOT'
+                    : `${task.slotsRemaining} ${task.slotsRemaining === 1 ? 'SLOT' : 'SLOTS'} LEFT`
+                  }
+                </div>
+                <div style={{
+                  padding:        SPACING.sm + ' ' + SPACING.md,
+                  background:     COLORS.bgCard,
+                  border:         `1px solid ${COLORS.border}`,
+                  borderRadius:   RADII.md,
+                  fontSize:       '0.75rem',
+                  fontWeight:     '700',
+                  color:          COLORS.textSecondary,
+                  textTransform:  'uppercase',
+                  letterSpacing:  '0.05em',
+                }}>
+                  ✓ {task.category}
+                </div>
+                <div style={{
+                  padding:        SPACING.sm + ' ' + SPACING.md,
+                  background:     COLORS.bgCard,
+                  border:         `1px solid ${COLORS.border}`,
+                  borderRadius:   RADII.md,
+                  fontSize:       '0.75rem',
+                  fontWeight:     '700',
+                  color:          COLORS.textSecondary,
+                  textTransform:  'uppercase',
+                  letterSpacing:  '0.05em',
+                }}>
+                  ⏱ {deadlineLabel}
+                </div>
+              </div>
+
+              {/* Instructions */}
+              <div>
+                <div style={{
+                  fontSize:      '0.7rem',
+                  fontWeight:    '700',
+                  color:         COLORS.textMuted,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  marginBottom:  SPACING.md,
+                }}>
+                  What you need to do
+                </div>
+                <p style={{
+                  margin:     0,
+                  fontSize:   '1rem',
+                  color:      COLORS.textPrimary,
+                  lineHeight: 1.6,
+                }}>
+                  {task.instructions}
+                </p>
+              </div>
             </div>
-            <p style={{
-              margin:     0,
-              fontSize:   '0.9rem',
-              color:      COLORS.textSecondary,
-              lineHeight: 1.6,
-            }}>
-              {task.instructions}
-            </p>
           </div>
 
           {/* Context — collapsed by default */}
@@ -432,181 +471,276 @@ export default function TaskDetailPage({
           </div>
         </div>
 
-        {/* Claim section */}
+        {/* ═══════════════════════════════════════════════════════════
+            CLAIM ACTION SECTION — Decisive moment
+            ═══════════════════════════════════════════════════════════ */}
         {!isClaimed && !isSubmitted && (
           <div style={{
-            background: '#111827', border: '1px solid #1f2937',
-            borderRadius: '16px', padding: '1.5rem',
+            background:     GRADIENTS.card,
+            border:         `1px solid ${COLORS.borderAccent}`,
+            borderRadius:   RADII.xl,
+            padding:        SPACING.xxl,
+            marginBottom:   SPACING.xxxl,
+            position:       'relative',
+            overflow:       'hidden',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)' as any,
           }}>
-            {claimError && (
+            {/* Background grid */}
+            <div style={{
+              position:     'absolute',
+              inset:        0,
+              opacity:      0.2,
+              background:   `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h60v60H0z' fill='%23080A0F'/%3E%3Cpath d='M0 0L60 60M60 0L0 60' stroke='rgba(0,150,255,0.1)' stroke-width='0.5'/%3E%3C/svg%3E")`,
+              pointerEvents: 'none',
+            }} />
+
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              {/* Error message */}
+              {claimError && (
+                <div style={{
+                  padding:      SPACING.md,
+                  background:   `rgba(255,71,87,0.1)`,
+                  border:       `1px solid ${COLORS.status.red}`,
+                  borderRadius: RADII.md,
+                  color:        COLORS.status.red,
+                  fontSize:     '0.9rem',
+                  marginBottom: SPACING.lg,
+                  lineHeight:   1.5,
+                }}>
+                  ❌ {claimError}
+                </div>
+              )}
+
+              {/* Wallet Warning */}
+              {!walletAddress && (
+                <div style={{
+                  padding:      SPACING.md,
+                  background:   `rgba(255,176,32,0.08)`,
+                  border:       `1px solid ${COLORS.status.amber}`,
+                  borderRadius: RADII.md,
+                  marginBottom: SPACING.lg,
+                  fontSize:     '0.9rem',
+                  color:        COLORS.status.amber,
+                  lineHeight:   1.6,
+                }}>
+                  ⚠️ <strong>Set your wallet address first</strong> — You'll receive Pi here on approval. Tap below to add it in seconds.
+                </div>
+              )}
+
+              {/* Action CTA — HEROIC BUTTON */}
+              <button
+                onClick={() => {
+                  if (!walletAddress) {
+                    setShowWalletModal(true)
+                    return
+                  }
+                  claimSlot()
+                }}
+                disabled={isClaiming || !canClaim}
+                style={{
+                  width:          '100%',
+                  padding:        SPACING.lg,
+                  background:     !canClaim
+                    ? `rgba(0,150,255,0.1)`
+                    : GRADIENTS.primary,
+                  color:          !canClaim ? COLORS.textMuted : 'white',
+                  border:         !canClaim
+                    ? `1px solid ${COLORS.border}`
+                    : 'none',
+                  borderRadius:   RADII.lg,
+                  fontSize:       '1.1rem',
+                  fontWeight:     '700',
+                  fontFamily:     FONTS.display,
+                  cursor:         isClaiming || !canClaim ? 'not-allowed' : 'pointer',
+                  boxShadow:      !canClaim ? 'none' : SHADOWS.accentGlow,
+                  transition:     'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  letterSpacing:  '-0.01em',
+                  opacity:        isClaiming ? 0.8 : 1,
+                }}
+                onMouseEnter={(e) => {
+                  if (!isClaiming && canClaim) {
+                    e.currentTarget.style.transform = 'translateY(-3px)'
+                    e.currentTarget.style.boxShadow = SHADOWS.cardHover
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)'
+                  e.currentTarget.style.boxShadow = !canClaim ? 'none' : SHADOWS.accentGlow
+                }}
+              >
+                {isClaiming ? (
+                  <>⚡ Securing your spot...</>
+                ) : !canClaim ? (
+                  task.slotsRemaining === 0
+                    ? '✗ All spots taken'
+                    : `🔒 Need ${task.minReputationReq} reputation`
+                ) : (
+                  <>
+                    ✓ Claim & Earn {Math.max(0, PLATFORM_CONFIG.workerNetPayout(task.piReward)).toFixed(2)}π
+                  </>
+                )}
+              </button>
+
+              {/* Info text */}
               <div style={{
-                padding: '0.875rem', background: '#450a0a',
-                border: '1px solid #dc2626', borderRadius: '8px',
-                color: '#fca5a5', fontSize: '0.875rem',
-                marginBottom: '1rem',
+                marginTop:   SPACING.lg,
+                paddingTop:  SPACING.lg,
+                borderTop:   `1px solid ${COLORS.borderAccent}`,
+                textAlign:   'center',
+                fontSize:    '0.85rem',
+                color:       COLORS.textSecondary,
               }}>
-                {claimError}
+                ⏱ Complete in ~{task.timeEstimateMin} min · Pi goes directly to your wallet · 60-min countdown after claim
               </div>
-            )}
-
-            {!walletAddress && (
-              <div style={{
-                padding:      SPACING.md,
-                background:   'rgba(245,158,11,0.08)',
-                border:       '1px solid rgba(245,158,11,0.25)',
-                borderRadius: RADII.md,
-                marginBottom: SPACING.md,
-                fontSize:     '0.82rem',
-                color:        '#F59E0B',
-                lineHeight:   1.5,
-              }}>
-                ⚠️ Set your wallet address to claim tasks.
-                Tap below to add it in seconds. {' '}
-              </div>
-            )}
-
-            <button
-              onClick={() => {
-                if (!walletAddress) {
-                  setShowWalletModal(true)
-                  return
-                }
-                claimSlot()
-              }}
-              disabled={isClaiming || !canClaim}
-              style={{
-                width: '100%', padding: '1rem',
-                background: !canClaim
-                  ? '#374151'
-                  : 'linear-gradient(135deg, #7B3FE4, #A855F7)',
-                color: 'white', border: 'none',
-                borderRadius: '12px', fontSize: '1rem',
-                fontWeight: '600',
-                cursor: isClaiming || !canClaim ? 'not-allowed' : 'pointer',
-              }}
-            >
-              {isClaiming
-                ? '⚡ Securing your spot...'
-                : !canClaim
-                ? task.slotsRemaining === 0
-                  ? 'All spots taken'
-                  : `Need ${task.minReputationReq} reputation to unlock`
-                : `Start earning ${Math.max(0, PLATFORM_CONFIG.workerNetPayout(task.piReward)).toFixed(2)}π now →`}
-            </button>
-
-            <p style={{
-              margin: '0.75rem 0 0', fontSize: '0.8rem',
-              color: '#6b7280', textAlign: 'center',
-            }}>
-              Complete in ~{task.timeEstimateMin} min · Pi sent directly to your wallet on approval
-            </p>
+            </div>
           </div>
         )}
 
-        {/* Submission form */}
+        {/* ═══════════════════════════════════════════════════════════
+            SUBMISSION SECTION — Proof + Countdown
+            ═══════════════════════════════════════════════════════════ */}
         {isClaimed && !isSubmitted && (
           <div style={{
-            background: '#111827', border: '1px solid #7B3FE4',
-            borderRadius: '16px', padding: '1.5rem',
+            background:     COLORS.bgCard,
+            border:         `1px solid ${COLORS.accent.primary}`,
+            borderRadius:   RADII.xl,
+            padding:        SPACING.xxl,
+            marginBottom:   SPACING.xxxl,
+            position:       'relative',
+            overflow:       'hidden',
           }}>
+            {/* Header with countdown */}
             <div style={{
-              display: 'flex', justifyContent: 'space-between',
-              alignItems: 'center', marginBottom: '1.25rem',
-              padding: '0.75rem 1rem', background: '#0f172a',
-              borderRadius: '8px',
+              display:        'flex',
+              justifyContent: 'space-between',
+              alignItems:     'center',
+              marginBottom:   SPACING.xxl,
+              paddingBottom:  SPACING.lg,
+              borderBottom:   `1px solid ${COLORS.borderAccent}`,
             }}>
-              <span style={{
-                fontSize: '0.85rem', color: '#9ca3af', fontWeight: '500',
-              }}>
-                🔒 Spot secured — complete to earn {Math.max(0, PLATFORM_CONFIG.workerNetPayout(task.piReward)).toFixed(2)}π
-              </span>
-              <span style={{
-                fontSize: '0.85rem', fontWeight: '600',
-                color: timeLeft === 'Expired' ? '#ef4444' : '#a78bfa',
-              }}>
-                ⏱ {timeLeft || 'Loading...'}
-              </span>
-            </div>
-
-            {/* Verification code display */}
-            {verificationCode && (
-              <div style={{
-                padding: '1rem',
-                background: 'rgba(99,102,241,0.06)',
-                border: '1px solid rgba(99,102,241,0.2)',
-                borderRadius: '8px',
-                marginBottom: '1.25rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '1rem',
-              }}>
-                <div>
-                  <div style={{
-                    fontSize: '0.7rem',
-                    fontWeight: '700',
-                    color: COLORS.textMuted,
-                    textTransform: 'uppercase' as const,
-                    letterSpacing: '0.1em',
-                    marginBottom: '0.5rem',
-                  }}>
-                    Include in your proof
-                  </div>
-                  <div style={{
-                    fontFamily: FONTS.mono,
-                    fontSize: '1.1rem',
-                    fontWeight: '800',
-                    color: COLORS.indigo,
-                    letterSpacing: '0.08em',
-                  }}>
-                    {verificationCode}
-                  </div>
+              <div>
+                <div style={{
+                  fontSize:      '0.75rem',
+                  fontWeight:    '700',
+                  color:         COLORS.textMuted,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  marginBottom:  SPACING.sm,
+                }}>
+                  🔒 Spot Secured
                 </div>
                 <div style={{
-                  fontSize: '0.75rem',
-                  color: COLORS.textMuted,
-                  textAlign: 'right' as const,
-                  lineHeight: '1.4',
+                  fontSize:     '1.1rem',
+                  fontWeight:   '700',
+                  color:        COLORS.accent.bright,
+                  fontFamily:   FONTS.display,
                 }}>
-                  Write this code somewhere visible in your proof
+                  Submit your proof to earn
+                </div>
+              </div>
+
+              {/* COUNTDOWN TIMER — Visual urgency */}
+              <div style={{
+                background:     `rgba(0,150,255,0.08)`,
+                border:         `2px solid ${timeLeft === 'Expired' ? COLORS.status.red : COLORS.accent.primary}`,
+                borderRadius:   RADII.lg,
+                padding:        `${SPACING.md} ${SPACING.lg}`,
+                textAlign:      'center',
+                minWidth:       '120px',
+              }}>
+                <div style={{
+                  fontSize:      '0.7rem',
+                  color:         COLORS.textMuted,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom:  SPACING.sm,
+                }}>
+                  Time left
+                </div>
+                <div style={{
+                  fontFamily:    FONTS.mono,
+                  fontSize:      timeLeft === 'Expired' ? '1.2rem' : '1.4rem',
+                  fontWeight:    '900',
+                  color:         timeLeft === 'Expired' ? COLORS.status.red : COLORS.accent.bright,
+                  letterSpacing: '0.02em',
+                }}>
+                  {timeLeft || '...'}
+                </div>
+              </div>
+            </div>
+
+            {/* Verification code */}
+            {verificationCode && (
+              <div style={{
+                padding:        SPACING.lg,
+                background:     `rgba(0,150,255,0.04)`,
+                border:         `1px dashed ${COLORS.accent.dim}`,
+                borderRadius:   RADII.md,
+                marginBottom:   SPACING.xxl,
+              }}>
+                <div style={{
+                  display:       'flex',
+                  justifyContent: 'space-between',
+                  alignItems:    'center',
+                  gap:           SPACING.lg,
+                }}>
+                  <div>
+                    <div style={{
+                      fontSize:      '0.7rem',
+                      fontWeight:    '700',
+                      color:         COLORS.textMuted,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em',
+                      marginBottom:  SPACING.sm,
+                    }}>
+                      Include this verification code
+                    </div>
+                    <div style={{
+                      fontFamily:    FONTS.mono,
+                      fontSize:      '1.3rem',
+                      fontWeight:    '900',
+                      color:         COLORS.accent.bright,
+                      letterSpacing: '0.1em',
+                      textShadow:    `0 0 20px ${COLORS.accent.glow}`,
+                    }}>
+                      {verificationCode}
+                    </div>
+                  </div>
+                  <div style={{
+                    fontSize:    '0.8rem',
+                    color:       COLORS.textSecondary,
+                    textAlign:   'right',
+                    maxWidth:    '180px',
+                    lineHeight:  '1.5',
+                  }}>
+                    Write this code visibly in your proof photo/screen
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* Proof submission header */}
-            <h3 style={{
-              margin: '0 0 0.5rem',
-              fontSize: '0.95rem',
-              fontWeight: '600',
-              color: COLORS.textPrimary,
-            }}>
-              Submit your proof
-            </h3>
+            {/* Proof submission */}
+            <div>
+              <h3 style={{
+                margin:      `0 0 ${SPACING.md}`,
+                fontSize:    '1rem',
+                fontWeight:  '700',
+                color:       COLORS.textPrimary,
+                fontFamily:  FONTS.display,
+              }}>
+                Upload Your Proof
+              </h3>
 
-            {/* Proof type indicator */}
-            <div style={{
-              display:      'flex',
-              alignItems:   'center',
-              gap:          '6px',
-              marginBottom: '0.875rem',
-              fontSize:     '0.75rem',
-              color:        COLORS.textMuted,
-            }}>
-              <span style={{
-                padding:      '2px 8px',
-                background:   COLORS.indigoDim,
-                border:       `1px solid rgba(99,102,241,0.2)`,
-                borderRadius: RADII.full,
-                color:        COLORS.indigoLight,
-                fontWeight:   '500',
-                fontFamily:   FONTS.mono,
-                fontSize:     '0.68rem',
+              <div style={{
+                fontSize:    '0.75rem',
+                color:       COLORS.textMuted,
+                marginBottom: SPACING.lg,
+                textTransform: 'uppercase',
                 letterSpacing: '0.05em',
               }}>
-                {task.proofType?.toUpperCase() ?? 'TEXT'}
-              </span>
-              <span>proof required</span>
-            </div>
+                Type: <strong>{task.proofType?.toUpperCase() ?? 'TEXT'}</strong>
+              </div>
 
             {/* Proof uploader component — for file-based proofs */}
             {user?.piUid && (
@@ -1081,181 +1215,232 @@ export default function TaskDetailPage({
               )
             })()}
 
-            {/* Character count for text proof */}
-            {(task.proofType ?? 'TEXT').toUpperCase() === 'TEXT' && (
-              <div style={{
-                fontSize:    '0.7rem',
-                color:       proofContent.trim().length < 10
-                  ? COLORS.red
-                  : COLORS.textMuted,
-                marginBottom: '0.75rem',
-                textAlign:   'right' as const,
-              }}>
-                {proofContent.trim().length} characters
-                {proofContent.trim().length < 10 && ' (minimum 10)'}
-              </div>
-            )}
+              {/* Character count */}
+              {(task.proofType ?? 'TEXT').toUpperCase() === 'TEXT' && (
+                <div style={{
+                  marginTop:    SPACING.md,
+                  fontSize:     '0.75rem',
+                  color:        proofContent.trim().length < 10
+                    ? COLORS.status.red
+                    : COLORS.textMuted,
+                  textAlign:    'right',
+                }}>
+                  {proofContent.trim().length} characters
+                  {proofContent.trim().length < 10 && ` — need ${10 - proofContent.trim().length} more`}
+                </div>
+              )}
+            </div>
 
-            {/* Error message */}
-            {submitError && (
-              <div style={{
-                padding:      '0.875rem',
-                background:   COLORS.redDim,
-                border:       `1px solid rgba(239,68,68,0.3)`,
-                borderRadius: RADII.md,
-                color:        COLORS.red,
-                fontSize:     '0.875rem',
-                marginBottom: '1rem',
-              }}>
-                {submitError}
-              </div>
-            )}
+              {/* Error message */}
+              {submitError && (
+                <div style={{
+                  padding:      SPACING.md,
+                  background:   `rgba(255,71,87,0.1)`,
+                  border:       `1px solid ${COLORS.status.red}`,
+                  borderRadius: RADII.md,
+                  color:        COLORS.status.red,
+                  fontSize:     '0.9rem',
+                  marginBottom: SPACING.lg,
+                  lineHeight:   1.5,
+                }}>
+                  ❌ {submitError}
+                </div>
+              )}
 
-            {/* Submit button */}
-            <button
-              onClick={() => submitProof(proofContent, '', task.proofType, proofStoragePath || undefined)}
-              disabled={isSubmitting || (proofContent.trim().length < 10 && !proofStoragePath)}
-              style={{
-                width:        '100%',
-                padding:      '1rem',
-                background:   isSubmitting || (proofContent.trim().length < 10 && !proofStoragePath)
-                  ? COLORS.bgElevated
-                  : `linear-gradient(180deg, ${COLORS.indigo} 0%, ${COLORS.indigoDark} 100%)`,
-                color:        isSubmitting || (proofContent.trim().length < 10 && !proofStoragePath)
-                  ? COLORS.textMuted
-                  : 'white',
-                border:       'none',
-                borderRadius: RADII.lg,
-                fontSize:     '1rem',
-                fontWeight:   '600',
-                cursor:       isSubmitting || (proofContent.trim().length < 10 && !proofStoragePath)
-                  ? 'not-allowed'
-                  : 'pointer',
-                boxShadow:    isSubmitting || (proofContent.trim().length < 10 && !proofStoragePath)
-                  ? 'none'
-                  : SHADOWS.indigoGlow,
-                fontFamily:   FONTS.sans,
-                transition:   'all 0.15s ease',
-              }}
-            >
-              {isSubmitting
-                ? '⏳ Submitting your work...'
-                : `Submit & earn ${task.piReward}π →`}
-            </button>
+              {/* ROCKET LAUNCH BUTTON — Dramatic submit */}
+              <button
+                onClick={() => submitProof(proofContent, '', task.proofType, proofStoragePath || undefined)}
+                disabled={isSubmitting || (proofContent.trim().length < 10 && !proofStoragePath)}
+                style={{
+                  width:          '100%',
+                  padding:        SPACING.lg,
+                  background:     isSubmitting || (proofContent.trim().length < 10 && !proofStoragePath)
+                    ? `rgba(0,150,255,0.1)`
+                    : GRADIENTS.primary,
+                  color:          isSubmitting || (proofContent.trim().length < 10 && !proofStoragePath)
+                    ? COLORS.textMuted
+                    : 'white',
+                  border:         isSubmitting || (proofContent.trim().length < 10 && !proofStoragePath)
+                    ? `1px solid ${COLORS.border}`
+                    : 'none',
+                  borderRadius:   RADII.lg,
+                  fontSize:       '1.1rem',
+                  fontWeight:     '700',
+                  fontFamily:     FONTS.display,
+                  cursor:         isSubmitting || (proofContent.trim().length < 10 && !proofStoragePath)
+                    ? 'not-allowed'
+                    : 'pointer',
+                  boxShadow:      isSubmitting || (proofContent.trim().length < 10 && !proofStoragePath)
+                    ? 'none'
+                    : SHADOWS.accentGlow,
+                  transition:     'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  letterSpacing:  '-0.01em',
+                  opacity:        isSubmitting ? 0.8 : 1,
+                  position:       'relative',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSubmitting && (proofContent.trim().length >= 10 || proofStoragePath)) {
+                    e.currentTarget.style.transform = 'translateY(-3px)'
+                    e.currentTarget.style.boxShadow = SHADOWS.cardHover
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)'
+                  e.currentTarget.style.boxShadow = SHADOWS.accentGlow
+                }}
+              >
+                {isSubmitting ? (
+                  <>⚡ Launching your proof...</>
+                ) : (
+                  <>
+                    🚀 Fire off & Earn {task.piReward}π
+                  </>
+                )}
+              </button>
           </div>
         )}
 
-        {/* Success state */}
+        {/* SUCCESS STATE — Victory screen */}
         {isSubmitted && (
           <div style={{
-            background:   COLORS.bgSurface,
-            border:       `1px solid rgba(16,185,129,0.4)`,
-            borderRadius: RADII.xl,
-            padding:      SPACING.xl,
-            textAlign:    'center' as const,
+            background:     GRADIENTS.card,
+            border:         `1px solid rgba(0,214,143,0.3)`,
+            borderRadius:   RADII.xl,
+            padding:        `${SPACING.xxxl} ${SPACING.xxl}`,
+            textAlign:      'center',
+            position:       'relative',
+            overflow:       'hidden',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)' as any,
           }}>
-            {/* Success icon */}
+            {/* Background confetti grid */}
             <div style={{
-              width:          '72px',
-              height:         '72px',
-              borderRadius:   '50%',
-              background:     'rgba(16,185,129,0.1)',
-              border:         '2px solid rgba(16,185,129,0.4)',
-              margin:         `0 auto ${SPACING.md}`,
-              display:        'flex',
-              alignItems:     'center',
-              justifyContent: 'center',
-              fontSize:       '2rem',
-            }}>
-              ✅
-            </div>
+              position:     'absolute',
+              inset:        0,
+              opacity:      0.2,
+              background:   `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h60v60H0z' fill='%23080A0F'/%3E%3Cpath d='M30 10L40 30L30 50L20 30Z' stroke='rgba(0,214,143,0.2)' stroke-width='0.5' fill='none'/%3E%3C/svg%3E")`,
+              pointerEvents: 'none',
+            }} />
 
-            <h3 style={{
-              margin:     `0 0 ${SPACING.xs}`,
-              fontSize:   '1.3rem',
-              fontWeight: '800',
-              color:      COLORS.textPrimary,
-            }}>
-              Work submitted!
-            </h3>
-
-            <p style={{
-              color:    COLORS.textMuted,
-              fontSize: '0.85rem',
-              margin:   `0 0 ${SPACING.lg}`,
-            }}>
-              You will receive{' '}
-              <span style={{
-                color:      COLORS.emerald,
-                fontWeight: '700',
-                fontFamily: FONTS.mono,
-              }}>
-                {agreedReward ?? task.piReward}π
-              </span>
-              {' '}when your employer approves.
-              Auto-approved in 72h if no response.
-            </p>
-
-            {/* Earnings preview */}
-            <div style={{
-              padding:      SPACING.md,
-              background:   'rgba(16,185,129,0.06)',
-              border:       '1px solid rgba(16,185,129,0.15)',
-              borderRadius: RADII.lg,
-              marginBottom: SPACING.lg,
-            }}>
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              {/* Victory icon */}
               <div style={{
-                fontSize:   '0.68rem',
-                color:      COLORS.textMuted,
-                fontWeight: '600',
-                textTransform: 'uppercase' as const,
-                letterSpacing: '0.1em',
-                marginBottom: '6px',
+                width:          '80px',
+                height:         '80px',
+                borderRadius:   RADII.xl,
+                background:     `rgba(0,214,143,0.1)`,
+                border:         `2px solid ${COLORS.status.green}`,
+                margin:         `0 auto ${SPACING.lg}`,
+                display:        'flex',
+                alignItems:     'center',
+                justifyContent: 'center',
+                fontSize:       '2.5rem',
+                boxShadow:      `0 0 30px rgba(0,214,143,0.3)`,
               }}>
-                Pending earnings
+                ✓
               </div>
-              <div style={{
-                fontFamily:    FONTS.mono,
-                fontSize:      '2rem',
-                fontWeight:    '800',
-                color:         COLORS.emerald,
-                letterSpacing: '-0.03em',
+
+              {/* Success message */}
+              <h3 style={{
+                margin:      `0 0 ${SPACING.md}`,
+                fontSize:    '1.5rem',
+                fontWeight:  '800',
+                color:       COLORS.status.green,
+                fontFamily:  FONTS.display,
               }}>
-                {agreedReward ?? task.piReward}π
+                Proof Submitted!
+              </h3>
+
+              <p style={{
+                margin:       `0 0 ${SPACING.lg}`,
+                fontSize:     '1rem',
+                color:        COLORS.textSecondary,
+                lineHeight:   '1.6',
+              }}>
+                Your work is locked in. You'll earn {' '}
+                <span style={{
+                  color:      COLORS.status.green,
+                  fontWeight: '700',
+                  fontFamily: FONTS.mono,
+                }}>
+                  {agreedReward ?? task.piReward}π
+                </span>
+                {' '}when approved. Auto-approved in 72h if no response.
+              </p>
+
+              {/* Earnings display */}
+              <div style={{
+                padding:      SPACING.lg,
+                background:   `rgba(0,214,143,0.05)`,
+                border:       `1px solid ${COLORS.status.green}`,
+                borderRadius: RADII.lg,
+                marginBottom: SPACING.xxl,
+              }}>
+                <div style={{
+                  fontSize:      '0.75rem',
+                  color:         COLORS.textMuted,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  marginBottom:  SPACING.md,
+                }}>
+                  Pending Earnings
+                </div>
+                <div style={{
+                  fontFamily:    FONTS.mono,
+                  fontSize:      '2.2rem',
+                  fontWeight:    '900',
+                  color:         COLORS.status.green,
+                  letterSpacing: '-0.03em',
+                }}>
+                  +{agreedReward ?? task.piReward}π
+                </div>
+              </div>
+
+              {/* CTA buttons */}
+              <div style={{ display: 'flex', gap: SPACING.md }}>
+                <Link
+                  href="/feed"
+                  style={{
+                    flex:           1,
+                    padding:        SPACING.lg,
+                    background:     GRADIENTS.primary,
+                    color:          'white',
+                    borderRadius:   RADII.lg,
+                    textDecoration: 'none',
+                    fontSize:       '0.95rem',
+                    fontWeight:     '700',
+                    boxShadow:      SHADOWS.accentGlow,
+                    textAlign:      'center',
+                    transition:     'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)'
+                  }}
+                >
+                  Find next task →
+                </Link>
+                <Link
+                  href="/dashboard"
+                  style={{
+                    flex:           1,
+                    padding:        SPACING.lg,
+                    background:     COLORS.bgCard,
+                    border:         `1px solid ${COLORS.borderAccent}`,
+                    color:          COLORS.textSecondary,
+                    borderRadius:   RADII.lg,
+                    textDecoration: 'none',
+                    fontSize:       '0.95rem',
+                    fontWeight:     '600',
+                    textAlign:      'center',
+                  }}
+                >
+                  View earnings
+                </Link>
               </div>
             </div>
-
-            {/* Next action — the loop */}
-            <Link
-              href="/feed"
-              style={{
-                display:        'block',
-                padding:        SPACING.md,
-                background:     `linear-gradient(135deg, ${COLORS.indigo}, #4338CA)`,
-                color:          'white',
-                borderRadius:   RADII.lg,
-                textDecoration: 'none',
-                fontSize:       '0.95rem',
-                fontWeight:     '700',
-                marginBottom:   SPACING.sm,
-                boxShadow:      '0 0 20px rgba(99,102,241,0.3)',
-              }}
-            >
-              Find next opportunity →
-            </Link>
-
-            <Link
-              href="/dashboard"
-              style={{
-                display:        'block',
-                padding:        SPACING.sm,
-                color:          COLORS.textMuted,
-                textDecoration: 'none',
-                fontSize:       '0.82rem',
-              }}
-            >
-              View my earnings
-            </Link>
           </div>
         )}
 
