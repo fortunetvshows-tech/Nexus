@@ -54,27 +54,39 @@ export async function GET(
         isFeatured,
         instructionFileUrl,
         instructionFileName,
-        employer:employerId (
-          piUsername,
-          reputationScore,
-          reputationLevel
-        )
+        employerId
       `)
       .eq('id', taskId)
       .is('deletedAt', null)
       .single()
 
-    console.log('[Nexus:TaskRoute] Task query:', task ? 'found' : 'not found', taskError?.message ?? '')
-
     if (taskError || !task) {
+      console.log('[Nexus:TaskRoute] Task query error:', taskError?.message ?? 'not found')
       return NextResponse.json(
         { error: 'NOT_FOUND' },
         { status: 404 }
       )
     }
 
+    // Fetch employer data separately
+    let employer = null
+    if (task.employerId) {
+      const { data: employerData } = await supabaseAdmin
+        .from('User')
+        .select('piUsername, reputationScore, reputationLevel')
+        .eq('id', task.employerId)
+        .single()
+      employer = employerData
+    }
+
+    // Combine task with employer
+    const taskWithEmployer = {
+      ...task,
+      employer
+    }
+
     return NextResponse.json(
-      { success: true, task },
+      { success: true, task: taskWithEmployer },
       { status: 200 }
     )
 
