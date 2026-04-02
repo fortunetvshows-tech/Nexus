@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import Link                    from 'next/link'
 import { usePiAuth }           from '@/hooks/use-pi-auth'
 import { NotificationBell }    from '@/components/NotificationBell'
-import { BottomNav }           from '@/components/BottomNav'
 import { COLORS, FONTS }       from '@/lib/design/tokens'
 
 interface NavigationProps {
@@ -565,8 +564,6 @@ export function Navigation({ currentPage }: NavigationProps) {
           }}
         />
       )}
-
-      <BottomNav currentPage={currentPage} />
     </>
   )
 }

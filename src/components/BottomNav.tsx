@@ -1,161 +1,38 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import Link     from 'next/link'
-import { usePiAuth } from '@/hooks/use-pi-auth'
-import { COLORS, FONTS, RADII } from '@/lib/design/tokens'
+import { useApp, ScreenName } from '@/context/AppContext'
 
-interface BottomNavProps {
-  currentPage?: string
+interface BottomNavItem {
+  id: ScreenName
+  label: string
+  icon: string
 }
 
-const NAV_ITEMS = [
-  {
-    key:   'feed',
-    href:  '/feed',
-    icon:  '⚡',
-    label: 'Earn',
-  },
-  {
-    key:   'dashboard',
-    href:  '/dashboard',
-    icon:  '📋',
-    label: 'My Work',
-  },
-  {
-    key:   'employer',
-    href:  '/employer',
-    icon:  '✚',
-    label: 'Post',
-  },
-  {
-    key:   'analytics',
-    href:  '/analytics',
-    icon:  '💰',
-    label: 'Earnings',
-  },
-  {
-    key:   'profile',
-    href:  '/profile',
-    icon:  '👤',
-    label: 'Profile',
-  },
-]
+export function BottomNav() {
+  const { currentScreen, navigate } = useApp()
 
-export function BottomNav({ currentPage }: BottomNavProps) {
-  const { user } = usePiAuth()
-  const [isMobile, setIsMobile] = useState(false)
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 769)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [])
-
-  // Only show for authenticated users on mobile
-  if (!user || !isMobile) return null
+  const items: BottomNavItem[] = [
+    { id: 'dashboard', label: 'Home', icon: '⊞' },
+    { id: 'discover', label: 'Discover', icon: '🔍' },
+    { id: 'wallet', label: 'Wallet', icon: '💼' },
+    { id: 'profile', label: 'Profile', icon: '👤' },
+  ]
 
   return (
-    <>
-      {/* Spacer so content is not hidden behind the nav */}
-      <div style={{ height: '72px' }} className="bottom-nav-spacer" />
-
-      {/* Bottom nav bar */}
-      <nav style={{
-        position:        'fixed' as const,
-        bottom:          0,
-        left:            0,
-        right:           0,
-        height:          '64px',
-        background:      COLORS.bgSurface,
-        borderTop:       `1px solid ${COLORS.border}`,
-        display:         'flex',
-        alignItems:      'stretch',
-        zIndex:          200,
-        paddingBottom:   'env(safe-area-inset-bottom)',
-        backdropFilter:  'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)' as any,
-      }}>
-        {NAV_ITEMS.map(item => {
-          const isActive = currentPage === item.key
-
-          return (
-            <Link
-              key={item.key}
-              href={item.href}
-              style={{
-                flex:           1,
-                display:        'flex',
-                flexDirection:  'column' as const,
-                alignItems:     'center',
-                justifyContent: 'center',
-                gap:            '2px',
-                textDecoration: 'none',
-                color:          isActive
-                  ? COLORS.indigo
-                  : COLORS.textMuted,
-                background:     'transparent',
-                border:         'none',
-                cursor:         'pointer',
-                transition:     'color 0.15s ease',
-                position:       'relative' as const,
-                padding:        '8px 4px',
-              }}
-            >
-              {/* Active indicator */}
-              {isActive && (
-                <div style={{
-                  position:     'absolute' as const,
-                  top:          0,
-                  left:         '20%',
-                  right:        '20%',
-                  height:       '2px',
-                  background:   COLORS.indigo,
-                  borderRadius: '0 0 2px 2px',
-                }} />
-              )}
-
-              {/* Post button — special styling */}
-              {item.key === 'employer' ? (
-                <div style={{
-                  width:          '40px',
-                  height:         '40px',
-                  borderRadius:   '12px',
-                  background:     `linear-gradient(135deg, ${COLORS.indigo}, #4338CA)`,
-                  display:        'flex',
-                  alignItems:     'center',
-                  justifyContent: 'center',
-                  fontSize:       '1.2rem',
-                  color:          'white',
-                  boxShadow:      '0 2px 8px rgba(99,102,241,0.4)',
-                  marginBottom:   '2px',
-                  marginTop:      '-8px',
-                }}>
-                  {item.icon}
-                </div>
-              ) : (
-                <span style={{
-                  fontSize:   '1.2rem',
-                  lineHeight: 1,
-                }}>
-                  {item.icon}
-                </span>
-              )}
-
-              <span style={{
-                fontSize:   '0.62rem',
-                fontWeight: isActive ? '700' : '500',
-                fontFamily: FONTS.sans,
-                letterSpacing: '0.01em',
-              }}>
-                {item.label}
-              </span>
-            </Link>
-          )
-        })}
-      </nav>
-    </>
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-base/90 backdrop-blur-3xl border-t border-line flex items-center justify-around pb-safe">
+      {items.map((item) => (
+        <button
+          key={item.id}
+          onClick={() => navigate(item.id)}
+          className={`flex-1 flex flex-col items-center gap-1 py-2 px-1 cursor-pointer transition-colors ${
+            currentScreen === item.id ? 'text-pi-lt' : 'text-t3'
+          }`}
+        >
+          <span className="text-2xl">{item.icon}</span>
+          <span className="text-xs font-bold uppercase letter-spacing-1">{item.label}</span>
+        </button>
+      ))}
+    </nav>
   )
 }
 
