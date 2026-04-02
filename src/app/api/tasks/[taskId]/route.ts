@@ -61,7 +61,6 @@ export async function GET(
         )
       `)
       .eq('id', taskId)
-      .eq('taskStatus', 'escrowed')
       .is('deletedAt', null)
       .single()
 
