@@ -190,7 +190,7 @@ export default function FeedPage() {
               {[
                 { label: 'Avg. Reward', value: '5-50 Pi' },
                 { label: 'Quickest Task', value: '5 min' },
-                { label: 'Your Streak', value: user?.streakDays || 0 + ' days' },
+                { label: 'Your Streak', value: '0 days' },
               ].map((stat, i) => (
                 <div key={i} style={{
                   padding:    SPACING.md,
@@ -369,7 +369,6 @@ export default function FeedPage() {
               fontWeight:   '600',
               cursor:       isLoading ? 'not-allowed' : 'pointer',
               transition:   'all 0.2s ease',
-              cursor:       isLoading ? 'not-allowed' : 'pointer',
               marginTop:    '1rem',
             }}
           >

@@ -59,6 +59,7 @@ export const COLORS = {
   bgBase: "#080A0F",
   bgSurface: "#0E1118",
   bgElevated: "#1A2030",
+  bgCard: "#121620",
   textPrimary: "#F0F4FF",
   textSecondary: "#8892A4",
   textTertiary: "#4A5568",
