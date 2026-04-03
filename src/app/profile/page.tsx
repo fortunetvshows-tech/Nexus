@@ -1,544 +1,251 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { usePiAuth }    from '@/hooks/use-pi-auth'
-import { Navigation }   from '@/components/Navigation'
-import { EditWalletModal } from '@/components/EditWalletModal'
-import {
-  COLORS, FONTS, RADII, SPACING, SHADOWS
-} from '@/lib/design/tokens'
+import { usePiAuth } from '@/hooks/use-pi-auth'
+import { Navigation } from '@/components/Navigation'
+import { COLORS, FONTS, RADII, SPACING } from '@/lib/design/tokens'
 
-interface ProfileData {
-  piUsername:     string
-  piUid:          string
-  walletAddress:  string | null
-  reputationScore: number
-  reputationLevel: string
-  kycLevel:       number
-  totalEarnings:  number
-  totalTasksCompleted: number
-  createdAt:      string
+interface Profile {
+  piUid: string
+  piUsername: string
+  walletAddress?: string
+  reputationScore?: number
+  tasksDone?: number
 }
 
 export default function ProfilePage() {
   const { user } = usePiAuth()
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [loading, setLoading] = useState(!user)
 
-  const [profile,       setProfile]       = useState<ProfileData | null>(null)
-  const [isLoading,     setIsLoading]     = useState(true)
-  const [walletInput,   setWalletInput]   = useState('')
-  const [isSaving,      setIsSaving]      = useState(false)
-  const [saveMessage,   setSaveMessage]   = useState<{
-    type: 'success' | 'error', text: string
-  } | null>(null)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-
-  // Fetch profile on mount (always runs when component mounts/remounts)
   useEffect(() => {
     if (!user?.piUid) return
-    
-    const fetchProfile = async () => {
-      setIsLoading(true)
-      try {
-        const res = await fetch(
-          `${window.location.origin}/api/profile`,
-          { headers: { 'x-pi-uid': user.piUid } }
-        )
-        const data = await res.json()
-        if (data.profile) {
-          setProfile(data.profile)
-          setWalletInput(data.profile.walletAddress ?? '')
-        }
-      } catch (err) {
-        console.error('Failed to fetch profile:', err)
-      } finally {
-        setIsLoading(false)
-      }
-    }
+    fetch(`${window.location.origin}/api/profile`, {
+      headers: { 'x-pi-uid': user.piUid },
+    })
+      .then(r => r.json())
+      .then(d => { if (d.profile) setProfile(d.profile) })
+      .finally(() => setLoading(false))
+  }, [user?.piUid])
 
-    fetchProfile()
-  }, [user?.piUid])  // Only depends on user being authenticated
-
-  const handleSaveWallet = async (walletToSave?: string) => {
-    const wallet = walletToSave || walletInput // Allow modal to pass wallet directly
-    if (!user?.piUid || !wallet.trim()) {
-      throw new Error('Missing wallet or user ID')
-    }
-    setIsSaving(true)
-    setSaveMessage(null)
-
-    try {
-      const res = await fetch(
-        `${window.location.origin}/api/profile/wallet`,
-        {
-          method:  'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-pi-uid':     user.piUid,
-          },
-          body: JSON.stringify({
-            walletAddress: wallet.trim(),
-          }),
-        }
-      )
-      const data = await res.json()
-
-      if (data.success) {
-        setSaveMessage({
-          type: 'success',
-          text: '✓ Wallet address saved. Future payments will go to this address.',
-        })
-        setProfile(prev => prev
-          ? { ...prev, walletAddress: wallet.trim() }
-          : prev
-        )
-        // Clear input after successful save
-        setWalletInput('')
-        // Close modal will happen in EditWalletModal after onSave resolves
-      } else {
-        const errorMsg = data.error ?? 'Failed to save wallet address'
-        setSaveMessage({
-          type: 'error',
-          text: errorMsg,
-        })
-        throw new Error(errorMsg)
-      }
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Network error. Please try again.'
-      setSaveMessage({
-        type: 'error',
-        text: errorMsg,
-      })
-      throw err // Re-throw so modal knows to stay open
-    } finally {
-      setIsSaving(false)
-    }
-  }
-
-  if (!user) {
-    return (
-      <div style={{
-        minHeight:  '100vh',
-        background: COLORS.bgBase,
-        display:    'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-        <p style={{ color: COLORS.textMuted }}>
-          Please log in to view your profile.
-        </p>
-      </div>
-    )
-  }
+  if (!user) return null
 
   return (
     <div style={{
       minHeight:  '100vh',
-      background: COLORS.bgBase,
+      background: '#07090E',
       fontFamily: FONTS.sans,
       color:      COLORS.textPrimary,
+      padding: '20px 16px',
     }}>
       <Navigation currentPage="profile" />
 
-      <main className="page-main" style={{ maxWidth: '600px' }}>
-
-        {/* Header */}
-        <div style={{ marginBottom: SPACING.xl }}>
-          <h1 style={{
-            margin:     '0 0 0.25rem',
-            fontSize:   '1.5rem',
-            fontWeight: '700',
-          }}>
-            Your Profile
-          </h1>
-          <p style={{
-            margin:  0,
-            color:   COLORS.textMuted,
-            fontSize: '0.875rem',
-          }}>
-            Manage your Pi identity and payment settings
-          </p>
-        </div>
-
-        {isLoading ? (
-          <div style={{
-            background:   COLORS.bgSurface,
-            border:       `1px solid ${COLORS.border}`,
-            borderRadius: RADII.xl,
-            padding:      SPACING.xl,
-            color:        COLORS.textMuted,
-            textAlign:    'center' as const,
-          }}>
-            Loading profile...
-          </div>
-        ) : (
-          <>
-            {/* Identity Card */}
-            <div className="proofgrid-card" style={{ marginBottom: SPACING.lg }}>
-              <div style={{
-                fontSize:      '0.65rem',
-                fontWeight:    '600',
-                color:         COLORS.textMuted,
-                textTransform: 'uppercase' as const,
-                letterSpacing: '0.1em',
-                marginBottom:  SPACING.md,
-              }}>
-                Pi Identity
-              </div>
-
-              {/* Avatar + Username */}
-              <div style={{
-                display:     'flex',
-                alignItems:  'center',
-                gap:         SPACING.md,
-                marginBottom: SPACING.md,
-              }}>
-                <div style={{
-                  width:          '56px',
-                  height:         '56px',
-                  borderRadius:   RADII.lg,
-                  background:     `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireLight})`,
-                  display:        'flex',
-                  alignItems:     'center',
-                  justifyContent: 'center',
-                  fontSize:       '1.5rem',
-                  fontWeight:     '700',
-                  color:          'white',
-                  flexShrink:     0,
-                  boxShadow:      SHADOWS.cyanGlow,
-                }}>
-                  {user.piUsername.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <div style={{
-                    fontSize:   '1.1rem',
-                    fontWeight: '700',
-                    color:      COLORS.textPrimary,
-                  }}>
-                    {user.piUsername}
-                  </div>
-                  <div style={{
-                    fontSize:   '0.8rem',
-                    color:      COLORS.textMuted,
-                    fontFamily: FONTS.mono,
-                  }}>
-                    {user.reputationLevel} · {user.reputationScore} REP
-                  </div>
-                </div>
-              </div>
-
-              {/* Stats row */}
-              <div style={{
-                display:             'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
-                gap:                 SPACING.sm,
-              }} className="stats-grid-3">
-                {[
-                  {
-                    label: 'KYC Level',
-                    value: profile?.kycLevel ?? 0,
-                  },
-                  {
-                    label: 'Tasks Done',
-                    value: profile?.totalTasksCompleted ?? 0,
-                  },
-                  {
-                    label: 'Pi Earned',
-                    value: `${Number(profile?.totalEarnings ?? 0).toFixed(2)}π`,
-                  },
-                ].map(stat => (
-                  <div key={stat.label} style={{
-                    background:   COLORS.bgRaised,
-                    border:       `1px solid ${COLORS.border}`,
-                    borderRadius: RADII.md,
-                    padding:      SPACING.sm,
-                    textAlign:    'center' as const,
-                  }}>
-                    <div style={{
-                      fontSize:   '1.1rem',
-                      fontWeight: '700',
-                      color:      COLORS.textPrimary,
-                      fontFamily: FONTS.mono,
-                    }}>
-                      {stat.value}
-                    </div>
-                    <div style={{
-                      fontSize: '0.65rem',
-                      color:    COLORS.textMuted,
-                      marginTop: '2px',
-                    }}>
-                      {stat.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Wallet Address Card */}
-            <div className="proofgrid-card">
-              <div style={{
-                fontSize:      '0.65rem',
-                fontWeight:    '600',
-                color:         COLORS.textMuted,
-                textTransform: 'uppercase' as const,
-                letterSpacing: '0.1em',
-                marginBottom:  SPACING.sm,
-              }}>
-                Payment Wallet
-              </div>
-
-              <p style={{
-                margin:   `0 0 ${SPACING.md}`,
-                fontSize: '0.82rem',
-                color:    COLORS.textSecondary,
-                lineHeight: 1.5,
-              }}>
-                This is where you receive Pi payments for completed tasks.
-                Keep it accurate — payments sent to wrong addresses cannot
-                be recovered.
-              </p>
-
-              {/* Wallet section with proper loading states */}
-              {isLoading ? (
-                <div style={{
-                  padding:      SPACING.md,
-                  background:   'rgba(99,102,241,0.08)',
-                  border:       `1px solid rgba(99,102,241,0.2)`,
-                  borderRadius: RADII.md,
-                  marginBottom: SPACING.md,
-                  fontSize:     '0.8rem',
-                  color:        COLORS.textMuted,
-                  textAlign:    'center' as const,
-                }}>
-                  Loading your wallet...
-                </div>
-              ) : profile?.walletAddress ? (
-                <>
-                  {/* Locked Wallet Display */}
-                  <div style={{
-                    padding:      SPACING.md,
-                    background:   'rgba(16,185,129,0.08)',
-                    border:       '1px solid rgba(16,185,129,0.2)',
-                    borderRadius: RADII.md,
-                    marginBottom: SPACING.md,
-                    display:      'flex',
-                    alignItems:   'flex-start',
-                    gap:          SPACING.md,
-                    justifyContent: 'space-between',
-                  }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{
-                        display:     'flex',
-                        alignItems:  'center',
-                        gap:         SPACING.xs,
-                        marginBottom: '0.5rem',
-                      }}>
-                        <span style={{ color: COLORS.emerald, fontSize: '1rem' }}>🔒</span>
-                        <span style={{
-                          fontSize:   '0.72rem',
-                          fontWeight: '600',
-                          color:      COLORS.emerald,
-                          textTransform: 'uppercase',
-                        }}>
-                          Protected Wallet
-                        </span>
-                      </div>
-                      <div style={{
-                        fontSize:   '0.78rem',
-                        fontFamily: FONTS.mono,
-                        color:      COLORS.emerald,
-                        wordBreak:  'break-all' as const,
-                        lineHeight: 1.4,
-                      }}>
-                        {profile.walletAddress}
-                      </div>
-                    </div>
-                      <button
-                      onClick={() => setIsEditModalOpen(true)}
-                      style={{
-                        padding:      '0.5rem 1rem',
-                        background:   COLORS.sapphire,
-                        border:       `1px solid ${COLORS.cyan}`,
-                        borderRadius: RADII.md,
-                        color:        'white',
-                        fontSize:     '0.8rem',
-                        fontWeight:   '500',
-                        cursor:       'pointer',
-                        whiteSpace:   'nowrap',
-                        flexShrink:   0,
-                        boxShadow:    SHADOWS.cyanGlow,
-                      }}
-                    >
-                      Edit
-                    </button>
-                  </div>
-
-                  {/* Message about new wallet set */}
-                  {saveMessage && (
-                    <div style={{
-                      padding:      `${SPACING.xs} ${SPACING.sm}`,
-                      background:   saveMessage.type === 'success'
-                        ? 'rgba(16,185,129,0.08)'
-                        : 'rgba(239,68,68,0.08)',
-                      border:       `1px solid ${saveMessage.type === 'success'
-                        ? 'rgba(16,185,129,0.2)'
-                        : 'rgba(239,68,68,0.2)'}`,
-                      borderRadius: RADII.md,
-                      marginBottom: SPACING.md,
-                      fontSize:     '0.8rem',
-                      color:        saveMessage.type === 'success'
-                        ? COLORS.emerald
-                        : COLORS.red,
-                    }}>
-                      {saveMessage.text}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <>
-                  {/* No wallet - show warning and input form */}
-                  <div style={{
-                    padding:      SPACING.sm,
-                    background:   'rgba(245,158,11,0.08)',
-                    border:       '1px solid rgba(245,158,11,0.2)',
-                    borderRadius: RADII.md,
-                    marginBottom: SPACING.md,
-                    fontSize:     '0.82rem',
-                    color:        COLORS.amber,
-                  }}>
-                    ⚠ No wallet address set. Payments cannot be processed
-                    until you add your Pi wallet address below.
-                  </div>
-                  <div style={{ marginBottom: SPACING.sm }}>
-                    <label style={{
-                      display:      'block',
-                      fontSize:     '0.78rem',
-                      fontWeight:   '500',
-                      color:        COLORS.textSecondary,
-                      marginBottom: '6px',
-                    }}>
-                      Pi Wallet Address
-                    </label>
-                    <input
-                      type="text"
-                      value={walletInput}
-                      onChange={e => setWalletInput(e.target.value)}
-                      placeholder="G... (starts with G, 56 characters)"
-                      style={{
-                        width:        '100%',
-                        padding:      '0.75rem',
-                        background:   COLORS.bgRaised,
-                        border:       `1px solid ${COLORS.borderAccent}`,
-                        borderRadius: RADII.md,
-                        color:        COLORS.textPrimary,
-                        fontSize:     '0.8rem',
-                        fontFamily:   FONTS.mono,
-                        outline:      'none',
-                        boxSizing:    'border-box' as const,
-                      }}
-                    />
-                    <p style={{
-                      margin:   '6px 0 0',
-                      fontSize: '0.72rem',
-                      color:    COLORS.textMuted,
-                    }}>
-                      Find your wallet address in Pi Wallet → Settings →
-                      Wallet Address. It starts with G and is 56 characters long.
-                    </p>
-                  </div>
-
-                  {/* Save message */}
-                  {saveMessage && (
-                    <div style={{
-                      padding:      `${SPACING.xs} ${SPACING.sm}`,
-                      background:   saveMessage.type === 'success'
-                        ? 'rgba(16,185,129,0.08)'
-                        : 'rgba(239,68,68,0.08)',
-                      border:       `1px solid ${saveMessage.type === 'success'
-                        ? 'rgba(16,185,129,0.2)'
-                        : 'rgba(239,68,68,0.2)'}`,
-                      borderRadius: RADII.md,
-                      marginBottom: SPACING.sm,
-                      fontSize:     '0.8rem',
-                      color:        saveMessage.type === 'success'
-                        ? COLORS.emerald
-                        : COLORS.red,
-                    }}>
-                      {saveMessage.text}
-                    </div>
-                  )}
-
-                  {/* Save button */}
-                  <button
-                    onClick={() => handleSaveWallet()}
-                    disabled={
-                      isSaving ||
-                      !walletInput.trim()
-                    }
-                    style={{
-                      width:        '100%',
-                      padding:      '0.875rem',
-                      background:   isSaving ? COLORS.bgRaised
-                        : `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
-                      border:       isSaving ? 'none' : `1px solid ${COLORS.cyan}`,
-                      borderRadius: RADII.md,
-                      color:        isSaving ? COLORS.textMuted : 'white',
-                      fontSize:     '0.9rem',
-                      fontWeight:   '600',
-                      cursor:       isSaving ? 'not-allowed' : 'pointer',
-                      fontFamily:   FONTS.sans,
-                      transition:   'all 0.15s ease',
-                      boxShadow:    isSaving ? 'none' : SHADOWS.cyanGlow,
-                    }}
-                  >
-                    {isSaving ? 'Saving...' : 'Save Wallet Address'}
-                  </button>
-                </>
-              )}
-
-              {/* Modal for editing wallet */}
-              <EditWalletModal
-                isOpen={isEditModalOpen}
-                currentWallet={profile?.walletAddress ?? null}
-                onClose={() => setIsEditModalOpen(false)}
-                onSave={handleSaveWallet}
-                isSaving={isSaving}
-              />
-            </div>
-          </>
-        )}
-
-        {/* Logout section */}
+      <main style={{
+        maxWidth: '480px',
+        margin: '0 auto',
+        paddingBottom: SPACING.xxl,
+      }}>
         <div style={{
-          marginTop: '2rem',
-          paddingTop: '1.5rem',
-          borderTop: `1px solid ${COLORS.border}`,
+          marginTop: SPACING.lg,
         }}>
-          <button
-            onClick={() => {
-              // Clear Pi session and reload to landing
-              if (typeof window !== 'undefined') {
-                window.location.href = '/'
-              }
-            }}
-            style={{
-              width:        '100%',
-              padding:      '0.875rem',
-              background:   'transparent',
-              border:       `1px solid rgba(239,68,68,0.3)`,
-              borderRadius: RADII.md,
-              color:        '#EF4444',
-              fontSize:     '0.85rem',
-              fontWeight:   '600',
-              cursor:       'pointer',
-              fontFamily:   FONTS.sans,
-            }}
-          >
-            Sign Out
-          </button>
+          {/* ── Header Card ─────────────────────────── */}
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(167,139,250,0.1), #131720 60%)',
+            border: '1px solid rgba(167,139,250,0.25)',
+            borderRadius: 18,
+            padding: '20px',
+            marginBottom: SPACING.lg,
+            textAlign: 'center',
+          }}>
+            {/* Avatar */}
+            <div style={{
+              width: 68,
+              height: 68,
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #A78BFA, #0095FF)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontWeight: 700,
+              fontSize: 24,
+              margin: '0 auto 16px',
+              border: '2px solid rgba(167,139,250,0.3)',
+            }}>
+              {user?.piUsername?.charAt(0).toUpperCase() || 'P'}
+            </div>
+
+            {/* Username */}
+            <div style={{
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: 24,
+              color: '#EEF2FF',
+              letterSpacing: 1,
+              marginBottom: 8,
+            }}>
+              {user?.piUsername || 'Pioneer'}
+            </div>
+
+            {/* Role + reputation */}
+            <div style={{
+              display: 'flex',
+              gap: 8,
+              justifyContent: 'center',
+              justifyItems: 'center',
+              marginBottom: 12,
+              flexWrap: 'wrap',
+            }}>
+              <div style={{
+                padding: '4px 10px',
+                background: 'rgba(0,149,255,0.1)',
+                border: '1px solid rgba(0,149,255,0.3)',
+                borderRadius: 6,
+                fontSize: 11,
+                color: '#0095FF',
+                fontWeight: 600,
+              }}>
+                Worker
+              </div>
+              <div style={{
+                padding: '4px 10px',
+                background: 'rgba(0,214,143,0.1)',
+                border: '1px solid rgba(0,214,143,0.3)',
+                borderRadius: 6,
+                fontSize: 11,
+                color: '#00D68F',
+                fontWeight: 600,
+              }}>
+                KYC Verified
+              </div>
+            </div>
+
+            {/* Rep score */}
+            <div style={{
+              fontSize: 14,
+              color: '#8892A8',
+            }}>
+              Reputation: {user?.reputationScore ?? 0}
+            </div>
+          </div>
+
+          {/* ── Stats Row ─────────────────────────── */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr 1fr',
+            gap: 12,
+            marginBottom: SPACING.lg,
+          }}>
+            {[
+              { label: 'Tasks Done', value: '24' },
+              { label: 'Pi Earned', value: '125.5' },
+              { label: 'Approval', value: '98%' },
+            ].map((stat) => (
+              <div key={stat.label} style={{
+                background: '#0F1119',
+                border: '1px solid #1A1F2E',
+                borderRadius: 12,
+                padding: '16px 12px',
+                textAlign: 'center',
+              }}>
+                <div style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: 22,
+                  color: '#0095FF',
+                  lineHeight: 1,
+                  marginBottom: 8,
+                }}>
+                  {stat.value}
+                </div>
+                <div style={{
+                  fontSize: 10,
+                  color: '#8892A8',
+                  textTransform: 'uppercase',
+                }}>
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ── Wallet Section ───────────────────── */}
+          <div style={{
+            background: '#0F1119',
+            border: '1px solid #1A1F2E',
+            borderRadius: 14,
+            padding: '16px',
+            marginBottom: SPACING.lg,
+          }}>
+            <div style={{
+              fontSize: 12,
+              color: '#8892A8',
+              textTransform: 'uppercase',
+              marginBottom: 10,
+              fontWeight: 600,
+            }}>
+              Wallet Address
+            </div>
+            <div style={{
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: 12,
+              color: '#0095FF',
+              wordBreak: 'break-all',
+              background: 'rgba(0,149,255,0.05)',
+              border: '1px solid rgba(0,149,255,0.2)',
+              borderRadius: 8,
+              padding: '10px',
+              marginBottom: 12,
+            }}>
+              {user?.piUid?.slice(0, 20) + '...' || 'Not set'}
+            </div>
+            <button style={{
+              width: '100%',
+              padding: '12px 16px',
+              background: 'linear-gradient(135deg, rgba(0,149,255,0.2), rgba(0,149,255,0.05))',
+              border: '1px solid rgba(0,149,255,0.3)',
+              borderRadius: 8,
+              color: '#0095FF',
+              fontWeight: 600,
+              fontSize: 14,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}>
+              Edit
+            </button>
+          </div>
+
+          {/* ── Settings ─────────────────────────– */}
+          <div style={{
+            background: '#0F1119',
+            border: '1px solid #1A1F2E',
+            borderRadius: 14,
+            overflow: 'hidden',
+          }}>
+            {[
+              { label: 'Notifications', checked: true },
+              { label: 'Marketing', checked: false },
+            ].map((setting, i) => (
+              <div key={i} style={{
+                padding: '14px 16px',
+                borderBottom: i < 1 ? '1px solid #1A1F2E' : 'none',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+                <label style={{
+                  fontSize: 14,
+                  color: '#EEF2FF',
+                  cursor: 'pointer',
+                }}>
+                  {setting.label}
+                </label>
+                <input type="checkbox" defaultChecked={setting.checked} style={{
+                  cursor: 'pointer',
+                }} />
+              </div>
+            ))}
+          </div>
         </div>
       </main>
     </div>
   )
 }
-
-

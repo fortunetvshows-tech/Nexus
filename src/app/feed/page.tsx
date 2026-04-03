@@ -1,15 +1,13 @@
 'use client'
 
-import { useState }         from 'react'
-import { usePiAuth }        from '@/hooks/use-pi-auth'
-import { useTaskSearch }    from '@/hooks/use-task-search'
-import { TaskCard }         from '@/components/TaskCard'
-import { TaskFilters }      from '@/components/TaskFilters'
-import { Navigation }       from '@/components/Navigation'
-import { COLORS, FONTS, RADII, SHADOWS, GRADIENTS, SPACING, statusStyle } from '@/lib/design/tokens'
+import { useState } from 'react'
+import { usePiAuth } from '@/hooks/use-pi-auth'
+import { useTaskSearch } from '@/hooks/use-task-search'
+import { TaskCard } from '@/components/TaskCard'
+import { Navigation } from '@/components/Navigation'
+import { COLORS, FONTS, RADII, SPACING } from '@/lib/design/tokens'
 
 export default function FeedPage() {
-  const [claimedTaskId, setClaimedTaskId] = useState<string | null>(null)
   const { user, isLoading: authLoading } = usePiAuth()
   const {
     tasks,
@@ -17,17 +15,13 @@ export default function FeedPage() {
     isLoading,
     filters,
     setFilters,
-    resetFilters,
-    loadMore,
-    refresh,
   } = useTaskSearch(user?.piUid)
 
-  // Not authenticated
   if (!user) {
     return (
       <div style={{
         minHeight:      '100vh',
-        background:     COLORS.bgBase,
+        background:     '#07090E',
         display:        'flex',
         alignItems:     'center',
         justifyContent: 'center',
@@ -35,7 +29,7 @@ export default function FeedPage() {
         gap:            '1rem',
         fontFamily:     FONTS.sans,
       }}>
-        <p style={{ color: COLORS.textSecondary, fontSize: '1rem' }}>
+        <p style={{ color: '#8892A8', fontSize: '1rem' }}>
           Sign in to see earning opportunities
         </p>
         <button
@@ -43,14 +37,14 @@ export default function FeedPage() {
           disabled={authLoading}
           style={{
             padding:       '0.75rem 2rem',
-            background:    `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
+            background:    '#0095FF',
             color:         'white',
-            border:        `1px solid ${COLORS.cyan}`,
+            border:        'none',
             borderRadius:  RADII.lg,
             fontSize:      '1rem',
             fontWeight:    '600',
             cursor:        authLoading ? 'not-allowed' : 'pointer',
-            boxShadow:     authLoading ? 'none' : SHADOWS.cyanGlow,
+            boxShadow:     '0 0 24px rgba(0,149,255,0.28)',
           }}
         >
           {authLoading ? 'Connecting...' : 'Connect with Pi'}
@@ -59,336 +53,201 @@ export default function FeedPage() {
     )
   }
 
+  const categories = ['All', 'Writing', 'Design', 'Analysis', 'Testing', 'Video']
+  const featuredTask = tasks?.[0] as any
+
   return (
     <div style={{
       minHeight:  '100vh',
-      background: COLORS.bgBase,
+      background: '#07090E',
       fontFamily: FONTS.sans,
       color:      COLORS.textPrimary,
+      padding: '20px 16px',
     }}>
       <Navigation currentPage="feed" />
 
-      {claimedTaskId && (
+      <main style={{
+        maxWidth: '480px',
+        margin: '0 auto',
+        paddingBottom: SPACING.xxl,
+      }}>
         <div style={{
-          position:    'fixed',
-          bottom:      '1.5rem',
-          left:        '50%',
-          transform:   'translateX(-50%)',
-          background:  COLORS.bgRaised,
-          border:      `1px solid ${COLORS.borderAccent}`,
-          borderRadius: RADII.lg,
-          padding:     '0.875rem 1.5rem',
-          color:       COLORS.textSecondary,
-          fontSize:    '0.875rem',
-          zIndex:      200,
-          whiteSpace:  'nowrap',
-          boxShadow:   '0 4px 24px rgba(0,0,0,0.4)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: SPACING.lg,
+          marginTop: SPACING.lg,
         }}>
-          Task claiming coming in the next update
-          <button
-            onClick={() => setClaimedTaskId(null)}
-            style={{
-              marginLeft: '1rem',
-              background: 'none',
-              border:     'none',
-              color:      COLORS.textMuted,
-              cursor:     'pointer',
-              fontSize:   '0.875rem',
-            }}
-          >
-            ✕
-          </button>
-        </div>
-      )}
-
-      <main className="page-main">
-
-        {/* HERO SECTION — Earning Potential + Stats */}
-        <div style={{
-          background:     GRADIENTS.card,
-          border:         `1px solid ${COLORS.borderAccent}`,
-          borderRadius:   RADII.xl,
-          padding:        SPACING.xl,
-          marginBottom:   SPACING.xxxl,
-          position:       'relative',
-          overflow:       'hidden',
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)' as any,
-        }}>
-          {/* Decorative grid background */}
           <div style={{
-            position:  'absolute',
-            inset:     0,
-            opacity:   0.4,
-            background: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h60v60H0z' fill='%23080A0F'/%3E%3Cpath d='M0 0L60 60M60 0L0 60' stroke='rgba(0,150,255,0.08)' stroke-width='0.5'/%3E%3C/svg%3E")`,
-            pointerEvents: 'none',
-          }} />
+            fontFamily: "'Bebas Neue', sans-serif",
+            fontSize: 24,
+            color: '#EEF2FF',
+            letterSpacing: 2,
+          }}>
+            DISCOVER
+          </div>
+          <div style={{
+            fontSize: 20,
+          }}>
+            🔔
+          </div>
+        </div>
 
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            {/* Top row: Title + Live count */}
-            <div style={{
-              display:        'flex',
-              justifyContent: 'space-between',
-              alignItems:     'flex-start',
-              marginBottom:   SPACING.xl,
-            }}>
-              <div>
-                <h1 style={{
-                  margin:       0,
-                  fontSize:     '2rem',
-                  fontWeight:   '800',
-                  color:        COLORS.textPrimary,
-                  letterSpacing: '-0.03em',
-                  fontFamily:   FONTS.display,
-                }}>
-                  Earn Pi Today
-                </h1>
-                <p style={{
-                  margin:   SPACING.sm + ' 0 0',
-                  fontSize: '0.9rem',
-                  color:    COLORS.textSecondary,
-                }}>
-                  Complete verified work · Get paid instantly
-                </p>
-              </div>
-              {!isLoading && pagination?.total && (
-                <div style={{
-                  padding:      SPACING.md + ' ' + SPACING.lg,
-                  background:   COLORS.piGlow,
-                  border:       `1px solid ${COLORS.accentDim}`,
-                  borderRadius: RADII.md,
-                  textAlign:    'center',
-                }}>
-                  <div style={{
-                    fontSize:   '1.5rem',
-                    fontWeight: '800',
-                    color:      COLORS.accentBright,
-                    fontFamily: FONTS.mono,
-                  }}>
-                    {pagination.total}
-                  </div>
-                  <div style={{
-                    fontSize:  '0.7rem',
-                    color:     COLORS.textMuted,
-                    marginTop: '2px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                  }}>
-                    Live Now
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Quick stats row */}
-            <div style={{
-              display:       'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-              gap:           SPACING.lg,
-              marginBottom:  SPACING.xl,
-            }}>
-              {[
-                { label: 'Avg. Reward', value: '5-50 Pi' },
-                { label: 'Quickest Task', value: '5 min' },
-                { label: 'Your Streak', value: '0 days' },
-              ].map((stat, i) => (
-                <div key={i} style={{
-                  padding:    SPACING.md,
-                  background: `rgba(0,150,255,0.05)`,
-                  border:     `1px solid rgba(0,150,255,0.1)`,
-                  borderRadius: RADII.md,
-                }}>
-                  <div style={{
-                    fontSize:   '0.75rem',
-                    color:      COLORS.textMuted,
-                    marginBottom: '4px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                  }}>
-                    {stat.label}
-                  </div>
-                  <div style={{
-                    fontSize:   '1.1rem',
-                    fontWeight: '700',
-                    color:      COLORS.accentBright,
-                    fontFamily: FONTS.mono,
-                  }}>
-                    {stat.value}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* CTA */}
+        <div style={{
+          display: 'flex',
+          gap: 8,
+          overflowX: 'auto',
+          scrollBehavior: 'smooth',
+          marginBottom: SPACING.lg,
+          paddingBottom: 8,
+          scrollbarWidth: 'none',
+        }}>
+          {categories.map((cat) => (
             <button
-              onClick={refresh}
-              disabled={isLoading}
+              key={cat}
+              onClick={() => setFilters({ ...filters, category: cat === 'All' ? '' : cat })}
               style={{
-                width:         '100%',
-                padding:       SPACING.lg,
-                background:    GRADIENTS.primary,
-                color:         'white',
-                border:        'none',
-                borderRadius:  RADII.lg,
-                fontSize:      '1rem',
-                fontWeight:    '700',
-                cursor:        isLoading ? 'not-allowed' : 'pointer',
-                boxShadow:     SHADOWS.accentLg,
-                transition:    'all 0.2s ease',
-                fontFamily:    FONTS.sans,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.boxShadow = SHADOWS.accentLg
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.boxShadow = SHADOWS.accentLg
+                padding: '8px 16px',
+                background: (filters.category === cat || (cat === 'All' && !filters.category))
+                  ? 'rgba(0,149,255,0.2)'
+                  : 'transparent',
+                border: (filters.category === cat || (cat === 'All' && !filters.category))
+                  ? '1px solid #0095FF'
+                  : '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 8,
+                color: (filters.category === cat || (cat === 'All' && !filters.category))
+                  ? '#0095FF'
+                  : '#8892A8',
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s',
               }}
             >
-              {isLoading ? '⟳ Loading...' : '↻ Refresh Opportunities'}
+              {cat}
             </button>
-          </div>
+          ))}
         </div>
 
-        {/* FILTERING SECTION */}
-        <div style={{
-          marginBottom: SPACING.xxl,
-        }}>
-          <h2 style={{
-            fontSize:   '0.9rem',
-            fontWeight: '700',
-            color:      COLORS.textMuted,
-            margin:     `0 0 ${SPACING.md} 0`,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            fontFamily: FONTS.sans,
-          }}>
-            Filter & Discover
-          </h2>
-          <TaskFilters
-            filters={filters}
-            onFilter={setFilters}
-            onReset={resetFilters}
-            resultCount={pagination?.total ?? 0}
-            isLoading={isLoading}
-          />
-        </div>
-
-        {/* LOADING STATE — Skeleton cards with glassmorphism */}
-        {isLoading && tasks.length === 0 && (
+        {featuredTask && (
           <div style={{
-            display:       'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-            gap:           SPACING.lg,
-            marginBottom:  SPACING.xxl,
-          }}>
-            {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} style={{
-                background:   COLORS.bgCard,
-                border:       `1px solid ${COLORS.border}`,
-                borderRadius: RADII.lg,
-                height:       '240px',
-                animation:    'pulse 2s infinite',
-                backdropFilter: 'blur(10px)',
-              }} />
-            ))}
-          </div>
-        )}
-
-        {/* EMPTY STATE — Motivational messaging */}
-        {!isLoading && tasks.length === 0 && (
-          <div style={{
-            textAlign:    'center',
-            padding:      `${SPACING.xxxl} ${SPACING.xl}`,
-            background:   COLORS.bgCard,
-            borderRadius: RADII.xl,
-            border:       `1px dashed ${COLORS.borderAccent}`,
-            marginBottom: SPACING.xxl,
+            background: 'linear-gradient(135deg, rgba(0,149,255,0.10) 0%, rgba(167,139,250,0.07) 50%, #131720 100%)',
+            border: '1px solid rgba(0,149,255,0.28)',
+            borderRadius: 24,
+            padding: '20px',
+            marginBottom: SPACING.lg,
           }}>
             <div style={{
-              fontSize:      '3rem',
-              marginBottom:  SPACING.lg,
-              animation:     'pulse 2s infinite',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              marginBottom: 12,
             }}>
-              🔍
+              <div style={{
+                fontFamily: "'Bebas Neue', sans-serif",
+                fontSize: 38,
+                color: '#0095FF',
+                lineHeight: 1,
+              }}>
+                {featuredTask.piReward}π
+              </div>
+              <div style={{
+                padding: '4px 10px',
+                background: 'rgba(255,176,32,0.1)',
+                border: '1px solid rgba(255,176,32,0.3)',
+                borderRadius: 6,
+                fontSize: 10,
+                color: '#FFB020',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+              }}>
+                FEATURED
+              </div>
             </div>
-            <h3 style={{
-              margin:       `0 0 ${SPACING.md} 0`,
-              fontSize:     '1.2rem',
-              color:        COLORS.textPrimary,
-              fontFamily:   FONTS.display,
-              fontWeight:   '700',
+            <div style={{
+              display: 'flex',
+              gap: 8,
+              marginBottom: 12,
+              flexWrap: 'wrap',
             }}>
-              No tasks match right now
-            </h3>
-            <p style={{
-              color:       COLORS.textSecondary,
-              margin:      0,
-              fontSize:    '0.9rem',
-              maxWidth:    '400px',
-              marginLeft:  'auto',
-              marginRight: 'auto',
+              <div style={{
+                padding: '4px 10px',
+                background: 'rgba(0,214,143,0.1)',
+                border: '1px solid rgba(0,214,143,0.3)',
+                borderRadius: 6,
+                fontSize: 11,
+                color: '#00D68F',
+                fontWeight: 600,
+              }}>
+                {featuredTask.category}
+              </div>
+              <div style={{
+                padding: '4px 10px',
+                background: 'rgba(0,149,255,0.1)',
+                border: '1px solid rgba(0,149,255,0.3)',
+                borderRadius: 6,
+                fontSize: 11,
+                color: '#0095FF',
+                fontWeight: 600,
+              }}>
+                By Acme Corp
+              </div>
+            </div>
+            <div style={{
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: 16,
+              color: '#EEF2FF',
+              marginBottom: 12,
+              lineHeight: 1.3,
             }}>
-              New opportunities post every hour. Adjust your filters or check back soon. Workers with higher badges unlock premium tasks.
-            </p>
+              {featuredTask.title}
+            </div>
+            <div style={{
+              display: 'flex',
+              gap: 8,
+              flexWrap: 'wrap',
+              fontSize: 11,
+              color: '#8892A8',
+            }}>
+              <span>5 slots</span>
+              <span>·</span>
+              <span>30 min</span>
+              <span>·</span>
+              <span>Due soon</span>
+            </div>
           </div>
         )}
 
-        {/* TASK GRID — Bento-style card layout */}
-        {tasks.length > 0 && (
+        {isLoading ? (
           <div style={{
-            display:       'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-            gap:           SPACING.lg,
-            marginBottom:  SPACING.xxl,
+            textAlign: 'center',
+            padding: SPACING.xl,
+            color: '#8892A8',
           }}>
-            {tasks.map((task: any) => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                workerReputation={user.reputationScore}
-              />
+            Loading opportunities...
+          </div>
+        ) : tasks && tasks.length > 0 ? (
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+          }}>
+            {(tasks as any)?.slice(1)?.map((task: any) => (
+              <TaskCard key={task.id} task={task} />
             ))}
           </div>
+        ) : (
+          <div style={{
+            textAlign: 'center',
+            padding: SPACING.xl,
+            color: '#8892A8',
+            fontSize: 14,
+          }}>
+            No tasks match your filter. Check back soon!
+          </div>
         )}
-
-        {/* LOAD MORE */}
-        {pagination?.hasMore && (
-          <button
-            onClick={loadMore}
-            disabled={isLoading}
-            style={{
-              width:        '100%',
-              padding:      SPACING.lg,
-              background:   'transparent',
-              border:       `1px solid ${COLORS.borderAccent}`,
-              borderRadius: RADII.lg,
-              color:        COLORS.accentBright,
-              fontSize:     '0.95rem',
-              fontWeight:   '600',
-              cursor:       isLoading ? 'not-allowed' : 'pointer',
-              transition:   'all 0.2s ease',
-              marginTop:    '1rem',
-            }}
-          >
-            {isLoading
-              ? 'Finding more opportunities...'
-              : `See ${pagination.total - tasks.length} more opportunities`
-            }
-          </button>
-        )}
-
-        {/* Floating Action Button — quick access to post */}
-        {user?.isAdmin && (
-          <a href="/employer" className="fab" title="Post an opportunity">
-            ✚
-          </a>
-        )}
-
       </main>
     </div>
   )
 }
-
-
