@@ -547,6 +547,7 @@ export default function ReviewPage({
                     color: '#d1d5db',
                     lineHeight: '1.6',
                     whiteSpace: 'pre-wrap' as const,
+                    wordBreak: 'break-word' as const,
                   }}>
                     <div style={{
                       fontSize: '0.65rem',
@@ -558,7 +559,7 @@ export default function ReviewPage({
                     }}>
                       💬 Notes
                     </div>
-                    {sub.proofContent}
+                    {String(sub.proofContent).replace(/</g, '&lt;').replace(/>/g, '&gt;')}
                   </div>
                 )}
 
