@@ -74,7 +74,7 @@ export default function FeedPage() {
           bottom:      '1.5rem',
           left:        '50%',
           transform:   'translateX(-50%)',
-          background:  COLORS.bgElevated,
+          background:  COLORS.bgRaised,
           border:      `1px solid ${COLORS.borderAccent}`,
           borderRadius: RADII.lg,
           padding:     '0.875rem 1.5rem',
@@ -390,4 +390,5 @@ export default function FeedPage() {
     </div>
   )
 }
+
 

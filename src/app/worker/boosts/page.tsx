@@ -151,8 +151,8 @@ export default function WorkerBoostsPage() {
                     style={{
                       padding: SPACING.md,
                       borderRadius: RADII.md,
-                      border: `2px solid ${selectedSubmission === sub.id ? COLORS.indigo : COLORS.border}`,
-                      backgroundColor: selectedSubmission === sub.id ? COLORS.bgElevated : 'transparent',
+                      border: `2px solid ${selectedSubmission === sub.id ? COLORS.pi : COLORS.border}`,
+                      backgroundColor: selectedSubmission === sub.id ? COLORS.bgRaised : 'transparent',
                       color: COLORS.textPrimary,
                       textAlign: 'left',
                       cursor: 'pointer',
@@ -185,4 +185,5 @@ export default function WorkerBoostsPage() {
     </>
   )
 }
+
 

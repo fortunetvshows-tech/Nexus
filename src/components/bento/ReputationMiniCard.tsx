@@ -32,7 +32,7 @@ export function ReputationMiniCard({
   kycLevel,
   tasksCompleted,
 }: ReputationMiniCardProps) {
-  const color    = LEVEL_COLORS[reputationLevel] ?? COLORS.indigo
+  const color    = LEVEL_COLORS[reputationLevel] ?? COLORS.pi
   const nextInfo = LEVEL_NEXT[reputationLevel]
   const progress = nextInfo
     ? Math.min((reputationScore / nextInfo.required) * 100, 100)
@@ -111,7 +111,7 @@ export function ReputationMiniCard({
           </div>
           <div style={{
             height:       '4px',
-            background:   COLORS.bgElevated,
+            background:   COLORS.bgRaised,
             borderRadius: '2px',
             overflow:     'hidden',
           }}>
@@ -135,7 +135,7 @@ export function ReputationMiniCard({
       }}>
         <div style={{
           padding:      SPACING.sm,
-          background:   COLORS.bgElevated,
+          background:   COLORS.bgRaised,
           borderRadius: RADII.md,
           textAlign:    'center' as const,
         }}>
@@ -157,7 +157,7 @@ export function ReputationMiniCard({
         </div>
         <div style={{
           padding:      SPACING.sm,
-          background:   COLORS.bgElevated,
+          background:   COLORS.bgRaised,
           borderRadius: RADII.md,
           textAlign:    'center' as const,
         }}>
@@ -180,4 +180,5 @@ export function ReputationMiniCard({
     </div>
   )
 }
+
 

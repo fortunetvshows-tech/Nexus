@@ -91,7 +91,7 @@ function timeAgo(dateStr: string): string {
 const STATUS_COLOR: Record<string, string> = {
   raised:            COLORS.amber,
   tier1_review:      COLORS.amber,
-  tier2_review:      COLORS.sapphire,
+  tier2_review:      COLORS.pi,
   tier3_review:      COLORS.red,
   resolved_worker:   COLORS.emerald,
   resolved_employer: COLORS.textMuted,
@@ -483,7 +483,7 @@ export default function AdminDisputesPage() {
       }}>
         <div style={{ fontSize: '2rem' }}>🔒</div>
         <div>Admin access required</div>
-        <Link href="/dashboard" style={{ color: COLORS.sapphire, textDecoration: 'none', fontSize: '0.85rem' }}>
+        <Link href="/dashboard" style={{ color: COLORS.pi, textDecoration: 'none', fontSize: '0.85rem' }}>
           ← Back to Dashboard
         </Link>
       </div>
@@ -571,7 +571,7 @@ export default function AdminDisputesPage() {
           display:      'flex',
           gap:          '0.375rem',
           marginBottom: SPACING.lg,
-          background:   COLORS.bgElevated,
+          background:   COLORS.bgRaised,
           borderRadius: RADII.lg,
           padding:      '0.3rem',
           border:       `1px solid ${COLORS.border}`,
@@ -581,7 +581,7 @@ export default function AdminDisputesPage() {
               key:   'disputes',
               label: `⚖ Disputes`,
               badge: activeDisputes.length > 0 ? activeDisputes.length : null,
-              color: COLORS.sapphire,
+              color: COLORS.pi,
             },
             {
               key:   'payouts',
@@ -645,7 +645,7 @@ export default function AdminDisputesPage() {
           display:      'flex',
           gap:          '0.375rem',
           marginBottom: SPACING.lg,
-          background:   COLORS.bgElevated,
+          background:   COLORS.bgRaised,
           borderRadius: RADII.lg,
           padding:      '0.3rem',
           border:       `1px solid ${COLORS.border}`,
@@ -798,7 +798,7 @@ export default function AdminDisputesPage() {
                   {dispute.submission?.rejectionReason && (
                     <div style={{
                       padding:      `${SPACING.xs} ${SPACING.sm}`,
-                      background:   COLORS.bgElevated,
+                      background:   COLORS.bgRaised,
                       border:       `1px solid ${COLORS.border}`,
                       borderRadius: RADII.sm,
                       fontSize:     '0.78rem',
@@ -1022,7 +1022,7 @@ export default function AdminDisputesPage() {
                           width:          '28px',
                           height:         '28px',
                           borderRadius:   '8px',
-                          background:     `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireLight})`,
+                          background:     `linear-gradient(135deg, ${COLORS.pi}, ${COLORS.piLt})`,
                           display:        'flex',
                           alignItems:     'center',
                           justifyContent: 'center',
@@ -1115,7 +1115,7 @@ export default function AdminDisputesPage() {
                             style={{
                               padding:      `${SPACING.xs} ${SPACING.md}`,
                               background:   paying || cancelling
-                                ? COLORS.bgElevated
+                                ? COLORS.bgRaised
                                 : `linear-gradient(180deg, ${COLORS.emerald} 0%, #10b981 100%)`,
                               border:       'none',
                               borderRadius: RADII.md,
@@ -1304,7 +1304,7 @@ export default function AdminDisputesPage() {
                 marginLeft:   'auto',
                 padding:      `${SPACING.sm} ${SPACING.md}`,
                 background:   selectedStuck.size === 0 || clearingStuck
-                  ? COLORS.bgElevated
+                  ? COLORS.bgRaised
                   : `linear-gradient(180deg, ${COLORS.red} 0%, #dc2626 100%)`,
                 border:       'none',
                 borderRadius: RADII.md,
@@ -1584,4 +1584,5 @@ export default function AdminDisputesPage() {
     </div>
   )
 }
+
 

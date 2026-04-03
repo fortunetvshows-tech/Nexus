@@ -121,10 +121,10 @@ export function TaskFilters({
             alignItems: 'center',
             gap:        '0.4rem',
             padding:    '0.4rem 0.875rem',
-            background: hasActiveFilters ? COLORS.bgElevated : COLORS.bgSurface,
-            border:     `1px solid ${hasActiveFilters ? COLORS.indigo : COLORS.border}`,
+            background: hasActiveFilters ? COLORS.bgRaised : COLORS.bgSurface,
+            border:     `1px solid ${hasActiveFilters ? COLORS.pi : COLORS.border}`,
             borderRadius: RADII.md,
-            color:      hasActiveFilters ? COLORS.indigoLight : COLORS.textMuted,
+            color:      hasActiveFilters ? COLORS.piLt : COLORS.textMuted,
             fontSize:   '0.8rem',
             cursor:     'pointer',
           }}
@@ -132,7 +132,7 @@ export function TaskFilters({
           ⚙ Filters
           {hasActiveFilters && (
             <span style={{
-              background:   COLORS.indigo,
+              background:   COLORS.pi,
               color:        COLORS.textPrimary,
               borderRadius: RADII.full,
               padding:      '0 6px',
@@ -205,7 +205,7 @@ export function TaskFilters({
                   padding:      '0.35rem 0.75rem',
                   borderRadius: RADII.full,
                   border:       'none',
-                  background:   !filters.category ? COLORS.indigo : COLORS.bgElevated,
+                  background:   !filters.category ? COLORS.pi : COLORS.bgRaised,
                   color:        !filters.category ? COLORS.textPrimary : COLORS.textSecondary,
                   fontSize:     '0.78rem',
                   cursor:       'pointer',
@@ -224,7 +224,7 @@ export function TaskFilters({
                     padding:      '0.35rem 0.75rem',
                     borderRadius: RADII.full,
                     border:       'none',
-                    background:   filters.category === cat ? COLORS.indigo : COLORS.bgElevated,
+                    background:   filters.category === cat ? COLORS.pi : COLORS.bgRaised,
                     color:        filters.category === cat ? COLORS.textPrimary : COLORS.textSecondary,
                     fontSize:     '0.78rem',
                     cursor:       'pointer',
@@ -325,4 +325,5 @@ export function TaskFilters({
     </div>
   )
 }
+
 

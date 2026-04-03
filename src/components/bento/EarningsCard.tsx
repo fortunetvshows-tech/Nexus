@@ -57,7 +57,7 @@ export function EarningsCard({
       {/* Divider */}
       <div style={{
         height:     '1px',
-        background: 'var(--nexus-border)',
+        background: 'var(--proofgrid-border)',
         margin:     '0.875rem 0',
       }} />
 
@@ -131,4 +131,5 @@ export function EarningsCard({
     </div>
   )
 }
+
 

@@ -67,7 +67,7 @@ export function ProofViewer({
             width:     '100%',
             maxHeight: '400px',
             objectFit: 'contain',
-            background: COLORS.bgElevated,
+            background: COLORS.bgRaised,
           }}
         />
       )}
@@ -88,7 +88,7 @@ export function ProofViewer({
             alignItems:     'center',
             gap:            SPACING.sm,
             padding:        SPACING.md,
-            background:     COLORS.bgElevated,
+            background:     COLORS.bgRaised,
             color:          COLORS.textPrimary,
             textDecoration: 'none',
             fontSize:       '0.85rem',
@@ -103,3 +103,4 @@ export function ProofViewer({
     </div>
   )
 }
+

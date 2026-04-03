@@ -21,3 +21,4 @@ export function Chip({ variant = 'blue', className = '', ...props }: ChipProps) 
     />
   )
 }
+

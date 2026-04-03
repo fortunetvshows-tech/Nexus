@@ -49,7 +49,7 @@ function FillBar({
   filled,
   total,
   delay = 0,
-  color = COLORS.indigo,
+  color = COLORS.pi,
 }: {
   filled:  number
   total:   number
@@ -73,7 +73,7 @@ function FillBar({
       <div style={{
         flex:         1,
         height:       '5px',
-        background:   COLORS.bgElevated,
+        background:   COLORS.bgRaised,
         borderRadius: '9999px',
         overflow:     'hidden',
       }}>
@@ -452,7 +452,7 @@ export default function EmployerDashboardPage() {
                     label="Tasks Posted"
                     value={tasks.length}
                     sub={`${activeTasks.length} active`}
-                    color={COLORS.indigo}
+                    color={COLORS.pi}
                     icon="📋"
                   />
                 ),
@@ -715,7 +715,7 @@ export default function EmployerDashboardPage() {
                                     filled={filled}
                                     total={task.slotsAvailable}
                                     delay={idx * 150}
-                                    color={activeTab === 'archived' ? COLORS.textMuted : COLORS.indigo}
+                                    color={activeTab === 'archived' ? COLORS.textMuted : COLORS.pi}
                                   />
                                 </div>
                               )
@@ -740,10 +740,10 @@ export default function EmployerDashboardPage() {
                                 disabled={!hasPrevPage}
                                 style={{
                                   padding:      '4px 12px',
-                                  background:   hasPrevPage ? COLORS.indigoDim : COLORS.bgElevated,
+                                  background:   hasPrevPage ? COLORS.piDim : COLORS.bgRaised,
                                   border:       `1px solid ${hasPrevPage ? COLORS.borderAccent : COLORS.border}`,
                                   borderRadius: RADII.sm,
-                                  color:        hasPrevPage ? COLORS.indigoLight : COLORS.textMuted,
+                                  color:        hasPrevPage ? COLORS.piLt : COLORS.textMuted,
                                   fontSize:     '0.75rem',
                                   cursor:       hasPrevPage ? 'pointer' : 'not-allowed',
                                   fontFamily:   FONTS.sans,
@@ -771,10 +771,10 @@ export default function EmployerDashboardPage() {
                                 disabled={!hasNextPage}
                                 style={{
                                   padding:      '4px 12px',
-                                  background:   hasNextPage ? COLORS.indigoDim : COLORS.bgElevated,
+                                  background:   hasNextPage ? COLORS.piDim : COLORS.bgRaised,
                                   border:       `1px solid ${hasNextPage ? COLORS.borderAccent : COLORS.border}`,
                                   borderRadius: RADII.sm,
-                                  color:        hasNextPage ? COLORS.indigoLight : COLORS.textMuted,
+                                  color:        hasNextPage ? COLORS.piLt : COLORS.textMuted,
                                   fontSize:     '0.75rem',
                                   cursor:       hasNextPage ? 'pointer' : 'not-allowed',
                                   fontFamily:   FONTS.sans,
@@ -932,7 +932,7 @@ export default function EmployerDashboardPage() {
                               alignItems:     'center',
                               gap:            '0.75rem',
                               padding:        `${SPACING.md} ${SPACING.lg}`,
-                              background:     COLORS.bgElevated,
+                              background:     COLORS.bgRaised,
                               border:         `1px solid ${COLORS.border}`,
                               borderLeft:     `3px solid ${COLORS.amber}`,
                               borderRadius:   RADII.md,
@@ -1038,7 +1038,7 @@ export default function EmployerDashboardPage() {
                 style={{
                   width:        '100%',
                   padding:      '0.75rem',
-                  background:   COLORS.bgElevated,
+                  background:   COLORS.bgRaised,
                   border:       `1px solid ${COLORS.borderAccent}`,
                   borderRadius: RADII.md,
                   color:        COLORS.textPrimary,
@@ -1059,7 +1059,7 @@ export default function EmployerDashboardPage() {
                 style={{
                   width:        '100%',
                   padding:      '0.75rem',
-                  background:   COLORS.bgElevated,
+                  background:   COLORS.bgRaised,
                   border:       `1px solid ${COLORS.borderAccent}`,
                   borderRadius: RADII.md,
                   color:        COLORS.textPrimary,
@@ -1081,7 +1081,7 @@ export default function EmployerDashboardPage() {
                 style={{
                   width:        '100%',
                   padding:      '0.75rem',
-                  background:   COLORS.bgElevated,
+                  background:   COLORS.bgRaised,
                   border:       `1px solid ${COLORS.borderAccent}`,
                   borderRadius: RADII.md,
                   color:        COLORS.textPrimary,
@@ -1182,4 +1182,5 @@ export default function EmployerDashboardPage() {
     </div>
   )
 }
+
 

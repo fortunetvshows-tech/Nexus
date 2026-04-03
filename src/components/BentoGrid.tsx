@@ -44,3 +44,4 @@ export function BentoGrid({ items, columns = 3, gap = '0.875rem' }: BentoGridPro
   )
 }
 
+

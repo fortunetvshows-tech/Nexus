@@ -83,12 +83,12 @@ function DisputeStatusBadge({
     return (
       <span style={{
         padding:      '3px 10px',
-        background:   COLORS.indigoDim,
+        background:   COLORS.piDim,
         border:       `1px solid rgba(99,102,241,0.3)`,
         borderRadius: RADII.full,
         fontSize:     '0.68rem',
         fontWeight:   '700',
-        color:        COLORS.indigoLight,
+        color:        COLORS.piLt,
         fontFamily:   FONTS.mono,
         whiteSpace:   'nowrap' as const,
         animation:    'pulse-glow 2s infinite',
@@ -161,7 +161,7 @@ export function DisputeTrackerCard({ disputes, workerId }: DisputeTrackerCardPro
               borderLeft:   `3px solid ${
                 dispute.status === 'resolved_worker' ? COLORS.emerald
                 : dispute.status === 'resolved_employer' ? COLORS.red
-                : COLORS.indigo
+                : COLORS.pi
               }`,
               borderRadius: RADII.lg,
               padding:      SPACING.lg,
@@ -229,8 +229,8 @@ export function DisputeTrackerCard({ disputes, workerId }: DisputeTrackerCardPro
                       height:       '4px',
                       borderRadius: '2px',
                       background:   i < totalVotes
-                        ? COLORS.indigo
-                        : COLORS.bgElevated,
+                        ? COLORS.pi
+                        : COLORS.bgRaised,
                       transition:   'background 0.3s',
                     }} />
                   ))}
@@ -285,4 +285,5 @@ export function DisputeTrackerCard({ disputes, workerId }: DisputeTrackerCardPro
     </div>
   )
 }
+
 

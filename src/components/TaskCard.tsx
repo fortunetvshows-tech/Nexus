@@ -217,7 +217,7 @@ export function TaskCard({
           {/* Claim button */}
           <div style={{
             padding:      '6px 16px',
-            background:   spotsLeft === 0 ? COLORS.bgElevated : color,
+            background:   spotsLeft === 0 ? COLORS.bgRaised : color,
             color:        spotsLeft === 0 ? COLORS.textMuted : 'white',
             borderRadius: RADII.md,
             fontSize:     '0.78rem',
@@ -233,4 +233,5 @@ export function TaskCard({
     </Link>
   )
 }
+
 

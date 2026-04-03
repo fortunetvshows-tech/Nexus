@@ -52,7 +52,7 @@ export function TopBar() {
         color:         COLORS.textPrimary,
         letterSpacing: '-0.02em',
       }}>
-        Nexus
+        ProofGrid
       </span>
     </header>
   )
@@ -88,7 +88,7 @@ export function TopBar() {
           flexShrink:    0,
         }}
       >
-        Nexus
+        ProofGrid
       </Link>
 
       {/* Spacer */}
@@ -162,4 +162,5 @@ export function TopBar() {
     </header>
   )
 }
+
 

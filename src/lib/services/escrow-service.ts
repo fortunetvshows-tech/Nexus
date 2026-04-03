@@ -1,7 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase-admin'
 
 /**
- * Escrow Service — Nexus financial operation layer.
+ * Escrow Service — ProofGrid financial operation layer.
  *
  * ARCHITECTURAL RULE:
  * No API route may call Transaction, EscrowLedger, or Submission
@@ -157,4 +157,5 @@ export async function rejectSubmission(
 
   return { success: true, data }
 }
+
 

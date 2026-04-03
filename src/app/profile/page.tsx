@@ -247,7 +247,7 @@ export default function ProfilePage() {
                   },
                 ].map(stat => (
                   <div key={stat.label} style={{
-                    background:   COLORS.bgElevated,
+                    background:   COLORS.bgRaised,
                     border:       `1px solid ${COLORS.border}`,
                     borderRadius: RADII.md,
                     padding:      SPACING.sm,
@@ -426,7 +426,7 @@ export default function ProfilePage() {
                       style={{
                         width:        '100%',
                         padding:      '0.75rem',
-                        background:   COLORS.bgElevated,
+                        background:   COLORS.bgRaised,
                         border:       `1px solid ${COLORS.borderAccent}`,
                         borderRadius: RADII.md,
                         color:        COLORS.textPrimary,
@@ -477,7 +477,7 @@ export default function ProfilePage() {
                     style={{
                       width:        '100%',
                       padding:      '0.875rem',
-                      background:   isSaving ? COLORS.bgElevated
+                      background:   isSaving ? COLORS.bgRaised
                         : `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
                       border:       isSaving ? 'none' : `1px solid ${COLORS.cyan}`,
                       borderRadius: RADII.md,
@@ -540,4 +540,5 @@ export default function ProfilePage() {
     </div>
   )
 }
+
 

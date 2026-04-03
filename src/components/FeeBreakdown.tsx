@@ -108,7 +108,7 @@ export function FeeBreakdown({
               Total locked in escrow
             </span>
             <span style={{
-              color:      COLORS.indigoLight,
+              color:      COLORS.piLt,
               fontWeight: '700',
             }}>
               {totalEscrow.toFixed(4)}π
@@ -219,4 +219,5 @@ export function FeeBreakdown({
     </div>
   )
 }
+
 

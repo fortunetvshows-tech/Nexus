@@ -128,7 +128,7 @@ export default function LandingPage() {
         }}>
           Earn Pi doing{' '}
           <span style={{
-            background:        `linear-gradient(135deg, ${COLORS.indigo}, ${COLORS.emerald})`,
+            background:        `linear-gradient(135deg, ${COLORS.pi}, ${COLORS.emerald})`,
             WebkitBackgroundClip: 'text' as any,
             WebkitTextFillColor: 'transparent',
           }}>
@@ -166,7 +166,7 @@ export default function LandingPage() {
                 href="/feed"
                 style={{
                   padding:        '1rem 2rem',
-                  background:     `linear-gradient(135deg, ${COLORS.indigo}, #4338CA)`,
+                  background:     `linear-gradient(135deg, ${COLORS.pi}, #4338CA)`,
                   color:          'white',
                   borderRadius:   RADII.lg,
                   fontSize:       '1rem',
@@ -208,8 +208,8 @@ export default function LandingPage() {
               style={{
                 padding:      '1rem 2.5rem',
                 background:   isAuthenticating || isLoading
-                  ? COLORS.bgElevated
-                  : `linear-gradient(135deg, ${COLORS.indigo}, #4338CA)`,
+                  ? COLORS.bgRaised
+                  : `linear-gradient(135deg, ${COLORS.pi}, #4338CA)`,
                 color:        isAuthenticating || isLoading ? COLORS.textMuted : 'white',
                 borderRadius: RADII.lg,
                 fontSize:     '1.1rem',
@@ -282,7 +282,7 @@ export default function LandingPage() {
         <div style={{
           fontSize:      '0.72rem',
           fontWeight:    '700',
-          color:         COLORS.indigo,
+          color:         COLORS.pi,
           textTransform: 'uppercase' as const,
           letterSpacing: '0.15em',
           marginBottom:  SPACING.sm,
@@ -319,7 +319,7 @@ export default function LandingPage() {
             alignItems:     'center',
             gap:            '8px',
             padding:        '0.875rem 2rem',
-            background:     `linear-gradient(135deg, ${COLORS.indigo}, #4338CA)`,
+            background:     `linear-gradient(135deg, ${COLORS.pi}, #4338CA)`,
             color:          'white',
             borderRadius:   RADII.lg,
             fontSize:       '0.95rem',
@@ -376,7 +376,7 @@ export default function LandingPage() {
                 emoji: '👁',
                 title: 'See an opportunity',
                 desc:  'Browse tasks that match your skills. Each shows exactly how much Pi you earn.',
-                color: COLORS.indigo,
+                color: COLORS.pi,
               },
               {
                 step:  '02',
@@ -513,7 +513,7 @@ export default function LandingPage() {
               alignItems:     'center',
               gap:            '8px',
               padding:        '1rem 2.5rem',
-              background:     `linear-gradient(135deg, ${COLORS.indigo}, #4338CA)`,
+              background:     `linear-gradient(135deg, ${COLORS.pi}, #4338CA)`,
               color:          'white',
               borderRadius:   RADII.lg,
               fontSize:       '1.1rem',
@@ -531,8 +531,8 @@ export default function LandingPage() {
             style={{
               padding:      '1rem 2.5rem',
               background:   isAuthenticating || isLoading
-                ? COLORS.bgElevated
-                : `linear-gradient(135deg, ${COLORS.indigo}, #4338CA)`,
+                ? COLORS.bgRaised
+                : `linear-gradient(135deg, ${COLORS.pi}, #4338CA)`,
               color:        isAuthenticating || isLoading ? COLORS.textMuted : 'white',
               borderRadius: RADII.lg,
               fontSize:     '1.1rem',
@@ -585,4 +585,5 @@ export default function LandingPage() {
     </div>
   )
 }
+
 

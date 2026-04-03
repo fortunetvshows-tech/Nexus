@@ -230,7 +230,7 @@ export default function AnalyticsPage() {
               <StatCard
                 label="This Week"
                 value={formatPi(workerSummary?.thisWeekEarned ?? 0)}
-                color={COLORS.sapphireLight}
+                color={COLORS.piLt}
               />
               <StatCard
                 label="Pending"
@@ -281,7 +281,7 @@ export default function AnalyticsPage() {
                 fontSize:     '0.875rem',
               }}>
                 No payouts yet.{' '}
-                <Link href="/feed" style={{ color: COLORS.indigo }}>
+                <Link href="/feed" style={{ color: COLORS.pi }}>
                   Find tasks →
                 </Link>
               </div>
@@ -352,4 +352,5 @@ export default function AnalyticsPage() {
     </div>
   )
 }
+
 

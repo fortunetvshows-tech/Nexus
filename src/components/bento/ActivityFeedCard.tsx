@@ -90,7 +90,7 @@ export function ActivityFeedCard({ submissions }: ActivityFeedCardProps) {
                   gap:         '0.625rem',
                   padding:     '0.5rem 0',
                   borderBottom: idx < Math.min(submissions.length, 4) - 1
-                    ? '1px solid var(--nexus-border)'
+                    ? '1px solid var(--proofgrid-border)'
                     : 'none',
                   animation:   `fade-up 0.3s ease ${idx * 0.08}s both`,
                 }}
@@ -153,4 +153,5 @@ export function ActivityFeedCard({ submissions }: ActivityFeedCardProps) {
     </div>
   )
 }
+
 

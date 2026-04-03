@@ -3,7 +3,7 @@ import { Redis } from '@upstash/redis'
 import { NextRequest, NextResponse } from 'next/server'
 
 /**
- * Rate limiting for Nexus API endpoints.
+ * Rate limiting for ProofGrid API endpoints.
  * Uses Upstash Redis sliding window algorithm.
  * Fails OPEN if Redis is not configured —
  * allows request through with a warning log.
@@ -132,4 +132,5 @@ export async function checkRateLimit(
 
   return null
 }
+
 

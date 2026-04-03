@@ -92,7 +92,7 @@ export function ReputationCard({
 
       {/* Progress bar */}
       <div style={{
-        background:   'var(--nexus-bg-elevated)',
+        background:   'var(--proofgrid-bg-elevated)',
         borderRadius: '9999px',
         height:       '5px',
         overflow:     'hidden',
@@ -157,4 +157,5 @@ export function ReputationCard({
     </div>
   )
 }
+
 

@@ -132,7 +132,7 @@ export default function ArbitratePage() {
               href={`/arbitrate/${arb.disputeId}`}
               style={{
                 background:     COLORS.bgSurface,
-                border:         `1px solid ${COLORS.sapphire}`,
+                border:         `1px solid ${COLORS.pi}`,
                 borderRadius:   RADII.xl,
                 padding:        '1.25rem',
                 textDecoration: 'none',
@@ -155,9 +155,9 @@ export default function ArbitratePage() {
                 <div style={{
                   padding:      '0.25rem 0.75rem',
                   borderRadius: RADII.full,
-                  background:   COLORS.bgElevated,
+                  background:   COLORS.bgRaised,
                   fontSize:     '0.75rem',
-                  color:        COLORS.sapphireLight,
+                  color:        COLORS.piLt,
                 }}>
                   Awaiting vote
                 </div>
@@ -176,4 +176,5 @@ export default function ArbitratePage() {
     </div>
   )
 }
+
 

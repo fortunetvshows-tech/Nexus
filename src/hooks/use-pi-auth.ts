@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useContext, useRef } from 'react'
 
-export interface NexusUser {
+export interface ProofGridUser {
   id: string
   piUid: string
   piUsername: string
@@ -14,21 +14,21 @@ export interface NexusUser {
 }
 
 interface AuthState {
-  user: NexusUser | null
+  user: ProofGridUser | null
   isLoading: boolean
   error: string | null
   isSdkReady: boolean
 }
 
-const SESSION_KEY = 'nexus_user'
+const SESSION_KEY = 'proofgrid_user'
 
-function saveUserToSession(user: NexusUser) {
+function saveUserToSession(user: ProofGridUser) {
   try {
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(user))
   } catch { /* ignore */ }
 }
 
-function getUserFromSession(): NexusUser | null {
+function getUserFromSession(): ProofGridUser | null {
   try {
     const raw = sessionStorage.getItem(SESSION_KEY)
     return raw ? JSON.parse(raw) : null
@@ -45,13 +45,13 @@ function clearUserFromSession() {
 
 function saveAuthScopesToSession(scopes: string[]) {
   try {
-    sessionStorage.setItem('nexus_auth_scopes', JSON.stringify(scopes))
+    sessionStorage.setItem('proofgrid_auth_scopes', JSON.stringify(scopes))
   } catch { /* ignore */ }
 }
 
 function getAuthScopesFromSession(): string[] {
   try {
-    const raw = sessionStorage.getItem('nexus_auth_scopes')
+    const raw = sessionStorage.getItem('proofgrid_auth_scopes')
     return raw ? JSON.parse(raw) : []
   } catch {
     return []
@@ -115,7 +115,7 @@ export function usePiAuth() {
       const auth = await window.Pi.authenticate(
         ['username', 'wallet_address', 'payments'],
         async (incompletePayment: any) => {
-          console.warn('[Nexus] Incomplete payment found:', incompletePayment)
+          console.warn('[ProofGrid] Incomplete payment found:', incompletePayment)
           if (!incompletePayment?.identifier) return
 
           const paymentId = incompletePayment.identifier
@@ -132,7 +132,7 @@ export function usePiAuth() {
                   headers: { 'Content-Type': 'application/json' },
                   body:    JSON.stringify({ paymentId, txid }),
                 })
-                console.log('[Nexus] Incomplete U2A payment completed:', paymentId)
+                console.log('[ProofGrid] Incomplete U2A payment completed:', paymentId)
               } else {
                 // No blockchain transaction — cancel it
                 await fetch(`${window.location.origin}/api/pi/cancel`, {
@@ -140,7 +140,7 @@ export function usePiAuth() {
                   headers: { 'Content-Type': 'application/json' },
                   body:    JSON.stringify({ paymentId }),
                 })
-                console.log('[Nexus] Incomplete U2A payment cancelled:', paymentId)
+                console.log('[ProofGrid] Incomplete U2A payment cancelled:', paymentId)
               }
             } else {
               // A2U — handle via existing route
@@ -151,7 +151,7 @@ export function usePiAuth() {
               })
             }
           } catch (err) {
-            console.error('[Nexus] Failed to handle incomplete payment:', err)
+            console.error('[ProofGrid] Failed to handle incomplete payment:', err)
           }
         }
       )
@@ -223,7 +223,7 @@ export function usePiAuth() {
 
   const clearAuth = useCallback(() => {
     clearUserFromSession()
-    sessionStorage.removeItem('nexus_auth_scopes')
+    sessionStorage.removeItem('proofgrid_auth_scopes')
     setState(prev => ({
       ...prev,
       user:  null,
@@ -241,4 +241,5 @@ export function usePiAuth() {
     isAuthenticated: state.user !== null,
   }
 }
+
 

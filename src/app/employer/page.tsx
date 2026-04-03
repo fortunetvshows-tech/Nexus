@@ -12,7 +12,7 @@ import { COLORS, FONTS, RADII, SHADOWS, GRADIENTS, SPACING, statusStyle } from '
 const inputStyle = {
   width:        '100%',
   padding:      '0.75rem 1rem',
-  background:   COLORS.bgElevated,
+  background:   COLORS.bgRaised,
   border:       `1px solid ${COLORS.borderAccent}`,
   borderRadius: RADII.md,
   color:        COLORS.textPrimary,
@@ -243,7 +243,7 @@ export default function EmployerPage() {
                 <div style={{
                   marginTop: '1.25rem',
                   padding: '1rem',
-                  background: COLORS.sapphireDim,
+                  background: COLORS.piDim,
                   border: `1px solid rgba(99,102,241,0.3)`,
                   borderRadius: RADII.lg,
                 }}>
@@ -356,7 +356,7 @@ export default function EmployerPage() {
                         width: '100%',
                         padding: '0.75rem',
                         background: isUploadingInstruction
-                          ? COLORS.bgElevated
+                          ? COLORS.bgRaised
                           : `linear-gradient(135deg, ${COLORS.sapphire} 0%, ${COLORS.sapphireDark} 100%)`,
                         color: isUploadingInstruction ? COLORS.textMuted : 'white',
                         border: 'none',
@@ -928,4 +928,5 @@ export default function EmployerPage() {
     </div>
   )
 }
+
 

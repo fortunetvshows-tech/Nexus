@@ -113,7 +113,7 @@ export function ProofUploader({
             alignItems:   'center',
             gap:          SPACING.sm,
             padding:      `${SPACING.sm} ${SPACING.md}`,
-            background:   COLORS.bgElevated,
+            background:   COLORS.bgRaised,
             border:       `1px dashed ${COLORS.border}`,
             borderRadius: RADII.md,
             color:        COLORS.textSecondary,
@@ -138,3 +138,4 @@ export function ProofUploader({
     </div>
   )
 }
+

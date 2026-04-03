@@ -101,8 +101,8 @@ export function Navigation({ currentPage }: NavigationProps) {
           <span className="hide-mobile" style={{
             fontSize:     '0.55rem',
             fontWeight:   '500',
-            color:        COLORS.indigo,
-            background:   COLORS.indigoDim,
+            color:        COLORS.pi,
+            background:   COLORS.piDim,
             padding:      '2px 6px',
             borderRadius: '4px',
             letterSpacing: '0.05em',
@@ -210,7 +210,7 @@ export function Navigation({ currentPage }: NavigationProps) {
                     width:          '32px',
                     height:         '32px',
                     borderRadius:   '50%',
-                    background:     `linear-gradient(135deg, ${COLORS.indigo}, ${COLORS.indigoLight})`,
+                    background:     `linear-gradient(135deg, ${COLORS.pi}, ${COLORS.piLt})`,
                     display:        'flex',
                     alignItems:     'center',
                     justifyContent: 'center',
@@ -233,7 +233,7 @@ export function Navigation({ currentPage }: NavigationProps) {
                       top:          '40px',
                       right:        0,
                       width:        '200px',
-                      background:   COLORS.bgElevated,
+                      background:   COLORS.bgRaised,
                       border:       `1px solid ${COLORS.borderAccent}`,
                       borderRadius: '12px',
                       boxShadow:    '0 8px 32px rgba(0,0,0,0.4)',
@@ -504,7 +504,7 @@ export function Navigation({ currentPage }: NavigationProps) {
                     : 'transparent',
                   marginBottom:   '2px',
                   borderLeft:     isActive
-                    ? `3px solid ${COLORS.indigo}`
+                    ? `3px solid ${COLORS.pi}`
                     : '3px solid transparent',
                   transition:     'all 0.15s ease',
                 }}
@@ -567,4 +567,5 @@ export function Navigation({ currentPage }: NavigationProps) {
     </>
   )
 }
+
 

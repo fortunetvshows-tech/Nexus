@@ -104,7 +104,7 @@ export function EditWalletModal({
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          background: COLORS.bgElevated,
+          background: COLORS.bgRaised,
           border: `1px solid ${COLORS.border}`,
           borderRadius: RADII.lg,
           padding: SPACING.lg,
@@ -200,7 +200,7 @@ export function EditWalletModal({
                 disabled={!newWallet.trim() || isSaving}
                 style={{
                   padding: `${SPACING.sm} ${SPACING.md}`,
-                  background: COLORS.indigo,
+                  background: COLORS.pi,
                   color: 'white',
                   border: 'none',
                   borderRadius: RADII.md,
@@ -285,4 +285,5 @@ export function EditWalletModal({
     </>
   )
 }
+
 

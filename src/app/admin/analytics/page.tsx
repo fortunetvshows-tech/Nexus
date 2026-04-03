@@ -65,7 +65,7 @@ function KPICard({
   label,
   value,
   badge,
-  badgeColor = COLORS.sapphire,
+  badgeColor = COLORS.pi,
 }: {
   icon: string
   label: string
@@ -82,7 +82,7 @@ function KPICard({
         borderRadius: '16px',
         padding: SPACING.lg,
         border: `1px solid ${COLORS.borderAccent}`,
-        boxShadow: isHovered ? SHADOWS.cardHover : SHADOWS.card,
+        boxShadow: isHovered ? SHADOWS.accentLg : SHADOWS.card,
         display: 'flex',
         flexDirection: 'column',
         gap: SPACING.md,
@@ -207,7 +207,7 @@ export default function AdminAnalyticsPage() {
       }}>
         <div style={{ fontSize: '2rem' }}>🔒</div>
         <div>Admin access required</div>
-        <Link href="/dashboard" style={{ color: COLORS.sapphire, textDecoration: 'none', fontSize: '0.85rem' }}>
+        <Link href="/dashboard" style={{ color: COLORS.pi, textDecoration: 'none', fontSize: '0.85rem' }}>
           ← Back to Dashboard
         </Link>
       </div>
@@ -297,7 +297,7 @@ export default function AdminAnalyticsPage() {
                 label="Total Payouts"
                 value={formatPi(analytics.summary.totalPiPaidOut)}
                 badge="90% Share"
-                badgeColor={COLORS.indigo}
+                badgeColor={COLORS.pi}
               />
               <KPICard
                 icon="👥"
@@ -332,13 +332,13 @@ export default function AdminAnalyticsPage() {
                 icon="🔒"
                 label="Escrowed"
                 value={formatPi(analytics.summary.totalPiEscrowed)}
-                badgeColor={COLORS.indigo}
+                badgeColor={COLORS.pi}
               />
               <KPICard
                 icon="📊"
                 label="Total Transactions"
                 value={analytics.summary.totalTransactions}
-                badgeColor={COLORS.indigo}
+                badgeColor={COLORS.pi}
               />
               <KPICard
                 icon="✔️"
@@ -372,7 +372,7 @@ export default function AdminAnalyticsPage() {
                 gap: SPACING.md,
               }}>
                 <div style={{
-                  backgroundColor: COLORS.bgElevated,
+                  backgroundColor: COLORS.bgRaised,
                   padding: SPACING.md,
                   borderRadius: RADII.md,
                   borderLeft: `4px solid ${COLORS.emerald}`,
@@ -389,15 +389,15 @@ export default function AdminAnalyticsPage() {
                 </div>
 
                 <div style={{
-                  backgroundColor: COLORS.bgElevated,
+                  backgroundColor: COLORS.bgRaised,
                   padding: SPACING.md,
                   borderRadius: RADII.md,
-                  borderLeft: `4px solid ${COLORS.indigo}`,
+                  borderLeft: `4px solid ${COLORS.pi}`,
                 }}>
                   <div style={{ color: COLORS.textMuted, fontSize: '0.875rem' }}>
                     Platform Revenue
                   </div>
-                  <div style={{ fontSize: '1.125rem', fontWeight: '700', marginTop: SPACING.xs, color: COLORS.indigo }}>
+                  <div style={{ fontSize: '1.125rem', fontWeight: '700', marginTop: SPACING.xs, color: COLORS.pi }}>
                     10%
                   </div>
                   <div style={{ fontSize: '0.75rem', color: COLORS.textMuted, marginTop: SPACING.xs }}>
@@ -406,7 +406,7 @@ export default function AdminAnalyticsPage() {
                 </div>
 
                 <div style={{
-                  backgroundColor: COLORS.bgElevated,
+                  backgroundColor: COLORS.bgRaised,
                   padding: SPACING.md,
                   borderRadius: RADII.md,
                   borderLeft: `4px solid ${COLORS.amber}`,
@@ -468,7 +468,7 @@ export default function AdminAnalyticsPage() {
                     <thead>
                       <tr style={{
                         borderBottom: `1px solid ${COLORS.borderAccent}`,
-                        backgroundColor: COLORS.bgElevated,
+                        backgroundColor: COLORS.bgRaised,
                       }}>
                         <th style={{
                           padding: SPACING.md,
@@ -547,7 +547,7 @@ export default function AdminAnalyticsPage() {
                             transition: 'background-color 0.2s ease',
                             cursor: 'pointer',
                           }}
-                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = COLORS.bgElevated)}
+                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = COLORS.bgRaised)}
                           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                           >
                             <td style={{ padding: SPACING.md, color: COLORS.textPrimary }}>
@@ -665,7 +665,7 @@ export default function AdminAnalyticsPage() {
                           alignItems: 'center',
                           gap: SPACING.md,
                           padding: SPACING.md,
-                          backgroundColor: COLORS.bgElevated,
+                          backgroundColor: COLORS.bgRaised,
                           borderRadius: RADII.md,
                           border: `1px solid ${COLORS.borderAccent}`,
                           transition: 'all 0.2s ease',
@@ -685,7 +685,7 @@ export default function AdminAnalyticsPage() {
                           width: '40px',
                           height: '40px',
                           borderRadius: '50%',
-                          backgroundColor: idx === 0 ? '#FFD700' : idx === 1 ? '#C0C0C0' : idx === 2 ? '#CD7F32' : COLORS.indigo,
+                          backgroundColor: idx === 0 ? '#FFD700' : idx === 1 ? '#C0C0C0' : idx === 2 ? '#CD7F32' : COLORS.pi,
                           color: idx < 3 ? '#000' : 'white',
                           display: 'flex',
                           alignItems: 'center',
@@ -742,7 +742,7 @@ export default function AdminAnalyticsPage() {
                             <div style={{
                               height: '100%',
                               width: `${Math.min(progressPercent, 100)}%`,
-                              backgroundColor: COLORS.indigo,
+                              backgroundColor: COLORS.pi,
                               borderRadius: RADII.full,
                               transition: 'width 0.3s ease',
                             }} />
@@ -760,4 +760,5 @@ export default function AdminAnalyticsPage() {
     </div>
   )
 }
+
 

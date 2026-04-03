@@ -231,7 +231,7 @@ export function NotificationBell({ piUid }: NotificationBellProps) {
                       {notif.body.length > 80 && (
                         <span style={{
                           fontSize:   '0.65rem',
-                          color:      COLORS.indigo,
+                          color:      COLORS.pi,
                           marginTop:  '2px',
                           display:    'block',
                           cursor:     'pointer',
@@ -302,4 +302,5 @@ export function NotificationBell({ piUid }: NotificationBellProps) {
     </div>
   )
 }
+
 

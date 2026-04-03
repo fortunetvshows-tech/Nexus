@@ -122,7 +122,7 @@ export function ConfirmDialog({
               transition: 'all 0.2s ease',
             }}
             onMouseEnter={e =>
-              (e.currentTarget.style.backgroundColor = COLORS.bgElevated)
+              (e.currentTarget.style.backgroundColor = COLORS.bgRaised)
             }
             onMouseLeave={e =>
               (e.currentTarget.style.backgroundColor = COLORS.bgSurface)
@@ -138,7 +138,7 @@ export function ConfirmDialog({
               padding: `${SPACING.sm} ${SPACING.md}`,
               borderRadius: RADII.md,
               border: 'none',
-              backgroundColor: isDangerous ? COLORS.red : COLORS.indigo,
+              backgroundColor: isDangerous ? COLORS.red : COLORS.pi,
               color: COLORS.textPrimary,
               cursor: isProcessing || isLoading ? 'not-allowed' : 'pointer',
               opacity: isProcessing || isLoading ? 0.7 : 1,
@@ -165,4 +165,5 @@ export function ConfirmDialog({
     </div>
   )
 }
+
 

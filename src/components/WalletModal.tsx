@@ -71,7 +71,7 @@ export function WalletModal({ open, onClose }: WalletModalProps) {
             transition: 'all 0.2s ease',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = COLORS.bgElevated
+            e.currentTarget.style.background = COLORS.bgRaised
             e.currentTarget.style.color = COLORS.textPrimary
           }}
           onMouseLeave={(e) => {
@@ -129,7 +129,7 @@ export function WalletModal({ open, onClose }: WalletModalProps) {
         <div
           style={{
             padding: SPACING.md,
-            background: COLORS.bgElevated,
+            background: COLORS.bgRaised,
             border: `1px solid ${COLORS.border}`,
             borderRadius: RADII.md,
             marginBottom: SPACING.lg,
@@ -203,7 +203,7 @@ export function WalletModal({ open, onClose }: WalletModalProps) {
             style={{
               width: '100%',
               padding: `${SPACING.md} ${SPACING.lg}`,
-              background: COLORS.bgElevated,
+              background: COLORS.bgRaised,
               color: COLORS.textPrimary,
               border: `1px solid ${COLORS.border}`,
               borderRadius: RADII.lg,
@@ -215,11 +215,11 @@ export function WalletModal({ open, onClose }: WalletModalProps) {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = COLORS.bgSurface
-              e.currentTarget.style.borderColor = COLORS.indigo
-              e.currentTarget.style.color = COLORS.indigo
+              e.currentTarget.style.borderColor = COLORS.pi
+              e.currentTarget.style.color = COLORS.pi
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = COLORS.bgElevated
+              e.currentTarget.style.background = COLORS.bgRaised
               e.currentTarget.style.borderColor = COLORS.border
               e.currentTarget.style.color = COLORS.textPrimary
             }}
@@ -254,3 +254,4 @@ export function WalletModal({ open, onClose }: WalletModalProps) {
     </>
   )
 }
+

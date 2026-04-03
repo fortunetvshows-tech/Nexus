@@ -176,7 +176,7 @@ export default function AdminCategoriesPage() {
               placeholder="🏷️"
               style={{
                 width: '60px', padding: '0.75rem', textAlign: 'center' as const,
-                background: COLORS.bgElevated, border: `1px solid ${COLORS.borderAccent}`,
+                background: COLORS.bgRaised, border: `1px solid ${COLORS.borderAccent}`,
                 borderRadius: RADII.md, color: COLORS.textPrimary,
                 fontSize: '1.2rem', outline: 'none',
               }}
@@ -187,7 +187,7 @@ export default function AdminCategoriesPage() {
               placeholder="Category name"
               style={{
                 flex: 1, padding: '0.75rem',
-                background: COLORS.bgElevated, border: `1px solid ${COLORS.borderAccent}`,
+                background: COLORS.bgRaised, border: `1px solid ${COLORS.borderAccent}`,
                 borderRadius: RADII.md, color: COLORS.textPrimary,
                 fontSize: '0.9rem', outline: 'none', fontFamily: FONTS.sans,
               }}
@@ -200,7 +200,7 @@ export default function AdminCategoriesPage() {
             placeholder="Description (optional)"
             style={{
               width: '100%', padding: '0.75rem', marginBottom: SPACING.sm,
-              background: COLORS.bgElevated, border: `1px solid ${COLORS.borderAccent}`,
+              background: COLORS.bgRaised, border: `1px solid ${COLORS.borderAccent}`,
               borderRadius: RADII.md, color: COLORS.textPrimary,
               fontSize: '0.85rem', outline: 'none', fontFamily: FONTS.sans,
               boxSizing: 'border-box' as const,
@@ -212,7 +212,7 @@ export default function AdminCategoriesPage() {
             disabled={isAdding || !newName.trim() || !newEmoji.trim()}
             style={{
               padding:      `${SPACING.sm} ${SPACING.lg}`,
-              background:   `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
+              background:   `linear-gradient(135deg, ${COLORS.pi}, ${COLORS.pi})`,
               border:       `1px solid ${COLORS.cyan}`,
               borderRadius: RADII.md,
               color:        'white',
@@ -247,7 +247,7 @@ export default function AdminCategoriesPage() {
                 <div key={cat.id} style={{
                   display: 'flex', alignItems: 'center', gap: SPACING.sm,
                   padding: SPACING.sm,
-                  background: COLORS.bgElevated,
+                  background: COLORS.bgRaised,
                   border: `1px solid ${cat.isActive ? COLORS.border : 'rgba(239,68,68,0.2)'}`,
                   borderRadius: RADII.md,
                   opacity: cat.isActive ? 1 : 0.6,
@@ -326,4 +326,5 @@ export default function AdminCategoriesPage() {
     </div>
   )
 }
+
 

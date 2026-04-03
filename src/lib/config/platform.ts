@@ -1,5 +1,5 @@
 /**
- * Nexus Platform Configuration
+ * ProofGrid Platform Configuration
  *
  * FINANCIAL CONSTANTS — change these to update platform economics.
  * All monetary values are in Pi (π).
@@ -23,7 +23,7 @@ export const PLATFORM_CONFIG = {
 
   /**
    * Pi Network blockchain transaction fee per transfer (in Pi)
-   * This fee is charged by the Pi blockchain, not by Nexus.
+   * This fee is charged by the Pi blockchain, not by ProofGrid.
    * Deducted from worker payout at withdrawal time.
    * Source: Pi Network documentation — update if Pi changes this.
    */
@@ -115,4 +115,5 @@ export const PLATFORM_CONFIG = {
   },
 
 } as const
+
 

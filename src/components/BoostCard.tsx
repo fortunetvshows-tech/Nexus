@@ -87,8 +87,8 @@ export function BoostCard({ title, currentBalance, boostOptions, onBoost, isLoad
               style={{
                 padding: SPACING.md,
                 borderRadius: RADII.md,
-                border: `2px solid ${selectedBoost === opt.type ? COLORS.indigo : COLORS.border}`,
-                backgroundColor: selectedBoost === opt.type ? COLORS.bgElevated : 'transparent',
+                border: `2px solid ${selectedBoost === opt.type ? COLORS.pi : COLORS.border}`,
+                backgroundColor: selectedBoost === opt.type ? COLORS.bgRaised : 'transparent',
                 color: COLORS.textPrimary,
                 cursor: 'pointer',
                 transition: 'all 0.2s',
@@ -120,7 +120,7 @@ export function BoostCard({ title, currentBalance, boostOptions, onBoost, isLoad
               padding: SPACING.md,
               borderRadius: RADII.md,
               border: `1px solid ${COLORS.border}`,
-              backgroundColor: COLORS.bgElevated,
+              backgroundColor: COLORS.bgRaised,
               color: COLORS.textPrimary,
               fontSize: '0.875rem',
             }}
@@ -138,7 +138,7 @@ export function BoostCard({ title, currentBalance, boostOptions, onBoost, isLoad
                   padding: SPACING.md,
                   borderRadius: RADII.md,
                   border: `1px solid ${COLORS.border}`,
-                  backgroundColor: COLORS.bgElevated,
+                  backgroundColor: COLORS.bgRaised,
                   color: COLORS.textPrimary,
                 }}
               >
@@ -178,7 +178,7 @@ export function BoostCard({ title, currentBalance, boostOptions, onBoost, isLoad
           padding: SPACING.md,
           borderRadius: RADII.md,
           border: 'none',
-          backgroundColor: selectedBoost && customAmount ? COLORS.indigo : COLORS.textMuted,
+          backgroundColor: selectedBoost && customAmount ? COLORS.pi : COLORS.textMuted,
           color: 'white',
           fontWeight: '600',
           cursor: selectedBoost && customAmount ? 'pointer' : 'not-allowed',
@@ -191,4 +191,5 @@ export function BoostCard({ title, currentBalance, boostOptions, onBoost, isLoad
     </div>
   )
 }
+
 

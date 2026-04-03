@@ -149,7 +149,7 @@ export function LeaderboardCard({ piUid, username }: LeaderboardCardProps) {
                   fontSize:   '0.78rem',
                   fontWeight: isCurrentUser ? '700' : '400',
                   color:      isCurrentUser
-                    ? COLORS.indigo
+                    ? COLORS.pi
                     : COLORS.textSecondary,
                   overflow:     'hidden',
                   textOverflow: 'ellipsis',
@@ -159,7 +159,7 @@ export function LeaderboardCard({ piUid, username }: LeaderboardCardProps) {
                   {isCurrentUser && (
                     <span style={{
                       fontSize:    '0.6rem',
-                      color:       COLORS.indigo,
+                      color:       COLORS.pi,
                       marginLeft:  '4px',
                       fontWeight:  '600',
                     }}>
@@ -208,7 +208,7 @@ export function LeaderboardCard({ piUid, username }: LeaderboardCardProps) {
           <div style={{
             flex:      1,
             fontSize:  '0.78rem',
-            color:     COLORS.indigo,
+            color:     COLORS.pi,
             fontWeight: '600',
           }}>
             {username} (You)
@@ -240,4 +240,5 @@ export function LeaderboardCard({ piUid, username }: LeaderboardCardProps) {
     </div>
   )
 }
+
 

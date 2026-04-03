@@ -17,7 +17,7 @@ export function ShinyButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`nexus-btn-primary ${className}`}
+      className={`proofgrid-btn-primary ${className}`}
       style={{
         position:    'relative',
         overflow:    'hidden',
@@ -73,4 +73,5 @@ export function ShinyButton({
     </button>
   )
 }
+
 

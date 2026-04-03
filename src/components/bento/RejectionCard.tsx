@@ -95,7 +95,7 @@ export function RejectionCard({
 
       {/* Employer feedback box */}
       <div style={{
-        background:   COLORS.bgElevated,
+        background:   COLORS.bgRaised,
         border:       `1px solid ${COLORS.border}`,
         borderRadius: RADII.md,
         padding:      `${SPACING.sm} ${SPACING.md}`,
@@ -141,7 +141,7 @@ export function RejectionCard({
             borderRadius:   RADII.md,
             fontSize:       '0.78rem',
             fontWeight:     '600',
-            color:          COLORS.indigoLight,
+            color:          COLORS.piLt,
             textDecoration: 'none',
             transition:     'all 0.15s ease',
           }}
@@ -172,4 +172,5 @@ export function RejectionCard({
     </div>
   )
 }
+
 

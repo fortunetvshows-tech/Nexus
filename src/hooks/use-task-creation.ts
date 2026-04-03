@@ -148,7 +148,7 @@ export function useTaskCreation(piUid: string | null) {
     createPayment(
       {
         amount:   cost,
-        memo:     `Nexus escrow: ${form.title}`,
+        memo:     `ProofGrid escrow: ${form.title}`,
         metadata: {
           category:       form.category,
           slots:          form.slotsAvailable,
@@ -250,4 +250,5 @@ export function useTaskCreation(piUid: string | null) {
     reset,
   }
 }
+
 

@@ -121,7 +121,7 @@ export function DisputeSection({
               style={{
                 width:        '100%',
                 padding:      '0.875rem',
-                background:   COLORS.bgElevated,
+                background:   COLORS.bgRaised,
                 border:       `1px solid ${COLORS.borderAccent}`,
                 borderRadius: '8px',
                 color:        COLORS.textPrimary,
@@ -170,7 +170,7 @@ export function DisputeSection({
                   padding:      '0.75rem',
                   background:   reason.trim().length < 20
                                   ? COLORS.borderAccent
-                                  : COLORS.indigo,
+                                  : COLORS.pi,
                   border:       'none',
                   borderRadius: '8px',
                   color:        'white',
@@ -211,7 +211,7 @@ export function DisputeSection({
     return (
       <div style={{
         background:   COLORS.bgSurface,
-        border:       `1px solid ${COLORS.indigo}`,
+        border:       `1px solid ${COLORS.pi}`,
         borderRadius: '16px',
         padding:      '1.5rem',
         marginTop:    '1rem',
@@ -297,4 +297,5 @@ export function DisputeSection({
     </div>
   )
 }
+
 

@@ -221,7 +221,7 @@ export async function payWorkerA2U(params: {
     // Step 1 — Create payment
     paymentId = await createPiPayment({
       amount,
-      memo:      `Nexus: ${taskTitle.slice(0, 40)}`,
+      memo:      `ProofGrid: ${taskTitle.slice(0, 40)}`,
       metadata:  { submissionId, taskId, type: 'worker_payout' },
       uid:       workerPiUid,
       toAddress: workerWallet,  // Use stored wallet address instead of relying on scopes
@@ -360,4 +360,5 @@ export async function cancelPiPayment(paymentId: string): Promise<A2UPaymentResu
     return { success: false, error: message, code: 'CANCEL_FAILED' }
   }
 }
+
 
