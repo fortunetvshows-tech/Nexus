@@ -254,7 +254,7 @@ export default function TaskDetailPage({
               <div style={{
                 fontSize:      '0.8rem',
                 fontWeight:    '700',
-                color:         COLORS.accent.primary,
+                color:         COLORS.accent,
                 textTransform: 'uppercase',
                 letterSpacing: '0.15em',
                 marginBottom:  SPACING.lg,
@@ -271,16 +271,16 @@ export default function TaskDetailPage({
                   fontFamily:    FONTS.mono,
                   fontSize:      'clamp(2.5rem, 15vw, 5rem)',
                   fontWeight:    '900',
-                  color:         COLORS.accent.primary,
+                  color:         COLORS.accent,
                   letterSpacing: '-0.05em',
                   lineHeight:    1,
-                  textShadow:    `0 0 40px ${COLORS.accent.glow}`,
+                  textShadow:    `0 0 40px ${COLORS.piGlow}`,
                 }}>
                   {Math.max(0, PLATFORM_CONFIG.workerNetPayout(task.piReward)).toFixed(2)}π
                 </div>
                 <div style={{
                   fontSize:      '1rem',
-                  color:         COLORS.accent.bright,
+                  color:         COLORS.accentBright,
                   marginTop:     SPACING.md,
                   fontWeight:    '600',
                   fontFamily:    FONTS.display,
@@ -302,9 +302,9 @@ export default function TaskDetailPage({
                 <span style={{
                   padding:        SPACING.sm + ' ' + SPACING.md,
                   background:     `rgba(0,150,255,0.08)`,
-                  border:         `1px solid ${COLORS.accent.dim}`,
+                  border:         `1px solid ${COLORS.accentDim}`,
                   borderRadius:   RADII.md,
-                  color:          COLORS.accent.bright,
+                  color:          COLORS.accentBright,
                   fontFamily:     FONTS.mono,
                 }}>
                   Listed: {task.piReward}π
@@ -315,7 +315,7 @@ export default function TaskDetailPage({
                   background:     `rgba(255,71,87,0.08)`,
                   border:         '1px solid rgba(255,71,87,0.2)',
                   borderRadius:   RADII.md,
-                  color:          COLORS.status.red,
+                  color:          COLORS.stop,
                   fontFamily:     FONTS.mono,
                 }}>
                   Fee: {(PLATFORM_CONFIG.PLATFORM_FEE_RATE * 100).toFixed(0)}%
@@ -365,8 +365,8 @@ export default function TaskDetailPage({
                   fontSize:       '0.75rem',
                   fontWeight:     '700',
                   color:          task.slotsRemaining <= 2
-                    ? COLORS.status.red
-                    : COLORS.status.green,
+                    ? COLORS.stop
+                    : COLORS.go,
                   textTransform:  'uppercase',
                   letterSpacing:  '0.05em',
                 }}>
@@ -465,7 +465,7 @@ export default function TaskDetailPage({
               {task.employer?.piUsername}
             </span>
             {' · '}
-            <span style={{ color: COLORS.indigo }}>
+            <span style={{ color: COLORS.pi }}>
               {task.employer?.reputationLevel}
             </span>
           </div>
@@ -501,9 +501,9 @@ export default function TaskDetailPage({
                 <div style={{
                   padding:      SPACING.md,
                   background:   `rgba(255,71,87,0.1)`,
-                  border:       `1px solid ${COLORS.status.red}`,
+                  border:       `1px solid ${COLORS.stop}`,
                   borderRadius: RADII.md,
-                  color:        COLORS.status.red,
+                  color:        COLORS.stop,
                   fontSize:     '0.9rem',
                   marginBottom: SPACING.lg,
                   lineHeight:   1.5,
@@ -517,11 +517,11 @@ export default function TaskDetailPage({
                 <div style={{
                   padding:      SPACING.md,
                   background:   `rgba(255,176,32,0.08)`,
-                  border:       `1px solid ${COLORS.status.amber}`,
+                  border:       `1px solid ${COLORS.warn}`,
                   borderRadius: RADII.md,
                   marginBottom: SPACING.lg,
                   fontSize:     '0.9rem',
-                  color:        COLORS.status.amber,
+                  color:        COLORS.warn,
                   lineHeight:   1.6,
                 }}>
                   ⚠️ <strong>Set your wallet address first</strong> — You'll receive Pi here on approval. Tap below to add it in seconds.
@@ -553,7 +553,7 @@ export default function TaskDetailPage({
                   fontWeight:     '700',
                   fontFamily:     FONTS.display,
                   cursor:         isClaiming || !canClaim ? 'not-allowed' : 'pointer',
-                  boxShadow:      !canClaim ? 'none' : SHADOWS.accentGlow,
+                  boxShadow:      !canClaim ? 'none' : SHADOWS.glow,
                   transition:     'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
                   letterSpacing:  '-0.01em',
                   opacity:        isClaiming ? 0.8 : 1,
@@ -561,12 +561,12 @@ export default function TaskDetailPage({
                 onMouseEnter={(e) => {
                   if (!isClaiming && canClaim) {
                     e.currentTarget.style.transform = 'translateY(-3px)'
-                    e.currentTarget.style.boxShadow = SHADOWS.cardHover
+                    e.currentTarget.style.boxShadow = SHADOWS.card
                   }
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)'
-                  e.currentTarget.style.boxShadow = !canClaim ? 'none' : SHADOWS.accentGlow
+                  e.currentTarget.style.boxShadow = !canClaim ? 'none' : SHADOWS.glow
                 }}
               >
                 {isClaiming ? (
@@ -603,7 +603,7 @@ export default function TaskDetailPage({
         {isClaimed && !isSubmitted && (
           <div style={{
             background:     COLORS.bgCard,
-            border:         `1px solid ${COLORS.accent.primary}`,
+            border:         `1px solid ${COLORS.accent}`,
             borderRadius:   RADII.xl,
             padding:        SPACING.xxl,
             marginBottom:   SPACING.xxxl,
@@ -633,7 +633,7 @@ export default function TaskDetailPage({
                 <div style={{
                   fontSize:     '1.1rem',
                   fontWeight:   '700',
-                  color:        COLORS.accent.bright,
+                  color:        COLORS.accentBright,
                   fontFamily:   FONTS.display,
                 }}>
                   Submit your proof to earn
@@ -643,7 +643,7 @@ export default function TaskDetailPage({
               {/* COUNTDOWN TIMER — Visual urgency */}
               <div style={{
                 background:     `rgba(0,150,255,0.08)`,
-                border:         `2px solid ${timeLeft === 'Expired' ? COLORS.status.red : COLORS.accent.primary}`,
+                border:         `2px solid ${timeLeft === 'Expired' ? COLORS.stop : COLORS.accent}`,
                 borderRadius:   RADII.lg,
                 padding:        `${SPACING.md} ${SPACING.lg}`,
                 textAlign:      'center',
@@ -662,7 +662,7 @@ export default function TaskDetailPage({
                   fontFamily:    FONTS.mono,
                   fontSize:      timeLeft === 'Expired' ? '1.2rem' : '1.4rem',
                   fontWeight:    '900',
-                  color:         timeLeft === 'Expired' ? COLORS.status.red : COLORS.accent.bright,
+                  color:         timeLeft === 'Expired' ? COLORS.stop : COLORS.accentBright,
                   letterSpacing: '0.02em',
                 }}>
                   {timeLeft || '...'}
@@ -675,7 +675,7 @@ export default function TaskDetailPage({
               <div style={{
                 padding:        SPACING.lg,
                 background:     `rgba(0,150,255,0.04)`,
-                border:         `1px dashed ${COLORS.accent.dim}`,
+                border:         `1px dashed ${COLORS.accentDim}`,
                 borderRadius:   RADII.md,
                 marginBottom:   SPACING.xxl,
               }}>
@@ -700,9 +700,9 @@ export default function TaskDetailPage({
                       fontFamily:    FONTS.mono,
                       fontSize:      '1.3rem',
                       fontWeight:    '900',
-                      color:         COLORS.accent.bright,
+                      color:         COLORS.accentBright,
                       letterSpacing: '0.1em',
-                      textShadow:    `0 0 20px ${COLORS.accent.glow}`,
+                      textShadow:    `0 0 20px ${COLORS.piGlow}`,
                     }}>
                       {verificationCode}
                     </div>
@@ -771,7 +771,7 @@ export default function TaskDetailPage({
                     style={{
                       width:      '100%',
                       padding:    '0.875rem',
-                      background: COLORS.bgElevated,
+                      background: COLORS.bgRaised,
                       border:     `1px solid ${COLORS.borderAccent}`,
                       borderRadius: RADII.md,
                       color:      COLORS.textPrimary,
@@ -832,7 +832,7 @@ export default function TaskDetailPage({
                         borderRadius: RADII.lg,
                         overflow: 'hidden',
                         border: `2px solid ${COLORS.emerald}`,
-                        background: COLORS.bgElevated,
+                        background: COLORS.bgRaised,
                       }}>
                         <img src={proofFileUrl} alt="Proof preview" style={{
                           width: '100%', maxHeight: '300px', objectFit: 'cover', display: 'block',
@@ -851,7 +851,7 @@ export default function TaskDetailPage({
                       </div>
                     ) : (
                       <button onClick={() => fileInputRef.current?.click()} disabled={isUploadingFile} style={{
-                        width: '100%', padding: '1.5rem', background: COLORS.bgElevated,
+                        width: '100%', padding: '1.5rem', background: COLORS.bgRaised,
                         border: `2px dashed ${COLORS.borderAccent}`, borderRadius: RADII.lg,
                         cursor: isUploadingFile ? 'not-allowed' : 'pointer', marginBottom: '0.75rem',
                         textAlign: 'center' as const, transition: 'all 0.2s ease', opacity: isUploadingFile ? 0.6 : 1,
@@ -887,7 +887,7 @@ export default function TaskDetailPage({
                   <div style={{ marginBottom: '1rem' }}>
                     <div style={{
                       padding:      '1.5rem',
-                      background:   COLORS.bgElevated,
+                      background:   COLORS.bgRaised,
                       border:       `2px dashed ${COLORS.borderAccent}`,
                       borderRadius: RADII.lg,
                       textAlign:    'center',
@@ -909,7 +909,7 @@ export default function TaskDetailPage({
                       style={{
                         width:        '100%',
                         padding:      '0.875rem',
-                        background:   COLORS.bgElevated,
+                        background:   COLORS.bgRaised,
                         border:       `1px solid ${COLORS.borderAccent}`,
                         borderRadius: RADII.md,
                         color:        COLORS.textPrimary,
@@ -933,7 +933,7 @@ export default function TaskDetailPage({
                     {task?.instructionFileUrl && (
                       <div style={{
                         padding: '1rem',
-                        background: COLORS.indigoDim,
+                        background: COLORS.piDim,
                         border: `1px solid rgba(99,102,241,0.3)`,
                         borderRadius: RADII.lg,
                         marginBottom: '1rem',
@@ -961,7 +961,7 @@ export default function TaskDetailPage({
                           style={{
                             display: 'inline-block',
                             padding: '0.5rem 1rem',
-                            background: COLORS.indigo,
+                            background: COLORS.pi,
                             color: 'white',
                             borderRadius: RADII.md,
                             textDecoration: 'none',
@@ -980,7 +980,7 @@ export default function TaskDetailPage({
                     {/* Work file upload */}
                     <div style={{
                       padding: '1.5rem',
-                      background: COLORS.bgElevated,
+                      background: COLORS.bgRaised,
                       border: `2px dashed ${COLORS.borderAccent}`,
                       borderRadius: RADII.lg,
                       textAlign: 'center' as const,
@@ -1115,8 +1115,8 @@ export default function TaskDetailPage({
                         }}
                         onMouseEnter={(e) => {
                           if (!isUploadingWorkFile) {
-                            e.currentTarget.style.background = COLORS.bgElevated
-                            e.currentTarget.style.borderColor = COLORS.indigo
+                            e.currentTarget.style.background = COLORS.bgRaised
+                            e.currentTarget.style.borderColor = COLORS.pi
                           }
                         }}
                         onMouseLeave={(e) => {
@@ -1151,7 +1151,7 @@ export default function TaskDetailPage({
                   <div style={{ marginBottom: '1rem' }}>
                     <div style={{
                       padding:      '1.5rem',
-                      background:   COLORS.bgElevated,
+                      background:   COLORS.bgRaised,
                       border:       `2px dashed ${COLORS.borderAccent}`,
                       borderRadius: RADII.lg,
                       textAlign:    'center',
@@ -1173,7 +1173,7 @@ export default function TaskDetailPage({
                       style={{
                         width:        '100%',
                         padding:      '0.875rem',
-                        background:   COLORS.bgElevated,
+                        background:   COLORS.bgRaised,
                         border:       `1px solid ${COLORS.borderAccent}`,
                         borderRadius: RADII.md,
                         color:        COLORS.textPrimary,
@@ -1199,7 +1199,7 @@ export default function TaskDetailPage({
                   style={{
                     width:        '100%',
                     padding:      '0.875rem',
-                    background:   COLORS.bgElevated,
+                    background:   COLORS.bgRaised,
                     border:       `1px solid ${COLORS.borderAccent}`,
                     borderRadius: RADII.md,
                     color:        COLORS.textPrimary,
@@ -1221,7 +1221,7 @@ export default function TaskDetailPage({
                   marginTop:    SPACING.md,
                   fontSize:     '0.75rem',
                   color:        proofContent.trim().length < 10
-                    ? COLORS.status.red
+                    ? COLORS.stop
                     : COLORS.textMuted,
                   textAlign:    'right',
                 }}>
@@ -1236,9 +1236,9 @@ export default function TaskDetailPage({
                 <div style={{
                   padding:      SPACING.md,
                   background:   `rgba(255,71,87,0.1)`,
-                  border:       `1px solid ${COLORS.status.red}`,
+                  border:       `1px solid ${COLORS.stop}`,
                   borderRadius: RADII.md,
-                  color:        COLORS.status.red,
+                  color:        COLORS.stop,
                   fontSize:     '0.9rem',
                   marginBottom: SPACING.lg,
                   lineHeight:   1.5,
@@ -1272,7 +1272,7 @@ export default function TaskDetailPage({
                     : 'pointer',
                   boxShadow:      isSubmitting || (proofContent.trim().length < 10 && !proofStoragePath)
                     ? 'none'
-                    : SHADOWS.accentGlow,
+                    : SHADOWS.glow,
                   transition:     'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
                   letterSpacing:  '-0.01em',
                   opacity:        isSubmitting ? 0.8 : 1,
@@ -1281,12 +1281,12 @@ export default function TaskDetailPage({
                 onMouseEnter={(e) => {
                   if (!isSubmitting && (proofContent.trim().length >= 10 || proofStoragePath)) {
                     e.currentTarget.style.transform = 'translateY(-3px)'
-                    e.currentTarget.style.boxShadow = SHADOWS.cardHover
+                    e.currentTarget.style.boxShadow = SHADOWS.card
                   }
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)'
-                  e.currentTarget.style.boxShadow = SHADOWS.accentGlow
+                  e.currentTarget.style.boxShadow = SHADOWS.glow
                 }}
               >
                 {isSubmitting ? (
@@ -1329,7 +1329,7 @@ export default function TaskDetailPage({
                 height:         '80px',
                 borderRadius:   RADII.xl,
                 background:     `rgba(0,214,143,0.1)`,
-                border:         `2px solid ${COLORS.status.green}`,
+                border:         `2px solid ${COLORS.go}`,
                 margin:         `0 auto ${SPACING.lg}`,
                 display:        'flex',
                 alignItems:     'center',
@@ -1345,7 +1345,7 @@ export default function TaskDetailPage({
                 margin:      `0 0 ${SPACING.md}`,
                 fontSize:    '1.5rem',
                 fontWeight:  '800',
-                color:       COLORS.status.green,
+                color:       COLORS.go,
                 fontFamily:  FONTS.display,
               }}>
                 Proof Submitted!
@@ -1359,7 +1359,7 @@ export default function TaskDetailPage({
               }}>
                 Your work is locked in. You'll earn {' '}
                 <span style={{
-                  color:      COLORS.status.green,
+                  color:      COLORS.go,
                   fontWeight: '700',
                   fontFamily: FONTS.mono,
                 }}>
@@ -1372,7 +1372,7 @@ export default function TaskDetailPage({
               <div style={{
                 padding:      SPACING.lg,
                 background:   `rgba(0,214,143,0.05)`,
-                border:       `1px solid ${COLORS.status.green}`,
+                border:       `1px solid ${COLORS.go}`,
                 borderRadius: RADII.lg,
                 marginBottom: SPACING.xxl,
               }}>
@@ -1389,7 +1389,7 @@ export default function TaskDetailPage({
                   fontFamily:    FONTS.mono,
                   fontSize:      '2.2rem',
                   fontWeight:    '900',
-                  color:         COLORS.status.green,
+                  color:         COLORS.go,
                   letterSpacing: '-0.03em',
                 }}>
                   +{agreedReward ?? task.piReward}π
@@ -1409,7 +1409,7 @@ export default function TaskDetailPage({
                     textDecoration: 'none',
                     fontSize:       '0.95rem',
                     fontWeight:     '700',
-                    boxShadow:      SHADOWS.accentGlow,
+                    boxShadow:      SHADOWS.glow,
                     textAlign:      'center',
                     transition:     'all 0.2s ease',
                   }}
@@ -1566,7 +1566,7 @@ export default function TaskDetailPage({
                   border: `1px solid rgba(99, 102, 241, 0.2)`,
                   borderRadius: RADII.md,
                   fontSize: '0.8rem',
-                  color: COLORS.indigoLight,
+                  color: COLORS.piLt,
                 }}>
                   ✓ Your wallet address is encrypted and secure
                 </div>
@@ -1627,7 +1627,7 @@ export default function TaskDetailPage({
                     transition: 'all 0.2s ease',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = COLORS.bgElevated
+                    e.currentTarget.style.background = COLORS.bgRaised
                     e.currentTarget.style.color = COLORS.textPrimary
                   }}
                   onMouseLeave={(e) => {

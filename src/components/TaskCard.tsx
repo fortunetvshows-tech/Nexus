@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { PLATFORM_CONFIG } from '@/lib/config/platform'
 import {
-  COLORS, FONTS, RADII, SHADOWS, SPACING
+  COLORS, FONTS, RADII, SPACING
 } from '@/lib/design/tokens'
 
 interface TaskCardProps {
@@ -32,15 +32,15 @@ interface TaskCardProps {
 
 // Map category to color for visual variety
 const CATEGORY_COLORS: Record<string, string> = {
-  '🤖 AI & Data Labeling':  '#6366F1',
-  '📍 Local Verification':  '#10B981',
-  '🌐 Translation':         '#F59E0B',
-  '📱 App Testing':         '#EC4899',
-  '✍️ Community & Content': '#8B5CF6',
+  '🤖 AI & Data Labeling':  '#0095FF',
+  '📍 Local Verification':  '#00D68F',
+  '🌐 Translation':         '#FFB020',
+  '📱 App Testing':         '#FF6B35',
+  '✍️ Community & Content': '#A78BFA',
 }
 
 function getCategoryColor(category: string): string {
-  return CATEGORY_COLORS[category] ?? '#6366F1'
+  return CATEGORY_COLORS[category] ?? '#0095FF'
 }
 
 export function TaskCard({
@@ -69,164 +69,146 @@ export function TaskCard({
       }}
     >
       <div
-        className="proofgrid-card"
         style={{
-          borderLeft:  `4px solid ${color}`,
-          padding:     SPACING.lg,
-          transition:  'all 0.15s ease',
-          cursor:      'pointer',
+          borderRadius: RADII.lg,
+          marginBottom: '10px',
+          cursor: 'pointer',
+          border: `1px solid ${COLORS.border}`,
+          background: COLORS.bgCard,
+          position: 'relative',
+          overflow: 'hidden',
+          transition: 'all 0.18s cubic-bezier(.4,0,.2,1)',
         }}
       >
-        {/* Featured badge */}
-        {task.isFeatured && (
-          <div style={{
-            position:     'absolute' as const,
-            top:          '-1px',
-            right:        SPACING.lg,
-            background:   color,
-            color:        'white',
-            fontSize:     '0.62rem',
-            fontWeight:   '700',
-            padding:      '2px 8px',
-            borderRadius: '0 0 6px 6px',
-            letterSpacing: '0.08em',
-          }}>
-            FEATURED
-          </div>
-        )}
-
-        {/* Row 1 — category + urgency signals */}
+        {/* Left accent bar */}
         <div style={{
-          display:        'flex',
-          alignItems:     'center',
-          justifyContent: 'space-between',
-          marginBottom:   SPACING.sm,
-        }}>
-          <span style={{
-            fontSize:     '0.68rem',
-            fontWeight:   '600',
-            color:        color,
-            background:   `${color}18`,
-            border:       `1px solid ${color}30`,
-            padding:      '2px 8px',
-            borderRadius: RADII.full,
-          }}>
-            {task.category}
-          </span>
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: '3px',
+          borderRadius: '3px 0 0 3px',
+          background: color,
+        }} />
 
+        {/* Main content */}
+        <div style={{
+          padding: '15px 15px 13px 18px',
+        }}>
+          {/* Top row — emoji + title + reward */}
           <div style={{
             display: 'flex',
-            gap:     '6px',
+            alignItems: 'flex-start',
+            gap: '12px',
+            marginBottom: '10px',
+          }}>
+            <span style={{
+              fontSize: '24px',
+              flexShrink: 0,
+            }}>
+              {task.category.charAt(0)}
+            </span>
+            <div style={{ flex: 1 }}>
+              <div style={{
+                fontSize: '14px',
+                fontWeight: 700,
+                color: COLORS.textPrimary,
+                marginBottom: '4px',
+              }}>
+                {task.title}
+              </div>
+              <div style={{
+                fontFamily: FONTS.display,
+                fontSize: '24px',
+                letterSpacing: '0.5px',
+                color: '#38B2FF',
+                fontWeight: 700,
+              }}>
+                {Math.max(0, PLATFORM_CONFIG.workerNetPayout(task.piReward)).toFixed(2)}π
+              </div>
+            </div>
+          </div>
+
+          {/* Meta row — chips */}
+          <div style={{
+            display: 'flex',
+            gap: '6px',
+            flexWrap: 'wrap',
+            marginBottom: '12px',
+          }}>
+            <div style={{
+              padding: '3px 9px',
+              borderRadius: RADII.full,
+              fontSize: '11px',
+              fontWeight: '700',
+              textTransform: 'uppercase',
+              letterSpacing: '0.4px',
+              background: 'rgba(0,149,255,0.13)',
+              color: '#38B2FF',
+              border: '1px solid rgba(0,149,255,0.22)',
+            }}>
+              {task.category}
+            </div>
+            <div style={{
+              padding: '3px 9px',
+              borderRadius: RADII.full,
+              fontSize: '11px',
+              fontWeight: '700',
+              textTransform: 'uppercase',
+              letterSpacing: '0.4px',
+              background: 'rgba(255,255,255,0.05)',
+              color: COLORS.textSecondary,
+              border: `1px solid ${COLORS.border}`,
+            }}>
+              ~{task.timeEstimateMin}m
+            </div>
+            <div style={{
+              padding: '3px 9px',
+              borderRadius: RADII.full,
+              fontSize: '11px',
+              fontWeight: '700',
+              textTransform: 'uppercase',
+              letterSpacing: '0.4px',
+              background: 'rgba(255,255,255,0.05)',
+              color: COLORS.textSecondary,
+              border: `1px solid ${COLORS.border}`,
+            }}>
+              {spotsLeft === 0 ? 'Full' : `${spotsLeft} slots`}
+            </div>
+          </div>
+
+          {/* Action row */}
+          <div style={{
+            display: 'flex',
             alignItems: 'center',
+            justifyContent: 'space-between',
           }}>
-            {isUrgent && (
-              <span style={{
-                fontSize:   '0.65rem',
-                fontWeight: '700',
-                color:      '#EF4444',
-                background: 'rgba(239,68,68,0.1)',
-                border:     '1px solid rgba(239,68,68,0.2)',
-                padding:    '2px 6px',
-                borderRadius: RADII.full,
-              }}>
-                {isLastSpot ? '🔥 Last spot' : `⚡ ${spotsLeft} spots left`}
-              </span>
-            )}
-            {isExpiringSoon && !isUrgent && (
-              <span style={{
-                fontSize:   '0.65rem',
-                fontWeight: '600',
-                color:      '#F59E0B',
-              }}>
-                {hoursLeft}h left
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Row 2 — REWARD (biggest element) + time */}
-        <div style={{
-          display:        'flex',
-          alignItems:     'baseline',
-          gap:            '12px',
-          marginBottom:   SPACING.sm,
-        }}>
-          <div>
             <div style={{
-              fontFamily:    FONTS.mono,
-              fontSize:      '2rem',
-              fontWeight:    '800',
-              color:         COLORS.emerald,
-              letterSpacing: '-0.03em',
-              lineHeight:    1,
+              fontSize: '12px',
+              color: COLORS.textMuted,
             }}>
-              {Math.max(0, PLATFORM_CONFIG.workerNetPayout(task.piReward)).toFixed(2)}π
+              {spotsLeft > 2
+                ? `${task.slotsAvailable - spotsLeft} taken`
+                : spotsLeft === 0
+                ? '✗ Full'
+                : `${spotsLeft} spot${spotsLeft > 1 ? 's' : ''} left`
+              }
             </div>
             <div style={{
-              fontSize:   '0.68rem',
-              color:      COLORS.textMuted,
-              marginTop:  '2px',
-              fontFamily: FONTS.sans,
+              padding: '6px 12px',
+              background: spotsLeft === 0 ? COLORS.bgRaised : color,
+              color: spotsLeft === 0 ? COLORS.textMuted : 'white',
+              borderRadius: RADII.md,
+              fontSize: '13px',
+              fontWeight: '700',
+              letterSpacing: '0.02em',
+              whiteSpace: 'nowrap' as const,
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
             }}>
-              after fees · listed {task.piReward}π
+              {spotsLeft === 0 ? 'Full' : 'Claim →'}
             </div>
-          </div>
-          <span style={{
-            fontSize:   '0.82rem',
-            color:      COLORS.textMuted,
-            fontWeight: '500',
-          }}>
-            in ~{task.timeEstimateMin} min
-          </span>
-        </div>
-
-        {/* Row 3 — Title */}
-        <p style={{
-          margin:     `0 0 ${SPACING.md}`,
-          fontSize:   '0.9rem',
-          fontWeight: '500',
-          color:      COLORS.textSecondary,
-          lineHeight: 1.4,
-          overflow:   'hidden',
-          display:    '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical' as any,
-        }}>
-          {task.title}
-        </p>
-
-        {/* Row 4 — action row */}
-        <div style={{
-          display:        'flex',
-          alignItems:     'center',
-          justifyContent: 'space-between',
-        }}>
-          {/* Social proof */}
-          <div style={{
-            fontSize: '0.72rem',
-            color:    COLORS.textMuted,
-          }}>
-            {spotsLeft > 2
-              ? `${task.slotsAvailable - spotsLeft} Pioneers already in`
-              : spotsLeft === 0
-              ? '✗ Full'
-              : `${spotsLeft} spot${spotsLeft > 1 ? 's' : ''} remaining`
-            }
-          </div>
-
-          {/* Claim button */}
-          <div style={{
-            padding:      '6px 16px',
-            background:   spotsLeft === 0 ? COLORS.bgRaised : color,
-            color:        spotsLeft === 0 ? COLORS.textMuted : 'white',
-            borderRadius: RADII.md,
-            fontSize:     '0.78rem',
-            fontWeight:   '700',
-            letterSpacing: '0.02em',
-            transition:   'all 0.15s ease',
-            whiteSpace:   'nowrap' as const,
-          }}>
-            {spotsLeft === 0 ? 'Full' : 'Claim →'}
           </div>
         </div>
       </div>

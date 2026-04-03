@@ -65,50 +65,32 @@ export function Navigation({ currentPage }: NavigationProps) {
 
       {/* Main nav bar */}
       <nav style={{
-        position:       'fixed',
-        top:            0,
-        left:           0,
-        right:          0,
-        height:         '64px',
-        background:     scrolled
-          ? 'rgba(15,23,42,0.95)'
-          : 'rgba(15,23,42,0.85)',
-        backdropFilter:   'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderBottom:   `1px solid ${scrolled ? COLORS.borderAccent : COLORS.border}`,
-        display:        'flex',
-        alignItems:     'center',
+        padding: '14px 20px 10px',
+        display: 'flex',
+        alignItems: 'center',
         justifyContent: 'space-between',
-        padding:        '0 var(--page-padding)',
-        zIndex:         200,
-        transition:     'all 0.2s ease',
-        fontFamily:     FONTS.sans,
+        flexShrink: 0,
+        background: 'linear-gradient(180deg, #0B0D14 70%, transparent)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
       }}>
 
         {/* Brand */}
         <Link href={user ? '/dashboard' : '/'} style={{
-          fontSize:       '1.05rem',
+          fontSize:       '20px',
+          fontFamily:     FONTS.display,
           fontWeight:     '700',
           color:          COLORS.textPrimary,
           textDecoration: 'none',
-          letterSpacing:  '-0.02em',
+          letterSpacing:  '2px',
+          textTransform:  'uppercase',
           display:        'flex',
           alignItems:     'center',
           gap:            '8px',
         }}>
           <span className="hide-mobile">ProofGrid</span>
           <span className="show-mobile">PG</span>
-          <span className="hide-mobile" style={{
-            fontSize:     '0.55rem',
-            fontWeight:   '500',
-            color:        COLORS.pi,
-            background:   COLORS.piDim,
-            padding:      '2px 6px',
-            borderRadius: '4px',
-            letterSpacing: '0.05em',
-          }}>
-            BETA
-          </span>
         </Link>
 
         {/* Desktop nav links */}

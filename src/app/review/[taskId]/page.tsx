@@ -353,7 +353,7 @@ export default function ReviewPage({
                   fontSize: '0.75rem', fontWeight: '500',
                   background: sub.status === 'APPROVED' ? COLORS.emeraldDim
                     : sub.status === 'REJECTED' ? COLORS.redDim
-                    : COLORS.bgElevated,
+                    : COLORS.bgRaised,
                   color: sub.status === 'APPROVED' ? COLORS.emerald
                     : sub.status === 'REJECTED' ? COLORS.red
                     : COLORS.textMuted,
@@ -424,9 +424,9 @@ export default function ReviewPage({
                       style={{
                         display: 'inline-block',
                         padding: '0.5rem 1rem',
-                        background: COLORS.indigoDim,
+                        background: COLORS.piDim,
                         border: `1px solid rgba(99,102,241,0.3)`,
-                        color: COLORS.indigoLight,
+                        color: COLORS.piLt,
                         borderRadius: RADII.md,
                         textDecoration: 'none',
                         fontSize: '0.8rem',
@@ -435,12 +435,12 @@ export default function ReviewPage({
                         marginBottom: '1rem',
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = COLORS.indigo
+                        e.currentTarget.style.background = COLORS.pi
                         e.currentTarget.style.color = 'white'
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.background = COLORS.indigoDim
-                        e.currentTarget.style.color = COLORS.indigoLight
+                        e.currentTarget.style.background = COLORS.piDim
+                        e.currentTarget.style.color = COLORS.piLt
                       }}
                     >
                       📥 View Instructions
@@ -593,7 +593,7 @@ export default function ReviewPage({
                       fontFamily:     FONTS.mono,
                       fontSize:       '1.1rem',
                       fontWeight:     '800',
-                      color:          COLORS.indigo,
+                      color:          COLORS.pi,
                       letterSpacing:  '0.08em',
                     }}>
                       {sub.verificationCode}

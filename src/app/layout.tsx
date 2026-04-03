@@ -4,7 +4,7 @@ import { PiPaymentProvider } from '@/contexts/PiPaymentContext'
 
 export const metadata: Metadata = {
   title: 'ProofGrid',
-  description: 'Earn Pi for real work. The Pi Network labor marketplace.',
+  description: 'ProofGrid — Decentralized Work Marketplace on Pi Network',
 }
 
 export default function RootLayout({

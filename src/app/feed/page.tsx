@@ -154,15 +154,15 @@ export default function FeedPage() {
               {!isLoading && pagination?.total && (
                 <div style={{
                   padding:      SPACING.md + ' ' + SPACING.lg,
-                  background:   COLORS.accent.glow,
-                  border:       `1px solid ${COLORS.accent.dim}`,
+                  background:   COLORS.piGlow,
+                  border:       `1px solid ${COLORS.accentDim}`,
                   borderRadius: RADII.md,
                   textAlign:    'center',
                 }}>
                   <div style={{
                     fontSize:   '1.5rem',
                     fontWeight: '800',
-                    color:      COLORS.accent.bright,
+                    color:      COLORS.accentBright,
                     fontFamily: FONTS.mono,
                   }}>
                     {pagination.total}
@@ -210,7 +210,7 @@ export default function FeedPage() {
                   <div style={{
                     fontSize:   '1.1rem',
                     fontWeight: '700',
-                    color:      COLORS.accent.bright,
+                    color:      COLORS.accentBright,
                     fontFamily: FONTS.mono,
                   }}>
                     {stat.value}
@@ -233,17 +233,17 @@ export default function FeedPage() {
                 fontSize:      '1rem',
                 fontWeight:    '700',
                 cursor:        isLoading ? 'not-allowed' : 'pointer',
-                boxShadow:     SHADOWS.accentGlow,
+                boxShadow:     SHADOWS.accentLg,
                 transition:    'all 0.2s ease',
                 fontFamily:    FONTS.sans,
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.boxShadow = SHADOWS.cardHover
+                e.currentTarget.style.boxShadow = SHADOWS.accentLg
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.boxShadow = SHADOWS.accentGlow
+                e.currentTarget.style.boxShadow = SHADOWS.accentLg
               }}
             >
               {isLoading ? '⟳ Loading...' : '↻ Refresh Opportunities'}
@@ -364,7 +364,7 @@ export default function FeedPage() {
               background:   'transparent',
               border:       `1px solid ${COLORS.borderAccent}`,
               borderRadius: RADII.lg,
-              color:        COLORS.accent.bright,
+              color:        COLORS.accentBright,
               fontSize:     '0.95rem',
               fontWeight:   '600',
               cursor:       isLoading ? 'not-allowed' : 'pointer',

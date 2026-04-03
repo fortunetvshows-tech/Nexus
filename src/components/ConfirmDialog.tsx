@@ -66,7 +66,7 @@ export function ConfirmDialog({
           padding: SPACING.lg,
           maxWidth: '400px',
           width: '90%',
-          boxShadow: SHADOWS.elevated,
+          boxShadow: SHADOWS.card,
           border: `1px solid ${COLORS.borderAccent}`,
         }}
         onClick={e => e.stopPropagation()}
