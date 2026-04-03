@@ -1,20 +1,9 @@
 'use client'
 
 import { useEffect, useState, useRef, useCallback } from 'react'
-import Link            from 'next/link'
 import { usePiAuth }   from '@/hooks/use-pi-auth'
 import { Navigation }  from '@/components/Navigation'
-import { BentoGrid }         from '@/components/BentoGrid'
-import { EarningsCard }      from '@/components/bento/EarningsCard'
-import { ActivityFeedCard }  from '@/components/bento/ActivityFeedCard'
-import { ReputationMiniCard } from '@/components/bento/ReputationMiniCard'
-import { LeaderboardCard }   from '@/components/bento/LeaderboardCard'
-import { RejectionCard }     from '@/components/bento/RejectionCard'
-import { DisputeTrackerCard } from '@/components/bento/DisputeTrackerCard'
-import { COLORS, FONTS, SPACING, RADII, SHADOWS, GRADIENTS, statusStyle, COMPONENT_STYLES } from '@/lib/design/tokens'
-import { PLATFORM_CONFIG }  from '@/lib/config/platform'
-
-// ── Types ──────────────────────────────────────────────────────────────
+import { COLORS, FONTS, SPACING, RADII, SHADOWS, GRADIENTS, statusStyle } from '@/lib/design/tokens'
 
 interface Submission {
   id:              string
@@ -32,25 +21,6 @@ interface Submission {
   }
 }
 
-interface WorkerDispute {
-  id:              string
-  status:          string
-  tier2VotesFor:   number
-  tier2VotesAgainst: number
-  resolvedInFavor: string | null
-  createdAt:       string
-  submission: {
-    id:   string
-    task: {
-      id: string
-      title: string
-      category: string
-    } | null
-  } | null
-}
-
-// ── Types ──────────────────────────────────────────────────────────────
-
 export default function DashboardPage() {
   const {
     user,
@@ -59,9 +29,7 @@ export default function DashboardPage() {
     authenticate,
   } = usePiAuth()
 
-  // Worker data
   const [submissions,   setSubmissions]   = useState<Submission[]>([])
-  const [submissionFilter, setSubmissionFilter] = useState<'all' | 'APPROVED' | 'SUBMITTED' | 'REJECTED'>('all')
   const [subLoading,    setSubLoading]    = useState(false)
   const [workerAnalytics, setWorkerAnalytics] = useState<{
     summary: {
@@ -72,7 +40,6 @@ export default function DashboardPage() {
     }
   } | null>(null)
 
-  // Worker reputation stats for mini card
   const [workerStats, setWorkerStats] = useState({
     reputationScore:   0,
     reputationLevel:   'Newcomer',
@@ -80,10 +47,6 @@ export default function DashboardPage() {
     tasksCompleted:    0,
   })
 
-  // Disputes data
-  const [workerDisputes, setWorkerDisputes] = useState<WorkerDispute[]>([])
-
-  // Fetch worker submissions
   const fetchSubmissions = useCallback(() => {
     if (!user?.piUid) return
     setSubLoading(true)
@@ -98,7 +61,6 @@ export default function DashboardPage() {
       .catch(() => setSubLoading(false))
   }, [user?.piUid])
 
-  // Fetch worker analytics
   const fetchWorkerAnalytics = useCallback(() => {
     if (!user?.piUid) return
     fetch(`${window.location.origin}/api/analytics/worker`, {
@@ -111,28 +73,13 @@ export default function DashboardPage() {
       .catch(console.error)
   }, [user?.piUid])
 
-  // Fetch worker disputes
-  const fetchWorkerDisputes = useCallback(() => {
-    if (!user?.piUid) return
-    fetch(`${window.location.origin}/api/disputes/worker`, {
-      headers: { 'x-pi-uid': user.piUid },
-    })
-      .then(r => r.json())
-      .then(d => {
-        if (d.disputes) setWorkerDisputes(d.disputes)
-      })
-      .catch(console.error)
-  }, [user?.piUid])
-
   useEffect(() => {
     if (user?.piUid) {
       fetchSubmissions()
       fetchWorkerAnalytics()
-      fetchWorkerDisputes()
     }
-  }, [user?.piUid, fetchSubmissions, fetchWorkerAnalytics, fetchWorkerDisputes])
+  }, [user?.piUid, fetchSubmissions, fetchWorkerAnalytics])
 
-  // Update worker stats for reputation card
   useEffect(() => {
     if (user) {
       const tasksCompleted = submissions.filter(s => s.status === 'APPROVED').length
@@ -145,41 +92,10 @@ export default function DashboardPage() {
     }
   }, [user, submissions])
 
-  // ── Stats ──────────────────────────────────────────────────────────
-
   const totalEarned    = workerAnalytics?.summary?.totalEarned    ?? 0
-  const thisWeekEarned = workerAnalytics?.summary?.thisWeekEarned ?? 0
-  const pendingAmount  = workerAnalytics?.summary?.totalPending   ?? 0
-  const totalSpent     = workerAnalytics?.summary?.totalSpent     ?? 0
   const completedTasks = submissions.filter(s => s.status === 'APPROVED').length
-  const pendingReview = submissions.filter(
-    s => s.status === 'SUBMITTED'
-  ).length
-
-  const openDisputes = submissions.filter(
-    s => s.status === 'DISPUTED'
-  ).length
-
-  const rejectedCount  = submissions.filter(s => s.status === 'REJECTED').length
-  const pendingCount   = submissions.filter(s => s.status === 'SUBMITTED').length
-  const approvedCount  = submissions.filter(s => s.status === 'APPROVED').length
-
-  const filteredSubmissions = submissionFilter === 'all'
-    ? submissions
-    : submissions.filter(s => s.status === submissionFilter)
-
+  const pendingReview = submissions.filter(s => s.status === 'SUBMITTED').length
   const recentSubmissions = submissions.slice(0, 4)
-
-  function timeAgo(dateStr: string): string {
-    const diff = Date.now() - new Date(dateStr).getTime()
-    const mins = Math.floor(diff / 60000)
-    if (mins < 60) return `${mins}m ago`
-    const hrs  = Math.floor(mins / 60)
-    if (hrs  < 24) return `${hrs}h ago`
-    return `${Math.floor(hrs / 24)}d ago`
-  }
-
-  // ── Loading / unauthenticated ──────────────────────────────────────
 
   if (!isAuthenticated) {
     return (
@@ -201,14 +117,14 @@ export default function DashboardPage() {
             onClick={authenticate}
             style={{
               padding:      '0.75rem 2rem',
-              background:   `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
+              background:   `linear-gradient(135deg, #0095FF, #004FCC)`,
               color:        'white',
-              border:       `1px solid ${COLORS.cyan}`,
+              border:       '1px solid rgba(0,149,255,0.3)',
               borderRadius: RADII.lg,
               fontSize:     '1rem',
               fontWeight:   '600',
               cursor:       'pointer',
-              boxShadow:    SHADOWS.cyanGlow,
+              boxShadow:    '0 0 24px rgba(0,149,255,0.28)',
             }}
           >
             Connect with Pi
@@ -218,611 +134,432 @@ export default function DashboardPage() {
     )
   }
 
-  // ── Dashboard ─────────────────────────────────────────────────────
-
   return (
     <div style={{
       minHeight:  '100vh',
-      background: COLORS.bgBase,
+      background: '#07090E',
       fontFamily: FONTS.sans,
       color:      COLORS.textPrimary,
+      padding: '20px 16px',
     }}>
       <Navigation currentPage="dashboard" />
 
-      <main className="page-main">
-
-        {/* ── Earning Machine Header ─────────────────────── */}
+      <main style={{
+        maxWidth: '480px',
+        margin: '0 auto',
+        paddingBottom: SPACING.xxl,
+      }}>
+        {/* ── Header Section ─────────────────────────── */}
         <div style={{
-          marginBottom: SPACING.lg,
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          marginBottom: SPACING.xl,
+          marginTop: SPACING.lg,
         }}>
-          {/* Greeting + earnings summary */}
+          <div>
+            <div style={{
+              fontSize: 14,
+              color: '#8892A8',
+              marginBottom: 4,
+            }}>
+              Good morning
+            </div>
+            <div style={{
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: 26,
+              color: '#EEF2FF',
+              letterSpacing: 1,
+            }}>
+              {user?.piUsername || 'Pioneer'}
+            </div>
+          </div>
+
+          {/* Online status pill */}
           <div style={{
-            display:        'flex',
-            alignItems:     'center',
-            justifyContent: 'space-between',
-            marginBottom:   SPACING.md,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '6px 12px',
+            background: 'rgba(0,214,143,0.1)',
+            border: '1px solid rgba(0,214,143,0.3)',
+            borderRadius: 999,
+            fontSize: 12,
+            color: '#00D68F',
+          }}>
+            <div style={{
+              width: 6,
+              height: 6,
+              borderRadius: '50%',
+              background: '#00D68F',
+              animation: 'pulseDot 2s infinite',
+            }} />
+            Online
+          </div>
+
+          {/* Avatar circle */}
+          <div style={{
+            width: 48,
+            height: 48,
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #0095FF, #A78BFA)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontWeight: 700,
+            fontSize: 18,
+            border: '2px solid rgba(0,149,255,0.3)',
+          }}>
+            {user?.piUsername?.charAt(0).toUpperCase() || 'P'}
+          </div>
+        </div>
+
+        {/* ── Rep Ring Card ─────────────────────────── */}
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(0,149,255,0.07) 0%, #131720 60%)',
+          border: '1px solid rgba(0,149,255,0.25)',
+          borderRadius: 18,
+          padding: '20px',
+          marginBottom: SPACING.lg,
+          display: 'flex',
+          gap: 16,
+        }}>
+          {/* Left: Progress ring + rep score */}
+          <div style={{
+            flex: '0 0 80px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            {/* SVG Ring */}
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              {/* Background circle */}
+              <circle cx="40" cy="40" r="36" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="2" />
+              {/* Progress circle */}
+              <circle
+                cx="40" cy="40" r="36" fill="none"
+                stroke="url(#repGradient)" strokeWidth="2"
+                strokeDasharray={`${(workerStats.reputationScore / 100) * 226} 226`}
+                strokeLinecap="round"
+                style={{ transform: 'rotate(-90deg)', transformOrigin: '40px 40px' }}
+              />
+              <defs>
+                <linearGradient id="repGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#0095FF" />
+                  <stop offset="100%" stopColor="#38B2FF" />
+                </linearGradient>
+              </defs>
+              {/* Center text */}
+              <text x="40" y="38" textAnchor="middle" style={{
+                fontFamily: "'Bebas Neue', sans-serif",
+                fontSize: 20,
+                fill: '#EEF2FF',
+                fontWeight: 700,
+              }}>
+                {workerStats.reputationScore}
+              </text>
+              <text x="40" y="52" textAnchor="middle" style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: 10,
+                fill: '#8892A8',
+              }}>
+                REP
+              </text>
+            </svg>
+          </div>
+
+          {/* Right: Level + chips + progress bar */}
+          <div style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
           }}>
             <div>
               <div style={{
-                fontSize:   '0.78rem',
-                color:      COLORS.cyan,
-                marginBottom: '2px',
+                fontFamily: "'Bebas Neue', sans-serif",
+                fontSize: 14,
+                color: '#EEF2FF',
+                letterSpacing: 1,
+                marginBottom: 4,
               }}>
-                Welcome back
+                Elite Worker · Level {Math.max(1, Math.floor(workerStats.reputationScore / 20))}
               </div>
               <div style={{
-                fontSize:   '1.3rem',
-                fontWeight: '800',
-                color:      COLORS.textPrimary,
-                letterSpacing: '-0.02em',
+                fontSize: 12,
+                color: '#8892A8',
               }}>
-                {user?.piUsername}
+                {100 - (workerStats.reputationScore % 100)} pts to next level
               </div>
             </div>
 
-            {/* Total earned — always visible */}
+            {/* Progress bar */}
             <div style={{
-              textAlign: 'right' as const,
+              height: 4,
+              background: 'rgba(255,255,255,0.1)',
+              borderRadius: 2,
+              overflow: 'hidden',
             }}>
               <div style={{
-                fontSize:   '0.68rem',
-                color:      COLORS.textMuted,
-                marginBottom: '2px',
-                textTransform: 'uppercase' as const,
-                letterSpacing: '0.08em',
+                height: '100%',
+                width: `${(workerStats.reputationScore % 100)}%`,
+                background: 'linear-gradient(90deg, #0095FF, #38B2FF)',
+              }} />
+            </div>
+
+            {/* Chips */}
+            <div style={{
+              display: 'flex',
+              gap: 8,
+              flexWrap: 'wrap',
+            }}>
+              <div style={{
+                padding: '4px 10px',
+                background: 'rgba(0,214,143,0.1)',
+                border: '1px solid rgba(0,214,143,0.3)',
+                borderRadius: 6,
+                fontSize: 11,
+                color: '#00D68F',
+                fontWeight: 600,
               }}>
-                Total earned
+                KYC L{workerStats.kycLevel}
               </div>
               <div style={{
-                fontFamily:    FONTS.mono,
-                fontSize:      '1.5rem',
-                fontWeight:    '800',
-                color:         COLORS.emerald,
-                letterSpacing: '-0.03em',
-                lineHeight:    1,
+                padding: '4px 10px',
+                background: 'rgba(0,149,255,0.1)',
+                border: '1px solid rgba(0,149,255,0.3)',
+                borderRadius: 6,
+                fontSize: 11,
+                color: '#0095FF',
+                fontWeight: 600,
               }}>
-                {totalEarned.toFixed(2)}π
+                Top 5%
+              </div>
+              <div style={{
+                padding: '4px 10px',
+                background: 'rgba(255,176,32,0.1)',
+                border: '1px solid rgba(255,176,32,0.3)',
+                borderRadius: 6,
+                fontSize: 11,
+                color: '#FFB020',
+                fontWeight: 600,
+              }}>
+                {completedTasks}T
               </div>
             </div>
           </div>
-
-          {/* Hero CTA — the most important element */}
-          <Link
-            href="/feed"
-            style={{
-              display:        'block',
-              padding:        '1rem 1.5rem',
-              background:     `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
-              borderRadius:   RADII.xl,
-              textDecoration: 'none',
-              boxShadow:      SHADOWS.cyanGlow,
-              position:       'relative' as const,
-              overflow:       'hidden',
-              border:         `1px solid ${COLORS.cyan}`,
-            }}
-          >
-            {/* Background shimmer */}
-            <div style={{
-              position:   'absolute' as const,
-              top:        0,
-              left:       0,
-              right:      0,
-              bottom:     0,
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 60%)',
-              pointerEvents: 'none' as const,
-            }} />
-
-            <div style={{
-              display:        'flex',
-              alignItems:     'center',
-              justifyContent: 'space-between',
-            }}>
-              <div>
-                <div style={{
-                  fontSize:   '1rem',
-                  fontWeight: '800',
-                  color:      'white',
-                  marginBottom: '2px',
-                }}>
-                  Start earning Pi now
-                </div>
-                <div style={{
-                  fontSize: '0.78rem',
-                  color:    'rgba(255,255,255,0.7)',
-                }}>
-                  {pendingReview > 0
-                    ? `${pendingReview} submission${pendingReview > 1 ? 's' : ''} pending review`
-                    : 'New opportunities available'}
-                </div>
-              </div>
-              <div style={{
-                fontSize:   '1.5rem',
-                color:      'white',
-                fontWeight: '700',
-              }}>
-                →
-              </div>
-            </div>
-          </Link>
         </div>
 
-        {/* Bento Grid */}
-        <BentoGrid
-          columns={3}
-          gap="0.875rem"
-          items={[
-
-            // Row 1: Earnings (wide) + Reputation
-            {
-              id:      'earnings',
-              colSpan: 2,
-              rowSpan: 1,
-              children: (
-                <EarningsCard
-                  totalEarned={totalEarned}
-                  thisWeekEarned={thisWeekEarned}
-                  pendingAmount={pendingAmount}
-                  totalSpent={totalSpent}
-                />
-              ),
-            },
-            {
-              id:      'reputation',
-              colSpan: 1,
-              children: (
-                <ReputationMiniCard
-                  reputationScore={workerStats.reputationScore}
-                  reputationLevel={workerStats.reputationLevel}
-                  kycLevel={workerStats.kycLevel}
-                  tasksCompleted={workerStats.tasksCompleted}
-                />
-              ),
-            },
-
-            // Row 2: Activity (wide) + Leaderboard
-            {
-              id:      'activity',
-              colSpan: 2,
-              children: (
-                <ActivityFeedCard
-                  submissions={recentSubmissions.map(sub => ({
-                    id:        sub.id,
-                    status:    sub.status,
-                    taskTitle: sub.task?.title ?? 'Unknown task',
-                    reward:    Number(sub.agreedReward ?? 0) * (1 - PLATFORM_CONFIG.PLATFORM_FEE_RATE),
-                    timeAgo:   sub.submittedAt
-                      ? timeAgo(sub.submittedAt)
-                      : 'recently',
-                  }))}
-                />
-              ),
-            },
-            {
-              id:      'leaderboard',
-              colSpan: 1,
-              children: (
-                <LeaderboardCard
-                  piUid={user?.piUid ?? ''}
-                  username={user?.piUsername ?? ''}
-                />
-              ),
-            },
-
-          ]}
-        />
-
-      {/* ══════════════════════════════════════════════════════
-          WORKER SECTION — My Earning History
-        ═══════════════════════════════════════════════════════ */}
-
-      {/* Section divider */}
-      <div style={{
-        display:    'flex',
-        alignItems: 'center',
-        gap:        '0.75rem',
-        margin:     `${SPACING.xxl} 0 ${SPACING.lg}`,
-        padding:    `${SPACING.md} ${SPACING.lg}`,
-        background: `linear-gradient(135deg, rgba(15, 82, 186, 0.05), transparent), ${COLORS.bgSurface}`,
-        borderRadius: RADII.lg,
-        border:     `1px solid ${COLORS.cyan}`,
-        boxShadow:  '0 4px 24px rgba(8, 26, 51, 0.2), 0 0 20px rgba(0, 229, 229, 0.06)',
-        backdropFilter: 'blur(10px)',
-      }}>
+        {/* ── Streak Bar ─────────────────────────────– */}
         <div style={{
-          fontSize:      '0.65rem',
-          fontWeight:    '600',
-          color:         COLORS.cyan,
-          textTransform: 'uppercase' as const,
-          letterSpacing: '0.1em',
-          whiteSpace:    'nowrap' as const,
-        }}>
-          My Work
-        </div>
-        <div style={{
-          height:     '1px',
-          flex:       1,
-          background: `linear-gradient(90deg, transparent, ${COLORS.cyan}, transparent)`,
-        }} />
-        {/* Rejected alert badge */}
-        {rejectedCount > 0 && (
-          <div style={{
-            padding:      '2px 8px',
-            background:   COLORS.redDim,
-            border:       `1px solid ${COLORS.red}`,
-            borderRadius: RADII.full,
-            fontSize:     '0.68rem',
-            fontWeight:   '700',
-            color:        COLORS.red,
-            whiteSpace:   'nowrap' as const,
-            fontFamily:   FONTS.mono,
-            animation:    'pulse-glow 2s infinite',
-          }}>
-            {rejectedCount} rejected
-          </div>
-        )}
-      </div>
-
-      {/* Three-state filter tabs */}
-      {submissions.length > 0 && (
-        <div style={{
-          display:      'flex',
-          gap:          '0.375rem',
+          background: 'linear-gradient(90deg, rgba(255,176,32,0.09) 0%, rgba(255,71,87,0.05) 100%)',
+          border: '1px solid rgba(255,176,32,0.2)',
+          borderRadius: 14,
+          padding: '13px 16px',
           marginBottom: SPACING.lg,
-          background:   `linear-gradient(135deg, rgba(15, 82, 186, 0.04), transparent), ${COLORS.bgSurface}`,
-          borderRadius: RADII.lg,
-          padding:      '0.3rem',
-          border:       `1px solid ${COLORS.cyan}`,
-          boxShadow:    '0 4px 24px rgba(8, 26, 51, 0.2), 0 0 12px rgba(0, 229, 229, 0.08)',
-          backdropFilter: 'blur(10px)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+        }}>
+          <div style={{
+            fontSize: 24,
+            animation: 'flicker 1.8s infinite',
+          }}>
+            🔥
+          </div>
+          <div style={{
+            display: 'flex',
+            alignItems: 'baseline',
+            gap: 6,
+          }}>
+            <div style={{
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: 26,
+              color: '#FFB020',
+              letterSpacing: 0.5,
+            }}>
+              {Math.max(0, Math.floor(completedTasks / 5))}
+            </div>
+            <div style={{
+              fontSize: 12,
+              color: '#FFB020',
+            }}>
+              day streak
+            </div>
+          </div>
+        </div>
+
+        {/* ── Stats 2x2 Grid ─────────────────────────– */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 12,
+          marginBottom: SPACING.lg,
         }}>
           {[
-            {
-              key:   'all',
-              label: `All (${submissions.length})`,
-              color: COLORS.textSecondary,
-            },
-            {
-              key:   'APPROVED',
-              label: approvedCount > 0 ? `✓ Approved (${approvedCount})` : '✓ Approved',
-              color: COLORS.emerald,
-            },
-            {
-              key:   'SUBMITTED',
-              label: pendingCount > 0 ? `⏳ Pending (${pendingCount})` : '⏳ Pending',
-              color: COLORS.amber,
-            },
-            {
-              key:   'REJECTED',
-              label: rejectedCount > 0 ? `✗ Rejected (${rejectedCount})` : '✗ Rejected',
-              color: COLORS.red,
-            },
-          ].map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setSubmissionFilter(tab.key as typeof submissionFilter)}
-              style={{
-                flex:         1,
-                padding:      '0.4rem 0.25rem',
-                borderRadius: RADII.md,
-                border:       'none',
-                background:   submissionFilter === tab.key
-                  ? COLORS.bgSurface
-                  : 'transparent',
-                color:        submissionFilter === tab.key
-                  ? tab.color
-                  : COLORS.textMuted,
-                fontSize:     '0.72rem',
-                fontWeight:   submissionFilter === tab.key ? '600' : '400',
-                cursor:       'pointer',
-                transition:   'all 0.15s ease',
-                whiteSpace:   'nowrap' as const,
-                fontFamily:   FONTS.sans,
-              }}
-            >
-              {tab.label}
-            </button>
+            { label: 'EARNINGS', value: `${totalEarned.toFixed(1)}π`, color: '#00D68F' },
+            { label: 'TASKS DONE', value: completedTasks.toString(), color: '#0095FF' },
+            { label: 'PENDING', value: `${pendingReview}`, color: '#FFB020' },
+            { label: 'ACTIVE', value: '3', color: '#0095FF' },
+          ].map((stat) => (
+            <div key={stat.label} style={{
+              background: '#0F1119',
+              border: '1px solid #1A1F2E',
+              borderRadius: 12,
+              padding: '16px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+            }}>
+              <div style={{
+                fontSize: 10,
+                color: '#454F64',
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
+                fontWeight: 600,
+              }}>
+                {stat.label}
+              </div>
+              <div style={{
+                fontFamily: "'Bebas Neue', sans-serif",
+                fontSize: 30,
+                color: stat.color,
+                lineHeight: 1,
+                letterSpacing: 0.5,
+              }}>
+                {stat.value}
+              </div>
+            </div>
           ))}
         </div>
-      )}
 
-      {/* Submissions list */}
-      {submissions.length === 0 ? (
+        {/* ── Active Tasks Section ─────────────────── */}
         <div style={{
-          padding:        `${SPACING.xxl} ${SPACING.xl}`,
-          textAlign:      'center',
-          background:     `linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%), ${COLORS.bgSurface}`,
-          border:         `1px solid ${COLORS.border}`,
-          borderRadius:   RADII.xl,
+          marginBottom: SPACING.lg,
         }}>
-          <div style={{ fontSize: '1.75rem', marginBottom: SPACING.md, opacity: 0.4 }}>✨</div>
-          <div style={{ fontSize: '0.95rem', fontWeight: '600', color: COLORS.textPrimary, marginBottom: SPACING.sm }}>
-            No submissions yet
-          </div>
-          <div style={{ fontSize: '0.85rem', color: COLORS.textSecondary, marginBottom: SPACING.xl }}>
-            Complete tasks to start earning Pi.
-          </div>
-          <Link
-            href="/feed"
-            style={{
-              padding:        `${SPACING.sm} ${SPACING.xl}`,
-              background:     `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
-              color:          'white',
-              borderRadius:   RADII.md,
-              fontSize:       '0.875rem',
-              fontWeight:     '600',
-              textDecoration: 'none',
-              boxShadow:      SHADOWS.cyanGlow,
-              border:         `1px solid ${COLORS.cyan}`,
-            }}
-          >
-            Browse Tasks
-          </Link>
-        </div>
-      ) : filteredSubmissions.length === 0 ? (
-        <div style={{
-          padding:      `${SPACING.xl}`,
-          textAlign:    'center',
-          background:   COLORS.bgSurface,
-          border:       `1px solid ${COLORS.border}`,
-          borderRadius: RADII.lg,
-          color:        COLORS.textMuted,
-          fontSize:     '0.85rem',
-        }}>
-          No {submissionFilter.toLowerCase()} submissions
-        </div>
-      ) : (
-        <div style={{
-          display:       'flex',
-          flexDirection: 'column',
-          gap:           SPACING.sm,
-        }}>
-          {filteredSubmissions.map((sub, idx) => {
-
-            // REJECTED — show RejectionCard
-            if (sub.status === 'REJECTED') {
-              return (
-                <RejectionCard
-                  key={sub.id}
-                  submissionId={sub.id}
-                  taskId={sub.task?.id ?? ''}
-                  taskTitle={sub.task?.title ?? 'Unknown task'}
-                  taskCategory={sub.task?.category ?? ''}
-                  reward={Number(sub.agreedReward ?? 0)}
-                  rejectionReason={sub.rejectionReason ?? null}
-                  rejectedAt={sub.updatedAt ?? sub.submittedAt}
-                />
-              )
-            }
-
-            // SUBMITTED — check if re-queued after dispute win
-            if (sub.status === 'SUBMITTED') {
-              const relatedDispute = workerDisputes.find(d => d.submission?.id === sub.id)
-              const isRequeued = relatedDispute?.status === 'resolved_worker'
-
-              return (
-                <div
-                  key={sub.id}
-                  style={{
-                    background:   isRequeued
-                      ? `linear-gradient(180deg, rgba(16,185,129,0.04) 0%, transparent 100%), ${COLORS.bgSurface}`
-                      : `linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%), ${COLORS.bgSurface}`,
-                    border:       `1px solid ${isRequeued ? 'rgba(16,185,129,0.25)' : COLORS.border}`,
-                    borderLeft:   `3px solid ${isRequeued ? COLORS.emerald : COLORS.amber}`,
-                    borderRadius: RADII.lg,
-                    padding:      `${SPACING.md} ${SPACING.lg}`,
-                    animation:    `fade-up 0.3s ease ${idx * 0.06}s both`,
-                  }}
-                >
-                  <div style={{
-                    display:        'flex',
-                    justifyContent: 'space-between',
-                    alignItems:     'flex-start',
-                    marginBottom:   isRequeued ? SPACING.sm : '4px',
-                  }}>
-                    <div style={{ flex: 1, minWidth: 0, marginRight: SPACING.md }}>
-                      <div style={{
-                        fontWeight:   '500',
-                        fontSize:     '0.875rem',
-                        color:        COLORS.textPrimary,
-                        overflow:     'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace:   'nowrap' as const,
-                        marginBottom: '3px',
-                      }}>
-                        {sub.task?.title ?? 'Unknown task'}
-                      </div>
-                      <div style={{
-                        fontSize: '0.78rem',
-                        color:    COLORS.textMuted,
-                        display:  'flex',
-                        gap:      '0.5rem',
-                      }}>
-                        <span>{sub.task?.category}</span>
-                        <span>·</span>
-                        <span style={{ fontFamily: FONTS.mono }}>{Number(sub.agreedReward ?? 0).toFixed(3)}π</span>
-                      </div>
-                    </div>
-                    <span style={{
-                      padding:      '2px 8px',
-                      borderRadius: RADII.full,
-                      fontSize:     '0.68rem',
-                      fontWeight:   '600',
-                      fontFamily:   FONTS.mono,
-                      flexShrink:   0,
-                      background:   isRequeued ? COLORS.emeraldDim : COLORS.amberDim,
-                      color:        isRequeued ? COLORS.emerald : COLORS.amber,
-                      border:       `1px solid ${isRequeued ? 'rgba(16,185,129,0.3)' : 'rgba(245,158,11,0.3)'}`,
-                    }}>
-                      {isRequeued ? 'DISPUTE WON' : 'PENDING'}
-                    </span>
-                  </div>
-
-                  {/* Dispute win notice */}
-                  {isRequeued && (
-                    <div style={{
-                      padding:      `${SPACING.xs} ${SPACING.sm}`,
-                      background:   COLORS.emeraldDim,
-                      border:       `1px solid rgba(16,185,129,0.2)`,
-                      borderRadius: RADII.sm,
-                      fontSize:     '0.75rem',
-                      color:        COLORS.emerald,
-                      marginTop:    SPACING.sm,
-                    }}>
-                      ✓ Dispute resolved in your favor — awaiting employer re-approval
-                    </div>
-                  )}
-
-                  {/* Normal pending notice */}
-                  {!isRequeued && (
-                    <div style={{
-                      fontSize: '0.75rem',
-                      color:    COLORS.amber,
-                      marginTop: '2px',
-                    }}>
-                      Awaiting employer review
-                    </div>
-                  )}
-                </div>
-              )
-            }
-
-            // APPROVED — link card
-            const s = { color: COLORS.emerald, background: COLORS.emeraldDim }
-            return (
-              <Link
-                key={sub.id}
-                href={`/task/${sub.task?.id}`}
-                style={{
-                  display:        'block',
-                  background:     `linear-gradient(180deg, rgba(16,185,129,0.04) 0%, transparent 100%), ${COLORS.bgSurface}`,
-                  border:         `1px solid ${COLORS.border}`,
-                  borderLeft:     `3px solid ${COLORS.emerald}`,
-                  borderRadius:   RADII.lg,
-                  padding:        `${SPACING.md} ${SPACING.lg}`,
-                  textDecoration: 'none',
-                  boxShadow:      SHADOWS.card,
-                  animation:      `fade-up 0.3s ease ${idx * 0.06}s both`,
-                }}
-              >
-                <div style={{
-                  display:        'flex',
-                  justifyContent: 'space-between',
-                  alignItems:     'flex-start',
-                  marginBottom:   '4px',
-                }}>
-                  <div style={{
-                    fontWeight:   '500',
-                    fontSize:     '0.875rem',
-                    color:        COLORS.textPrimary,
-                    overflow:     'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace:   'nowrap' as const,
-                    flex:         1,
-                    marginRight:  SPACING.md,
-                  }}>
-                    {sub.task?.title ?? 'Unknown task'}
-                  </div>
-                  <span style={{
-                    padding:      '2px 8px',
-                    borderRadius: RADII.full,
-                    fontSize:     '0.68rem',
-                    fontWeight:   '600',
-                    letterSpacing: '0.03em',
-                    fontFamily:   FONTS.mono,
-                    flexShrink:   0,
-                    background:   COLORS.emeraldDim,
-                    color:        COLORS.emerald,
-                    border:       `1px solid rgba(16,185,129,0.3)`,
-                  }}>
-                    APPROVED
-                  </span>
-                </div>
-                <div style={{
-                  fontSize: '0.78rem',
-                  color:    COLORS.textMuted,
-                  display:  'flex',
-                  gap:      '0.75rem',
-                  flexWrap: 'wrap' as const,
-                }}>
-                  <span>{sub.task?.category}</span>
-                  <span style={{
-                    color:      COLORS.emerald,
-                    fontFamily: FONTS.mono,
-                    fontWeight: '500',
-                  }}>
-                    {(Number(sub.agreedReward ?? 0) * (1 - PLATFORM_CONFIG.PLATFORM_FEE_RATE)).toFixed(3)}π
-                  </span>
-                  <span style={{ color: COLORS.emerald }}>Payment processed</span>
-                </div>
-              </Link>
-            )
-          })}
-        </div>
-      )}
-
-      {/* ══════════════════════════════════════════════════════
-          DISPUTES SECTION — My Disputes (if any)
-        ═══════════════════════════════════════════════════════ */}
-
-      {workerDisputes.length > 0 && (
-        <>
-          {/* Section divider */}
           <div style={{
-            display:    'flex',
+            display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            gap:        '0.75rem',
-            margin:     `${SPACING.xxl} 0 ${SPACING.lg}`,
-            padding:    `${SPACING.md} ${SPACING.lg}`,
-            background: `linear-gradient(135deg, rgba(15, 82, 186, 0.05), transparent), ${COLORS.bgSurface}`,
-            borderRadius: RADII.lg,
-            border:     `1px solid ${COLORS.cyan}`,
-            boxShadow:  '0 4px 24px rgba(8, 26, 51, 0.2), 0 0 20px rgba(0, 229, 229, 0.06)',
-            backdropFilter: 'blur(10px)',
+            marginBottom: SPACING.md,
           }}>
             <div style={{
-              fontSize:      '0.65rem',
-              fontWeight:    '600',
-              color:         COLORS.cyan,
-              textTransform: 'uppercase' as const,
-              letterSpacing: '0.1em',
-              whiteSpace:    'nowrap' as const,
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: 16,
+              color: '#EEF2FF',
+              letterSpacing: 1,
             }}>
-              My Disputes
+              ACTIVE TASKS
             </div>
-            <div style={{
-              height:     '1px',
-              flex:       1,
-              background: `linear-gradient(90deg, transparent, ${COLORS.cyan}, transparent)`,
-            }} />
-            {/* Active disputes badge */}
-            {workerDisputes.some(d => !['resolved_worker', 'resolved_employer', 'closed_no_action'].includes(d.status)) && (
-              <div style={{
-                padding:      '2px 8px',
-                background:   COLORS.sapphireDim,
-                border:       `1px solid ${COLORS.sapphire}`,
-                borderRadius: RADII.full,
-                fontSize:     '0.68rem',
-                fontWeight:   '700',
-                color:        COLORS.sapphire,
-                whiteSpace:   'nowrap' as const,
-                fontFamily:   FONTS.mono,
-              }}>
-                {workerDisputes.filter(d => !['resolved_worker', 'resolved_employer', 'closed_no_action'].includes(d.status)).length} active
-              </div>
-            )}
+            <a href="/feed" style={{
+              fontSize: 12,
+              color: '#0095FF',
+              textDecoration: 'none',
+              fontWeight: 600,
+            }}>
+              See All →
+            </a>
           </div>
 
-          {/* Disputes list */}
-          <DisputeTrackerCard disputes={workerDisputes} workerId={user?.id ?? ''} />
-        </>
-      )}
+          {recentSubmissions.length > 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {recentSubmissions.map((sub) => (
+                <div key={sub.id} style={{
+                  background: '#0F1119',
+                  border: '1px solid #1A1F2E',
+                  borderRadius: 12,
+                  padding: '12px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
+                  <div>
+                    <div style={{
+                      fontSize: 13,
+                      color: '#EEF2FF',
+                      fontWeight: 600,
+                      marginBottom: 4,
+                    }}>
+                      {sub.task.title}
+                    </div>
+                    <div style={{
+                      fontSize: 11,
+                      color: '#8892A8',
+                    }}>
+                      {sub.task.category}
+                    </div>
+                  </div>
+                  <div style={{
+                    padding: '4px 8px',
+                    background: statusStyle(sub.status).background,
+                    border: statusStyle(sub.status).border,
+                    borderRadius: 6,
+                    fontSize: 10,
+                    color: statusStyle(sub.status).color,
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                  }}>
+                    {sub.status}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{
+              textAlign: 'center',
+              padding: SPACING.lg,
+              color: '#8892A8',
+              fontSize: 14,
+            }}>
+              No active tasks. Start earning by finding work in the feed.
+            </div>
+          )}
+        </div>
 
-      {/* ══════════════════════════════════════════════════════
-          ══════════════════════════════════════════════════════ */}
-
+        {/* ── Quick Actions ─────────────────────────– */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 12,
+        }}>
+          <a href="/feed" style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            padding: '16px',
+            background: 'linear-gradient(135deg, rgba(0,149,255,0.2), rgba(0,149,255,0.05))',
+            border: '1px solid rgba(0,149,255,0.3)',
+            borderRadius: 12,
+            color: '#0095FF',
+            textDecoration: 'none',
+            fontWeight: 600,
+            fontSize: 14,
+            transition: 'all 0.2s',
+          }}>
+            ⛏️ Find Work
+          </a>
+          <a href="/analytics" style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            padding: '16px',
+            background: 'linear-gradient(135deg, rgba(167,139,250,0.2), rgba(167,139,250,0.05))',
+            border: '1px solid rgba(167,139,250,0.3)',
+            borderRadius: 12,
+            color: '#A78BFA',
+            textDecoration: 'none',
+            fontWeight: 600,
+            fontSize: 14,
+            transition: 'all 0.2s',
+          }}>
+            📊 Analytics
+          </a>
+        </div>
       </main>
     </div>
   )
 }
-
-
