@@ -198,8 +198,10 @@ export default function ArbitrateDisputePage({
               fontSize:   '0.875rem',
               color:      '#d1d5db',
               lineHeight: '1.6',
+              whiteSpace: 'pre-wrap' as const,
+              wordBreak:  'break-word' as const,
             }}>
-              {task.instructions as string}
+              {String(task.instructions ?? '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}
             </p>
           </div>
         )}

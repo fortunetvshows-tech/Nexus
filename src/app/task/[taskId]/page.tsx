@@ -422,8 +422,10 @@ export default function TaskDetailPage({
                   fontSize:   '1rem',
                   color:      COLORS.textPrimary,
                   lineHeight: 1.6,
+                  whiteSpace: 'pre-wrap' as const,
+                  wordBreak:  'break-word' as const,
                 }}>
-                  {task.instructions}
+                  {String(task.instructions).replace(/</g, '&lt;').replace(/>/g, '&gt;')}
                 </p>
               </div>
             </div>
@@ -446,8 +448,10 @@ export default function TaskDetailPage({
                 fontSize:   '0.85rem',
                 color:      COLORS.textMuted,
                 lineHeight: 1.6,
+                whiteSpace: 'pre-wrap' as const,
+                wordBreak:  'break-word' as const,
               }}>
-                {task.description}
+                {String(task.description).replace(/</g, '&lt;').replace(/>/g, '&gt;')}
               </p>
             </details>
           )}
