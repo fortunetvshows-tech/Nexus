@@ -254,10 +254,10 @@ export default function ReviewPage({
   if (!user) {
     return (
       <div style={{
-        minHeight: '100vh', background: '#0f0f0f',
+        minHeight: '100vh', background: COLORS.bgBase,
         display: 'flex', alignItems: 'center',
-        justifyContent: 'center', color: '#9ca3af',
-        fontFamily: 'system-ui, sans-serif',
+        justifyContent: 'center', color: COLORS.textMuted,
+        fontFamily: FONTS.sans,
       }}>
         Connecting to Pi Network...
       </div>
@@ -267,35 +267,36 @@ export default function ReviewPage({
   return (
     <div style={{
       minHeight:  '100vh',
-      background: '#0f0f0f',
-      fontFamily: 'system-ui, sans-serif',
-      color:      '#ffffff',
+      background: COLORS.bgBase,
+      fontFamily: FONTS.sans,
+      color:      COLORS.textPrimary,
     }}>
       <Navigation currentPage="employer" />
 
       <main className="page-main">
 
         <Link href="/employer" style={{
-          color: '#6b7280', fontSize: '0.875rem',
+          color: COLORS.textMuted, fontSize: '0.875rem',
           textDecoration: 'none', display: 'inline-block',
-          marginBottom: '1.5rem',
+          marginBottom: SPACING.lg,
         }}>
           ← Back
         </Link>
 
         <h1 style={{
           margin: '0 0 0.5rem', fontSize: '1.4rem', fontWeight: '700',
+          fontFamily: FONTS.display,
         }}>
-          Review Submissions
+          REVIEW SUBMISSIONS
         </h1>
-        <p style={{ margin: '0 0 2rem', color: '#6b7280', fontSize: '0.875rem' }}>
+        <p style={{ margin: '0 0 2rem', color: COLORS.textMuted, fontSize: '0.875rem' }}>
           {taskTitle}
         </p>
 
         {isLoading && (
           <div style={{
-            background: '#111827', borderRadius: '12px',
-            height: '200px', border: '1px solid #1f2937',
+            background: COLORS.bgSurface, borderRadius: RADII.xl,
+            height: '200px', border: `1px solid ${COLORS.border}`,
           }} />
         )}
 
@@ -341,7 +342,7 @@ export default function ReviewPage({
                     {sub.worker?.piUsername}
                   </div>
                   <div style={{
-                    fontSize: '0.78rem', color: '#6b7280', marginTop: '0.2rem',
+                    fontSize: '0.78rem', color: COLORS.textMuted, marginTop: '0.2rem',
                   }}>
                     Rep {sub.worker?.reputationScore}
                     {' · '}{sub.worker?.reputationLevel}
@@ -400,8 +401,8 @@ export default function ReviewPage({
 
               {/* Instructions + Proof — documents section */}
               <div style={{
-                background: '#0f172a', borderRadius: '8px',
-                padding: '1rem', marginBottom: '1rem',
+                background: COLORS.bgRaised, borderRadius: RADII.md,
+                padding: SPACING.lg, marginBottom: SPACING.lg,
               }}>
                 {/* Instruction file (reference) */}
                 {taskInstructionUrl && (
