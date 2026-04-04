@@ -1,21 +1,24 @@
 'use client'
 
-import { useApp, ScreenName } from '@/context/AppContext'
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 
 interface BottomNavItem {
-  id: ScreenName
+  href: string
   label: string
   icon: string
+  pattern: RegExp
 }
 
 export function BottomNav() {
-  const { currentScreen, navigate } = useApp()
+  const pathname = usePathname()
 
   const items: BottomNavItem[] = [
-    { id: 'dashboard', label: 'Home', icon: '⊞' },
-    { id: 'discover', label: 'Discover', icon: '🔍' },
-    { id: 'wallet', label: 'Wallet', icon: '💼' },
-    { id: 'profile', label: 'Profile', icon: '👤' },
+    { href: '/dashboard', label: 'Home', icon: '⊞', pattern: /^\/(dashboard)?$/ },
+    { href: '/feed', label: 'Discover', icon: '🔍', pattern: /^\/feed/ },
+    { href: '/employer', label: 'Post', icon: '➕', pattern: /^\/employer(\/|$)/ },
+    { href: '/my-tasks', label: 'Tasks', icon: '✓', pattern: /^\/my-tasks/ },
+    { href: '/profile', label: 'Profile', icon: '👤', pattern: /^\/profile/ },
   ]
 
   return (
@@ -25,7 +28,7 @@ export function BottomNav() {
       left: 0,
       right: 0,
       zIndex: 100,
-      background: 'rgba(11,13,20,0.92)',
+      background: 'rgba(11,13,20,0.95)',
       backdropFilter: 'blur(24px) saturate(1.4)',
       WebkitBackdropFilter: 'blur(24px) saturate(1.4)',
       borderTop: '1px solid rgba(255,255,255,0.07)',
@@ -33,11 +36,11 @@ export function BottomNav() {
       padding: '8px 0 max(env(safe-area-inset-bottom), 10px)',
     }}>
       {items.map((item) => {
-        const isActive = currentScreen === item.id
+        const isActive = item.pattern.test(pathname)
         return (
-          <button
-            key={item.id}
-            onClick={() => navigate(item.id)}
+          <Link
+            key={item.href}
+            href={item.href}
             style={{
               flex: 1,
               display: 'flex',
@@ -53,6 +56,7 @@ export function BottomNav() {
               textTransform: 'uppercase',
               background: 'none',
               border: 'none',
+              textDecoration: 'none',
               transition: 'all 0.15s ease',
             }}
           >
@@ -78,10 +82,15 @@ export function BottomNav() {
                   <line x1="14" y1="14" x2="20" y2="20" />
                 </>
               )}
-              {item.icon === '💼' && (
+              {item.icon === '➕' && (
                 <>
-                  <rect x="2" y="7" width="18" height="12" rx="1" />
-                  <path d="M6 7V5a2 2 0 012-2h6a2 2 0 012 2v2" />
+                  <line x1="11" y1="4" x2="11" y2="18" />
+                  <line x1="4" y1="11" x2="18" y2="11" />
+                </>
+              )}
+              {item.icon === '✓' && (
+                <>
+                  <polyline points="3 11 8 16 18 6" />
                 </>
               )}
               {item.icon === '👤' && (
@@ -92,7 +101,7 @@ export function BottomNav() {
               )}
             </svg>
             <span>{item.label}</span>
-          </button>
+          </Link>
         )
       })}
     </nav>

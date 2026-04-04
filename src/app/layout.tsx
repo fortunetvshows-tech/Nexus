@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { PiPaymentProvider } from '@/contexts/PiPaymentContext'
+import { BottomNav } from '@/components/BottomNav'
 
 export const metadata: Metadata = {
   title: 'ProofGrid',
@@ -81,37 +82,97 @@ export default function RootLayout({
             padding: 0;
           }
 
+          html, body {
+            height: 100%;
+            width: 100%;
+          }
+
+          html {
+            background: #07090E;
+          }
+
+          @keyframes breathe {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+          }
+
+          @keyframes gemIn {
+            0% { opacity: 0; transform: scale(0.96) translateY(-8px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+          }
+
+          @keyframes slideInUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+          }
+
+          @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+          }
+
           input, textarea, select {
-            font-family: 'Inter', system-ui, sans-serif;
+            font-family: inherit;
           }
 
-          input::placeholder,
-          textarea::placeholder {
-            color: #64748B;
+          input[type="checkbox"] {
+            cursor: pointer;
+            accent-color: #0095FF;
           }
 
+          scrollbar-width: thin;
+          scrollbar-color: rgba(136, 146, 168, 0.4) transparent;
+          
           ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
           }
 
           ::-webkit-scrollbar-track {
-            background: #0F172A;
+            background: transparent;
           }
 
           ::-webkit-scrollbar-thumb {
-            background: #263348;
+            background: rgba(136, 146, 168, 0.4);
             border-radius: 3px;
           }
 
           ::-webkit-scrollbar-thumb:hover {
-            background: #334155;
+            background: rgba(136, 146, 168, 0.6);
           }
-        `}} />
+
+          .hide-mobile {
+            display: none;
+          }
+
+          .show-mobile {
+            display: block;
+          }
+
+          @media (min-width: 768px) {
+            .hide-mobile {
+              display: block;
+            }
+
+            .show-mobile {
+              display: none;
+            }
+          }
+        ` }} />
+
+        {/* Meta tags for PWA */}
+        <meta name="theme-color" content="#07090E" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="ProofGrid" />
       </head>
+
       <body>
         <PiPaymentProvider>
-          {children}
+          <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+            {children}
+            <BottomNav />
+          </div>
         </PiPaymentProvider>
       </body>
     </html>
