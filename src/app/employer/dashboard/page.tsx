@@ -379,779 +379,457 @@ export default function EmployerDashboardPage() {
 
       <main className="page-main">
 
-        {/* ── Header ──────────────────────────────────── */}
+        {/* ── TopBar ──────────────────────────────────── */}
         <div style={{
-          display:        'flex',
+          padding: '14px 20px 10px',
+          display: 'flex', alignItems: 'center',
           justifyContent: 'space-between',
-          alignItems:     'flex-start',
-          marginBottom:   SPACING.xl,
+          background: 'linear-gradient(180deg, transparent 70%, rgba(0,201,167,0.05))',
+          marginBottom: SPACING.lg,
+          borderRadius: RADII.lg,
         }}>
           <div>
-            <div style={{
-              fontSize:      '0.65rem',
-              fontWeight:    '600',
-              color:         COLORS.textMuted,
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase' as const,
-              marginBottom:  '4px',
-              fontFamily:    FONTS.mono,
-            }}>
+            <div style={{ fontSize: 12, color: '#8892A8', marginBottom: 2 }}>
               Employer Dashboard
             </div>
-            <h1 style={{
-              margin:        0,
-              fontSize:      'clamp(1.25rem, 4vw, 1.75rem)',
-              fontWeight:    '700',
-              letterSpacing: '-0.02em',
+            <div style={{
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: 24, letterSpacing: 2,
+              textTransform: 'uppercase',
             }}>
-              Your Opportunities
-            </h1>
+              {user?.piUsername?.toUpperCase()}{' '}
+              <span style={{ color: '#33D9BC' }}>🏗️</span>
+            </div>
           </div>
-          <Link
-            href="/employer"
-            style={{
-              padding:        `${SPACING.sm} ${SPACING.lg}`,
-              background:     `linear-gradient(135deg, ${COLORS.sapphire}, ${COLORS.sapphireDark})`,
-              color:          'white',
-              borderRadius:   RADII.md,
-              fontSize:       '0.85rem',
-              fontWeight:     '600',
-              textDecoration: 'none',
-              boxShadow:      SHADOWS.cyanGlow,
-              border:         `1px solid ${COLORS.cyan}`,
-              whiteSpace:     'nowrap' as const,
-              flexShrink:     0,
-            }}
-          >
-            + Post Task
-          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              padding: '5px 10px',
+              background: 'rgba(0,201,167,0.13)',
+              border: '1px solid rgba(0,201,167,0.25)',
+              borderRadius: 100,
+            }}>
+              <div style={{
+                width: 6, height: 6, borderRadius: '50%',
+                background: '#00C9A7',
+                boxShadow: '0 0 6px #00C9A7',
+              }} />
+              <span style={{
+                fontSize: 11, fontWeight: 700, color: '#33D9BC',
+              }}>ACTIVE</span>
+            </div>
+            <div style={{
+              width: 34, height: 34, borderRadius: '50%',
+              background: 'linear-gradient(135deg, #00C9A7, #0095FF)',
+              display: 'flex', alignItems: 'center',
+              justifyContent: 'center',
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: 13, color: '#fff',
+              boxShadow: '0 0 18px rgba(0,201,167,0.25)',
+            }}>
+              {user?.piUsername?.slice(0,2).toUpperCase()}
+            </div>
+          </div>
         </div>
 
-        {/* ── Bento Grid ──────────────────────────────── */}
+        {/* ── Main Escrow Summary Card ──────────────────────── */}
+        {!isLoading && (
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(0,201,167,0.08) 0%, #131720 60%)',
+            border: '1px solid rgba(0,201,167,0.25)',
+            borderRadius: 18, padding: 16, marginBottom: 14,
+          }}>
+            <div style={{
+              display: 'flex', justifyContent: 'space-between',
+              alignItems: 'flex-start', marginBottom: 12,
+            }}>
+              <div>
+                <div style={{
+                  fontSize: 11, fontWeight: 700,
+                  color: '#454F64', textTransform: 'uppercase',
+                  letterSpacing: '0.8px', marginBottom: 5,
+                }}>Total Pi in Escrow</div>
+                <div style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: 40, letterSpacing: 1.5,
+                  color: '#33D9BC', lineHeight: 1,
+                }}>
+                  {totalEscrowed?.toFixed(2) ?? '0.00'}π
+                </div>
+                <div style={{ fontSize: 12, color: '#8892A8', marginTop: 4 }}>
+                  across {activeTasks.length} active tasks
+                </div>
+              </div>
+              <Link
+                href="/employer"
+                style={{
+                  padding: '9px 16px',
+                  background: '#00C9A7', border: 'none',
+                  borderRadius: 12, color: '#07090E',
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: 13, fontWeight: 700,
+                  cursor: 'pointer',
+                  textDecoration: 'none',
+                  marginTop: 4,
+                  display: 'inline-block',
+                }}
+              >+ New Task</Link>
+            </div>
+
+            {/* 3-col mini stats */}
+            <div style={{
+              display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
+              gap: 10,
+            }}>
+              {[
+                { label: 'Pending', value: pending.length, color: '#FFB020' },
+                { label: 'Total Tasks', value: tasks.length, color: '#00D68F' },
+                { label: 'Completed', value: completedTasks.length, color: '#00C9A7' },
+              ].map(s => (
+                <div key={s.label} style={{
+                  textAlign: 'center', padding: '10px 6px',
+                  background: 'rgba(0,0,0,0.2)', borderRadius: 8,
+                }}>
+                  <div style={{
+                    fontFamily: "'Bebas Neue', sans-serif",
+                    fontSize: 22, color: s.color,
+                  }}>{s.value}</div>
+                  <div style={{
+                    fontSize: 10, color: '#454F64',
+                    marginTop: 2, textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                  }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── Review Alert ──────────────────────────────── */}
+        {!isLoading && pending.length > 0 && (
+          <div style={{
+            background: 'rgba(255,176,32,0.13)',
+            border: '1px solid rgba(255,176,32,0.25)',
+            borderRadius: 12, padding: '13px 16px',
+            marginBottom: 14,
+            display: 'flex', alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#FFB020' }}>
+                ⚠️ {pending.length} submissions need review
+              </div>
+              <div style={{ fontSize: 12, color: '#8892A8', marginTop: 2 }}>
+                Tap to review and release payment
+              </div>
+            </div>
+            <Link
+              href="/employer/submissions"
+              style={{
+                padding: '7px 14px',
+                background: 'rgba(255,176,32,0.13)',
+                border: '1px solid rgba(255,176,32,0.25)',
+                borderRadius: 8, color: '#FFB020',
+                fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                textDecoration: 'none',
+                display: 'inline-block',
+              }}
+            >Review →</Link>
+          </div>
+        )}
+
+        {/* ── Task List with Tabs ──────────────────────────── */}
         {isLoading ? (
           <div style={{
-            display:       'flex',
-            flexDirection: 'column',
-            gap:           '0.875rem',
+            borderRadius: 12,
+            padding: '2rem',
+            textAlign: 'center',
+            color: '#8892A8',
           }}>
-            {[1, 2, 3].map(i => (
-              <div key={i} className="proofgrid-card" style={{ height: '100px' }} />
-            ))}
+            Loading tasks...
           </div>
         ) : (
-          <BentoGrid
-            columns={3}
-            gap="0.875rem"
-            items={[
+          <>
+            {/* Tab row */}
+            <div style={{
+              display: 'flex',
+              gap: '2rem',
+              marginBottom: '1.5rem',
+              paddingBottom: '1rem',
+              borderBottom: '1px solid rgba(0,201,167,0.2)',
+            }}>
+              <button
+                onClick={() => { setActiveTab('active'); setActivePage(0) }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '0',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: activeTab === 'active' ? 700 : 600,
+                  color: activeTab === 'active' ? '#33D9BC' : '#8892A8',
+                  borderBottom: activeTab === 'active' ? '2px solid #00C9A7' : 'none',
+                  paddingBottom: '8px',
+                  fontFamily: FONTS.sans,
+                }}
+              >
+                ⚡ Active Tasks {activeTasks.length > 0 && `(${activeTasks.length})`}
+              </button>
+              <button
+                onClick={() => { setActiveTab('archived'); setArchivedPage(0) }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '0',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: activeTab === 'archived' ? 700 : 600,
+                  color: activeTab === 'archived' ? '#33D9BC' : '#8892A8',
+                  borderBottom: activeTab === 'archived' ? '2px solid #00C9A7' : 'none',
+                  paddingBottom: '8px',
+                  fontFamily: FONTS.sans,
+                }}
+              >
+                📦 Archived {archivedTasks.length > 0 && `(${archivedTasks.length})`}
+              </button>
+            </div>
 
-              // ── Row 1: 4 stat cards ──────────────────
-              {
-                id:       'stat-tasks',
-                children: (
-                  <EmployerStatCard
-                    label="Tasks Posted"
-                    value={tasks.length}
-                    sub={`${activeTasks.length} active`}
-                    color={COLORS.pi}
-                    icon="📋"
-                  />
-                ),
-              },
-              {
-                id:       'stat-fillrate',
-                children: (
-                  <EmployerStatCard
-                    label="Pioneers Working"
-                    value={`${fillRate}%`}
-                    sub={`${summary?.totalSlotsFilled ?? 0} / ${summary?.totalSlotsPosted ?? 0} slots`}
-                    color={parseFloat(fillRate) > 50 ? COLORS.emerald : COLORS.amber}
-                    icon="📊"
-                  />
-                ),
-              },
-              {
-                id:       'stat-escrow',
-                children: (
-                  <EmployerStatCard
-                    label="Total Escrowed"
-                    value={`${totalEscrowed.toFixed(3)}π`}
-                    sub="locked in escrow"
-                    color={COLORS.amber}
-                    icon="🔒"
-                  />
-                ),
-              },
-              {
-                id:       'stat-spent',
-                children: (
-                  <EmployerStatCard
-                    label="Total Spent"
-                    value={`${totalSpent.toFixed(3)}π`}
-                    sub="paid to workers"
-                    color={COLORS.emerald}
-                    icon="💰"
-                  />
-                ),
-              },
-              {
-                id:       'stat-pending',
-                children: (
-                  <EmployerStatCard
-                    label="Pending Reviews"
-                    value={pending.length}
-                    sub="awaiting review"
-                    color={COLORS.amber}
-                    icon="⏳"
-                  />
-                ),
-              },
+            {/* Tasks content */}
+            {(() => {
+              const TASKS_PER_PAGE = 6
+              const displayTasks = activeTab === 'active' ? activeTasks : archivedTasks
+              const currentPage = activeTab === 'active' ? activePage : archivedPage
+              const startIdx = currentPage * TASKS_PER_PAGE
+              const paginatedTasks = displayTasks.slice(startIdx, startIdx + TASKS_PER_PAGE)
+              const totalPages = Math.ceil(displayTasks.length / TASKS_PER_PAGE)
+              const hasNextPage = currentPage < totalPages - 1
+              const hasPrevPage = currentPage > 0
 
-              // ── Row 2: Task performance (wide) + Quick post ──
-              {
-                id:      'task-performance',
-                colSpan: 2,
-                children: (() => {
-                  const TASKS_PER_PAGE = 4
-                  const displayTasks = activeTab === 'active' ? activeTasks : archivedTasks
-                  const currentPage = activeTab === 'active' ? activePage : archivedPage
-                  const startIdx = currentPage * TASKS_PER_PAGE
-                  const paginatedTasks = displayTasks.slice(startIdx, startIdx + TASKS_PER_PAGE)
-                  const totalPages = Math.ceil(displayTasks.length / TASKS_PER_PAGE)
-                  const hasNextPage = currentPage < totalPages - 1
-                  const hasPrevPage = currentPage > 0
-
-                  return (
-                    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                      {/* ── TAB HEADER ── */}
-                      <div style={{
-                        display:       'flex',
-                        gap:           '1rem',
-                        marginBottom:  SPACING.lg,
-                        borderBottom:  `1px solid ${COLORS.border}`,
-                        paddingBottom: SPACING.md,
-                      }}>
-                        <button
-                          onClick={() => { setActiveTab('active'); setActivePage(0) }}
-                          style={{
-                            background:   'none',
-                            border:       'none',
-                            padding:      '0 0.5rem',
-                            cursor:       'pointer',
-                            fontSize:     '0.85rem',
-                            fontWeight:   activeTab === 'active' ? '700' : '600',
-                            color:        activeTab === 'active' ? COLORS.sapphire : COLORS.textMuted,
-                            borderBottom: activeTab === 'active' ? `2px solid ${COLORS.sapphire}` : 'none',
-                            fontFamily:   FONTS.sans,
-                            paddingBottom: '4px',
-                          }}
-                        >
-                          ⚡ Active Tasks {activeTasks.length > 0 && `(${activeTasks.length})`}
-                        </button>
-                        <button
-                          onClick={() => { setActiveTab('archived'); setArchivedPage(0) }}
-                          style={{
-                            background:   'none',
-                            border:       'none',
-                            padding:      '0 0.5rem',
-                            cursor:       'pointer',
-                            fontSize:     '0.85rem',
-                            fontWeight:   activeTab === 'archived' ? '700' : '600',
-                            color:        activeTab === 'archived' ? COLORS.emerald : COLORS.textMuted,
-                            borderBottom: activeTab === 'archived' ? `2px solid ${COLORS.emerald}` : 'none',
-                            fontFamily:   FONTS.sans,
-                            paddingBottom: '4px',
-                          }}
-                        >
-                          📦 Archived {archivedTasks.length > 0 && `(${archivedTasks.length})`}
-                        </button>
-                      </div>
-
-                      {/* ── CONTENT ── */}
-                      {displayTasks.length === 0 ? (
-                        <div style={{
-                          display:        'flex',
-                          flexDirection:  'column',
-                          alignItems:     'center',
-                          justifyContent: 'center',
-                          height:         '120px',
-                          color:          COLORS.textMuted,
-                          fontSize:       '0.85rem',
-                          gap:            '0.5rem',
-                        }}>
-                          <span style={{ fontSize: '1.5rem', opacity: 0.4 }}>
-                            {activeTab === 'active' ? '📭' : '🎁'}
-                          </span>
-                          {activeTab === 'active' ? 'No active tasks' : 'No archived tasks'}
-                        </div>
-                      ) : (
-                        <>
-                          <div style={{
-                            display:       'flex',
-                            flexDirection: 'column',
-                            gap:           '0.875rem',
-                            flex:          1,
-                          }}>
-                            {paginatedTasks.map((task, idx) => {
-                              const filled = task.slotsAvailable - task.slotsRemaining
-                              return (
-                                <div key={task.id}>
-                                  <div style={{
-                                    display:        'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems:     'center',
-                                    marginBottom:   '6px',
-                                  }}>
-                                    <div style={{
-                                      fontSize:     '0.82rem',
-                                      fontWeight:   '500',
-                                      color:        activeTab === 'active' ? COLORS.textPrimary : COLORS.textMuted,
-                                      flex:         1,
-                                      overflow:     'hidden',
-                                      textOverflow: 'ellipsis',
-                                      whiteSpace:   'nowrap' as const,
-                                      marginRight:  '0.75rem',
-                                    }}>
-                                      {task.title}
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
-                                      <span style={{
-                                        fontFamily: FONTS.mono,
-                                        fontSize:   '0.72rem',
-                                        color:      COLORS.textMuted,
-                                      }}>
-                                        {filled}/{task.slotsAvailable}
-                                      </span>
-                                      {activeTab === 'active' && (
-                                        <Link
-                                          href={`/review/${task.id}`}
-                                          style={{
-                                            padding:        '2px 8px',
-                                            background:     COLORS.sapphireDim,
-                                            color:          COLORS.sapphireLight,
-                                            borderRadius:   '6px',
-                                            fontSize:       '0.68rem',
-                                            fontWeight:     '600',
-                                            textDecoration: 'none',
-                                            border:         `1px solid rgba(99,102,241,0.2)`,
-                                          }}
-                                        >
-                                          Review
-                                        </Link>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  {/* Task actions */}
-                                  <div style={{
-                                    display: 'flex',
-                                    gap:     '8px',
-                                    marginTop: '0.75rem',
-                                  }}>
-                                    {activeTab === 'active' && (
-                                      <>
-                                        <button
-                                          onClick={() => setEditingTask(task)}
-                                          style={{
-                                            padding:      '4px 12px',
-                                            background:   'transparent',
-                                            border:       `1px solid ${COLORS.borderAccent}`,
-                                            borderRadius: RADII.sm,
-                                            color:        COLORS.textSecondary,
-                                            fontSize:     '0.75rem',
-                                            cursor:       'pointer',
-                                            fontFamily:   FONTS.sans,
-                                          }}
-                                        >
-                                          ✏️ Edit
-                                        </button>
-                                        <button
-                                          onClick={() => handleArchive(task.id, task.title)}
-                                          style={{
-                                            padding:      '4px 12px',
-                                            background:   'transparent',
-                                            border:       '1px solid rgba(239,68,68,0.3)',
-                                            borderRadius: RADII.sm,
-                                            color:        '#EF4444',
-                                            fontSize:     '0.75rem',
-                                            cursor:       'pointer',
-                                            fontFamily:   FONTS.sans,
-                                          }}
-                                        >
-                                          🗄 Archive
-                                        </button>
-                                      </>
-                                    )}
-                                    {activeTab === 'archived' && task.slotsRemaining > 0 && (
-                                      <button
-                                        onClick={() => handleRefund(task.id)}
-                                        style={{
-                                          padding:      '4px 12px',
-                                          background:   'rgba(16,185,129,0.1)',
-                                          border:       '1px solid rgba(16,185,129,0.3)',
-                                          borderRadius: RADII.md,
-                                          color:        COLORS.emerald,
-                                          fontSize:     '0.72rem',
-                                          cursor:       'pointer',
-                                          fontWeight:   '600',
-                                          flex:         1,
-                                          fontFamily:   FONTS.sans,
-                                        }}
-                                      >
-                                        💰 Refund {(task.piReward * task.slotsRemaining).toFixed(2)}π
-                                      </button>
-                                    )}
-                                    {activeTab === 'archived' && task.slotsRemaining === 0 && (
-                                      <div style={{
-                                        fontSize:   '0.72rem',
-                                        color:      COLORS.textMuted,
-                                        fontStyle:  'italic',
-                                      }}>
-                                        All slots claimed
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  <FillBar
-                                    filled={filled}
-                                    total={task.slotsAvailable}
-                                    delay={idx * 150}
-                                    color={activeTab === 'archived' ? COLORS.textMuted : COLORS.pi}
-                                  />
-                                </div>
-                              )
-                            })}
-                          </div>
-
-                          {/* ── PAGINATION CONTROLS ── */}
-                          {totalPages > 1 && (
-                            <div style={{
-                              display:        'flex',
-                              justifyContent: 'center',
-                              gap:            SPACING.md,
-                              marginTop:      SPACING.lg,
-                              paddingTop:     SPACING.md,
-                              borderTop:      `1px solid ${COLORS.border}`,
-                            }}>
-                              <button
-                                onClick={() => activeTab === 'active' 
-                                  ? setActivePage(currentPage - 1)
-                                  : setArchivedPage(currentPage - 1)
-                                }
-                                disabled={!hasPrevPage}
-                                style={{
-                                  padding:      '4px 12px',
-                                  background:   hasPrevPage ? COLORS.piDim : COLORS.bgRaised,
-                                  border:       `1px solid ${hasPrevPage ? COLORS.borderAccent : COLORS.border}`,
-                                  borderRadius: RADII.sm,
-                                  color:        hasPrevPage ? COLORS.piLt : COLORS.textMuted,
-                                  fontSize:     '0.75rem',
-                                  cursor:       hasPrevPage ? 'pointer' : 'not-allowed',
-                                  fontFamily:   FONTS.sans,
-                                  fontWeight:   '600',
-                                }}
-                              >
-                                ← Previous
-                              </button>
-                              <div style={{
-                                fontSize:     '0.75rem',
-                                color:        COLORS.textMuted,
-                                display:      'flex',
-                                alignItems:   'center',
-                                gap:          '4px',
-                              }}>
-                                <span style={{ fontFamily: FONTS.mono }}>
-                                  {currentPage + 1} / {totalPages}
-                                </span>
-                              </div>
-                              <button
-                                onClick={() => activeTab === 'active'
-                                  ? setActivePage(currentPage + 1)
-                                  : setArchivedPage(currentPage + 1)
-                                }
-                                disabled={!hasNextPage}
-                                style={{
-                                  padding:      '4px 12px',
-                                  background:   hasNextPage ? COLORS.piDim : COLORS.bgRaised,
-                                  border:       `1px solid ${hasNextPage ? COLORS.borderAccent : COLORS.border}`,
-                                  borderRadius: RADII.sm,
-                                  color:        hasNextPage ? COLORS.piLt : COLORS.textMuted,
-                                  fontSize:     '0.75rem',
-                                  cursor:       hasNextPage ? 'pointer' : 'not-allowed',
-                                  fontFamily:   FONTS.sans,
-                                  fontWeight:   '600',
-                                }}
-                              >
-                                Next →
-                              </button>
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  )
-                })(),
-              },
-              {
-                id:      'quick-post',
-                children: (
-                  <div style={{
-                    height:         '100%',
-                    display:        'flex',
-                    flexDirection:  'column',
-                    justifyContent: 'space-between',
-                  }}>
-                    <div>
-                      <div style={{
-                        fontSize:      '0.65rem',
-                        fontWeight:    '600',
-                        color:         COLORS.textMuted,
-                        textTransform: 'uppercase' as const,
-                        letterSpacing: '0.1em',
-                        marginBottom:  SPACING.md,
-                      }}>
-                        Quick Actions
-                      </div>
-                      <div style={{
-                        fontSize:   '0.85rem',
-                        color:      COLORS.textSecondary,
-                        lineHeight: '1.5',
-                        marginBottom: SPACING.lg,
-                      }}>
-                        Post a new task and fund it with Pi escrow instantly.
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      <Link
-                        href="/employer"
-                        style={{
-                          display:        'flex',
-                          alignItems:     'center',
-                          justifyContent: 'center',
-                          gap:            '6px',
-                          padding:        `${SPACING.md} ${SPACING.lg}`,
-                          background:     GRADIENTS.indigo,
-                          color:          'white',
-                          borderRadius:   RADII.md,
-                          fontSize:       '0.85rem',
-                          fontWeight:     '600',
-                          textDecoration: 'none',
-                          boxShadow:      SHADOWS.indigoGlow,
-                          transition:     'all 0.15s ease',
-                        }}
-                      >
-                        📋 Post New Task
-                      </Link>
-                      <Link
-                        href="/analytics"
-                        style={{
-                          display:        'flex',
-                          alignItems:     'center',
-                          justifyContent: 'center',
-                          gap:            '6px',
-                          padding:        `${SPACING.md} ${SPACING.lg}`,
-                          background:     'transparent',
-                          color:          COLORS.textSecondary,
-                          borderRadius:   RADII.md,
-                          fontSize:       '0.85rem',
-                          fontWeight:     '500',
-                          textDecoration: 'none',
-                          border:         `1px solid ${COLORS.borderAccent}`,
-                          transition:     'all 0.15s ease',
-                        }}
-                      >
-                        📊 View Analytics
-                      </Link>
-                    </div>
+              return displayTasks.length === 0 ? (
+                <div style={{
+                  textAlign: 'center',
+                  padding: '3rem 2rem',
+                  color: '#8892A8',
+                }}>
+                  <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>
+                    {activeTab === 'active' ? '📭' : '🎁'}
                   </div>
-                ),
-              },
-
-              // ── Row 3: Submission queue (full width) ──
-              {
-                id:      'submission-queue',
-                colSpan: 3,
-                children: (
-                  <div>
-                    <div style={{
-                      display:        'flex',
-                      justifyContent: 'space-between',
-                      alignItems:     'center',
-                      marginBottom:   SPACING.lg,
-                    }}>
-                      <div style={{
-                        fontSize:      '0.65rem',
-                        fontWeight:    '600',
-                        color:         COLORS.textMuted,
-                        textTransform: 'uppercase' as const,
-                        letterSpacing: '0.1em',
-                      }}>
-                        Pending Reviews
-                      </div>
-                      {pending.length > 0 && (
-                        <span style={{
-                          padding:      '2px 8px',
-                          background:   COLORS.amberDim,
-                          color:        COLORS.amber,
-                          borderRadius: RADII.full,
-                          fontSize:     '0.7rem',
-                          fontWeight:   '700',
-                          border:       `1px solid rgba(245,158,11,0.3)`,
-                          fontFamily:   FONTS.mono,
-                        }}>
-                          {pending.length} awaiting
-                        </span>
-                      )}
-                    </div>
-
-                    {pending.length === 0 ? (
-                      <div style={{
-                        display:        'flex',
-                        alignItems:     'center',
-                        justifyContent: 'center',
-                        padding:        `${SPACING.xl} 0`,
-                        color:          COLORS.textMuted,
-                        fontSize:       '0.85rem',
-                        gap:            '0.5rem',
-                      }}>
-                        <span style={{ opacity: 0.5 }}>✓</span>
-                        All submissions reviewed
-                      </div>
-                    ) : (
-                      <div style={{
-                        display:             'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                        gap:                 '0.625rem',
-                      }}>
-                        {pending.map((sub, idx) => (
-                          <Link
-                            key={sub.id}
-                            href={`/review/${sub.taskId}`}
-                            style={{
-                              display:        'flex',
-                              alignItems:     'center',
-                              gap:            '0.75rem',
-                              padding:        `${SPACING.md} ${SPACING.lg}`,
-                              background:     COLORS.bgRaised,
-                              border:         `1px solid ${COLORS.border}`,
-                              borderLeft:     `3px solid ${COLORS.amber}`,
-                              borderRadius:   RADII.md,
-                              textDecoration: 'none',
-                              transition:     'all 0.15s ease',
-                              animation:      `fade-up 0.3s ease ${idx * 0.06}s both`,
-                            }}
-                          >
-                            <div style={{
-                              width:          '32px',
-                              height:         '32px',
-                              borderRadius:   '8px',
-                              background:     COLORS.amberDim,
-                              border:         `1px solid rgba(245,158,11,0.3)`,
-                              display:        'flex',
-                              alignItems:     'center',
-                              justifyContent: 'center',
-                              fontSize:       '0.75rem',
-                              fontWeight:     '700',
-                              color:          COLORS.amber,
-                              flexShrink:     0,
-                              fontFamily:     FONTS.mono,
-                            }}>
-                              {sub.workerName.charAt(0).toUpperCase()}
-                            </div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
+                  No {activeTab} tasks
+                </div>
+              ) : (
+                <>
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr',
+                    gap: '0.75rem',
+                  }}>
+                    {paginatedTasks.map((task) => {
+                      const filled = task.slotsAvailable - task.slotsRemaining
+                      const fillPct = Math.round((filled / task.slotsAvailable) * 100)
+                      return (
+                        <div
+                          key={task.id}
+                          style={{
+                            background: 'rgba(0,201,167,0.05)',
+                            border: '1px solid rgba(0,201,167,0.15)',
+                            borderLeft: '3px solid #00C9A7',
+                            borderRadius: 10,
+                            padding: '14px',
+                          }}
+                        >
+                          <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-start',
+                            marginBottom: '10px',
+                          }}>
+                            <div style={{ flex: 1 }}>
                               <div style={{
-                                fontSize:     '0.8rem',
-                                fontWeight:   '500',
-                                color:        COLORS.textPrimary,
-                                overflow:     'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace:   'nowrap' as const,
+                                fontSize: '14px',
+                                fontWeight: 600,
+                                color: '#EEF2FF',
                                 marginBottom: '2px',
                               }}>
-                                {sub.taskTitle}
+                                {task.title}
                               </div>
                               <div style={{
-                                fontSize: '0.7rem',
-                                color:    COLORS.textMuted,
+                                fontSize: '12px',
+                                color: '#8892A8',
                               }}>
-                                by {sub.workerName}
+                                {task.category} • {task.piReward}π per slot
                               </div>
                             </div>
-                            <span style={{
-                              fontSize:   '0.72rem',
-                              color:      COLORS.amber,
-                              fontWeight: '600',
-                              flexShrink: 0,
+                            <div style={{
+                              fontSize: '13px',
+                              fontWeight: 700,
+                              color: '#33D9BC',
+                              textAlign: 'right',
                             }}>
-                              Review →
-                            </span>
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ),
-              },
+                              {filled}/{task.slotsAvailable} filled
+                              <br />
+                              <span style={{ fontSize: '11px', color: '#8892A8' }}>
+                                {fillPct}%
+                              </span>
+                            </div>
+                          </div>
 
-            ]}
-          />
+                          {/* Progress bar */}
+                          <div style={{
+                            height: '6px',
+                            background: '#131720',
+                            borderRadius: 3,
+                            overflow: 'hidden',
+                            marginBottom: '12px',
+                          }}>
+                            <div style={{
+                              height: '100%',
+                              width: `${fillPct}%`,
+                              background: '#00C9A7',
+                              transition: 'width 0.3s ease',
+                            }} />
+                          </div>
+
+                          {/* Actions */}
+                          <div style={{
+                            display: 'flex',
+                            gap: '8px',
+                          }}>
+                            {activeTab === 'active' && (
+                              <>
+                                <Link
+                                  href={`/review/${task.id}`}
+                                  style={{
+                                    padding: '6px 12px',
+                                    background: 'rgba(0,201,167,0.1)',
+                                    border: '1px solid rgba(0,201,167,0.3)',
+                                    borderRadius: 6,
+                                    color: '#00C9A7',
+                                    fontSize: '12px',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    textDecoration: 'none',
+                                    flex: 1,
+                                    textAlign: 'center',
+                                  }}
+                                >
+                                  Review submissions
+                                </Link>
+                                <button
+                                  onClick={() => handleArchive(task.id, task.title)}
+                                  style={{
+                                    padding: '6px 12px',
+                                    background: 'transparent',
+                                    border: '1px solid rgba(255,71,87,0.3)',
+                                    borderRadius: 6,
+                                    color: '#FF4757',
+                                    fontSize: '12px',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                  }}
+                                >
+                                  Archive
+                                </button>
+                              </>
+                            )}
+                            {activeTab === 'archived' && task.slotsRemaining > 0 && (
+                              <button
+                                onClick={() => handleRefund(task.id)}
+                                style={{
+                                  padding: '6px 12px',
+                                  background: 'rgba(16,185,129,0.1)',
+                                  border: '1px solid rgba(16,185,129,0.3)',
+                                  borderRadius: 6,
+                                  color: '#00D68F',
+                                  fontSize: '12px',
+                                  fontWeight: 600,
+                                  cursor: 'pointer',
+                                  flex: 1,
+                                }}
+                              >
+                                💰 Refund {(task.piReward * task.slotsRemaining).toFixed(2)}π
+                              </button>
+                            )}
+                            {activeTab === 'archived' && task.slotsRemaining === 0 && (
+                              <div style={{
+                                fontSize: '12px',
+                                color: '#454F64',
+                                fontStyle: 'italic',
+                              }}>
+                                ✓ All slots claimed
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      gap: '12px',
+                      marginTop: '1.5rem',
+                      paddingTop: '1rem',
+                      borderTop: '1px solid rgba(255,255,255,0.07)',
+                    }}>
+                      <button
+                        onClick={() => activeTab === 'active'
+                          ? setActivePage(currentPage - 1)
+                          : setArchivedPage(currentPage - 1)
+                        }
+                        disabled={!hasPrevPage}
+                        style={{
+                          padding: '6px 12px',
+                          background: hasPrevPage ? 'rgba(0,201,167,0.1)' : 'rgba(255,255,255,0.05)',
+                          border: `1px solid ${hasPrevPage ? 'rgba(0,201,167,0.3)' : 'rgba(255,255,255,0.1)'}`,
+                          borderRadius: 6,
+                          color: hasPrevPage ? '#00C9A7' : '#8892A8',
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          cursor: hasPrevPage ? 'pointer' : 'not-allowed',
+                        }}
+                      >
+                        ← Prev
+                      </button>
+                      <div style={{
+                        fontSize: '12px',
+                        color: '#8892A8',
+                        minWidth: '40px',
+                        textAlign: 'center',
+                      }}>
+                        {currentPage + 1} / {totalPages}
+                      </div>
+                      <button
+                        onClick={() => activeTab === 'active'
+                          ? setActivePage(currentPage + 1)
+                          : setArchivedPage(currentPage + 1)
+                        }
+                        disabled={!hasNextPage}
+                        style={{
+                          padding: '6px 12px',
+                          background: hasNextPage ? 'rgba(0,201,167,0.1)' : 'rgba(255,255,255,0.05)',
+                          border: `1px solid ${hasNextPage ? 'rgba(0,201,167,0.3)' : 'rgba(255,255,255,0.1)'}`,
+                          borderRadius: 6,
+                          color: hasNextPage ? '#00C9A7' : '#8892A8',
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          cursor: hasNextPage ? 'pointer' : 'not-allowed',
+                        }}
+                      >
+                        Next →
+                      </button>
+                    </div>
+                  )}
+                </>
+              )
+            })()}
+          </>
         )}
 
       </main>
-
-      {/* Edit modal */}
-      {editingTask && (
-        <div style={{
-          position:   'fixed' as const,
-          inset:      0,
-          background: 'rgba(0,0,0,0.7)',
-          zIndex:     500,
-          display:    'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding:    '1rem',
-        }}>
-          <div style={{
-            background:   COLORS.bgSurface,
-            border:       `1px solid ${COLORS.border}`,
-            borderRadius: RADII.xl,
-            padding:      SPACING.xl,
-            width:        '100%',
-            maxWidth:     '520px',
-            maxHeight:    '80vh',
-            overflowY:    'auto' as const,
-          }}>
-            <h2 style={{
-              margin:     `0 0 ${SPACING.lg}`,
-              fontSize:   '1.1rem',
-              fontWeight: '700',
-              color:      COLORS.textPrimary,
-            }}>
-              Edit Opportunity
-            </h2>
-
-            <div style={{ marginBottom: SPACING.md }}>
-              <label style={{ display: 'block', fontSize: '0.78rem', color: COLORS.textMuted, marginBottom: '4px' }}>Title</label>
-              <input
-                defaultValue={editingTask.title}
-                onChange={e => setEditForm(prev => ({ ...prev, title: e.target.value }))}
-                style={{
-                  width:        '100%',
-                  padding:      '0.75rem',
-                  background:   COLORS.bgRaised,
-                  border:       `1px solid ${COLORS.borderAccent}`,
-                  borderRadius: RADII.md,
-                  color:        COLORS.textPrimary,
-                  fontSize:     '0.9rem',
-                  outline:      'none',
-                  boxSizing:    'border-box' as const,
-                  fontFamily:   FONTS.sans,
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: SPACING.md }}>
-              <label style={{ display: 'block', fontSize: '0.78rem', color: COLORS.textMuted, marginBottom: '4px' }}>Description</label>
-              <textarea
-                defaultValue={editingTask.description ?? ''}
-                onChange={e => setEditForm(prev => ({ ...prev, description: e.target.value }))}
-                rows={3}
-                style={{
-                  width:        '100%',
-                  padding:      '0.75rem',
-                  background:   COLORS.bgRaised,
-                  border:       `1px solid ${COLORS.borderAccent}`,
-                  borderRadius: RADII.md,
-                  color:        COLORS.textPrimary,
-                  fontSize:     '0.875rem',
-                  resize:       'vertical' as const,
-                  outline:      'none',
-                  boxSizing:    'border-box' as const,
-                  fontFamily:   FONTS.sans,
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: SPACING.lg }}>
-              <label style={{ display: 'block', fontSize: '0.78rem', color: COLORS.textMuted, marginBottom: '4px' }}>Instructions</label>
-              <textarea
-                defaultValue={editingTask.instructions ?? ''}
-                onChange={e => setEditForm(prev => ({ ...prev, instructions: e.target.value }))}
-                rows={4}
-                style={{
-                  width:        '100%',
-                  padding:      '0.75rem',
-                  background:   COLORS.bgRaised,
-                  border:       `1px solid ${COLORS.borderAccent}`,
-                  borderRadius: RADII.md,
-                  color:        COLORS.textPrimary,
-                  fontSize:     '0.875rem',
-                  resize:       'vertical' as const,
-                  outline:      'none',
-                  boxSizing:    'border-box' as const,
-                  fontFamily:   FONTS.sans,
-                }}
-              />
-            </div>
-
-            <div style={{ display: 'flex', gap: SPACING.sm }}>
-              <button
-                onClick={() => setEditingTask(null)}
-                style={{
-                  flex:         1,
-                  padding:      '0.875rem',
-                  background:   'transparent',
-                  border:       `1px solid ${COLORS.border}`,
-                  borderRadius: RADII.md,
-                  color:        COLORS.textSecondary,
-                  fontSize:     '0.875rem',
-                  cursor:       'pointer',
-                  fontFamily:   FONTS.sans,
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveEdit}
-                disabled={isSaving}
-                style={{
-                  flex:         2,
-                  padding:      '0.875rem',
-                  background:   COLORS.sapphire,
-                  border:       'none',
-                  borderRadius: RADII.md,
-                  color:        'white',
-                  fontSize:     '0.875rem',
-                  fontWeight:   '600',
-                  cursor:       isSaving ? 'not-allowed' : 'pointer',
-                  fontFamily:   FONTS.sans,
-                }}
-              >
-                {isSaving ? 'Saving...' : 'Save Changes'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {actionMessage && (
-        <div style={{
-          position:     'fixed' as const,
-          bottom:       '5rem',
-          left:         '50%',
-          transform:    'translateX(-50%)',
-          padding:      `${SPACING.sm} ${SPACING.lg}`,
-          background:   COLORS.bgSurface,
-          border:       `1px solid ${COLORS.border}`,
-          borderRadius: RADII.full,
-          color:        COLORS.textPrimary,
-          fontSize:     '0.85rem',
-          zIndex:       600,
-          boxShadow:    '0 4px 20px rgba(0,0,0,0.4)',
-        }}>
-          {actionMessage}
-        </div>
-      )}
 
       {/* Confirmation Dialog */}
       <ConfirmDialog
