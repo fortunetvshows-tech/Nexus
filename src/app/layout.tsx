@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import './globals.css'
 import { PiPaymentProvider } from '@/contexts/PiPaymentContext'
 import { BottomNav } from '@/components/BottomNav'
@@ -16,7 +17,7 @@ export default function RootLayout({
   const isSandbox = process.env.PI_SANDBOX === 'true'
 
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -40,11 +41,95 @@ export default function RootLayout({
           }}
         />
 
-        {/* Google Fonts — DM Sans, Bebas Neue, IBM Plex Mono */}
+        {/* Tailwind CDN */}
+        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+        {/* Custom Tailwind Configuration */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              tailwind.config = {
+                darkMode: "class",
+                theme: {
+                  extend: {
+                    "colors": {
+                      "surface-dim": "#111319",
+                      "on-surface-variant": "#bfc7d5",
+                      "on-secondary-fixed": "#002019",
+                      "on-tertiary-fixed": "#390c00",
+                      "secondary-fixed-dim": "#38debb",
+                      "on-secondary-container": "#004d3f",
+                      "on-primary-fixed": "#001c38",
+                      "error": "#ffb4ab",
+                      "error-container": "#93000a",
+                      "outline-variant": "#404753",
+                      "primary-fixed-dim": "#a1c9ff",
+                      "primary-fixed": "#d3e4ff",
+                      "background": "#111319",
+                      "tertiary-container": "#f5642e",
+                      "on-secondary": "#00382d",
+                      "on-tertiary-fixed-variant": "#832600",
+                      "on-background": "#e2e2ea",
+                      "tertiary": "#ffb59d",
+                      "surface-container-highest": "#33353b",
+                      "inverse-on-surface": "#2e3036",
+                      "surface-container": "#1d2025",
+                      "on-primary-container": "#002c51",
+                      "on-secondary-fixed-variant": "#005142",
+                      "outline": "#89919e",
+                      "on-surface": "#e2e2ea",
+                      "surface": "#111319",
+                      "on-tertiary": "#5d1900",
+                      "on-error-container": "#ffdad6",
+                      "on-error": "#690005",
+                      "tertiary-fixed-dim": "#ffb59d",
+                      "surface-tint": "#a1c9ff",
+                      "tertiary-fixed": "#ffdbd0",
+                      "surface-container-low": "#191c21",
+                      "primary": "#a1c9ff",
+                      "on-primary-fixed-variant": "#004880",
+                      "inverse-primary": "#0060a8",
+                      "secondary-container": "#00c7a5",
+                      "on-primary": "#00325b",
+                      "on-tertiary-container": "#531500",
+                      "secondary": "#41e4c0",
+                      "surface-bright": "#37393f",
+                      "surface-container-lowest": "#0c0e13",
+                      "inverse-surface": "#e2e2ea",
+                      "surface-variant": "#33353b",
+                      "surface-container-high": "#282a30",
+                      "secondary-fixed": "#5ffbd6",
+                      "primary-container": "#0095ff"
+                    },
+                    "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+                    },
+                    "fontFamily": {
+                      "headline": ["Space Grotesk"],
+                      "body": ["Manrope"],
+                      "label": ["Manrope"]
+                    }
+                  }
+                }
+              }
+            `
+          }}
+        />
+
+        {/* Google Fonts — DM Sans, Bebas Neue, IBM Plex Mono, Space Grotesk, Manrope */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
-          href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@300..700&family=Manrope:wght@200..800&display=swap"
+          rel="stylesheet"
+        />
+
+        {/* Material Symbols */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
         />
 
@@ -73,13 +158,14 @@ export default function RootLayout({
           }
 
           body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background: #0F172A;
-            color: #F1F5F9;
+            font-family: 'Manrope', sans-serif;
+            background: #07090E;
+            color: #e2e2ea;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             margin: 0;
             padding: 0;
+            overflow: hidden;
           }
 
           html, body {

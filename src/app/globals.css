@@ -74,3 +74,63 @@ body::before {
   50%     { opacity: 1; transform: translate(-50%, -58%) scale(1.12); }
 }
 
+/* Custom Typography Classes */
+.bebas-neue {
+  font-family: 'Bebas Neue', cursive;
+}
+
+.dm-sans {
+  font-family: 'DM Sans', sans-serif;
+}
+
+.ibm-plex {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* Hex Mesh Background */
+.hex-mesh {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l25.98 15v30L30 60 4.02 45V15z' fill-opacity='0.03' fill='%230095FF' fill-rule='evenodd'/%3E%3C/svg%3E");
+  background-size: 60px 60px;
+}
+
+/* Glow Orb Effect */
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  z-index: 0;
+}
+
+/* Crystal Shield Logo */
+.crystal-shield {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  background: linear-gradient(135deg, #0095ff 0%, #004880 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 40px rgba(0, 149, 255, 0.4);
+}
+
+.crystal-shield::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  background: #07090E;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  z-index: 1;
+}
+
+.crystal-shield .inner-gem {
+  position: relative;
+  z-index: 2;
+  font-size: 48px;
+  background: linear-gradient(135deg, #a1c9ff 0%, #0095ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 8px rgba(0, 149, 255, 0.8));
+}
+
