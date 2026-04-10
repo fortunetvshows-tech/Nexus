@@ -1,9 +1,47 @@
 'use client'
 
 import { useEffect, useState, useRef, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { usePiAuth }   from '@/hooks/use-pi-auth'
 import { Navigation }  from '@/components/Navigation'
 import { COLORS, FONTS, SPACING, RADII, SHADOWS, GRADIENTS, statusStyle } from '@/lib/design/tokens'
+
+// ━━━ Data Adapter Functions ━━━
+function getGreeting(): string {
+  const h = new Date().getHours()
+  if (h < 12) return 'Good morning'
+  if (h < 17) return 'Good afternoon'
+  return 'Good evening'
+}
+
+function getRepLevel(score: number): { level: number; title: string; nextThreshold: number } {
+  if (score < 200) return { level: 1, title: 'Newcomer', nextThreshold: 200 }
+  if (score < 400) return { level: 2, title: 'Contributor', nextThreshold: 400 }
+  if (score < 600) return { level: 3, title: 'Skilled', nextThreshold: 600 }
+  if (score < 800) return { level: 4, title: 'Expert', nextThreshold: 800 }
+  if (score < 1000) return { level: 5, title: 'Elite', nextThreshold: 1000 }
+  return { level: 6, title: 'Sentinel', nextThreshold: 1000 }
+}
+
+function repToDashoffset(score: number): number {
+  return 276 * (1 - Math.min(score, 1000) / 1000)
+}
+
+function kycLabel(level: number): string {
+  if (level === 0) return 'Unverified'
+  if (level === 1) return 'KYC L1'
+  return 'KYC L2 ✓'
+}
+
+function streakBonus(streak: number): string {
+  if (streak >= 7) return '+20% bonus active'
+  if (streak >= 3) return '+10% bonus active'
+  return 'Keep going!'
+}
+
+function formatPi(amount: number): string {
+  return amount.toFixed(2)
+}
 
 interface Submission {
   id:              string
