@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Script from 'next/script'
 import './globals.css'
 import { PiPaymentProvider } from '@/contexts/PiPaymentContext'
-import { BottomNav } from '@/components/BottomNav'
+import { ConditionalNav } from '@/components/ConditionalNav'
 
 export const metadata: Metadata = {
   title: 'ProofGrid',
@@ -257,7 +257,7 @@ export default function RootLayout({
         <PiPaymentProvider>
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             {children}
-            <BottomNav />
+            <ConditionalNav />
           </div>
         </PiPaymentProvider>
       </body>
