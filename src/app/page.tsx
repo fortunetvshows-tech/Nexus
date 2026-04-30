@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { usePiAuth } from '@/hooks/use-pi-auth'
 
 export default function OnboardingPage() {
-  const { authenticate, isLoading, isAuthenticated, user } = usePiAuth()
+  const { authenticate, isLoading, isAuthenticated, user, error, isSdkReady } = usePiAuth()
   const router = useRouter()
   const [hasMounted, setHasMounted] = useState(false)
 
@@ -83,6 +83,16 @@ export default function OnboardingPage() {
                 Explore Tasks
               </button>
             </div>
+            {error && (
+              <p className="mt-3 rounded-lg border border-rose-300/25 bg-rose-300/10 px-3 py-2 text-xs text-rose-100">
+                {error}
+              </p>
+            )}
+            {!isSdkReady && (
+              <p className="mt-3 text-xs text-slate-300">
+                Login requires Pi Browser. If the button fails, open this app inside Pi Browser and retry.
+              </p>
+            )}
 
             <div className="mt-8 grid grid-cols-3 gap-3 text-center">
               <div className="rounded-xl border border-white/10 bg-white/5 p-3">
@@ -139,7 +149,7 @@ export default function OnboardingPage() {
                 </p>
               </article>
             </div>
-          </p>
+          </div>
         </section>
       </main>
     </div>
