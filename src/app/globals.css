@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
+@config "../../tailwind.config.js";
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -19,6 +20,13 @@ html {
   --motion-slow: 320ms;
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-emphasized: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --page-padding: 16px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --page-padding: 24px;
+  }
 }
 
 body {
@@ -178,6 +186,26 @@ body::before {
 
 .motion-chip:active {
   transform: scale(0.98);
+}
+
+/* Default page container spacing (accounts for fixed nav + bottom nav) */
+.page-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 88px var(--page-padding) 140px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Utility for flex containers that should hide on mobile */
+.hide-mobile-flex {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .hide-mobile-flex {
+    display: flex;
+  }
 }
 
 /* Admin disputes Stitch-style polish */

@@ -104,7 +104,7 @@ export function Navigation({ currentPage }: NavigationProps) {
 
         {/* Desktop nav links */}
         {user && (
-          <div className="hide-mobile" style={{ display: 'flex', gap: '2px' }}>
+          <div className="hide-mobile-flex" style={{ gap: '2px' }}>
             {navItems.map(item => {
               const isActive = currentPage === item.key
               return (
@@ -140,9 +140,8 @@ export function Navigation({ currentPage }: NavigationProps) {
             <>
               {/* Balance — desktop only */}
               <div
-                className="hide-mobile"
+                className="hide-mobile-flex"
                 style={{
-                  display:      'flex',
                   alignItems:   'center',
                   gap:          '6px',
                   padding:      '5px 10px',
