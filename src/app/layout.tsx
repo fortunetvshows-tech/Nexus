@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
 import './globals.css'
 import { PiPaymentProvider } from '@/contexts/PiPaymentContext'
@@ -7,6 +7,12 @@ import { ConditionalNav } from '@/components/ConditionalNav'
 export const metadata: Metadata = {
   title: 'ProofGrid',
   description: 'ProofGrid — Decentralized Work Marketplace on Pi Network',
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({
@@ -20,9 +26,6 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>ProofGrid</title>
-        <meta name="description" content="Earn Pi for real work. The Pi Network labor marketplace." />
         <link rel="icon" href="/favicon.ico" sizes="256x256" type="image/x-icon" />
         
         {/* Pi Network SDK — loads synchronously before page renders */}

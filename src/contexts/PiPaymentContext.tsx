@@ -78,29 +78,38 @@ export function PiPaymentProvider({
 
     const initializeAuth = async () => {
       const ensurePiInit = () => {
-        if (typeof window === 'undefined' || !window.Pi) return
+        if (
+          typeof window === 'undefined' ||
+          !window.Pi ||
+          typeof window.Pi.init !== 'function'
+        ) return false
         const w = window as any
-        if (w.__proofgridPiInitDone) return
+        if (w.__proofgridPiInitDone) return true
 
         try {
-          if (typeof window.Pi.init === 'function') {
-            window.Pi.init({
-              version: '2.0',
-              sandbox: process.env.NEXT_PUBLIC_PI_SANDBOX === 'true',
-            })
-          }
+          window.Pi.init({
+            version: '2.0',
+            sandbox: process.env.NEXT_PUBLIC_PI_SANDBOX === 'true',
+          })
           w.__proofgridPiInitDone = true
+          return true
         } catch {
           // If Pi.init fails here, authenticate/createPayment will still surface errors.
+          return false
         }
       }
 
-      // Wait for Pi SDK to be available
+      // Wait for Pi SDK and key methods to be available
       let attempts = 0
       let piAvailable = false
 
       while (attempts < 50 && !piAvailable) {
-        if (typeof window !== 'undefined' && window.Pi) {
+        if (
+          typeof window !== 'undefined' &&
+          window.Pi &&
+          typeof window.Pi.authenticate === 'function' &&
+          typeof window.Pi.init === 'function'
+        ) {
           piAvailable = true
           break
         }
@@ -114,7 +123,15 @@ export function PiPaymentProvider({
       }
 
       try {
-        ensurePiInit()
+        // Retry init briefly in case SDK object exists before methods are fully attached.
+        let initReady = false
+        for (let i = 0; i < 8 && !initReady; i++) {
+          initReady = ensurePiInit()
+          if (!initReady) {
+            await new Promise(resolve => setTimeout(resolve, 100))
+          }
+        }
+
         console.log('[ProofGrid:PiPaymentProvider] Acquiring global "payments" scope...')
         
         // Authenticate with payments scope GLOBALLY on app load
