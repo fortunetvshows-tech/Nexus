@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Testing
+coverage/
+
+# Next.js build output
+.next/
+out/
+build/
+
+# Vercel
+.vercel/
+
+# Supabase local temp state
+supabase/.temp/
+
+# Env files (never commit)
+.env
+.env.*
+.env*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log
+last-build.log
+build-output.txt
+build_result.log
+build-verification.log
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# OS / Editor
+.DS_Store
+.vscode/
+
+# Misc secrets
+*.pem

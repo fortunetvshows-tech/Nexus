@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ProofGrid | Onboarding</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=DM+Sans:wght@400;500;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Space+Grotesk:wght@300;500;700&amp;family=Manrope:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#111319",
+                      "on-surface-variant": "#bfc7d5",
+                      "on-secondary-fixed": "#002019",
+                      "on-tertiary-fixed": "#390c00",
+                      "secondary-fixed-dim": "#38debb",
+                      "on-secondary-container": "#004d3f",
+                      "on-primary-fixed": "#001c38",
+                      "error": "#ffb4ab",
+                      "error-container": "#93000a",
+                      "outline-variant": "#404753",
+                      "primary-fixed-dim": "#a1c9ff",
+                      "primary-fixed": "#d3e4ff",
+                      "background": "#111319",
+                      "tertiary-container": "#f5642e",
+                      "on-secondary": "#00382d",
+                      "on-tertiary-fixed-variant": "#832600",
+                      "on-background": "#e2e2ea",
+                      "tertiary": "#ffb59d",
+                      "surface-container-highest": "#33353b",
+                      "inverse-on-surface": "#2e3036",
+                      "surface-container": "#1d2025",
+                      "on-primary-container": "#002c51",
+                      "on-secondary-fixed-variant": "#005142",
+                      "outline": "#89919e",
+                      "on-surface": "#e2e2ea",
+                      "surface": "#111319",
+                      "on-tertiary": "#5d1900",
+                      "on-error-container": "#ffdad6",
+                      "on-error": "#690005",
+                      "tertiary-fixed-dim": "#ffb59d",
+                      "surface-tint": "#a1c9ff",
+                      "tertiary-fixed": "#ffdbd0",
+                      "surface-container-low": "#191c21",
+                      "primary": "#a1c9ff",
+                      "on-primary-fixed-variant": "#004880",
+                      "inverse-primary": "#0060a8",
+                      "secondary-container": "#00c7a5",
+                      "on-primary": "#00325b",
+                      "on-tertiary-container": "#531500",
+                      "secondary": "#41e4c0",
+                      "surface-bright": "#37393f",
+                      "surface-container-lowest": "#0c0e13",
+                      "inverse-surface": "#e2e2ea",
+                      "surface-variant": "#33353b",
+                      "surface-container-high": "#282a30",
+                      "secondary-fixed": "#5ffbd6",
+                      "primary-container": "#0095ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Space Grotesk"],
+                      "body": ["Manrope"],
+                      "label": ["Manrope"]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #07090E;
+            color: #e2e2ea;
+            font-family: 'Manrope', sans-serif;
+            overflow: hidden;
+        }
+        .bebas-neue { font-family: 'Bebas Neue', cursive; }
+        .dm-sans { font-family: 'DM Sans', sans-serif; }
+        .ibm-plex { font-family: 'IBM Plex Mono', monospace; }
+        
+        .hex-mesh {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l25.98 15v30L30 60 4.02 45V15z' fill-opacity='0.03' fill='%230095FF' fill-rule='evenodd'/%3E%3C/svg%3E");
+            background-size: 60px 60px;
+        }
+
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        .crystal-shield {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            background: linear-gradient(135deg, #0095ff 0%, #004880 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 40px rgba(0, 149, 255, 0.4);
+        }
+
+        .crystal-shield::after {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            background: #07090E;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            z-index: 1;
+        }
+
+        .crystal-shield .inner-gem {
+            position: relative;
+            z-index: 2;
+            font-size: 48px;
+            background: linear-gradient(135deg, #a1c9ff 0%, #0095ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(0, 149, 255, 0.8));
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex items-center justify-center min-h-screen relative overflow-hidden">
+<!-- Shell Visibility & Relevance: Suppression of Nav Shells for Transactional/Onboarding page -->
+<!-- Background Layers -->
+<div class="fixed inset-0 hex-mesh"></div>
+<div class="glow-orb bg-primary-container w-[400px] h-[400px] -top-20 -left-20"></div>
+<div class="glow-orb bg-secondary-container w-[300px] h-[300px] bottom-20 -right-10"></div>
+<!-- Main Content Container -->
+<main class="relative z-10 w-full max-w-[420px] px-8 flex flex-col items-center text-center">
+<!-- Logo Section -->
+<div class="mb-8 transform hover:scale-105 transition-transform duration-500">
+<div class="crystal-shield">
+<span class="material-symbols-outlined inner-gem" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<!-- Typography Branding -->
+<div class="space-y-1 mb-12">
+<h1 class="bebas-neue text-6xl tracking-[0.15em] text-white leading-none">
+                PROOFGRID
+            </h1>
+<p class="ibm-plex text-xs tracking-[0.3em] text-primary font-medium opacity-80">
+                DECENTRALIZED WORK MARKETPLACE
+            </p>
+</div>
+<!-- Bento-style Feature Bullets -->
+<div class="w-full space-y-4 mb-16">
+<div class="flex items-center gap-5 p-4 rounded-2xl bg-surface-container-low/40 backdrop-blur-md outline-variant/15 border border-transparent hover:border-primary/20 transition-all group">
+<div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="shield">shield</span>
+</div>
+<div class="text-left">
+<h3 class="dm-sans text-sm font-bold text-white tracking-wide">Escrow protection</h3>
+<p class="dm-sans text-[11px] text-on-surface-variant">Smart contract secured funds</p>
+</div>
+</div>
+<div class="flex items-center gap-5 p-4 rounded-2xl bg-surface-container-low/40 backdrop-blur-md outline-variant/15 border border-transparent hover:border-primary/20 transition-all group">
+<div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="bolt">bolt</span>
+</div>
+<div class="text-left">
+<h3 class="dm-sans text-sm font-bold text-white tracking-wide">Instant payments</h3>
+<p class="dm-sans text-[11px] text-on-surface-variant">Real-time Pi Network settlement</p>
+</div>
+</div>
+<div class="flex items-center gap-5 p-4 rounded-2xl bg-surface-container-low/40 backdrop-blur-md outline-variant/15 border border-transparent hover:border-primary/20 transition-all group">
+<div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="public">public</span>
+</div>
+<div class="text-left">
+<h3 class="dm-sans text-sm font-bold text-white tracking-wide">Work from anywhere</h3>
+<p class="dm-sans text-[11px] text-on-surface-variant">Global borderless opportunities</p>
+</div>
+</div>
+</div>
+<!-- Call to Action -->
+<div class="w-full space-y-6">
+<button class="w-full py-5 px-6 rounded-[18px] bg-gradient-to-br from-primary-container to-[#005bb8] text-white font-bold tracking-wider dm-sans flex items-center justify-center gap-3 shadow-[0_12px_40px_-12px_rgba(0,149,255,0.5)] active:scale-95 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="material-symbols-outlined text-xl" data-icon="rocket_launch">rocket_launch</span>
+<span>Connect with Pi Browser</span>
+</button>
+<div class="flex items-center justify-center gap-2 text-on-surface-variant">
+<span class="ibm-plex text-[10px] uppercase tracking-widest">Network Status:</span>
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-secondary-container/10 border border-secondary-container/20">
+<div class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></div>
+<span class="ibm-plex text-[10px] text-secondary font-bold">MAINNET LIVE</span>
+</div>
+</div>
+</div>
+<!-- Footer Visual Decor -->
+<div class="mt-16 opacity-30 flex gap-4">
+<div class="w-1 h-1 rounded-full bg-primary"></div>
+<div class="w-1 h-1 rounded-full bg-primary"></div>
+<div class="w-1 h-1 rounded-full bg-primary"></div>
+</div>
+</main>
+<!-- Bottom Aesthetic Accents -->
+<div class="fixed bottom-0 left-0 w-full h-[150px] bg-gradient-to-t from-primary/5 to-transparent pointer-events-none"></div>
+<!-- Decorative Grid Image -->
+<div class="absolute inset-0 z-0 opacity-10 pointer-events-none">
+<img class="w-full h-full object-cover" data-alt="Abstract network architecture with glowing blue nodes and crystalline structures on a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwPCkyAJers_AaS39M6NMrthl_OAlxauuQLhen9dZOht25wmXjAlKiL-Kv818sLKAabl5Z_2pDmvWyekxOdoQrHFtAuMuqngyKUS7ynQpLXc7Ib_cfgsf1zho_6_JH8wtYEqJ6LXic_3e-o3ZqytHVl3fxHRO2pMAlP26Kbb3IWNby_An3O6jzavIH7YQH-uoZkelcwYMKQpDMEFP4Fg_wEUZKS1k_wpVG6U9fphU3UDvMKrh9rmTQs83T16c3qsAjw1PNavhkGNIL"/>
+</div>
+</body></html>

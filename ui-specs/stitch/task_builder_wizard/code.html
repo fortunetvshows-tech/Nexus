@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=DM+Sans:wght@400;500;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@500;700&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#111319",
+                    "on-surface-variant": "#bfc7d5",
+                    "on-secondary-fixed": "#002019",
+                    "on-tertiary-fixed": "#390c00",
+                    "secondary-fixed-dim": "#38debb",
+                    "on-secondary-container": "#004d3f",
+                    "on-primary-fixed": "#001c38",
+                    "error": "#ffb4ab",
+                    "error-container": "#93000a",
+                    "outline-variant": "#404753",
+                    "primary-fixed-dim": "#a1c9ff",
+                    "primary-fixed": "#d3e4ff",
+                    "background": "#111319",
+                    "tertiary-container": "#f5642e",
+                    "on-secondary": "#00382d",
+                    "on-tertiary-fixed-variant": "#832600",
+                    "on-background": "#e2e2ea",
+                    "tertiary": "#ffb59d",
+                    "surface-container-highest": "#33353b",
+                    "inverse-on-surface": "#2e3036",
+                    "surface-container": "#1d2025",
+                    "on-primary-container": "#002c51",
+                    "on-secondary-fixed-variant": "#005142",
+                    "outline": "#89919e",
+                    "on-surface": "#e2e2ea",
+                    "surface": "#111319",
+                    "on-tertiary": "#5d1900",
+                    "on-error-container": "#ffdad6",
+                    "on-error": "#690005",
+                    "tertiary-fixed-dim": "#ffb59d",
+                    "surface-tint": "#a1c9ff",
+                    "tertiary-fixed": "#ffdbd0",
+                    "surface-container-low": "#191c21",
+                    "primary": "#a1c9ff",
+                    "on-primary-fixed-variant": "#004880",
+                    "inverse-primary": "#0060a8",
+                    "secondary-container": "#00c7a5",
+                    "on-primary": "#00325b",
+                    "on-tertiary-container": "#531500",
+                    "secondary": "#41e4c0",
+                    "surface-bright": "#37393f",
+                    "surface-container-lowest": "#0c0e13",
+                    "inverse-surface": "#e2e2ea",
+                    "surface-variant": "#33353b",
+                    "surface-container-high": "#282a30",
+                    "secondary-fixed": "#5ffbd6",
+                    "primary-container": "#0095ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(29, 32, 37, 0.6);
+            backdrop-filter: blur(24px);
+        }
+        .step-line {
+            height: 2px;
+            background: #404753;
+            flex-grow: 1;
+        }
+        .step-line-active {
+            background: #00C9A7;
+        }
+        .teal-glow-btn {
+            background: linear-gradient(135deg, #00C9A7 0%, #004d3f 100%);
+            box-shadow: 0 0 20px rgba(0, 201, 167, 0.3);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-dim text-on-surface font-body min-h-screen pb-32">
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 w-full z-50 bg-[#07090E]/80 backdrop-blur-xl flex justify-between items-center px-5 h-16 shadow-[0_8px_32px_0_rgba(0,0,0,0.4)]">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400">arrow_back</span>
+<span class="font-['Bebas_Neue'] text-2xl tracking-widest text-white">PROOFGRID</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="minimalist 3d render avatar of a professional architect in dark sleek attire against a neon blue background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCL6d5lENOPSYzPWw2XfSdm9rIvchIT6xiZe2_OLkM8ZwDrisE5pF7QvkqU-yFtem2OMeKnZTMgfeaKx5Jzks3-SUxyUZ1JDFqdkIiDStjX_ogwbr22JnEFpmRWK8Q8jImlPlRtonDP4bY1DOO1zwTK-rXntduYSTE5Np3Ag_1ShUphHp8BQhsYbBQuXf3jXdq4OGaV9ujnwjRiih3w7Nbrh_2BkDQxYQdQEUd487vnMawZeIRNCcbIICKsqFUygu7KrQwfTOWPrViC"/>
+</div>
+<span class="material-symbols-outlined text-white">notifications</span>
+</div>
+</header>
+<main class="pt-24 px-5 max-w-4xl mx-auto">
+<!-- Wizard Header -->
+<div class="mb-10">
+<h1 class="font-['Bebas_Neue'] text-4xl tracking-tight mb-2 text-white">TASK BUILDER</h1>
+<p class="font-['IBM_Plex_Mono'] text-xs text-secondary-container uppercase tracking-widest">Architecting New Deployment</p>
+</div>
+<!-- Step Indicator -->
+<div class="flex items-center justify-between mb-12 px-4">
+<!-- Step 1: Done -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center text-surface-dim">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+<div class="step-line step-line-active mx-2"></div>
+<!-- Step 2: Done -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center text-surface-dim">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+<div class="step-line step-line-active mx-2"></div>
+<!-- Step 3: Current -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-6 h-6 rounded-full border-2 border-secondary-container bg-surface-dim flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-secondary-container"></div>
+</div>
+</div>
+<div class="step-line mx-2"></div>
+<!-- Step 4: Future -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-outline-variant/40"></div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Form Canvas -->
+<div class="lg:col-span-7 space-y-8">
+<!-- Section: Requirements (Step 3 Content Focus) -->
+<section class="glass-card p-6 rounded-[24px] border border-outline-variant/10 shadow-xl">
+<h2 class="font-['DM_Sans'] font-bold text-xl mb-6 text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary-container">verified_user</span>
+                        WORKER REQUIREMENTS
+                    </h2>
+<div class="space-y-6">
+<div>
+<label class="block font-['IBM_Plex_Mono'] text-[10px] uppercase tracking-[2px] text-on-surface-variant mb-3">Minimum Reputation Score</label>
+<div class="relative flex items-center">
+<input class="w-full h-1 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary-container" type="range"/>
+<div class="absolute -top-8 right-0 font-['Bebas_Neue'] text-2xl text-secondary-container">850+</div>
+</div>
+<p class="text-[11px] text-on-surface-variant mt-2 italic">Only top-tier architects will see this task.</p>
+</div>
+<div>
+<label class="block font-['IBM_Plex_Mono'] text-[10px] uppercase tracking-[2px] text-on-surface-variant mb-3">Auto-Approve Window (Hours)</label>
+<div class="grid grid-cols-4 gap-3">
+<button class="py-3 rounded-xl border border-secondary-container/20 bg-secondary-container/5 text-secondary-container font-['IBM_Plex_Mono'] text-sm">12</button>
+<button class="py-3 rounded-xl border border-outline-variant/20 hover:border-secondary-container/50 transition-all font-['IBM_Plex_Mono'] text-sm">24</button>
+<button class="py-3 rounded-xl border border-outline-variant/20 hover:border-secondary-container/50 transition-all font-['IBM_Plex_Mono'] text-sm">48</button>
+<button class="py-3 rounded-xl border border-outline-variant/20 hover:border-secondary-container/50 transition-all font-['IBM_Plex_Mono'] text-sm">72</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Live Escrow Calculator (Step 2 Preview) -->
+<section class="bg-secondary-container p-8 rounded-[32px] text-on-secondary-container shadow-[0_20px_50px_rgba(0,201,167,0.2)] relative overflow-hidden">
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="font-['IBM_Plex_Mono'] text-[11px] uppercase tracking-[3px] opacity-80 mb-1">Live Escrow Forecast</h3>
+<p class="font-['Bebas_Neue'] text-5xl tracking-tighter">π 4,250.00</p>
+</div>
+<span class="material-symbols-outlined text-4xl opacity-40">account_balance_wallet</span>
+</div>
+<div class="grid grid-cols-2 gap-4 border-t border-on-secondary-container/10 pt-6">
+<div>
+<p class="text-[10px] uppercase font-bold opacity-60">Pay per Worker</p>
+<p class="font-['IBM_Plex_Mono'] font-bold">π 42.50</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold opacity-60">Total Slots</p>
+<p class="font-['IBM_Plex_Mono'] font-bold">100 Units</p>
+</div>
+</div>
+</div>
+<!-- Decorative Mesh -->
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0); background-size: 16px 16px;"></div>
+</section>
+</div>
+<!-- Review Summary (Step 4 Sidebar) -->
+<div class="lg:col-span-5">
+<div class="sticky top-24 space-y-6">
+<div class="glass-card rounded-[24px] overflow-hidden border border-outline-variant/10 shadow-2xl">
+<div class="bg-surface-container-high p-6 flex justify-between items-center">
+<h3 class="font-['Bebas_Neue'] text-2xl tracking-wide text-white">TASK SUMMARY</h3>
+<span class="px-3 py-1 bg-secondary-container/10 border border-secondary-container/20 text-secondary-container text-[10px] font-['IBM_Plex_Mono'] rounded-full">DRAFT MODE</span>
+</div>
+<div class="p-6 space-y-5">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary-container">construction</span>
+</div>
+<div>
+<p class="font-bold text-white">Smart Contract Audit</p>
+<p class="text-xs text-on-surface-variant">Infrastructure Category</p>
+</div>
+</div>
+<div class="space-y-3 py-4 border-y border-outline-variant/10">
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">Proof Method</span>
+<span class="text-white font-['IBM_Plex_Mono']">GitHub Pull Request</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">Time Estimate</span>
+<span class="text-white font-['IBM_Plex_Mono']">4.5 Hours</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">Deadline</span>
+<span class="text-white font-['IBM_Plex_Mono']">24 OCT 2023</span>
+</div>
+</div>
+<div class="flex items-center gap-3 p-4 bg-green-500/5 rounded-2xl border border-green-500/20">
+<span class="material-symbols-outlined text-[#00D68F]" style="font-variation-settings: 'FILL' 1;">lock</span>
+<p class="text-[11px] text-[#00D68F] font-medium leading-tight">Escrow verified. Funds will be locked in decentralized vault upon launch.</p>
+</div>
+<button class="w-full py-5 rounded-2xl teal-glow-btn text-on-secondary-container font-['Bebas_Neue'] text-2xl tracking-widest uppercase transition-all active:scale-[0.98]">
+                                Launch Task
+                            </button>
+</div>
+</div>
+<div class="flex justify-center">
+<button class="text-on-surface-variant hover:text-white font-['IBM_Plex_Mono'] text-[10px] uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">save</span>
+                            Save for later
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar Shell -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-[32px] bg-[#0B0D14]/92 backdrop-blur-[24px] shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+<div class="flex justify-around items-center pt-3 pb-6 px-4 w-full">
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined mb-1">grid_view</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined mb-1">explore</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest">Discover</span>
+</div>
+<!-- Active Navigation Point -->
+<div class="flex flex-col items-center justify-center text-[#00C9A7] drop-shadow-[0_0_8px_rgba(0,201,167,0.6)] scale-110 duration-300 ease-out">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">add_box</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest">Post</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined mb-1">assignment</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest">Tasks</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined mb-1">account_circle</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest">Profile</span>
+</div>
+</div>
+</nav>
+</body></html>

@@ -14,7 +14,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const isSandbox = process.env.PI_SANDBOX === 'true'
+  const isSandbox = (process.env.NEXT_PUBLIC_PI_SANDBOX ?? process.env.PI_SANDBOX) === 'true'
 
   return (
     <html lang="en" className="dark">

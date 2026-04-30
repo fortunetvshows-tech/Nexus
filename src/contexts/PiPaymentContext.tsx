@@ -77,6 +77,24 @@ export function PiPaymentProvider({
     if (authInitializedRef.current) return
 
     const initializeAuth = async () => {
+      const ensurePiInit = () => {
+        if (typeof window === 'undefined' || !window.Pi) return
+        const w = window as any
+        if (w.__proofgridPiInitDone) return
+
+        try {
+          if (typeof window.Pi.init === 'function') {
+            window.Pi.init({
+              version: '2.0',
+              sandbox: process.env.NEXT_PUBLIC_PI_SANDBOX === 'true',
+            })
+          }
+          w.__proofgridPiInitDone = true
+        } catch {
+          // If Pi.init fails here, authenticate/createPayment will still surface errors.
+        }
+      }
+
       // Wait for Pi SDK to be available
       let attempts = 0
       let piAvailable = false
@@ -96,6 +114,7 @@ export function PiPaymentProvider({
       }
 
       try {
+        ensurePiInit()
         console.log('[ProofGrid:PiPaymentProvider] Acquiring global "payments" scope...')
         
         // Authenticate with payments scope GLOBALLY on app load
@@ -150,6 +169,19 @@ export function PiPaymentProvider({
 
     setIsProcessing(true)
     setError(null)
+
+    try {
+      const w = window as any
+      if (!w.__proofgridPiInitDone && typeof window.Pi.init === 'function') {
+        window.Pi.init({
+          version: '2.0',
+          sandbox: process.env.NEXT_PUBLIC_PI_SANDBOX === 'true',
+        })
+        w.__proofgridPiInitDone = true
+      }
+    } catch {
+      // ignore
+    }
 
     window.Pi.createPayment(
       {

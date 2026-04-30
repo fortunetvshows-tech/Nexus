@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Review Submissions - ProofGrid</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&amp;family=Space+Grotesk:wght@300..700&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#111319",
+                        "on-surface-variant": "#bfc7d5",
+                        "on-secondary-fixed": "#002019",
+                        "on-tertiary-fixed": "#390c00",
+                        "secondary-fixed-dim": "#38debb",
+                        "on-secondary-container": "#004d3f",
+                        "on-primary-fixed": "#001c38",
+                        "error": "#ffb4ab",
+                        "error-container": "#93000a",
+                        "outline-variant": "#404753",
+                        "primary-fixed-dim": "#a1c9ff",
+                        "primary-fixed": "#d3e4ff",
+                        "background": "#111319",
+                        "tertiary-container": "#f5642e",
+                        "on-secondary": "#00382d",
+                        "on-tertiary-fixed-variant": "#832600",
+                        "on-background": "#e2e2ea",
+                        "tertiary": "#ffb59d",
+                        "surface-container-highest": "#33353b",
+                        "inverse-on-surface": "#2e3036",
+                        "surface-container": "#1d2025",
+                        "on-primary-container": "#002c51",
+                        "on-secondary-fixed-variant": "#005142",
+                        "outline": "#89919e",
+                        "on-surface": "#e2e2ea",
+                        "surface": "#111319",
+                        "on-tertiary": "#5d1900",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "tertiary-fixed-dim": "#ffb59d",
+                        "surface-tint": "#a1c9ff",
+                        "tertiary-fixed": "#ffdbd0",
+                        "surface-container-low": "#191c21",
+                        "primary": "#a1c9ff",
+                        "on-primary-fixed-variant": "#004880",
+                        "inverse-primary": "#0060a8",
+                        "secondary-container": "#00c7a5",
+                        "on-primary": "#00325b",
+                        "on-tertiary-container": "#531500",
+                        "secondary": "#41e4c0",
+                        "surface-bright": "#37393f",
+                        "surface-container-lowest": "#0c0e13",
+                        "inverse-surface": "#e2e2ea",
+                        "surface-variant": "#33353b",
+                        "surface-container-high": "#282a30",
+                        "secondary-fixed": "#5ffbd6",
+                        "primary-container": "#0095ff",
+                        "success-accent": "#00D68F"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Bebas Neue"],
+                        "body": ["DM Sans"],
+                        "label": ["IBM Plex Mono"],
+                        "ui": ["Manrope"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(29, 32, 37, 0.7);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(137, 145, 158, 0.15);
+        }
+        .honeycomb-overlay {
+            background-image: url("data:image/svg+xml,%3Csvg width='42' height='42' viewBox='0 0 42 42' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M21 0l21 12v24L21 48 0 36V12L21 0zm0 1l20 11v22l-20 11L1 34V12L21 1z' fill='%2300c7a5' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-dim text-on-surface font-body selection:bg-secondary-container/30">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#07090E]/80 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] flex justify-between items-center px-5 h-16">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-secondary-container/50">
+<img alt="Employer Profile" data-alt="professional portrait of a tech entrepreneur in a modern office with neon lighting highlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5_xoJDlEQSuHPBCpBsR1jcHTrFpW7y1DauF6xIML3FXLka1OptYQGBpXfbFaJ233Dxteisx94BLwdOOwb4O3oVDVBfz3RHSYSr6aWlt4ldFNiSPzznpbhRNj4MOAGxTWmbqry3Ol0AIKBC91Q3IiE7RkXXRKj9841YI3sNp71QmYLjsc7qlGAbDzNf3Q5CUQAMDz3RZk0XHdkm6cPJFThzaMku6ZvYuD9QE_nV8YqFDypkBWVLOAOUUG0PdUetVWUJjY81DBL6l90"/>
+</div>
+<h1 class="font-['Bebas_Neue'] text-2xl tracking-widest text-white">REVIEW SUBMISSIONS</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-secondary-container hover:opacity-80 transition-opacity">notifications</button>
+</div>
+</header>
+<main class="pt-24 pb-32 px-5 max-w-2xl mx-auto space-y-8">
+<!-- Task Summary Card -->
+<section class="glass-card rounded-[32px] p-6 honeycomb-overlay relative overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="font-label text-[10px] uppercase tracking-widest text-secondary-container mb-1 block">Active Task ID: 8829-QX</span>
+<h2 class="font-headline text-3xl text-white leading-none">NEURAL MESH VALIDATION</h2>
+</div>
+<div class="text-right">
+<p class="font-headline text-2xl text-success-accent leading-none">π 420.00</p>
+<p class="font-label text-[10px] text-on-surface-variant">ESCROW SECURED</p>
+</div>
+</div>
+<div class="flex items-center gap-4 text-sm text-on-surface-variant">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base">group</span>
+<span>12/20 Submissions</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base">schedule</span>
+<span>2h 45m remaining</span>
+</div>
+</div>
+</section>
+<!-- Submission Items List -->
+<div class="space-y-6">
+<h3 class="font-label text-xs uppercase tracking-widest text-on-surface-variant px-2">Pending Verification (2)</h3>
+<!-- Submission Item 1 -->
+<div class="glass-card rounded-[24px] overflow-hidden">
+<!-- Worker Header -->
+<div class="p-4 flex items-center justify-between border-b border-outline-variant/10">
+<div class="flex items-center gap-3">
+<img alt="Worker Avatar" class="w-10 h-10 rounded-xl" data-alt="close up headshot of a professional worker in cybernetic gear with blue ambient lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBc5S-BFs49zvQvgCCUuLzCVevabqgDyD66qk6hhR3ZDbrLi34PMn6L9kQk_54hzx7YQItF2thpaPLCIP8ZyEG97AJIZY5vrSqCtgL744ZRFVxCZUWVaMmQgT1UMsbSS5m6TYgGviwDa3Wk1L-Pu7rxLHtn4W75Yrf6u-3bYUeuDy9LQNQTjgLOH7UZoH4CeHX8L07puIMXnl5ll0WJE7lE_uLW482dMJR9iKn8cyFTB7BFGyjyKSBVWuHTRSE1nC2zZsKV0gb9fAv"/>
+<div>
+<p class="font-ui font-bold text-sm">Architect_01</p>
+<div class="flex items-center gap-2">
+<span class="font-label text-[10px] bg-secondary-container/10 text-secondary-container px-2 py-0.5 rounded border border-secondary-container/20">REP 98.4</span>
+<span class="font-label text-[10px] text-on-surface-variant">VERIFIED WORKER</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label text-[10px] text-on-surface-variant block">SUBMITTED</span>
+<span class="font-ui text-xs font-medium">14:20 GMT</span>
+</div>
+</div>
+<!-- Proof Card -->
+<div class="p-5 space-y-4">
+<div class="aspect-video w-full rounded-xl overflow-hidden relative group">
+<img alt="Proof Image" class="w-full h-full object-cover" data-alt="high tech server room with green glowing wires and complex circuit patterns in a dark environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBafhlzgzqndYqtED2Ifcx2PG3op-7TI5KAdDasDMCkAo9dS-5I9cT-MC1dhYoJP5Y66N3BsGWwm38ikQ0FITPXSRjyENJmhpmv-CtHM67k2cIKBflRLloSKMEWzOfmxNqSQMT0ZzCqisnNsiFeet-J_M629dnA5tM_-rWhleQXncIEiSOFwlGrVi6u5CuFbHC5e8AOFNBBjRcWs4ILCSj3XUQzCYVB3RtqaSfx4MOCEg-zde5dgsiUGWwMKF_x4ADrXFqlp7L3GFnS"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dim/80 to-transparent flex items-end p-4">
+<p class="font-label text-[10px] text-white">ENCRYPTED_PAYLOAD_V2.SVG</p>
+</div>
+</div>
+<!-- Verification Match -->
+<div class="flex items-center justify-between bg-surface-container-lowest p-4 rounded-xl">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-success-accent" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-label text-xs tracking-tight text-white">NX-8829-4401</p>
+<p class="text-[10px] text-on-surface-variant">HASH INTEGRITY MATCHED</p>
+</div>
+</div>
+<div class="h-8 w-px bg-outline-variant/20"></div>
+<div class="text-right">
+<span class="font-label text-[10px] text-success-accent">99% CONFIDENCE</span>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="p-4 grid grid-cols-2 gap-3 pt-0">
+<button class="bg-surface-container-highest hover:bg-error/10 hover:text-error text-on-surface-variant py-3 rounded-xl font-headline text-xl tracking-wide transition-all active:scale-95">
+                        REJECT
+                    </button>
+<button class="bg-gradient-to-br from-secondary-container to-secondary-fixed-dim text-on-secondary-container py-3 rounded-xl font-headline text-xl tracking-wide shadow-[0_12px_24px_-8px_rgba(0,199,165,0.4)] hover:opacity-90 transition-all active:scale-95">
+                        APPROVE
+                    </button>
+</div>
+</div>
+<!-- Submission Item 2 (Manual Review Required) -->
+<div class="glass-card rounded-[24px] overflow-hidden opacity-90">
+<div class="p-4 flex items-center justify-between border-b border-outline-variant/10">
+<div class="flex items-center gap-3">
+<img alt="Worker Avatar" class="w-10 h-10 rounded-xl grayscale" data-alt="portrait of a focused woman in a futuristic lab coat against a minimal dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHZH3fOCkkGD2XaMdEhni9MyUNfMi4SxMP5S1S9Ed19kcSdHAMcpum7ai4_WSPCEpByfI2HKLzZwK8zQsyBDaPwc_zDNXjjDKmWMa1R5A4Zm_HJAwHvYMAhCHeD-ldCKD6u6rFzHKZuaR7zEmP9P7azZTB5v2MepoKWZMO6HubkhbnHGSRyRZMZ9O6gQ8QXDF7SJ1XRzC_OWoH4G5qtQ91Q6RdNkbtGJbBXzS2bM6J_5e8BtqC-cw5d5Oo0IRC-vsfZnk6bQVP9ywL"/>
+<div>
+<p class="font-ui font-bold text-sm">Synthetix_Dev</p>
+<div class="flex items-center gap-2">
+<span class="font-label text-[10px] bg-tertiary-container/10 text-tertiary-container px-2 py-0.5 rounded border border-tertiary-container/20">REP 72.1</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label text-[10px] text-on-surface-variant block">SUBMITTED</span>
+<span class="font-ui text-xs font-medium">15:05 GMT</span>
+</div>
+</div>
+<div class="p-5 space-y-4">
+<div class="p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/10">
+<p class="font-label text-[10px] text-on-surface-variant mb-2">TEXT_PROOF_LOG:</p>
+<p class="font-label text-xs leading-relaxed text-secondary-fixed-dim">
+                            $ npm run validate --target=grid-alpha<br/>
+                            &gt; Result: Hash alignment 84%<br/>
+                            &gt; Status: Payload delivered to endpoint_09...
+                        </p>
+</div>
+<div class="flex items-center justify-between bg-surface-container-lowest p-4 rounded-xl border border-error/20">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error">cancel</span>
+<div>
+<p class="font-label text-xs tracking-tight text-white">NX-XXXX-XXXX</p>
+<p class="text-[10px] text-error">SIGNATURE MISMATCH</p>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label text-[10px] text-error uppercase">Manual Check</span>
+</div>
+</div>
+</div>
+<div class="p-4 grid grid-cols-2 gap-3 pt-0">
+<button class="bg-error-container text-on-error-container py-3 rounded-xl font-headline text-xl tracking-wide hover:opacity-90 transition-all active:scale-95">
+                        REJECT
+                    </button>
+<button class="bg-surface-container-highest text-on-surface-variant py-3 rounded-xl font-headline text-xl tracking-wide hover:bg-white/5 transition-all active:scale-95">
+                        APPROVE
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 bg-[#0B0D14]/92 backdrop-blur-[24px] rounded-t-[32px] flex justify-around items-center pt-3 pb-6 px-4 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors group">
+<span class="material-symbols-outlined mb-1 transition-transform group-active:scale-110">grid_view</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors group">
+<span class="material-symbols-outlined mb-1 transition-transform group-active:scale-110">explore</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest">Discover</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors group">
+<span class="material-symbols-outlined mb-1 transition-transform group-active:scale-110">add_box</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest">Post</span>
+</button>
+<button class="flex flex-col items-center justify-center text-secondary-container drop-shadow-[0_0_8px_rgba(0,199,165,0.6)] scale-110">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">assignment</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest">Tasks</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors group">
+<span class="material-symbols-outlined mb-1 transition-transform group-active:scale-110">account_circle</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest">Profile</span>
+</button>
+</nav>
+</body></html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PROOFGRID | Worker Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=DM+Sans:wght@400;500;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@500;700&amp;family=Manrope:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#111319",
+                      "on-surface-variant": "#bfc7d5",
+                      "on-secondary-fixed": "#002019",
+                      "on-tertiary-fixed": "#390c00",
+                      "secondary-fixed-dim": "#38debb",
+                      "on-secondary-container": "#004d3f",
+                      "on-primary-fixed": "#001c38",
+                      "error": "#ffb4ab",
+                      "error-container": "#93000a",
+                      "outline-variant": "#404753",
+                      "primary-fixed-dim": "#a1c9ff",
+                      "primary-fixed": "#d3e4ff",
+                      "background": "#111319",
+                      "tertiary-container": "#f5642e",
+                      "on-secondary": "#00382d",
+                      "on-tertiary-fixed-variant": "#832600",
+                      "on-background": "#e2e2ea",
+                      "tertiary": "#ffb59d",
+                      "surface-container-highest": "#33353b",
+                      "inverse-on-surface": "#2e3036",
+                      "surface-container": "#1d2025",
+                      "on-primary-container": "#002c51",
+                      "on-secondary-fixed-variant": "#005142",
+                      "outline": "#89919e",
+                      "on-surface": "#e2e2ea",
+                      "surface": "#111319",
+                      "on-tertiary": "#5d1900",
+                      "on-error-container": "#ffdad6",
+                      "on-error": "#690005",
+                      "tertiary-fixed-dim": "#ffb59d",
+                      "surface-tint": "#a1c9ff",
+                      "tertiary-fixed": "#ffdbd0",
+                      "surface-container-low": "#191c21",
+                      "primary": "#a1c9ff",
+                      "on-primary-fixed-variant": "#004880",
+                      "inverse-primary": "#0060a8",
+                      "secondary-container": "#00c7a5",
+                      "on-primary": "#00325b",
+                      "on-tertiary-container": "#531500",
+                      "secondary": "#41e4c0",
+                      "surface-bright": "#37393f",
+                      "surface-container-lowest": "#0c0e13",
+                      "inverse-surface": "#e2e2ea",
+                      "surface-variant": "#33353b",
+                      "surface-container-high": "#282a30",
+                      "secondary-fixed": "#5ffbd6",
+                      "primary-container": "#0095ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Bebas Neue"],
+                      "body": ["DM Sans"],
+                      "label": ["IBM Plex Mono"]
+              }
+            },
+          }
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tonal-shift-no-border {
+            border: none !important;
+        }
+        .glass-panel {
+            background: rgba(29, 32, 37, 0.7);
+            backdrop-filter: blur(24px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-dim text-on-surface font-body selection:bg-primary-container/30">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#07090E]/80 backdrop-blur-xl flex justify-between items-center px-5 h-16 w-full shadow-[0_8px_32px_0_rgba(0,0,0,0.4)]">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container overflow-hidden ring-1 ring-primary/20">
+<img alt="Avatar" data-alt="close up of a professional male architect wearing stylish glasses in a minimalist tech office setting, cool blue lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDdCZnkCy7a4g1fl0uP7TEtkH94pEONHL4Nf35rps2Xo1_8GJFrL1A38obLtUmc-PJxcCSTdlxyIT-WM-vQePBXSg1lsNPse5M78kw5hxJi4c7VH4VxkqzBo78bLqZ2nDxSQnigP4Dp0VlxpXxqY_dsL5fDHM5wz0ZuPQXhbWyLagn02qaU7LRsGksIMfanZfgVNIeAUCz1y83FkEWShzIhYP61oz9dWPtOt4lkhgQfF-emNfqi1_-pCeAfmwE5zjPxDRONw1DNxsr"/>
+</div>
+<span class="font-['Bebas_Neue'] text-2xl tracking-widest text-white">PROOFGRID</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-[#0095FF] hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</header>
+<main class="pt-24 pb-32 px-5 max-w-md mx-auto space-y-8">
+<!-- Greeting Section -->
+<section class="space-y-1">
+<p class="font-label text-xs uppercase tracking-widest text-primary-container">System Status: Active</p>
+<h1 class="font-headline text-4xl text-white tracking-tight">Good morning, Architect_01</h1>
+</section>
+<!-- Reputation & Streak Row -->
+<div class="grid grid-cols-12 gap-4 items-stretch">
+<!-- Reputation Ring -->
+<div class="col-span-7 glass-panel p-6 rounded-[32px] flex flex-col items-center justify-center relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-full bg-primary-container/5 opacity-20 pointer-events-none"></div>
+<div class="relative w-32 h-32">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 100 100">
+<circle class="text-surface-container-highest" cx="50" cy="50" fill="transparent" r="44" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-[#0095FF] drop-shadow-[0_0_8px_rgba(0,149,255,0.8)]" cx="50" cy="50" fill="transparent" r="44" stroke="currentColor" stroke-dasharray="276" stroke-dashoffset="60" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline text-4xl text-white">842</span>
+<span class="font-label text-[10px] uppercase text-on-surface-variant">REP SCORE</span>
+</div>
+</div>
+</div>
+<!-- Streak Bar & Quick Actions -->
+<div class="col-span-5 flex flex-col gap-4">
+<div class="glass-panel p-4 rounded-[24px] flex flex-col items-center justify-center text-center">
+<span class="text-3xl mb-1">🔥</span>
+<span class="font-headline text-2xl text-[#FFA000]">12 DAYS</span>
+<p class="font-label text-[9px] uppercase leading-tight text-on-surface-variant">2.5x MULTIPLIER<br/>ACTIVE</p>
+</div>
+<button class="bg-[#0095FF] text-white font-headline text-xl py-3 rounded-[18px] shadow-[0_0_20px_rgba(0,149,255,0.4)] active:scale-95 transition-all">
+                    FIND WORK
+                </button>
+</div>
+</div>
+<!-- 2x2 Stats Grid -->
+<section class="grid grid-cols-2 gap-4">
+<!-- This Week -->
+<div class="surface-container-low p-5 rounded-[24px] relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-[#00D68F]"></div>
+<p class="font-body text-xs text-on-surface-variant mb-2">THIS WEEK</p>
+<div class="flex items-baseline gap-1">
+<span class="font-label text-xl text-[#00D68F]">π</span>
+<span class="font-label text-2xl font-bold text-[#00D68F]">420.50</span>
+</div>
+</div>
+<!-- Tasks Done -->
+<div class="surface-container-low p-5 rounded-[24px]">
+<p class="font-body text-xs text-on-surface-variant mb-1">TASKS DONE</p>
+<span class="font-headline text-4xl text-white">128</span>
+</div>
+<!-- Approval Rate -->
+<div class="surface-container-low p-5 rounded-[24px]">
+<p class="font-body text-xs text-on-surface-variant mb-1">APPROVAL</p>
+<span class="font-headline text-4xl text-[#FFA000]">98.2%</span>
+</div>
+<!-- Active Tasks -->
+<div class="surface-container-low p-5 rounded-[24px]">
+<p class="font-body text-xs text-on-surface-variant mb-1">ACTIVE</p>
+<span class="font-headline text-4xl text-[#0095FF]">04</span>
+</div>
+</section>
+<!-- Active Tasks List -->
+<section class="space-y-4">
+<div class="flex justify-between items-end">
+<h3 class="font-headline text-2xl tracking-wide text-white">CURRENT OPERATIONS</h3>
+<button class="font-label text-[10px] uppercase text-[#0095FF] hover:underline">View All</button>
+</div>
+<div class="space-y-3">
+<!-- Task 1 -->
+<div class="surface-container p-4 rounded-[20px] flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">architecture</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-white">Lattice Protocol Audit</h4>
+<p class="font-label text-[10px] text-on-surface-variant">REF: #7721-XA</p>
+</div>
+</div>
+<span class="font-label text-[9px] px-2 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">IN PROGRESS</span>
+</div>
+<!-- Task 2 -->
+<div class="surface-container p-4 rounded-[20px] flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">database</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-white">Data Node Calibration</h4>
+<p class="font-label text-[10px] text-on-surface-variant">REF: #3902-QB</p>
+</div>
+</div>
+<span class="font-label text-[9px] px-2 py-1 rounded-full bg-secondary/10 text-secondary border border-secondary/20 uppercase">Review</span>
+</div>
+<!-- Task 3 -->
+<div class="surface-container p-4 rounded-[20px] flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary">security</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-white">Firewall Stress Test</h4>
+<p class="font-label text-[10px] text-on-surface-variant">REF: #1105-GT</p>
+</div>
+</div>
+<span class="font-label text-[9px] px-2 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">IN PROGRESS</span>
+</div>
+</div>
+</section>
+<!-- Quick Action Footer -->
+<div class="pt-4">
+<button class="w-full glass-panel py-4 rounded-[24px] flex items-center justify-center gap-3 border border-outline-variant/10 hover:bg-white/5 transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">monitoring</span>
+<span class="font-headline text-xl text-white tracking-wide">DETAILED ANALYTICS</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-[32px] bg-[#0B0D14]/92 backdrop-blur-[24px] flex justify-around items-center pt-3 pb-6 px-4 w-full shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+<a class="flex flex-col items-center justify-center text-[#0095FF] drop-shadow-[0_0_8px_rgba(0,149,255,0.6)] scale-110 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest mt-1">Discover</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">add_box</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest mt-1">Post</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest mt-1">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

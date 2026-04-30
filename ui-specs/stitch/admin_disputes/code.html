@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&amp;family=Space+Grotesk:wght@300..700&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-dim": "#111319",
+                        "on-surface-variant": "#bfc7d5",
+                        "on-secondary-fixed": "#002019",
+                        "on-tertiary-fixed": "#390c00",
+                        "secondary-fixed-dim": "#38debb",
+                        "on-secondary-container": "#004d3f",
+                        "on-primary-fixed": "#001c38",
+                        "error": "#ffb4ab",
+                        "error-container": "#93000a",
+                        "outline-variant": "#404753",
+                        "primary-fixed-dim": "#a1c9ff",
+                        "primary-fixed": "#d3e4ff",
+                        "background": "#111319",
+                        "tertiary-container": "#f5642e",
+                        "on-secondary": "#00382d",
+                        "on-tertiary-fixed-variant": "#832600",
+                        "on-background": "#e2e2ea",
+                        "tertiary": "#ffb59d",
+                        "surface-container-highest": "#33353b",
+                        "inverse-on-surface": "#2e3036",
+                        "surface-container": "#1d2025",
+                        "on-primary-container": "#002c51",
+                        "on-secondary-fixed-variant": "#005142",
+                        "outline": "#89919e",
+                        "on-surface": "#e2e2ea",
+                        "surface": "#111319",
+                        "on-tertiary": "#5d1900",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "tertiary-fixed-dim": "#ffb59d",
+                        "surface-tint": "#a1c9ff",
+                        "tertiary-fixed": "#ffdbd0",
+                        "surface-container-low": "#191c21",
+                        "primary": "#a1c9ff",
+                        "on-primary-fixed-variant": "#004880",
+                        "inverse-primary": "#0060a8",
+                        "secondary-container": "#00c7a5",
+                        "on-primary": "#00325b",
+                        "on-tertiary-container": "#531500",
+                        "secondary": "#41e4c0",
+                        "surface-bright": "#37393f",
+                        "surface-container-lowest": "#0c0e13",
+                        "inverse-surface": "#e2e2ea",
+                        "surface-variant": "#33353b",
+                        "surface-container-high": "#282a30",
+                        "secondary-fixed": "#5ffbd6",
+                        "primary-container": "#0095ff",
+                        "brand-dispute": "#FF6B35",
+                        "brand-success": "#00D68F"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"],
+                        "bebas": ["Bebas Neue"],
+                        "mono": ["IBM Plex Mono"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(29, 32, 37, 0.6);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .tonal-shift-no-border {
+            border: none !important;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-dim text-on-surface font-body min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#07090E]/80 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] flex justify-between items-center px-5 h-16 w-full tonal-shift-no-border">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest">
+<img alt="user_profile_avatar" class="w-full h-full object-cover" data-alt="close-up portrait of a high-tech digital avatar with neon accents and futuristic attire" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAN-yDztPVX3Z1T2PSR6bEX2EXv09UUdVQe7qnoq9L4EgLSnFAf5X5-M6HqyTKAHeHv3mKQQPoNTnYyRUzp170JX24USX-nkL6hhi2Pbc3ysEBkd-o5LDA_AGxCQoRceJytfdQrVZUgyQz3hsIFHQVpL8uVODIIhSckSpc1jDYJbTs1mwn4D-eT3SMgzdZA8kX8oz5Y4VwrLud8TTVaJhlzlPWWRYzuX4d0Wb2mCA9MtPj4ERN5D1e8Mc99EqIhEG3r6jG7mgENoPkT"/>
+</div>
+<h1 class="font-bebas tracking-widest text-2xl text-white">DISPUTES</h1>
+</div>
+<button class="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 active:duration-100">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</header>
+<main class="pt-24 px-5 max-w-5xl mx-auto">
+<!-- Section Header / Tabs -->
+<div class="flex flex-col gap-6 mb-8">
+<div class="flex gap-8 border-b border-outline-variant/20">
+<button class="pb-3 text-brand-dispute border-b-2 border-brand-dispute font-mono text-sm tracking-widest uppercase">
+                    Open Disputes
+                </button>
+<button class="pb-3 text-on-surface-variant hover:text-white transition-colors font-mono text-sm tracking-widest uppercase">
+                    Stuck Payments
+                </button>
+</div>
+</div>
+<!-- Bento Grid for Disputes -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Dispute Card 1 -->
+<div class="glass-card rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden group">
+<!-- Glowing Accent -->
+<div class="absolute -top-12 -right-12 w-24 h-24 bg-brand-dispute/10 blur-[40px] rounded-full"></div>
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="font-mono text-[10px] text-brand-dispute uppercase tracking-tighter">Case #TX-8821</span>
+<h3 class="font-headline font-bold text-lg mt-1">Smart Contract Audit: Phase 2</h3>
+</div>
+<div class="bg-brand-dispute/10 px-3 py-1 rounded-full border border-brand-dispute/20">
+<span class="font-bebas text-xl text-brand-dispute tracking-tight">π 450.00</span>
+</div>
+</div>
+<div class="flex items-center justify-between gap-4 py-4 bg-surface-container-lowest/50 rounded-xl px-4">
+<div class="flex flex-col items-center gap-1">
+<div class="w-10 h-10 rounded-full border-2 border-primary/30 p-0.5">
+<img alt="worker" class="rounded-full w-full h-full object-cover" data-alt="minimalist 3d render of a digital worker avatar profile icon on a deep space background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXfjZvu7EnkJ4xhQHQEjrCFeYuYHezFH_76fOWKUz0pQKAv6JPMmIbTicTrR1ZeitcQkhQ5bhvfI_OKr0jxuXcmXoygt0hzUKg7XG_slBt6SOOz8It9yW8n2RJd6sdwf7fJANz1iFSqYdOrHZU6af-rFeHqwppk7XYGCONN3-UqYRmlbbFLsylcgrxCNjVpgM4pToZRuhDu4RO0RLDxEUIduaN4w2J82Kuda2qIDrf-iYfRhxZmwy49pB-TSa2-81lIZCnsn6k9ByI"/>
+</div>
+<span class="font-mono text-[10px] text-on-surface-variant uppercase">Worker</span>
+<span class="text-xs font-bold">@dev_kyle</span>
+</div>
+<div class="flex-1 h-[1px] bg-outline-variant/30 relative">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface-container px-2">
+<span class="material-symbols-outlined text-brand-dispute text-sm">gavel</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-10 h-10 rounded-full border-2 border-secondary/30 p-0.5">
+<img alt="employer" class="rounded-full w-full h-full object-cover" data-alt="professional corporate employer avatar profile icon with a clean digital aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6dWBEZFC11JqQfvaan9OdT8TPsxehe6m9pWRPD_bl4NKa6GHTGCG7XkQuM_K_HaWVSu2D-u1S0jSHKnoRLT28VxgtwcUIyPbtgLDfQuNxGwQRk2RQJkSboC8nyxuH_ZE8_XI9KlyTmbjvyFGycE6zR7JIwgU9L7geaksMg2DX2FEyb7bSYn0fg29dy1jIqYpsgzp4uI0byNiB_MT3LiYqGUmQ2v_J_mWTEQMTKQUcspzsPxpRfIdWpBbCj2UQRDKA-nUYrctj7sJS"/>
+</div>
+<span class="font-mono text-[10px] text-on-surface-variant uppercase">Employer</span>
+<span class="text-xs font-bold">Nexus Labs</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 bg-brand-success/10 hover:bg-brand-success/20 text-brand-success border border-brand-success/30 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all active:scale-95">
+                        Favor Worker
+                    </button>
+<button class="flex-1 bg-error/10 hover:bg-error/20 text-error border border-error/30 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all active:scale-95">
+                        Favor Employer
+                    </button>
+</div>
+</div>
+<!-- Dispute Card 2 -->
+<div class="glass-card rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden group">
+<div class="absolute -top-12 -right-12 w-24 h-24 bg-brand-dispute/10 blur-[40px] rounded-full"></div>
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="font-mono text-[10px] text-brand-dispute uppercase tracking-tighter">Case #TX-9042</span>
+<h3 class="font-headline font-bold text-lg mt-1">Logo Identity Rebranding</h3>
+</div>
+<div class="bg-brand-dispute/10 px-3 py-1 rounded-full border border-brand-dispute/20">
+<span class="font-bebas text-xl text-brand-dispute tracking-tight">π 1,200.00</span>
+</div>
+</div>
+<div class="flex items-center justify-between gap-4 py-4 bg-surface-container-lowest/50 rounded-xl px-4">
+<div class="flex flex-col items-center gap-1">
+<div class="w-10 h-10 rounded-full border-2 border-primary/30 p-0.5">
+<img alt="worker" class="rounded-full w-full h-full object-cover" data-alt="artistic digital artist avatar with vibrant colors and creative energy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnD0Azk6T1SJn2D-qMfGZDelivw15O5qcrNpwapGWs4kb6CyeiF8uwvJb9SU_8YWcB7wq_6O5J5UwfcjAv_DXIF9LMoyowsMGQw5SOINsNWZs_E02dHc4kneiVFmchoyIcbjHuQ1mIASMhhC7Hovzdn_HGLXHAY3Hv9cKUrUD8JYCa6LxTd4HlxlTTUz2OIVnF6vn-pd5PcXTWzX2IvMXB9CT12xIEe44GMjtb3G27uZWqiip1TBVjFKeBsOQHmGnSqxUKFHQ0ZDn9"/>
+</div>
+<span class="font-mono text-[10px] text-on-surface-variant uppercase">Worker</span>
+<span class="text-xs font-bold">@pixel_queen</span>
+</div>
+<div class="flex-1 h-[1px] bg-outline-variant/30 relative">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface-container px-2">
+<span class="material-symbols-outlined text-brand-dispute text-sm">gavel</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-10 h-10 rounded-full border-2 border-secondary/30 p-0.5">
+<img alt="employer" class="rounded-full w-full h-full object-cover" data-alt="startup founder avatar with a modern tech-entrepreneur look" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCybVXLjVImAgD7_2mULVT_bbGeV_BrSrCYwSJuoLIGrGxiWZ-kBlQ1ljkkSYw7MwG6XyxlHhseNjA_2y6Z9kV4P3eBZlc6evEQjK4zDeOJl4bstW8oOEcjzGSqy-fzGCH5tUofMmwkjeRBKrrEo_0dW9VVgdZFsAllOVsLqIj2JP38q4VvzGV6zhlJ5xmNF_rdmttNyh19_GIwONr0qSlu-G7YDQEsCC4hJUZZU6A6HfR0nHoS0-o7ulIaOiLKLX4EcEwGV8wmDQkC"/>
+</div>
+<span class="font-mono text-[10px] text-on-surface-variant uppercase">Employer</span>
+<span class="text-xs font-bold">StealthCo</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 bg-brand-success/10 hover:bg-brand-success/20 text-brand-success border border-brand-success/30 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all active:scale-95">
+                        Favor Worker
+                    </button>
+<button class="flex-1 bg-error/10 hover:bg-error/20 text-error border border-error/30 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all active:scale-95">
+                        Favor Employer
+                    </button>
+</div>
+</div>
+<!-- Stuck Payments Section Heading -->
+<div class="md:col-span-2 mt-8 mb-4">
+<h2 class="font-bebas text-3xl tracking-widest text-white/50">STUCK PAYMENTS</h2>
+</div>
+<!-- Stuck Payment Card 1 -->
+<div class="glass-card rounded-2xl p-5 flex items-center justify-between border-l-4 border-l-brand-dispute">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center text-brand-dispute">
+<span class="material-symbols-outlined">hourglass_empty</span>
+</div>
+<div>
+<p class="font-bold text-sm">Transfer to @mark_node</p>
+<p class="font-mono text-[10px] text-on-surface-variant">STUCK SINCE: 14h 22m</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2">
+<span class="font-mono text-sm text-brand-dispute">π 78.40</span>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-white/5 hover:bg-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all">Clear</button>
+<button class="px-3 py-1 bg-brand-dispute text-white rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all shadow-[0_0_15px_rgba(255,107,53,0.3)]">Retry</button>
+</div>
+</div>
+</div>
+<!-- Stuck Payment Card 2 -->
+<div class="glass-card rounded-2xl p-5 flex items-center justify-between border-l-4 border-l-brand-dispute">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center text-brand-dispute">
+<span class="material-symbols-outlined">hourglass_empty</span>
+</div>
+<div>
+<p class="font-bold text-sm">Transfer to @ethan_ai</p>
+<p class="font-mono text-[10px] text-on-surface-variant">STUCK SINCE: 2d 04h</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2">
+<span class="font-mono text-sm text-brand-dispute">π 1,024.00</span>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-white/5 hover:bg-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all">Clear</button>
+<button class="px-3 py-1 bg-brand-dispute text-white rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all shadow-[0_0_15px_rgba(255,107,53,0.3)]">Retry</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-[32px] bg-[#0B0D14]/92 backdrop-blur-[24px] shadow-[0_-10px_40px_rgba(0,0,0,0.5)] flex justify-around items-center pt-3 pb-6 px-4 w-full tonal-shift-no-border">
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest mt-1">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest mt-1">Discover</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined">add_box</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest mt-1">Post</span>
+</button>
+<button class="flex flex-col items-center justify-center text-brand-dispute drop-shadow-[0_0_8px_rgba(255,107,53,0.6)] scale-110 duration-300 ease-out">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">assignment</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest mt-1">Tasks</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest mt-1">Profile</span>
+</button>
+</nav>
+</body></html>

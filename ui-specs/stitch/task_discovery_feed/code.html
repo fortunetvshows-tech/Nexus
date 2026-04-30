@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ProofGrid - Task Discovery</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@300..700&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#111319",
+                        "on-surface-variant": "#bfc7d5",
+                        "on-secondary-fixed": "#002019",
+                        "on-tertiary-fixed": "#390c00",
+                        "secondary-fixed-dim": "#38debb",
+                        "on-secondary-container": "#004d3f",
+                        "on-primary-fixed": "#001c38",
+                        "error": "#ffb4ab",
+                        "error-container": "#93000a",
+                        "outline-variant": "#404753",
+                        "primary-fixed-dim": "#a1c9ff",
+                        "primary-fixed": "#d3e4ff",
+                        "background": "#111319",
+                        "tertiary-container": "#f5642e",
+                        "on-secondary": "#00382d",
+                        "on-tertiary-fixed-variant": "#832600",
+                        "on-background": "#e2e2ea",
+                        "tertiary": "#ffb59d",
+                        "surface-container-highest": "#33353b",
+                        "inverse-on-surface": "#2e3036",
+                        "surface-container": "#1d2025",
+                        "on-primary-container": "#002c51",
+                        "on-secondary-fixed-variant": "#005142",
+                        "outline": "#89919e",
+                        "on-surface": "#e2e2ea",
+                        "surface": "#111319",
+                        "on-tertiary": "#5d1900",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "tertiary-fixed-dim": "#ffb59d",
+                        "surface-tint": "#a1c9ff",
+                        "tertiary-fixed": "#ffdbd0",
+                        "surface-container-low": "#191c21",
+                        "primary": "#a1c9ff",
+                        "on-primary-fixed-variant": "#004880",
+                        "inverse-primary": "#0060a8",
+                        "secondary-container": "#00c7a5",
+                        "on-primary": "#00325b",
+                        "on-tertiary-container": "#531500",
+                        "secondary": "#41e4c0",
+                        "surface-bright": "#37393f",
+                        "surface-container-lowest": "#0c0e13",
+                        "inverse-surface": "#e2e2ea",
+                        "surface-variant": "#33353b",
+                        "surface-container-high": "#282a30",
+                        "secondary-fixed": "#5ffbd6",
+                        "primary-container": "#0095ff"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bebas-font { font-family: 'Bebas Neue', sans-serif; }
+        .mono-font { font-family: 'IBM Plex Mono', monospace; }
+        .dm-sans { font-family: 'DM Sans', sans-serif; }
+        
+        ::-webkit-scrollbar { display: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-container/30">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#07090E]/80 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] flex justify-between items-center px-5 h-16 w-full">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/30">
+<img alt="Profile" data-alt="close-up portrait of a digital architect professional wearing glasses with subtle tech reflections on lenses dark studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuATpmJOIYgJ0zaI4RvWIXjPoSv1u-wj4uXpm2nn3i3ZRq_A7-jIDY_ZpQ9iRxXZBq9qKdQ_eDyLU_PsbCbiF5YyF1Zv5Re2GOxduwruxbTmzmtz0PBUZVUn-_PYlGxWZsJxzHJSnUrT5IuvJglcL75VSwaQqNB4CG9rzA3qaVPLi6KJGYQXMlL9JeYUV3mxRwMPUhjiuHxbEgHE68GzfePLFJuchirx-HNfHUenR8sLBOO3R96pcImRKjlI0teoTinwq-n3RS6N-RII"/>
+</div>
+<span class="bebas-font text-2xl tracking-widest text-white">DISCOVER</span>
+</div>
+<div class="flex items-center">
+<button class="text-slate-400 hover:opacity-80 transition-opacity scale-95 active:duration-100">
+<span class="material-symbols-outlined text-[#0095FF]">notifications</span>
+</button>
+</div>
+</header>
+<main class="pt-20 pb-32 px-5 max-w-2xl mx-auto space-y-8">
+<!-- Filter Chips Section -->
+<section class="flex gap-3 overflow-x-auto pb-2 -mx-5 px-5 no-scrollbar">
+<button class="flex items-center gap-2 px-4 py-2 bg-primary-container rounded-full text-on-primary-container text-xs font-bold uppercase tracking-wider whitespace-nowrap shadow-[0_4px_12px_rgba(0,149,255,0.3)]">
+<span class="material-symbols-outlined text-sm">grid_view</span> All
+            </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-low rounded-full text-on-surface-variant text-xs font-bold uppercase tracking-wider whitespace-nowrap hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-sm">grade</span> Featured
+            </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-low rounded-full text-on-surface-variant text-xs font-bold uppercase tracking-wider whitespace-nowrap hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-sm">payments</span> High Pay
+            </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-low rounded-full text-on-surface-variant text-xs font-bold uppercase tracking-wider whitespace-nowrap hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-sm">schedule</span> Expiring Soon
+            </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-low rounded-full text-on-surface-variant text-xs font-bold uppercase tracking-wider whitespace-nowrap hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-sm">new_releases</span> New
+            </button>
+</section>
+<!-- Featured Task Card -->
+<section>
+<div class="relative group cursor-pointer overflow-hidden rounded-[24px] bg-gradient-to-br from-primary-container via-[#0060a8] to-surface-container p-[1px]">
+<div class="bg-[#0c0e13]/90 backdrop-blur-xl rounded-[23px] p-6 relative overflow-hidden">
+<!-- Background Glow -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary-container/20 blur-[80px] rounded-full"></div>
+<div class="flex justify-between items-start relative z-10">
+<div class="space-y-1">
+<span class="mono-font text-[10px] text-primary-fixed-dim tracking-tighter uppercase px-2 py-1 bg-primary/10 rounded border border-primary/20">Verified Campaign</span>
+<h2 class="dm-sans text-xl font-bold text-white mt-3 leading-tight">Neural Network Training: Visual Quality QA</h2>
+<p class="text-on-surface-variant text-sm mt-1 max-w-[200px]">Benchmark AI generated assets for industrial design consistency.</p>
+</div>
+<div class="text-right">
+<div class="bebas-font text-[38px] leading-none text-white drop-shadow-[0_0_12px_rgba(0,149,255,0.6)]">5.50π</div>
+<div class="mono-font text-[10px] text-primary mt-1">Est. Reward</div>
+</div>
+</div>
+<div class="mt-8 flex items-center justify-between relative z-10">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-7 h-7 rounded-full border-2 border-[#0c0e13]" data-alt="profile photo of a young professional person in a sleek modern digital environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhYu6O4Lc6TWmmy-Hx905r_DhtoowvL6cB_KXIL71PyhIFXoCU4XwPyZbvOEdbW1On7iNbjKHgrTavbLcYJfLc189a_W2kE0OO4SJE_ZacFnAcxiPWTaanlrYa1mSZktuULuvHHK5dhVGPZFnu3_2oywLNWV2Dr4mD8MGQTK8X1-4xLTyDb_usa-_ZambbdK6nDixyUsYAmWbotxJehVu4DDC-qXmCr64ykBRH56dG-GimcOrquaKdo3mrXW6NqJgGWr7eUxBYJ7XC"/>
+<img alt="Avatar" class="w-7 h-7 rounded-full border-2 border-[#0c0e13]" data-alt="headshot of a technician with soft teal studio lighting in a professional dark setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwFlJugFchrDYlByxXHh25B5bQqxmEwu0paYld_zBPOkY5cudJ4aYjy7E3stknGzychmMDJnQh7TyOjtDJl9rJZYNEKlvoXPEaZluVxR-6QZpXHA4cvflStr8LYBfHc5QjdQd9a9EtC12VnFlOSHvsHBT86RqWDoqjiwLYHdxPBBVRo2lyrHF0Q9YTmiPHVSJdT3fZefEBRxGOxinm9A9u4K1rNGnzfEmD32qyjIaXF21femuhRBXe1muBNmDtbv53BfHmJyr9cXKH"/>
+<div class="w-7 h-7 rounded-full border-2 border-[#0c0e13] bg-surface-container-highest flex items-center justify-center text-[10px] text-white mono-font">+42</div>
+</div>
+<button class="bg-primary-container text-on-primary-container text-xs font-bold px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity">
+                            START NOW
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Regular Task List -->
+<section class="space-y-4">
+<h3 class="bebas-font text-xl tracking-widest text-slate-400">AVAILABLE TASKS</h3>
+<!-- Task Card 1 -->
+<div class="bg-surface-container rounded-2xl p-5 border-l-[3px] border-[#0095FF] flex flex-col gap-4 relative overflow-hidden group hover:bg-surface-container-high transition-colors">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center text-2xl">
+                            🔍
+                        </div>
+<div>
+<h4 class="dm-sans font-bold text-on-surface">Data Labeling: Satellite Hubs</h4>
+<p class="text-xs text-on-surface-variant mono-font">Employer: Orbital_Dynamics</p>
+</div>
+</div>
+<div class="bebas-font text-2xl text-white">0.75π</div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="mono-font text-[10px] px-2 py-1 bg-surface-container-highest text-on-surface-variant rounded border border-outline-variant/20 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">schedule</span> 14m left
+                    </span>
+<span class="mono-font text-[10px] px-2 py-1 bg-surface-container-highest text-on-surface-variant rounded border border-outline-variant/20 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">groups</span> 12/50 slots
+                    </span>
+<span class="mono-font text-[10px] px-2 py-1 bg-primary/5 text-primary rounded border border-primary/20 flex items-center gap-1 uppercase">
+                        High Speed
+                    </span>
+</div>
+</div>
+<!-- Task Card 2 -->
+<div class="bg-surface-container rounded-2xl p-5 border-l-[3px] border-[#0095FF] flex flex-col gap-4 relative overflow-hidden group hover:bg-surface-container-high transition-colors">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center text-2xl">
+                            📝
+                        </div>
+<div>
+<h4 class="dm-sans font-bold text-on-surface">Legal Document Abstracting</h4>
+<p class="text-xs text-on-surface-variant mono-font">Employer: Lex_Protocol</p>
+</div>
+</div>
+<div class="bebas-font text-2xl text-white">2.10π</div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="mono-font text-[10px] px-2 py-1 bg-surface-container-highest text-on-surface-variant rounded border border-outline-variant/20 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">schedule</span> 2h left
+                    </span>
+<span class="mono-font text-[10px] px-2 py-1 bg-surface-container-highest text-on-surface-variant rounded border border-outline-variant/20 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">groups</span> 2/10 slots
+                    </span>
+<span class="mono-font text-[10px] px-2 py-1 bg-secondary/5 text-secondary rounded border border-secondary/20 flex items-center gap-1 uppercase">
+                        Expert Level
+                    </span>
+</div>
+</div>
+<!-- Task Card 3 -->
+<div class="bg-surface-container rounded-2xl p-5 border-l-[3px] border-[#0095FF] flex flex-col gap-4 relative overflow-hidden group hover:bg-surface-container-high transition-colors">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center text-2xl">
+                            🧬
+                        </div>
+<div>
+<h4 class="dm-sans font-bold text-on-surface">Genome Sequence Sorting</h4>
+<p class="text-xs text-on-surface-variant mono-font">Employer: Bio_Lattice</p>
+</div>
+</div>
+<div class="bebas-font text-2xl text-white">1.45π</div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="mono-font text-[10px] px-2 py-1 bg-surface-container-highest text-on-surface-variant rounded border border-outline-variant/20 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">schedule</span> 45m left
+                    </span>
+<span class="mono-font text-[10px] px-2 py-1 bg-surface-container-highest text-on-surface-variant rounded border border-outline-variant/20 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">groups</span> Full
+                    </span>
+<span class="mono-font text-[10px] px-2 py-1 bg-tertiary/5 text-tertiary rounded border border-tertiary/20 flex items-center gap-1 uppercase">
+                        Academic
+                    </span>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-[32px] bg-[#0B0D14]/92 backdrop-blur-[24px] shadow-[0_-10px_40px_rgba(0,0,0,0.5)] flex justify-around items-center pt-3 pb-6 px-4 w-full">
+<!-- Home -->
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined mb-1">grid_view</span>
+<span class="dm-sans text-[10px] font-bold uppercase tracking-widest">Home</span>
+</button>
+<!-- Discover (Active) -->
+<button class="flex flex-col items-center justify-center text-[#0095FF] drop-shadow-[0_0_8px_rgba(0,149,255,0.6)] scale-110 duration-300 ease-out">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">explore</span>
+<span class="dm-sans text-[10px] font-bold uppercase tracking-widest">Discover</span>
+</button>
+<!-- Post (FAB Contextually Suppressed/Inactive in styling here) -->
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined mb-1">add_box</span>
+<span class="dm-sans text-[10px] font-bold uppercase tracking-widest">Post</span>
+</button>
+<!-- Tasks -->
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined mb-1">assignment</span>
+<span class="dm-sans text-[10px] font-bold uppercase tracking-widest">Tasks</span>
+</button>
+<!-- Profile -->
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined mb-1">account_circle</span>
+<span class="dm-sans text-[10px] font-bold uppercase tracking-widest">Profile</span>
+</button>
+</nav>
+</body></html>
