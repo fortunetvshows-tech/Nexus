@@ -80,15 +80,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    // Custom plugin to ensure brand colors consistency
-    function({ addBase, theme }) {
-      addBase({
-        body: {
-          backgroundColor: theme('colors.brand.dark'),
-          color: theme('colors.brand.text'),
-        },
-      });
-    },
-  ],
+  plugins: [],
 };
