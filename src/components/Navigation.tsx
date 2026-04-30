@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link                    from 'next/link'
+import Image                   from 'next/image'
 import { usePiAuth }           from '@/hooks/use-pi-auth'
 import { NotificationBell }    from '@/components/NotificationBell'
 import { COLORS, FONTS }       from '@/lib/design/tokens'
@@ -89,6 +90,13 @@ export function Navigation({ currentPage }: NavigationProps) {
           alignItems:     'center',
           gap:            '8px',
         }}>
+          <Image
+            src="/images/logo.png"
+            alt="ProofGrid logo"
+            width={28}
+            height={28}
+            style={{ borderRadius: 8, objectFit: 'contain' }}
+          />
           <span className="hide-mobile">ProofGrid</span>
           <span className="show-mobile">PG</span>
         </Link>

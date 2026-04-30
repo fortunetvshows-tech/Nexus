@@ -22,43 +22,22 @@ export function BottomNav() {
   ]
 
   return (
-    <nav style={{
-      position: 'fixed',
-      bottom: 0,
-      left: 0,
-      right: 0,
-      zIndex: 100,
-      background: 'rgba(11,13,20,0.95)',
-      backdropFilter: 'blur(24px) saturate(1.4)',
-      WebkitBackdropFilter: 'blur(24px) saturate(1.4)',
-      borderTop: '1px solid rgba(255,255,255,0.07)',
-      display: 'flex',
-      padding: '8px 0 max(env(safe-area-inset-bottom), 10px)',
-    }}>
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-[100] border-t border-white/10 bg-slate-950/80 backdrop-blur-2xl"
+      style={{ padding: '8px 0 max(env(safe-area-inset-bottom), 10px)' }}
+    >
+      <div className="mx-auto flex w-full max-w-3xl px-2">
       {items.map((item) => {
         const isActive = item.pattern.test(pathname)
         return (
           <Link
             key={item.href}
             href={item.href}
-            style={{
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '4px',
-              padding: '4px',
-              cursor: 'pointer',
-              color: isActive ? '#38B2FF' : '#454F64',
-              fontSize: '10px',
-              fontWeight: '600',
-              letterSpacing: '0.6px',
-              textTransform: 'uppercase',
-              background: 'none',
-              border: 'none',
-              textDecoration: 'none',
-              transition: 'all 0.15s ease',
-            }}
+            className={`flex flex-1 flex-col items-center gap-1 rounded-xl px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wide no-underline transition ${
+              isActive
+                ? 'bg-cyan-300/15 text-cyan-100'
+                : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
+            } motion-chip motion-press`}
           >
             <svg
               width="22"
@@ -67,11 +46,7 @@ export function BottomNav() {
               fill="none"
               stroke="currentColor"
               strokeWidth="1.6"
-              style={{
-                transform: isActive ? 'scale(1.1)' : 'scale(1)',
-                filter: isActive ? 'drop-shadow(0 0 7px rgba(0,149,255,0.4))' : 'none',
-                transition: 'all 0.15s ease',
-              }}
+              className={isActive ? 'scale-110 drop-shadow-[0_0_8px_rgba(34,211,238,0.55)] transition' : 'transition'}
             >
               {item.icon === '⊞' && (
                 <rect x="2" y="2" width="8" height="8" rx="1" />
@@ -104,6 +79,7 @@ export function BottomNav() {
           </Link>
         )
       })}
+      </div>
     </nav>
   )
 }

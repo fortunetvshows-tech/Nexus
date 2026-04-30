@@ -12,6 +12,14 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+:root {
+  --motion-fast: 150ms;
+  --motion-base: 220ms;
+  --motion-slow: 320ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
 body {
   font-family: 'DM Sans', sans-serif;
   background: #07090E;
@@ -132,5 +140,66 @@ body::before {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 0 8px rgba(0, 149, 255, 0.8));
+}
+
+/* Shared premium motion utilities */
+.motion-surface {
+  transition:
+    transform var(--motion-base) var(--ease-standard),
+    background-color var(--motion-base) var(--ease-standard),
+    border-color var(--motion-base) var(--ease-standard),
+    box-shadow var(--motion-base) var(--ease-standard),
+    color var(--motion-base) var(--ease-standard);
+}
+
+.motion-surface:hover {
+  transform: translateY(-1px);
+}
+
+.motion-press {
+  transition:
+    transform var(--motion-fast) var(--ease-emphasized),
+    filter var(--motion-fast) var(--ease-standard),
+    opacity var(--motion-fast) var(--ease-standard);
+}
+
+.motion-press:active {
+  transform: scale(0.98);
+}
+
+.motion-chip {
+  transition:
+    background-color var(--motion-fast) var(--ease-standard),
+    border-color var(--motion-fast) var(--ease-standard),
+    color var(--motion-fast) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard);
+}
+
+.motion-chip:active {
+  transform: scale(0.98);
+}
+
+/* Admin disputes Stitch-style polish */
+.admin-disputes-page .page-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 96px 20px 120px;
+}
+
+.admin-disputes-page .proofgrid-card {
+  background: rgba(29, 32, 37, 0.62) !important;
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.8);
+  transition:
+    transform var(--motion-base) var(--ease-standard),
+    border-color var(--motion-base) var(--ease-standard),
+    background-color var(--motion-base) var(--ease-standard);
+}
+
+.admin-disputes-page .proofgrid-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 107, 53, 0.26) !important;
 }
 

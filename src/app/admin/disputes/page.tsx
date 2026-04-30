@@ -89,10 +89,10 @@ function timeAgo(dateStr: string): string {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  raised:            COLORS.amber,
-  tier1_review:      COLORS.amber,
-  tier2_review:      COLORS.pi,
-  tier3_review:      COLORS.red,
+  raised:            COLORS.ad,
+  tier1_review:      COLORS.warn,
+  tier2_review:      COLORS.ad,
+  tier3_review:      COLORS.stop,
   resolved_worker:   COLORS.emerald,
   resolved_employer: COLORS.textMuted,
   closed_no_action:  COLORS.textMuted,
@@ -491,9 +491,9 @@ export default function AdminDisputesPage() {
   }
 
   return (
-    <div style={{
+    <div className="admin-disputes-page" style={{
       minHeight:  '100vh',
-      background: COLORS.bgBase,
+      background: 'radial-gradient(circle at 8% 10%, rgba(245,100,46,0.16), transparent 38%), radial-gradient(circle at 92% 80%, rgba(255,107,53,0.14), transparent 36%), #07090E',
       fontFamily: FONTS.sans,
       color:      COLORS.textPrimary,
     }}>
@@ -512,19 +512,20 @@ export default function AdminDisputesPage() {
             <div style={{
               fontSize:      '0.65rem',
               fontWeight:    '600',
-              color:         COLORS.textMuted,
-              letterSpacing: '0.1em',
+              color:         COLORS.adLt,
+              letterSpacing: '0.16em',
               textTransform: 'uppercase' as const,
               marginBottom:  '4px',
               fontFamily:    FONTS.mono,
             }}>
-              Admin Panel
+              Governance Console
             </div>
             <h1 style={{
               margin:        0,
-              fontSize:      'clamp(1.25rem, 4vw, 1.75rem)',
+              fontSize:      'clamp(1.7rem, 5vw, 2.3rem)',
               fontWeight:    '700',
-              letterSpacing: '-0.02em',
+              letterSpacing: '0.03em',
+              fontFamily:    FONTS.display,
             }}>
               Dispute Management
             </h1>
@@ -537,17 +538,31 @@ export default function AdminDisputesPage() {
             {activeDisputes.length > 0 && (
               <div style={{
                 padding:      '4px 12px',
-                background:   COLORS.redDim,
-                border:       `1px solid rgba(239,68,68,0.3)`,
+                background:   COLORS.adDim,
+                border:       `1px solid rgba(255,107,53,0.35)`,
                 borderRadius: RADII.full,
                 fontSize:     '0.75rem',
                 fontWeight:   '700',
-                color:        COLORS.red,
+                color:        COLORS.ad,
                 fontFamily:   FONTS.mono,
               }}>
                 {activeDisputes.length} active
               </div>
             )}
+            <div style={{
+              padding:      '4px 10px',
+              background:   'rgba(255,255,255,0.04)',
+              border:       `1px solid rgba(255,255,255,0.12)`,
+              borderRadius: RADII.full,
+              fontSize:     '0.62rem',
+              fontWeight:   '600',
+              color:        COLORS.textSecondary,
+              fontFamily:   FONTS.mono,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase' as const,
+            }}>
+              Tiered Arbitration
+            </div>
           </div>
         </div>
 
@@ -571,17 +586,17 @@ export default function AdminDisputesPage() {
           display:      'flex',
           gap:          '0.375rem',
           marginBottom: SPACING.lg,
-          background:   COLORS.bgRaised,
+          background:   'rgba(255,255,255,0.04)',
           borderRadius: RADII.lg,
           padding:      '0.3rem',
-          border:       `1px solid ${COLORS.border}`,
+          border:       `1px solid rgba(255,255,255,0.08)`,
         }}>
           {[
             {
               key:   'disputes',
               label: `⚖ Disputes`,
               badge: activeDisputes.length > 0 ? activeDisputes.length : null,
-              color: COLORS.pi,
+              color: COLORS.ad,
             },
             {
               key:   'payouts',
@@ -611,10 +626,12 @@ export default function AdminDisputesPage() {
                 background:   activeTab === tab.key ? COLORS.bgSurface : 'transparent',
                 color:        activeTab === tab.key ? tab.color : COLORS.textMuted,
                 fontSize:     '0.85rem',
-                fontWeight:   activeTab === tab.key ? '600' : '400',
+                fontWeight:   activeTab === tab.key ? '600' : '500',
                 cursor:       'pointer',
                 transition:   'all 0.15s ease',
-                fontFamily:   FONTS.sans,
+                fontFamily:   FONTS.mono,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase' as const,
               }}
             >
               {tab.label}
@@ -663,13 +680,15 @@ export default function AdminDisputesPage() {
                 padding:      '0.4rem 0.5rem',
                 borderRadius: RADII.md,
                 border:       'none',
-                background:   filter === tab.key ? COLORS.bgSurface : 'transparent',
+                background:   filter === tab.key ? 'rgba(255,107,53,0.12)' : 'transparent',
                 color:        filter === tab.key ? tab.color : COLORS.textMuted,
                 fontSize:     '0.78rem',
-                fontWeight:   filter === tab.key ? '600' : '400',
+                fontWeight:   filter === tab.key ? '600' : '500',
                 cursor:       'pointer',
                 transition:   'all 0.15s ease',
-                fontFamily:   FONTS.sans,
+                fontFamily:   FONTS.mono,
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase' as const,
                 whiteSpace:   'nowrap' as const,
               }}
             >
@@ -764,11 +783,14 @@ export default function AdminDisputesPage() {
                         {dispute.submission?.task?.title ?? 'Unknown task'}
                       </div>
                       <div style={{
-                        fontSize: '0.75rem',
+                        fontSize: '0.68rem',
                         color:    COLORS.textMuted,
                         display:  'flex',
                         gap:      '0.625rem',
                         flexWrap: 'wrap' as const,
+                        fontFamily: FONTS.mono,
+                        letterSpacing: '0.02em',
+                        textTransform: 'uppercase' as const,
                       }}>
                         <span>Worker: <strong style={{ color: COLORS.textSecondary }}>{dispute.worker?.piUsername}</strong></span>
                         <span>·</span>
@@ -842,16 +864,18 @@ export default function AdminDisputesPage() {
                           padding:      `${SPACING.sm} ${SPACING.md}`,
                           background:   COLORS.emeraldDim,
                           border:       `1px solid rgba(16,185,129,0.3)`,
-                          borderRadius: RADII.md,
+                          borderRadius: RADII.lg,
                           fontSize:     '0.78rem',
-                          fontWeight:   '600',
+                          fontWeight:   '700',
                           color:        COLORS.emerald,
                           cursor:       resolving === dispute.id ? 'not-allowed' : 'pointer',
-                          fontFamily:   FONTS.sans,
+                          fontFamily:   FONTS.mono,
                           transition:   'all 0.15s ease',
+                          letterSpacing: '0.07em',
+                          textTransform: 'uppercase' as const,
                         }}
                       >
-                        ✓ Rule for Worker
+                        Favor Worker
                       </button>
                       <button
                         onClick={() => handleResolve(dispute.id, 'resolved_employer')}
@@ -860,16 +884,18 @@ export default function AdminDisputesPage() {
                           padding:      `${SPACING.sm} ${SPACING.md}`,
                           background:   COLORS.redDim,
                           border:       `1px solid rgba(239,68,68,0.3)`,
-                          borderRadius: RADII.md,
+                          borderRadius: RADII.lg,
                           fontSize:     '0.78rem',
-                          fontWeight:   '600',
+                          fontWeight:   '700',
                           color:        COLORS.red,
                           cursor:       resolving === dispute.id ? 'not-allowed' : 'pointer',
-                          fontFamily:   FONTS.sans,
+                          fontFamily:   FONTS.mono,
                           transition:   'all 0.15s ease',
+                          letterSpacing: '0.07em',
+                          textTransform: 'uppercase' as const,
                         }}
                       >
-                        ✗ Uphold Rejection
+                        Favor Employer
                       </button>
                     </div>
                   )}
@@ -1118,18 +1144,20 @@ export default function AdminDisputesPage() {
                                 ? COLORS.bgRaised
                                 : `linear-gradient(180deg, ${COLORS.emerald} 0%, #10b981 100%)`,
                               border:       'none',
-                              borderRadius: RADII.md,
+                              borderRadius: RADII.lg,
                               fontSize:     '0.75rem',
-                              fontWeight:   '600',
+                              fontWeight:   '700',
                               color:        paying || cancelling ? COLORS.textMuted : 'white',
                               cursor:       paying || cancelling ? 'not-allowed' : 'pointer',
-                              fontFamily:   FONTS.sans,
+                              fontFamily:   FONTS.mono,
                               transition:   'all 0.15s ease',
                               boxShadow:    paying || cancelling ? 'none' : `0 0 12px rgba(16,185,129,0.3)`,
                               whiteSpace:   'nowrap' as const,
+                              letterSpacing: '0.07em',
+                              textTransform: 'uppercase' as const,
                             }}
                           >
-                            {isPaying ? '⏳ Paying...' : '💳 Pay Now'}
+                            {isPaying ? 'Paying...' : 'Pay Now'}
                           </button>
 
                           {/* Cancel button — only when payment is stuck (has piPaymentId but not confirmed) */}
@@ -1141,17 +1169,19 @@ export default function AdminDisputesPage() {
                                 padding:      `${SPACING.xs} ${SPACING.md}`,
                                 background:   'transparent',
                                 border:       `1px solid rgba(239,68,68,0.3)`,
-                                borderRadius: RADII.md,
+                                borderRadius: RADII.lg,
                                 fontSize:     '0.75rem',
-                                fontWeight:   '600',
+                                fontWeight:   '700',
                                 color:        cancelling === payout.id ? COLORS.textMuted : COLORS.red,
                                 cursor:       cancelling === payout.id || !!paying ? 'not-allowed' : 'pointer',
-                                fontFamily:   FONTS.sans,
+                                fontFamily:   FONTS.mono,
                                 transition:   'all 0.15s ease',
                                 whiteSpace:   'nowrap' as const,
+                                letterSpacing: '0.07em',
+                                textTransform: 'uppercase' as const,
                               }}
                             >
-                              {cancelling === payout.id ? 'Cancelling...' : '✗ Cancel'}
+                              {cancelling === payout.id ? 'Cancelling...' : 'Cancel'}
                             </button>
                           )}
                         </div>
@@ -1267,13 +1297,15 @@ export default function AdminDisputesPage() {
                 padding:      `${SPACING.sm} ${SPACING.md}`,
                 background:   'transparent',
                 border:       `1px solid ${COLORS.textMuted}30`,
-                borderRadius: RADII.md,
+                borderRadius: RADII.lg,
                 fontSize:     '0.85rem',
-                fontWeight:   '600',
+                fontWeight:   '700',
                 color:        COLORS.textSecondary,
                 cursor:       'pointer',
-                fontFamily:   FONTS.sans,
+                fontFamily:   FONTS.mono,
                 transition:   'all 0.15s ease',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase' as const,
               }}
             >
               Select All
@@ -1285,13 +1317,15 @@ export default function AdminDisputesPage() {
                 padding:      `${SPACING.sm} ${SPACING.md}`,
                 background:   'transparent',
                 border:       `1px solid ${COLORS.textMuted}30`,
-                borderRadius: RADII.md,
+                borderRadius: RADII.lg,
                 fontSize:     '0.85rem',
-                fontWeight:   '600',
+                fontWeight:   '700',
                 color:        COLORS.textSecondary,
                 cursor:       'pointer',
-                fontFamily:   FONTS.sans,
+                fontFamily:   FONTS.mono,
                 transition:   'all 0.15s ease',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase' as const,
               }}
             >
               Deselect All
@@ -1307,17 +1341,19 @@ export default function AdminDisputesPage() {
                   ? COLORS.bgRaised
                   : `linear-gradient(180deg, ${COLORS.red} 0%, #dc2626 100%)`,
                 border:       'none',
-                borderRadius: RADII.md,
+                borderRadius: RADII.lg,
                 fontSize:     '0.85rem',
-                fontWeight:   '600',
+                fontWeight:   '700',
                 color:        selectedStuck.size === 0 || clearingStuck ? COLORS.textMuted : 'white',
                 cursor:       selectedStuck.size === 0 || clearingStuck ? 'not-allowed' : 'pointer',
-                fontFamily:   FONTS.sans,
+                fontFamily:   FONTS.mono,
                 transition:   'all 0.15s ease',
                 boxShadow:    selectedStuck.size === 0 || clearingStuck ? 'none' : `0 0 12px rgba(239,68,68,0.3)`,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase' as const,
               }}
             >
-              {clearingStuck ? '⏳ Clearing...' : `🗑 Clear ${selectedStuck.size > 0 ? selectedStuck.size : ''}`}
+              {clearingStuck ? 'Clearing...' : `Clear ${selectedStuck.size > 0 ? selectedStuck.size : ''}`}
             </button>
           </div>
         )}
@@ -1518,15 +1554,18 @@ export default function AdminDisputesPage() {
                       background: COLORS.emerald,
                       color: 'white',
                       border: 'none',
-                      borderRadius: RADII.sm,
+                      borderRadius: RADII.lg,
                       fontSize: '0.85rem',
-                      fontWeight: '600',
+                      fontWeight: '700',
                       cursor: retryingStuck ? 'not-allowed' : 'pointer',
                       opacity: retryingStuck ? 0.6 : 1,
                       transition: 'all 0.2s ease',
+                      fontFamily: FONTS.mono,
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase' as const,
                     }}
                   >
-                    {retryingStuck ? '⏳ Retrying...' : '🔄 Retry Payment'}
+                    {retryingStuck ? 'Retrying...' : 'Retry Payment'}
                   </button>
                 )}
                 </>

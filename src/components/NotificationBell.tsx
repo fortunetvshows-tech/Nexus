@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useNotifications }            from '@/hooks/use-notifications'
-import { COLORS, FONTS, RADII, SHADOWS, GRADIENTS, SPACING, statusStyle } from '@/lib/design/tokens'
+import { COLORS } from '@/lib/design/tokens'
 
 interface NotificationBellProps {
   piUid: string | undefined
@@ -79,39 +79,16 @@ export function NotificationBell({ piUid }: NotificationBellProps) {
       {/* Bell button */}
       <button
         onClick={handleOpen}
-        style={{
-          position:   'relative',
-          background: 'transparent',
-          border:     'none',
-          cursor:     'pointer',
-          padding:    '6px',
-          borderRadius: '8px',
-          color:      '#9ca3af',
-          fontSize:   '1.2rem',
-          lineHeight: 1,
-          transition: 'background 0.15s',
-        }}
+        className={`motion-press motion-chip relative rounded-lg border px-2 py-1.5 text-lg leading-none ${
+          isOpen
+            ? 'border-cyan-300/40 bg-cyan-300/10 text-cyan-100'
+            : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10'
+        }`}
         title="Notifications"
       >
         🔔
         {unreadCount > 0 && (
-          <span style={{
-            position:       'absolute',
-            top:            '0px',
-            right:          '0px',
-            minWidth:       '18px',
-            height:         '18px',
-            borderRadius:   '9999px',
-            background:     '#7B3FE4',
-            color:          'white',
-            fontSize:       '0.65rem',
-            fontWeight:     '700',
-            display:        'flex',
-            alignItems:     'center',
-            justifyContent: 'center',
-            padding:        '0 4px',
-            lineHeight:     1,
-          }}>
+          <span className="absolute -right-1 -top-1 min-w-[18px] rounded-full border border-violet-300/40 bg-violet-500 px-1 text-[10px] font-bold text-white">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -119,45 +96,17 @@ export function NotificationBell({ piUid }: NotificationBellProps) {
 
       {/* Dropdown */}
       {isOpen && (
-        <div style={{
-          position:     'absolute',
-          top:          'calc(100% + 8px)',
-          right:        0,
-          width:        '320px',
-          background:   '#111827',
-          border:       '1px solid #1f2937',
-          borderRadius: '16px',
-          boxShadow:    '0 20px 40px rgba(0,0,0,0.6)',
-          zIndex:       200,
-          overflow:     'hidden',
-        }}>
+        <div className="absolute right-0 top-[calc(100%+8px)] z-[200] w-[340px] overflow-hidden rounded-2xl border border-white/15 bg-slate-950/95 shadow-[0_20px_50px_-16px_rgba(0,0,0,0.75)] backdrop-blur-2xl">
 
           {/* Header */}
-          <div style={{
-            display:        'flex',
-            justifyContent: 'space-between',
-            alignItems:     'center',
-            padding:        '1rem 1.25rem 0.75rem',
-            borderBottom:   '1px solid #1f2937',
-          }}>
-            <span style={{
-              fontWeight: '600',
-              fontSize:   '0.9rem',
-              color:      '#ffffff',
-            }}>
+          <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+            <span className="text-sm font-semibold text-white">
               Notifications
             </span>
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllRead}
-                style={{
-                  background: 'transparent',
-                  border:     'none',
-                  color:      '#7B3FE4',
-                  fontSize:   '0.8rem',
-                  cursor:     'pointer',
-                  padding:    '0',
-                }}
+                className="motion-chip text-xs font-medium text-cyan-200 hover:text-cyan-100"
               >
                 Mark all read
               </button>
@@ -165,17 +114,9 @@ export function NotificationBell({ piUid }: NotificationBellProps) {
           </div>
 
           {/* Notification list */}
-          <div style={{
-            maxHeight:  '380px',
-            overflowY:  'auto',
-          }}>
+          <div className="max-h-[380px] overflow-y-auto">
             {notifications.length === 0 && (
-              <div style={{
-                padding:   '2rem',
-                textAlign: 'center',
-                color:     '#6b7280',
-                fontSize:  '0.875rem',
-              }}>
+              <div className="p-8 text-center text-sm text-slate-400">
                 No notifications yet
               </div>
             )}
@@ -187,38 +128,19 @@ export function NotificationBell({ piUid }: NotificationBellProps) {
                   setExpandedId(prev => prev === notif.id ? null : notif.id)
                   if (!notif.isRead) markRead(notif.id)
                 }}
-                style={{
-                  padding:    '0.875rem 1.25rem',
-                  borderBottom: '1px solid #1f2937',
-                  background: notif.isRead ? 'transparent' : '#1e1b4b',
-                  cursor:     'pointer',
-                  transition: 'background 0.15s',
-                }}
+                className={`motion-chip cursor-pointer border-b border-white/10 px-4 py-3 ${
+                  notif.isRead ? 'bg-transparent hover:bg-white/5' : 'bg-cyan-500/10 hover:bg-cyan-500/15'
+                }`}
               >
-                <div style={{
-                  display: 'flex',
-                  gap:     '0.75rem',
-                }}>
-                  <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>
+                <div className="flex gap-3">
+                  <span className="shrink-0 text-lg">
                     {notificationIcon(notif.type)}
                   </span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{
-                      fontWeight:   notif.isRead ? '400' : '600',
-                      fontSize:     '0.85rem',
-                      color:        '#ffffff',
-                      marginBottom: '0.2rem',
-                      whiteSpace:   'nowrap',
-                      overflow:     'hidden',
-                      textOverflow: 'ellipsis',
-                    }}>
+                  <div className="min-w-0 flex-1">
+                    <div className={`mb-1 truncate text-sm ${notif.isRead ? 'font-normal text-slate-100' : 'font-semibold text-white'}`}>
                       {notif.title}
                     </div>
-                    <div style={{
-                      fontSize: '0.78rem',
-                      color:    '#9ca3af',
-                      marginBottom: '0.25rem',
-                    }}>
+                    <div className="mb-1 text-xs text-slate-300">
                       <span style={{
                         display:           expandedId === notif.id ? 'block' : '-webkit-box',
                         WebkitLineClamp:   expandedId === notif.id ? undefined : 2,
@@ -229,53 +151,28 @@ export function NotificationBell({ piUid }: NotificationBellProps) {
                         {notif.body}
                       </span>
                       {notif.body.length > 80 && (
-                        <span style={{
-                          fontSize:   '0.65rem',
-                          color:      COLORS.pi,
-                          marginTop:  '2px',
-                          display:    'block',
-                          cursor:     'pointer',
-                        }}>
+                        <span className="mt-1 block cursor-pointer text-[10px] text-cyan-200">
                           {expandedId === notif.id ? '▲ Show less' : '▼ Read more'}
                         </span>
                       )}
                     </div>
                     {/* Fee Breakdown Display */}
                     {notif.type === 'task_approved' && (notif.metadata as any)?.grossAmount && (
-                      <div style={{
-                        fontSize: '0.7rem',
-                        color: '#7aa3c0',
-                        marginTop: '0.5rem',
-                        padding: '0.5rem',
-                        backgroundColor: 'rgba(122, 163, 192, 0.08)',
-                        borderRadius: '4px',
-                        lineHeight: '1.4',
-                      }}>
-                        <div style={{ marginBottom: '0.25rem' }}>💰 <strong>Payment Breakdown:</strong></div>
+                      <div className="mt-2 rounded-md border border-cyan-300/25 bg-cyan-300/10 p-2 text-[11px] leading-relaxed text-cyan-100">
+                        <div className="mb-1 font-semibold">💰 Payment Breakdown</div>
                         <div>Gross: {(notif.metadata as any).grossAmount?.toFixed(2)}π</div>
                         <div>− Platform: {(notif.metadata as any).platformFee?.toFixed(2)}π</div>
-                        <div style={{ marginTop: '0.25rem', fontWeight: 'bold', color: '#10b981' }}>
+                        <div className="mt-1 font-semibold text-emerald-200">
                           Net: {(notif.metadata as any).netAmount?.toFixed(2)}π
                         </div>
                       </div>
                     )}
-                    <div style={{
-                      fontSize: '0.72rem',
-                      color:    '#4b5563',
-                      marginTop: notif.type === 'task_approved' && (notif.metadata as any)?.grossAmount ? '0.35rem' : undefined,
-                    }}>
+                    <div className="mt-1 text-[11px] text-slate-400">
                       {timeAgo(notif.createdAt)}
                     </div>
                   </div>
                   {!notif.isRead && (
-                    <div style={{
-                      width:        '8px',
-                      height:       '8px',
-                      borderRadius: '50%',
-                      background:   '#7B3FE4',
-                      flexShrink:   0,
-                      marginTop:    '4px',
-                    }} />
+                    <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-cyan-300" />
                   )}
                 </div>
               </div>
@@ -284,15 +181,8 @@ export function NotificationBell({ piUid }: NotificationBellProps) {
 
           {/* Footer */}
           {notifications.length > 0 && (
-            <div style={{
-              padding:    '0.75rem 1.25rem',
-              borderTop:  '1px solid #1f2937',
-              textAlign:  'center',
-            }}>
-              <span style={{
-                fontSize: '0.78rem',
-                color:    '#4b5563',
-              }}>
+            <div className="border-t border-white/10 px-4 py-2 text-center">
+              <span className="text-xs text-slate-400">
                 Showing last {notifications.length} notifications
               </span>
             </div>

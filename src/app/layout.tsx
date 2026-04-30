@@ -165,7 +165,7 @@ export default function RootLayout({
             -moz-osx-font-smoothing: grayscale;
             margin: 0;
             padding: 0;
-            overflow: hidden;
+            overflow-x: hidden;
           }
 
           html, body {

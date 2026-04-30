@@ -1,10 +1,10 @@
 'use client'
 
-import React, { useState, useMemo, ReactNode } from 'react'
+import React, { useState, useMemo } from 'react'
 import { usePiAuth } from '@/hooks/use-pi-auth'
 import { useTaskSearch } from '@/hooks/use-task-search'
 import { TaskCard } from '@/components/TaskCard'
-import { COLORS, FONTS, RADII, SPACING } from '@/lib/design/tokens'
+import { Navigation } from '@/components/Navigation'
 
 type FilterId = 'all' | 'featured' | 'high-pay' | 'expiring' | 'new'
 
@@ -15,33 +15,12 @@ const FeedPage: React.FC = () => {
 
   if (!user) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        background: '#07090E',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column',
-        gap: '1rem',
-        fontFamily: FONTS.sans,
-      }}>
-        <p style={{ color: '#8892A8', fontSize: '1rem' }}>
-          Sign in to see earning opportunities
-        </p>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#060b17] px-6 text-center text-white">
+        <p className="text-sm text-slate-300">Sign in to see earning opportunities</p>
         <button
           onClick={() => typeof window !== 'undefined' && window.location.reload()}
           disabled={authLoading}
-          style={{
-            padding: '0.75rem 2rem',
-            background: '#0095FF',
-            color: 'white',
-            border: 'none',
-            borderRadius: RADII.lg,
-            fontSize: '1rem',
-            fontWeight: '600',
-            cursor: authLoading ? 'not-allowed' : 'pointer',
-            boxShadow: '0 0 24px rgba(0,149,255,0.28)',
-          }}
+          className="rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_12px_35px_-12px_rgba(14,165,233,0.6)] disabled:opacity-70"
         >
           {authLoading ? 'Connecting...' : 'Connect with Pi'}
         </button>
@@ -92,216 +71,87 @@ const FeedPage: React.FC = () => {
   const featuredTask = (tasks?.find((t: any) => t.isFeatured) || tasks?.[0]) as any
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: '#07090E',
-        fontFamily: FONTS.sans,
-        color: COLORS.textPrimary,
-        padding: '20px 16px',
-        paddingBottom: '120px',
-      }}
-    >
-      {/* TopBar */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: SPACING.lg,
-          marginTop: 0,
-        }}
-      >
-        <div
-          style={{
-            fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: 24,
-            color: '#EEF2FF',
-            letterSpacing: 2,
-            textTransform: 'uppercase',
-          }}
-        >
-          Discover
-        </div>
-        <div style={{ fontSize: 20 }}>🔔</div>
-      </div>
+    <div className="relative min-h-screen overflow-hidden bg-[#060b17] px-4 pb-28 pt-5 text-white md:px-8">
+      <div className="pointer-events-none absolute inset-0 hex-mesh opacity-40" />
+      <div className="pointer-events-none absolute -left-20 top-20 h-72 w-72 rounded-full bg-cyan-400/15 blur-3xl" />
+      <div className="pointer-events-none absolute -right-20 top-1/2 h-80 w-80 rounded-full bg-blue-500/15 blur-3xl" />
+      <Navigation currentPage="feed" />
 
-      <main style={{ maxWidth: '600px', margin: '0 auto' }}>
-        <>
-          {/* Filter Chips */}
-          <div
-          style={{
-            display: 'flex',
-            gap: 8,
-            overflowX: 'auto',
-            scrollBehavior: 'smooth',
-            marginBottom: SPACING.lg,
-            paddingBottom: 8,
-            scrollbarWidth: 'none',
-          }}
-        >
-        {filterChips.map((filter: any) => (
+      <main className="relative z-10 mx-auto mt-6 w-full max-w-5xl space-y-5">
+        <section className="rounded-2xl border border-white/15 bg-white/5 p-5 backdrop-blur-xl">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-xs text-slate-300">Discover opportunities</p>
+              <h1 className="mt-1 text-2xl font-semibold">Task Feed</h1>
+            </div>
+            <span className="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-xs text-cyan-100">
+              {sortedTasks.length} tasks available
+            </span>
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="hide-scrollbar flex gap-2 overflow-x-auto">
+            {filterChips.map((filter: any) => (
             <button
               key={filter.id}
               onClick={() => setActiveFilter(filter.id)}
-              style={{
-                padding: '7px 14px',
-                borderRadius: 100,
-                border: `1px solid ${
-                  activeFilter === filter.id
-                    ? '#0095FF'
-                    : 'rgba(255,255,255,0.12)'
-                }`,
-                background:
-                  activeFilter === filter.id
-                    ? 'rgba(0,149,255,0.13)'
-                    : '#131720',
-                color:
-                  activeFilter === filter.id ? '#38B2FF' : '#8892A8',
-                fontSize: 12,
-                fontWeight: 700,
-                whiteSpace: 'nowrap',
-                cursor: 'pointer',
-                flexShrink: 0,
-                transition: 'all 0.18s',
-              }}
+              className={`motion-chip motion-press shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                activeFilter === filter.id
+                  ? 'border-cyan-300/60 bg-cyan-300/15 text-cyan-100'
+                  : 'border-white/20 bg-slate-950/40 text-slate-300 hover:bg-white/10'
+              }`}
             >
               {filter.label}
             </button>
-          ))}
-        </div>
+            ))}
+          </div>
+        </section>
 
-        {/* Featured Task */}
         {featuredTask && (
-          <div
-            style={{
-              background:
-                'linear-gradient(135deg, rgba(0,149,255,0.10) 0%, rgba(167,139,250,0.07) 50%, #131720 100%)',
-              border: '1px solid rgba(0,149,255,0.28)',
-              borderRadius: 24,
-              padding: '20px',
-              marginBottom: SPACING.lg,
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                marginBottom: 12,
-              }}
-            >
-              <div
-                style={{
-                  fontFamily: "'Bebas Neue', sans-serif",
-                  fontSize: 38,
-                  color: '#0095FF',
-                  lineHeight: 1,
-                }}
-              >
+          <section className="rounded-2xl border border-cyan-300/20 bg-gradient-to-br from-cyan-400/10 via-indigo-400/10 to-slate-950/40 p-5">
+            <div className="mb-3 flex items-start justify-between gap-3">
+              <div className="text-3xl font-semibold text-cyan-200">
                 {featuredTask.piReward}π
               </div>
               {featuredTask.isFeatured && (
-                <div
-                  style={{
-                    padding: '4px 10px',
-                    background: 'rgba(255,176,32,0.1)',
-                    border: '1px solid rgba(255,176,32,0.3)',
-                    borderRadius: 6,
-                    fontSize: 10,
-                    color: '#FFB020',
-                    fontWeight: 600,
-                    textTransform: 'uppercase',
-                  }}
-                >
+                <div className="rounded-md border border-amber-300/30 bg-amber-300/10 px-2 py-1 text-[10px] font-semibold uppercase text-amber-100">
                   ⭐ Featured
                 </div>
               )}
             </div>
-            <div
-              style={{
-                display: 'flex',
-                gap: 8,
-                marginBottom: 12,
-                flexWrap: 'wrap',
-              }}
-            >
-              <div
-                style={{
-                  padding: '4px 10px',
-                  background: 'rgba(0,214,143,0.1)',
-                  border: '1px solid rgba(0,214,143,0.3)',
-                  borderRadius: 6,
-                  fontSize: 11,
-                  color: '#00D68F',
-                  fontWeight: 600,
-                }}
-              >
+            <div className="mb-3 flex flex-wrap gap-2">
+              <span className="rounded-md border border-emerald-300/30 bg-emerald-300/10 px-2 py-1 text-xs text-emerald-100">
                 {featuredTask.category}
-              </div>
-              <div
-                style={{
-                  padding: '4px 10px',
-                  background: 'rgba(0,149,255,0.1)',
-                  border: '1px solid rgba(0,149,255,0.3)',
-                  borderRadius: 6,
-                  fontSize: 11,
-                  color: '#0095FF',
-                  fontWeight: 600,
-                }}
-              >
+              </span>
+              <span className="rounded-md border border-cyan-300/30 bg-cyan-300/10 px-2 py-1 text-xs text-cyan-100">
                 {featuredTask.employer?.piUsername || 'Employer'}
-              </div>
+              </span>
             </div>
-            <div
-              style={{
-                fontFamily: "'Bebas Neue', sans-serif",
-                fontSize: 16,
-                color: '#EEF2FF',
-                marginBottom: 12,
-                lineHeight: 1.3,
-              }}
-            >
+            <h2 className="mb-2 text-lg font-semibold text-white">
               {featuredTask.title}
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                gap: 8,
-                flexWrap: 'wrap',
-                fontSize: 11,
-                color: '#8892A8',
-              }}
-            >
+            </h2>
+            <div className="flex flex-wrap gap-2 text-xs text-slate-300">
               <span>{featuredTask.slotsRemaining} slots</span>
               <span>·</span>
               <span>{featuredTask.timeEstimateMin} min</span>
               <span>·</span>
               <span>Due soon</span>
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Task List */}
         {sortedTasks.length > 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <section className="space-y-3">
             {sortedTasks.map((task: any) => (
               <TaskCard key={task.id} task={task} />
             ))}
-          </div>
+          </section>
         ) : (
-          <div
-            style={{
-              textAlign: 'center',
-              padding: SPACING.xl,
-              color: '#8892A8',
-              fontSize: 14,
-            }}
-          >
+          <p className="rounded-xl border border-dashed border-white/20 bg-white/5 p-6 text-center text-sm text-slate-300">
             No tasks match your filter. Check back soon!
-          </div>
+          </p>
         )}
-        </>
       </main>
     </div>
   )

@@ -1,6 +1,7 @@
 'use client'
 
 import Link               from 'next/link'
+import Image              from 'next/image'
 import { useState, useEffect } from 'react'
 import { usePiAuth }      from '@/hooks/use-pi-auth'
 import { COLORS, FONTS, RADII } from '@/lib/design/tokens'
@@ -52,6 +53,13 @@ export function TopBar() {
         color:         COLORS.textPrimary,
         letterSpacing: '-0.02em',
       }}>
+        <Image
+          src="/images/logo.png"
+          alt="ProofGrid logo"
+          width={24}
+          height={24}
+          style={{ marginRight: 8, verticalAlign: 'middle', borderRadius: 6, objectFit: 'contain' }}
+        />
         ProofGrid
       </span>
     </header>
@@ -86,8 +94,18 @@ export function TopBar() {
           textDecoration: 'none',
           letterSpacing: '-0.02em',
           flexShrink:    0,
+          display:       'flex',
+          alignItems:    'center',
+          gap:           '8px',
         }}
       >
+        <Image
+          src="/images/logo.png"
+          alt="ProofGrid logo"
+          width={24}
+          height={24}
+          style={{ borderRadius: 6, objectFit: 'contain' }}
+        />
         ProofGrid
       </Link>
 

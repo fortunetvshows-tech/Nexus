@@ -2,9 +2,6 @@
 
 import Link from 'next/link'
 import { PLATFORM_CONFIG } from '@/lib/config/platform'
-import {
-  COLORS, FONTS, RADII, SPACING
-} from '@/lib/design/tokens'
 
 interface TaskCardProps {
   task: {
@@ -45,12 +42,10 @@ function getCategoryColor(category: string): string {
 
 export function TaskCard({
   task,
-  workerReputation = 0,
 }: TaskCardProps) {
 
   const color         = getCategoryColor(task.category)
   const spotsLeft     = task.slotsRemaining
-  const isLastSpot    = spotsLeft === 1
   const isUrgent      = spotsLeft <= 2
   const deadlineDate  = new Date(task.deadline)
   const hoursLeft     = Math.max(
@@ -60,158 +55,70 @@ export function TaskCard({
   const isExpiringSoon = hoursLeft < 24
 
   return (
-    <Link
-      href={`/task/${task.id}`}
-      style={{
-        display:        'block',
-        textDecoration: 'none',
-        position:       'relative' as const,
-      }}
-    >
-      <div
-        style={{
-          borderRadius: RADII.lg,
-          marginBottom: '10px',
-          cursor: 'pointer',
-          border: `1px solid ${COLORS.border}`,
-          background: COLORS.bgCard,
-          position: 'relative',
-          overflow: 'hidden',
-          transition: 'all 0.18s cubic-bezier(.4,0,.2,1)',
-        }}
-      >
-        {/* Left accent bar */}
-        <div style={{
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          bottom: 0,
-          width: '3px',
-          borderRadius: '3px 0 0 3px',
-          background: color,
-        }} />
+    <Link href={`/task/${task.id}`} className="block no-underline">
+      <article className="motion-surface group relative mb-3 overflow-hidden rounded-2xl border border-white/15 bg-white/5 p-4 shadow-[0_10px_30px_-18px_rgba(0,0,0,0.7)] backdrop-blur-xl hover:border-cyan-300/40 hover:bg-white/10">
+        <div className="absolute inset-y-0 left-0 w-1 rounded-l-2xl" style={{ background: color }} />
 
-        {/* Main content */}
-        <div style={{
-          padding: '15px 15px 13px 18px',
-        }}>
-          {/* Top row — emoji + title + reward */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: '12px',
-            marginBottom: '10px',
-          }}>
-            <span style={{
-              fontSize: '24px',
-              flexShrink: 0,
-            }}>
+        <div className="ml-1">
+          <div className="mb-3 flex items-start gap-3">
+            <span className="shrink-0 text-2xl">
               {task.category.charAt(0)}
             </span>
-            <div style={{ flex: 1 }}>
-              <div style={{
-                fontSize: '14px',
-                fontWeight: 700,
-                color: COLORS.textPrimary,
-                marginBottom: '4px',
-              }}>
+            <div className="flex-1">
+              <h3 className="mb-1 text-sm font-semibold text-white">
                 {task.title}
-              </div>
-              <div style={{
-                fontFamily: FONTS.display,
-                fontSize: '24px',
-                letterSpacing: '0.5px',
-                color: '#38B2FF',
-                fontWeight: 700,
-              }}>
+              </h3>
+              <p className="text-2xl font-semibold text-cyan-200">
                 {Math.max(0, PLATFORM_CONFIG.workerNetPayout(task.piReward)).toFixed(2)}π
-              </div>
+              </p>
             </div>
           </div>
 
-          {/* Meta row — chips */}
-          <div style={{
-            display: 'flex',
-            gap: '6px',
-            flexWrap: 'wrap',
-            marginBottom: '12px',
-          }}>
-            <div style={{
-              padding: '3px 9px',
-              borderRadius: RADII.full,
-              fontSize: '11px',
-              fontWeight: '700',
-              textTransform: 'uppercase',
-              letterSpacing: '0.4px',
-              background: 'rgba(0,149,255,0.13)',
-              color: '#38B2FF',
-              border: '1px solid rgba(0,149,255,0.22)',
-            }}>
+          <div className="mb-3 flex flex-wrap gap-2">
+            <span className="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-2.5 py-1 text-[11px] font-semibold text-cyan-100">
               {task.category}
-            </div>
-            <div style={{
-              padding: '3px 9px',
-              borderRadius: RADII.full,
-              fontSize: '11px',
-              fontWeight: '700',
-              textTransform: 'uppercase',
-              letterSpacing: '0.4px',
-              background: 'rgba(255,255,255,0.05)',
-              color: COLORS.textSecondary,
-              border: `1px solid ${COLORS.border}`,
-            }}>
+            </span>
+            <span className="rounded-full border border-white/20 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-300">
               ~{task.timeEstimateMin}m
-            </div>
-            <div style={{
-              padding: '3px 9px',
-              borderRadius: RADII.full,
-              fontSize: '11px',
-              fontWeight: '700',
-              textTransform: 'uppercase',
-              letterSpacing: '0.4px',
-              background: 'rgba(255,255,255,0.05)',
-              color: COLORS.textSecondary,
-              border: `1px solid ${COLORS.border}`,
-            }}>
+            </span>
+            <span className="rounded-full border border-white/20 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-300">
               {spotsLeft === 0 ? 'Full' : `${spotsLeft} slots`}
-            </div>
+            </span>
+            {isExpiringSoon && (
+              <span className="rounded-full border border-amber-300/30 bg-amber-300/10 px-2.5 py-1 text-[11px] font-semibold text-amber-100">
+                Expiring soon
+              </span>
+            )}
+            {task.isFeatured && (
+              <span className="rounded-full border border-violet-300/30 bg-violet-300/10 px-2.5 py-1 text-[11px] font-semibold text-violet-100">
+                Featured
+              </span>
+            )}
           </div>
 
-          {/* Action row */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}>
-            <div style={{
-              fontSize: '12px',
-              color: COLORS.textMuted,
-            }}>
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs text-slate-300">
               {spotsLeft > 2
                 ? `${task.slotsAvailable - spotsLeft} taken`
                 : spotsLeft === 0
                 ? '✗ Full'
                 : `${spotsLeft} spot${spotsLeft > 1 ? 's' : ''} left`
               }
-            </div>
-            <div style={{
-              padding: '6px 12px',
-              background: spotsLeft === 0 ? COLORS.bgRaised : color,
-              color: spotsLeft === 0 ? COLORS.textMuted : 'white',
-              borderRadius: RADII.md,
-              fontSize: '13px',
-              fontWeight: '700',
-              letterSpacing: '0.02em',
-              whiteSpace: 'nowrap' as const,
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease',
-            }}>
+            </p>
+            <div
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold ${
+                spotsLeft === 0
+                  ? 'border border-white/20 bg-white/10 text-slate-400'
+                  : isUrgent
+                  ? 'border border-rose-300/40 bg-rose-300/15 text-rose-100'
+                  : 'border border-cyan-300/40 bg-cyan-300/15 text-cyan-100'
+              } motion-chip`}
+            >
               {spotsLeft === 0 ? 'Full' : 'Claim →'}
             </div>
           </div>
         </div>
-      </div>
+      </article>
     </Link>
   )
 }

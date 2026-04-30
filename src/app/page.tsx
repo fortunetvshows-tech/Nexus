@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { usePiAuth } from '@/hooks/use-pi-auth'
 
 export default function OnboardingPage() {
@@ -24,108 +25,123 @@ export default function OnboardingPage() {
   if (!hasMounted) return null
 
   return (
-    <div className="flex items-center justify-center min-h-screen relative overflow-hidden">
-      {/* Background Layers */}
-      <div className="fixed inset-0 hex-mesh"></div>
-      <div className="glow-orb bg-primary-container w-[400px] h-[400px] -top-20 -left-20"></div>
-      <div className="glow-orb bg-secondary-container w-[300px] h-[300px] bottom-20 -right-10"></div>
+    <div className="relative min-h-screen overflow-hidden bg-[#060b17] text-white">
+      <div className="pointer-events-none absolute inset-0 hex-mesh opacity-50" />
+      <div className="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full bg-cyan-400/20 blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 top-1/3 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-indigo-500/20 blur-3xl" />
 
-      {/* Main Content Container */}
-      <main className="relative z-10 w-full max-w-[420px] px-8 flex flex-col items-center text-center">
-        {/* Logo Section */}
-        <div className="mb-8 transform hover:scale-105 transition-transform duration-500">
-          <div className="crystal-shield">
-            <span className="material-symbols-outlined inner-gem" data-icon="verified" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+      <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 pb-14 pt-10 md:px-10">
+        <header className="mb-14 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Image
+              src="/images/logo.png"
+              alt="ProofGrid logo"
+              width={44}
+              height={44}
+              className="h-11 w-11 rounded-xl object-contain"
+              priority
+            />
+            <div>
+              <h1 className="dm-sans text-lg font-semibold tracking-wide">ProofGrid</h1>
+              <p className="text-xs text-slate-300">Decentralized Work Marketplace</p>
+            </div>
           </div>
-        </div>
+          <div className="rounded-full border border-cyan-300/30 bg-cyan-400/10 px-3 py-1 text-xs font-medium text-cyan-100">
+            Mainnet Live
+          </div>
+        </header>
 
-        {/* Typography Branding */}
-        <div className="space-y-1 mb-12">
-          <h1 className="bebas-neue text-6xl tracking-[0.15em] text-white leading-none">
-            PROOFGRID
-          </h1>
-          <p className="ibm-plex text-xs tracking-[0.3em] text-primary font-medium opacity-80">
-            DECENTRALIZED WORK MARKETPLACE
+        <section className="grid items-center gap-10 md:grid-cols-2">
+          <div>
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-slate-200">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              Trusted escrow + instant payout
+            </p>
+            <h2 className="text-4xl font-semibold leading-tight md:text-5xl">
+              Post tasks, verify proofs, and pay workers in seconds.
+            </h2>
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-300 md:text-base">
+              ProofGrid is a polished marketplace for micro-work on Pi Network. Employers get
+              quality submissions with transparent controls, and workers earn with fast approvals.
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <button
+                onClick={authenticate}
+                disabled={isLoading}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_12px_35px_-12px_rgba(14,165,233,0.6)] transition hover:brightness-110 disabled:opacity-70"
+              >
+                <span className="material-symbols-outlined text-[18px]">rocket_launch</span>
+                {isLoading ? 'Connecting...' : 'Connect with Pi Browser'}
+              </button>
+              <button
+                onClick={() => router.push('/feed')}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
+              >
+                <span className="material-symbols-outlined text-[18px]">explore</span>
+                Explore Tasks
+              </button>
+            </div>
+
+            <div className="mt-8 grid grid-cols-3 gap-3 text-center">
+              <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                <p className="text-xl font-semibold text-cyan-200">5k+</p>
+                <p className="text-xs text-slate-300">Active Workers</p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                <p className="text-xl font-semibold text-cyan-200">50k+</p>
+                <p className="text-xs text-slate-300">Tasks Completed</p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                <p className="text-xl font-semibold text-cyan-200">1-2s</p>
+                <p className="text-xs text-slate-300">Payout Speed</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-white/15 bg-white/5 p-5 backdrop-blur-xl">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-slate-200">Platform Highlights</h3>
+              <span className="rounded-full bg-cyan-400/15 px-2 py-1 text-[10px] text-cyan-100">
+                Proof-first Workflow
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              <article className="rounded-xl border border-white/10 bg-slate-950/40 p-4">
+                <div className="mb-2 flex items-center gap-2 text-cyan-200">
+                  <span className="material-symbols-outlined text-[18px]">shield</span>
+                  <span className="text-sm font-medium">Atomic Escrow</span>
+                </div>
+                <p className="text-xs leading-relaxed text-slate-300">
+                  Funds are locked before work starts, protecting workers and employers.
+                </p>
+              </article>
+
+              <article className="rounded-xl border border-white/10 bg-slate-950/40 p-4">
+                <div className="mb-2 flex items-center gap-2 text-cyan-200">
+                  <span className="material-symbols-outlined text-[18px]">verified_user</span>
+                  <span className="text-sm font-medium">Proof Verification</span>
+                </div>
+                <p className="text-xs leading-relaxed text-slate-300">
+                  Submit text, image, file, or video proofs with transparent review states.
+                </p>
+              </article>
+
+              <article className="rounded-xl border border-white/10 bg-slate-950/40 p-4">
+                <div className="mb-2 flex items-center gap-2 text-cyan-200">
+                  <span className="material-symbols-outlined text-[18px]">bolt</span>
+                  <span className="text-sm font-medium">Instant Settlement</span>
+                </div>
+                <p className="text-xs leading-relaxed text-slate-300">
+                  Approved work triggers fast Pi Network payouts with platform fee tracking.
+                </p>
+              </article>
+            </div>
           </p>
-        </div>
-
-        {/* Bento-style Feature Bullets */}
-        <div className="w-full space-y-4 mb-16">
-          {/* Feature 1: Escrow Protection */}
-          <div className="flex items-center gap-5 p-4 rounded-2xl bg-surface-container-low/40 backdrop-blur-md outline-variant/15 border border-transparent hover:border-primary/20 transition-all group">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
-              <span className="material-symbols-outlined text-2xl" data-icon="shield">shield</span>
-            </div>
-            <div className="text-left">
-              <h3 className="dm-sans text-sm font-bold text-white tracking-wide">Escrow protection</h3>
-              <p className="dm-sans text-[11px] text-on-surface-variant">Smart contract secured funds</p>
-            </div>
-          </div>
-
-          {/* Feature 2: Instant Payments */}
-          <div className="flex items-center gap-5 p-4 rounded-2xl bg-surface-container-low/40 backdrop-blur-md outline-variant/15 border border-transparent hover:border-primary/20 transition-all group">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
-              <span className="material-symbols-outlined text-2xl" data-icon="bolt">bolt</span>
-            </div>
-            <div className="text-left">
-              <h3 className="dm-sans text-sm font-bold text-white tracking-wide">Instant payments</h3>
-              <p className="dm-sans text-[11px] text-on-surface-variant">Real-time Pi Network settlement</p>
-            </div>
-          </div>
-
-          {/* Feature 3: Work from Anywhere */}
-          <div className="flex items-center gap-5 p-4 rounded-2xl bg-surface-container-low/40 backdrop-blur-md outline-variant/15 border border-transparent hover:border-primary/20 transition-all group">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
-              <span className="material-symbols-outlined text-2xl" data-icon="public">public</span>
-            </div>
-            <div className="text-left">
-              <h3 className="dm-sans text-sm font-bold text-white tracking-wide">Work from anywhere</h3>
-              <p className="dm-sans text-[11px] text-on-surface-variant">Global borderless opportunities</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Call to Action */}
-        <div className="w-full space-y-6">
-          <button
-            onClick={authenticate}
-            disabled={isLoading}
-            className="w-full py-5 px-6 rounded-[18px] bg-gradient-to-br from-primary-container to-[#005bb8] text-white font-bold tracking-wider dm-sans flex items-center justify-center gap-3 shadow-[0_12px_40px_-12px_rgba(0,149,255,0.5)] active:scale-95 transition-all group relative overflow-hidden disabled:opacity-70"
-          >
-            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <span className="material-symbols-outlined text-xl" data-icon="rocket_launch">rocket_launch</span>
-            <span>{isLoading ? 'Connecting...' : 'Connect with Pi Browser'}</span>
-          </button>
-
-          {/* Network Status */}
-          <div className="flex items-center justify-center gap-2 text-on-surface-variant">
-            <span className="ibm-plex text-[10px] uppercase tracking-widest">Network Status:</span>
-            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-secondary-container/10 border border-secondary-container/20">
-              <div className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></div>
-              <span className="ibm-plex text-[10px] text-secondary font-bold">MAINNET LIVE</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer Visual Decor */}
-        <div className="mt-16 opacity-30 flex gap-4">
-          <div className="w-1 h-1 rounded-full bg-primary"></div>
-          <div className="w-1 h-1 rounded-full bg-primary"></div>
-          <div className="w-1 h-1 rounded-full bg-primary"></div>
-        </div>
+        </section>
       </main>
-
-      {/* Bottom Aesthetic Accents */}
-      <div className="fixed bottom-0 left-0 w-full h-[150px] bg-gradient-to-t from-primary/5 to-transparent pointer-events-none"></div>
-
-      {/* Decorative Grid Image */}
-      <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
-        <img
-          className="w-full h-full object-cover"
-          alt="Abstract network architecture with glowing blue nodes and crystalline structures on a dark background"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwPCkyAJers_AaS39M6NMrthl_OAlxauuQLhen9dZOht25wmXjAlKiL-Kv818sLKAabl5Z_2pDmvWyekxOdoQrHFtAuMuqngyKUS7ynQpLXc7Ib_cfgsf1zho_6_JH8wtYEqJ6LXic_3e-o3ZqytHVl3fxHRO2pMAlP26Kbb3IWNby_An3O6jzavIH7YQH-uoZkelcwYMKQpDMEFP4Fg_wEUZKS1k_wpVG6U9fphU3UDvMKrh9rmTQs83T16c3qsAjw1PNavhkGNIL"
-        />
-      </div>
     </div>
   )
 }
