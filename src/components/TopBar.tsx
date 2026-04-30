@@ -59,6 +59,7 @@ export function TopBar() {
           width={24}
           height={24}
           style={{ marginRight: 8, verticalAlign: 'middle', borderRadius: 6, objectFit: 'contain' }}
+          unoptimized
         />
         ProofGrid
       </span>
@@ -105,6 +106,7 @@ export function TopBar() {
           width={24}
           height={24}
           style={{ borderRadius: 6, objectFit: 'contain' }}
+          unoptimized
         />
         ProofGrid
       </Link>

@@ -96,6 +96,7 @@ export function Navigation({ currentPage }: NavigationProps) {
             width={28}
             height={28}
             style={{ borderRadius: 8, objectFit: 'contain' }}
+            unoptimized
           />
           <span className="hide-mobile">ProofGrid</span>
           <span className="show-mobile">PG</span>
