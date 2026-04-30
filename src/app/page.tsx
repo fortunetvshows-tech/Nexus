@@ -69,11 +69,11 @@ export default function OnboardingPage() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <button
                 onClick={authenticate}
-                disabled={isLoading}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_12px_35px_-12px_rgba(14,165,233,0.6)] transition hover:brightness-110 disabled:opacity-70"
+                disabled={isLoading || !isSdkReady}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_12px_35px_-12px_rgba(14,165,233,0.6)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-55"
               >
                 <span className="material-symbols-outlined text-[18px]">rocket_launch</span>
-                {isLoading ? 'Connecting...' : 'Connect with Pi Browser'}
+                {isLoading ? 'Connecting...' : !isSdkReady ? 'Open in Pi Browser' : 'Connect with Pi Browser'}
               </button>
               <button
                 onClick={() => router.push('/feed')}

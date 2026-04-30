@@ -186,7 +186,17 @@ export function usePiAuth() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.message || 'Authentication failed')
+        const fallback = data?.message || 'Authentication failed'
+        if (data?.error === 'INVALID_ACCESS_TOKEN') {
+          throw new Error('Pi auth token was rejected. Open the app in Pi Browser and reconnect.')
+        }
+        if (data?.error === 'PI_API_UNREACHABLE') {
+          throw new Error('Pi servers are temporarily unreachable. Please retry in a moment.')
+        }
+        if (data?.error === 'DATABASE_ERROR') {
+          throw new Error('Login succeeded but user profile setup failed. Please retry.')
+        }
+        throw new Error(fallback)
       }
 
       // Save to sessionStorage so all pages have user immediately

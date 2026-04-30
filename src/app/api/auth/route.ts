@@ -52,13 +52,21 @@ export async function POST(req: NextRequest) {
 
   // Top-level error boundary — catches any unhandled exception
   // and returns structured error instead of raw 500
+  let authStep = 'start'
   try {
 
     // Rate limit check — must be first
-    const limited = await checkRateLimit(req, 'auth')
-    if (limited) return limited
+    authStep = 'rate_limit'
+    try {
+      const limited = await checkRateLimit(req, 'auth')
+      if (limited) return limited
+    } catch (rateLimitError) {
+      // Fail-open on rate limiter transport/runtime errors
+      console.error('[ProofGrid:Auth] Rate limiter failed open:', rateLimitError)
+    }
 
     // Parse request body
+    authStep = 'parse_body'
     let body: AuthRequestBody
     try {
       body = await req.json()
@@ -82,6 +90,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Verify with Pi Platform /me API
+    authStep = 'pi_verify'
     let piUser: PiMeResponse
     try {
       const piResponse = await fetch(`${PI_API_BASE}/v2/me`, {
@@ -169,6 +178,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check ban status BEFORE upsert
+    authStep = 'ban_check'
     try {
       const { data: existingUser } = await supabaseAdmin
         .from('User')
@@ -191,6 +201,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate referral code for new users
+    authStep = 'referral_code'
     const referralCode = 'NX-' + piUser.username.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12)
 
     // Build upsert object
@@ -203,6 +214,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if refCode was provided and is valid
+    authStep = 'referrer_lookup'
     if (refCode && refCode.startsWith('NX-')) {
       try {
         // Find the referrer
@@ -224,17 +236,30 @@ export async function POST(req: NextRequest) {
     }
 
     // Upsert user record with explicit type assertion
-    const upsertResult = await supabaseAdmin
-      .from('User')
-      .upsert(upsertObject, {
-        onConflict:       'piUid',
-        ignoreDuplicates: false,
-      })
-      .select(
-        'id, piUid, piUsername, userRole, reputationScore, ' +
-        'reputationLevel, kycLevel, accountStatus, isAdmin'
+    authStep = 'user_upsert'
+    let upsertResult: any
+    try {
+      upsertResult = await supabaseAdmin
+        .from('User')
+        .upsert(upsertObject, {
+          onConflict:       'piUid',
+          ignoreDuplicates: false,
+        })
+        .select(
+          'id, piUid, piUsername, userRole, reputationScore, ' +
+          'reputationLevel, kycLevel, accountStatus, isAdmin'
+        )
+        .single()
+    } catch (upsertThrownError) {
+      console.error('[ProofGrid:Auth] Upsert threw unexpectedly:', upsertThrownError)
+      return NextResponse.json(
+        {
+          error:   'DATABASE_ERROR',
+          message: 'User profile setup failed. Please retry.',
+        },
+        { status: 500 }
       )
-      .single()
+    }
 
     const { data: user, error: upsertError } = upsertResult as {
       data: UserRow | null
@@ -283,11 +308,11 @@ export async function POST(req: NextRequest) {
   } catch (unhandledError) {
     // This catches anything that escaped the inner try/catch blocks
     // Log the full error for diagnosis
-    console.error('[ProofGrid:Auth] UNHANDLED ERROR:', unhandledError)
+    console.error('[ProofGrid:Auth] UNHANDLED ERROR:', { step: authStep, error: unhandledError })
     return NextResponse.json(
       {
         error:   'INTERNAL_ERROR',
-        message: 'An unexpected error occurred. Please try again.',
+        message: `Authentication failed at step: ${authStep}. Please try again.`,
       },
       { status: 500 }
     )

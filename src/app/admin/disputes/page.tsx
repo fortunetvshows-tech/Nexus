@@ -506,7 +506,7 @@ export default function AdminDisputesPage() {
           display:        'flex',
           justifyContent: 'space-between',
           alignItems:     'flex-start',
-          marginBottom:   SPACING.xl,
+          marginBottom:   '28px',
         }}>
           <div>
             <div style={{
@@ -621,6 +621,7 @@ export default function AdminDisputesPage() {
                 justifyContent: 'center',
                 gap:          '6px',
                 padding:      '0.5rem 0.75rem',
+                minHeight:    '38px',
                 borderRadius: RADII.md,
                 border:       'none',
                 background:   activeTab === tab.key ? COLORS.bgSurface : 'transparent',
@@ -678,6 +679,7 @@ export default function AdminDisputesPage() {
               style={{
                 flex:         1,
                 padding:      '0.4rem 0.5rem',
+                minHeight:    '34px',
                 borderRadius: RADII.md,
                 border:       'none',
                 background:   filter === tab.key ? 'rgba(255,107,53,0.12)' : 'transparent',
@@ -772,7 +774,7 @@ export default function AdminDisputesPage() {
                   }}>
                     <div style={{ flex: 1, minWidth: 0, marginRight: SPACING.md }}>
                       <div style={{
-                        fontSize:     '0.875rem',
+                        fontSize:     '0.82rem',
                         fontWeight:   '600',
                         color:        COLORS.textPrimary,
                         marginBottom: '4px',
@@ -854,7 +856,7 @@ export default function AdminDisputesPage() {
                       display:             'grid',
                       gridTemplateColumns: '1fr 1fr',
                       gap:                 SPACING.sm,
-                      paddingTop:          SPACING.sm,
+                      paddingTop:          '10px',
                       borderTop:           `1px solid ${COLORS.border}`,
                     }}>
                       <button

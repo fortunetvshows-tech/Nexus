@@ -78,17 +78,17 @@ function KPICard({
   return (
     <div
       style={{
-        backgroundColor: COLORS.bgSurface,
-        borderRadius: '16px',
+        backgroundColor: 'rgba(29,32,37,0.62)',
+        borderRadius: '20px',
         padding: SPACING.lg,
-        border: `1px solid ${COLORS.borderAccent}`,
-        boxShadow: isHovered ? SHADOWS.accentLg : SHADOWS.card,
+        border: `1px solid rgba(245,100,46,0.18)`,
+        boxShadow: isHovered ? SHADOWS.ad : SHADOWS.card,
         display: 'flex',
         flexDirection: 'column',
         gap: SPACING.md,
         position: 'relative',
         overflow: 'hidden',
-        transition: 'all 0.2s ease',
+        transition: 'all 0.22s cubic-bezier(0.4, 0, 0.2, 1)',
         transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
         cursor: 'default',
       }}
@@ -114,7 +114,7 @@ function KPICard({
       }}>
         <div style={{
           padding: SPACING.sm,
-          backgroundColor: `${badgeColor}15`,
+          backgroundColor: `${badgeColor}18`,
           borderRadius: RADII.md,
           fontSize: '1.5rem',
           display: 'flex',
@@ -127,13 +127,15 @@ function KPICard({
         </div>
         {badge && (
           <div style={{
-            fontSize: '0.65rem',
+            fontSize: '0.62rem',
             fontWeight: '700',
             color: badgeColor,
             backgroundColor: `${badgeColor}20`,
             padding: `${SPACING.xs} ${SPACING.sm}`,
             borderRadius: RADII.full,
             textTransform: 'uppercase',
+            fontFamily: FONTS.mono,
+            letterSpacing: '0.07em',
           }}>
             {badge}
           </div>
@@ -141,20 +143,22 @@ function KPICard({
       </div>
       <div>
         <div style={{
-          fontSize: '0.75rem',
+          fontSize: '0.68rem',
           fontWeight: '600',
           color: COLORS.textMuted,
           textTransform: 'uppercase',
-          letterSpacing: '0.05em',
+          letterSpacing: '0.1em',
           marginBottom: SPACING.xs,
+          fontFamily: FONTS.mono,
         }}>
           {label}
         </div>
         <div style={{
-          fontSize: '1.75rem',
+          fontSize: '2rem',
           fontWeight: '700',
-          color: COLORS.textPrimary,
-          fontFamily: FONTS.mono,
+          color: COLORS.ad,
+          fontFamily: FONTS.display,
+          letterSpacing: '0.02em',
         }}>
           {value}
         </div>
@@ -215,9 +219,9 @@ export default function AdminAnalyticsPage() {
   }
 
   return (
-    <div style={{
+    <div className="admin-analytics-page" style={{
       minHeight: '100vh',
-      backgroundColor: COLORS.bgBase,
+      background: 'radial-gradient(circle at 8% 10%, rgba(245,100,46,0.16), transparent 38%), radial-gradient(circle at 92% 80%, rgba(255,107,53,0.14), transparent 36%), #07090E',
       fontFamily: FONTS.sans,
       color: COLORS.textPrimary,
     }}>
@@ -226,36 +230,40 @@ export default function AdminAnalyticsPage() {
       <main className="page-main" style={{
         maxWidth: '1400px',
         margin: '0 auto',
-        padding: `64px var(--page-padding) ${SPACING.xl}`,
+        padding: `96px var(--page-padding) 128px`,
       }}>
         {/* Header */}
         <div style={{ marginBottom: SPACING.xl }}>
           <div style={{
             fontSize: '0.65rem',
             fontWeight: '600',
-            color: COLORS.textMuted,
-            letterSpacing: '0.1em',
+            color: COLORS.adLt,
+            letterSpacing: '0.16em',
             textTransform: 'uppercase' as const,
             marginBottom: '4px',
             fontFamily: FONTS.mono,
           }}>
-            Admin Panel
+            Governance Console
           </div>
           <h1 style={{
             margin: 0,
-            fontSize: 'clamp(1.25rem, 4vw, 1.75rem)',
+            fontSize: 'clamp(1.7rem, 5vw, 2.3rem)',
             fontWeight: '700',
-            letterSpacing: '-0.02em',
-            marginBottom: SPACING.xs,
+            letterSpacing: '0.03em',
+            marginBottom: '6px',
+            fontFamily: FONTS.display,
           }}>
-            💰 Revenue Dashboard
+            Mainframe Dashboard
           </h1>
           <p style={{
-            fontSize: '1rem',
+            fontSize: '0.78rem',
             color: COLORS.textMuted,
             margin: 0,
+            fontFamily: FONTS.mono,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase' as const,
           }}>
-            Platform metrics and financial overview
+            System Protocol Active
           </p>
         </div>
 
@@ -349,7 +357,7 @@ export default function AdminAnalyticsPage() {
             </div>
 
             {/* Revenue Breakdown */}
-            <div style={{
+            <div className="admin-glass-card" style={{
               backgroundColor: COLORS.bgSurface,
               borderRadius: RADII.lg,
               padding: SPACING.lg,
@@ -358,12 +366,14 @@ export default function AdminAnalyticsPage() {
               boxShadow: SHADOWS.card,
             }}>
               <h2 style={{
-                fontSize: '1.125rem',
+                fontSize: '1.35rem',
                 fontWeight: '700',
                 color: COLORS.textPrimary,
                 margin: `0 0 ${SPACING.md} 0`,
+                fontFamily: FONTS.display,
+                letterSpacing: '0.04em',
               }}>
-                💹 Revenue Breakdown
+                Revenue Breakdown
               </h2>
 
               <div style={{
@@ -377,7 +387,7 @@ export default function AdminAnalyticsPage() {
                   borderRadius: RADII.md,
                   borderLeft: `4px solid ${COLORS.emerald}`,
                 }}>
-                  <div style={{ color: COLORS.textMuted, fontSize: '0.875rem' }}>
+                  <div className="admin-mono-label" style={{ color: COLORS.textMuted }}>
                     Worker Share
                   </div>
                   <div style={{ fontSize: '1.125rem', fontWeight: '700', marginTop: SPACING.xs, color: COLORS.emerald }}>
@@ -394,7 +404,7 @@ export default function AdminAnalyticsPage() {
                   borderRadius: RADII.md,
                   borderLeft: `4px solid ${COLORS.pi}`,
                 }}>
-                  <div style={{ color: COLORS.textMuted, fontSize: '0.875rem' }}>
+                  <div className="admin-mono-label" style={{ color: COLORS.textMuted }}>
                     Platform Revenue
                   </div>
                   <div style={{ fontSize: '1.125rem', fontWeight: '700', marginTop: SPACING.xs, color: COLORS.pi }}>
@@ -411,7 +421,7 @@ export default function AdminAnalyticsPage() {
                   borderRadius: RADII.md,
                   borderLeft: `4px solid ${COLORS.amber}`,
                 }}>
-                  <div style={{ color: COLORS.textMuted, fontSize: '0.875rem' }}>
+                  <div className="admin-mono-label" style={{ color: COLORS.textMuted }}>
                     Total Transaction Value
                   </div>
                   <div style={{ fontSize: '1.125rem', fontWeight: '700', marginTop: SPACING.xs, color: COLORS.amber }}>
@@ -426,7 +436,7 @@ export default function AdminAnalyticsPage() {
 
             {/* Recent Transactions */}
             {analytics.recentTransactions.length > 0 && (
-              <div style={{
+              <div className="admin-glass-card" style={{
                 backgroundColor: COLORS.bgSurface,
                 borderRadius: RADII.lg,
                 padding: SPACING.lg,
@@ -438,19 +448,24 @@ export default function AdminAnalyticsPage() {
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  marginBottom: SPACING.md,
+                  marginBottom: '14px',
                 }}>
                   <h2 style={{
-                    fontSize: '1.125rem',
+                    fontSize: '1.35rem',
                     fontWeight: '700',
                     color: COLORS.textPrimary,
                     margin: 0,
+                    fontFamily: FONTS.display,
+                    letterSpacing: '0.04em',
                   }}>
-                    📝 Recent Transactions
+                    Recent System Events
                   </h2>
                   <div style={{
-                    fontSize: '0.75rem',
+                    fontSize: '0.68rem',
                     color: COLORS.textMuted,
+                    fontFamily: FONTS.mono,
+                    textTransform: 'uppercase' as const,
+                    letterSpacing: '0.07em',
                   }}>
                     Total Value: {(() => {
                       const total = analytics.recentTransactions.reduce((sum, t) => sum + t.amount, 0)
@@ -468,71 +483,77 @@ export default function AdminAnalyticsPage() {
                     <thead>
                       <tr style={{
                         borderBottom: `1px solid ${COLORS.borderAccent}`,
-                        backgroundColor: COLORS.bgRaised,
+                        backgroundColor: 'rgba(255,255,255,0.03)',
                       }}>
                         <th style={{
-                          padding: SPACING.md,
+                          padding: '14px 16px',
                           textAlign: 'left',
                           color: COLORS.textMuted,
                           fontWeight: '700',
-                          fontSize: '0.7rem',
+                          fontSize: '0.62rem',
                           textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
+                          letterSpacing: '0.1em',
+                          fontFamily: FONTS.mono,
                         }}>
                           Type
                         </th>
                         <th style={{
-                          padding: SPACING.md,
+                          padding: '14px 16px',
                           textAlign: 'right',
                           color: COLORS.textMuted,
                           fontWeight: '700',
-                          fontSize: '0.7rem',
+                          fontSize: '0.62rem',
                           textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
+                          letterSpacing: '0.1em',
+                          fontFamily: FONTS.mono,
                         }}>
                           Amount
                         </th>
                         <th style={{
-                          padding: SPACING.md,
+                          padding: '14px 16px',
                           textAlign: 'right',
                           color: COLORS.textMuted,
                           fontWeight: '700',
-                          fontSize: '0.7rem',
+                          fontSize: '0.62rem',
                           textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
+                          letterSpacing: '0.1em',
+                          fontFamily: FONTS.mono,
                         }}>
                           Fee
                         </th>
                         <th style={{
-                          padding: SPACING.md,
+                          padding: '14px 16px',
                           textAlign: 'right',
                           color: COLORS.textMuted,
                           fontWeight: '700',
-                          fontSize: '0.7rem',
+                          fontSize: '0.62rem',
                           textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
+                          letterSpacing: '0.1em',
+                          fontFamily: FONTS.mono,
                         }}>
                           Net
                         </th>
                         <th style={{
-                          padding: SPACING.md,
+                          padding: '14px 16px',
                           textAlign: 'center',
                           color: COLORS.textMuted,
                           fontWeight: '700',
-                          fontSize: '0.7rem',
+                          fontSize: '0.62rem',
                           textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
+                          letterSpacing: '0.1em',
+                          fontFamily: FONTS.mono,
                         }}>
                           Status
                         </th>
                         <th style={{
-                          padding: SPACING.md,
+                          padding: '14px 16px',
                           textAlign: 'right',
                           color: COLORS.textMuted,
                           fontWeight: '700',
-                          fontSize: '0.7rem',
+                          fontSize: '0.62rem',
                           textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
+                          letterSpacing: '0.1em',
+                          fontFamily: FONTS.mono,
                         }}>
                           Time
                         </th>
@@ -601,12 +622,14 @@ export default function AdminAnalyticsPage() {
                                 color: statusColor,
                                 padding: `${SPACING.xs} ${SPACING.sm}`,
                                 borderRadius: RADII.full,
-                                fontSize: '0.7rem',
+                                fontSize: '0.62rem',
                                 fontWeight: '700',
                                 textTransform: 'uppercase',
                                 textDecoration: 'none',
+                                fontFamily: FONTS.mono,
+                                letterSpacing: '0.1em',
                               }}>
-                                {tx.status === 'confirmed' ? '✓ Confirmed' : tx.status === 'pending' ? '⏳ Pending' : '✗ Failed'}
+                                {tx.status === 'confirmed' ? 'Confirmed' : tx.status === 'pending' ? 'Pending' : 'Failed'}
                               </span>
                             </td>
                             <td style={{
@@ -628,7 +651,7 @@ export default function AdminAnalyticsPage() {
 
             {/* Top Users - Leaderboard Style */}
             {analytics.topUsers.length > 0 && (
-              <div style={{
+              <div className="admin-glass-card" style={{
                 backgroundColor: COLORS.bgSurface,
                 borderRadius: RADII.lg,
                 padding: SPACING.lg,
@@ -636,12 +659,14 @@ export default function AdminAnalyticsPage() {
                 boxShadow: SHADOWS.card,
               }}>
                 <h2 style={{
-                  fontSize: '1.125rem',
+                  fontSize: '1.35rem',
                   fontWeight: '700',
                   color: COLORS.textPrimary,
                   margin: `0 0 ${SPACING.lg} 0`,
+                  fontFamily: FONTS.display,
+                  letterSpacing: '0.04em',
                 }}>
-                  ⭐ Top Users Leaderboard
+                  Top Users Leaderboard
                 </h2>
 
                 <div style={{
