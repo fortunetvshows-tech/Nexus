@@ -70,7 +70,7 @@ export default function ProfilePage() {
 
       <Navigation currentPage="profile" />
 
-      <main className="relative z-10 mx-auto mt-6 w-full max-w-5xl space-y-5">
+      <main className="relative z-10 mx-auto mt-6 w-full max-w-6xl space-y-5 lg:space-y-6">
         <section className="motion-surface rounded-2xl border border-white/15 bg-white/5 p-6 text-center backdrop-blur-xl">
           <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-indigo-500 text-xl font-bold text-slate-950">
             {user?.piUsername?.charAt(0).toUpperCase() || 'P'}

@@ -162,7 +162,7 @@ export default function RootLayout({
             display: block;
           }
 
-          @media (min-width: 768px) {
+          @media (min-width: 1100px) {
             .hide-mobile {
               display: block;
             }

@@ -77,7 +77,7 @@ const FeedPage: React.FC = () => {
       <div className="pointer-events-none absolute -right-20 top-1/2 h-80 w-80 rounded-full bg-blue-500/15 blur-3xl" />
       <Navigation currentPage="feed" />
 
-      <main className="relative z-10 mx-auto mt-6 w-full max-w-5xl space-y-5">
+      <main className="relative z-10 mx-auto mt-6 w-full max-w-6xl space-y-5 lg:space-y-6">
         <section className="rounded-2xl border border-white/15 bg-white/5 p-5 backdrop-blur-xl">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>

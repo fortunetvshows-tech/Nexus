@@ -103,7 +103,7 @@ export default function DashboardPage() {
 
       <Navigation currentPage="dashboard" />
 
-      <main className="relative z-10 mx-auto mt-6 w-full max-w-5xl space-y-5">
+      <main className="relative z-10 mx-auto mt-6 w-full max-w-6xl space-y-5 lg:space-y-6">
         <section className="motion-surface rounded-2xl border border-white/15 bg-white/5 p-5 backdrop-blur-xl">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
