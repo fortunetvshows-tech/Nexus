@@ -2,8 +2,10 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { usePiAuth }   from '@/hooks/use-pi-auth'
-import { Navigation }  from '@/components/Navigation'
+import { PageTopbar } from '@/components/PageTopbar'
+import { useNotifications } from '@/hooks/use-notifications'
 import { statusStyle } from '@/lib/design/tokens'
 
 interface Submission {
@@ -23,6 +25,7 @@ interface Submission {
 }
 
 export default function DashboardPage() {
+  const router = useRouter()
   const {
     user,
     isAuthenticated,
@@ -39,6 +42,7 @@ export default function DashboardPage() {
       totalSpent:     number
     }
   } | null>(null)
+  const { unreadCount: notifCount } = useNotifications(user?.piUid)
 
   const fetchSubmissions = useCallback(() => {
     if (!user?.piUid) return
@@ -96,14 +100,85 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#060b17] px-4 pb-28 pt-5 text-white md:px-8">
-      <div className="pointer-events-none absolute inset-0 hex-mesh opacity-40" />
-      <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-cyan-400/15 blur-3xl" />
-      <div className="pointer-events-none absolute -right-20 top-1/2 h-80 w-80 rounded-full bg-indigo-500/20 blur-3xl" />
+    <div className="w-full text-white">
+      <PageTopbar
+        title="ProofGrid"
+        actions={
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              padding: '5px 10px',
+              background: 'rgba(0,214,143,0.12)',
+              border: '1px solid rgba(0,214,143,0.25)',
+              borderRadius: '100px',
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: '12px',
+              fontWeight: '700',
+              color: '#00D68F',
+            }}>
+              π {totalEarned.toFixed(2)}
+            </div>
+            <div
+              style={{
+                width: '34px',
+                height: '34px',
+                borderRadius: '50%',
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                position: 'relative',
+                fontSize: '16px',
+              }}
+              onClick={() => router.push('/notifications')}
+            >
+              🔔
+              {notifCount > 0 && (
+                <div style={{
+                  position: 'absolute',
+                  top: '4px',
+                  right: '4px',
+                  width: '8px',
+                  height: '8px',
+                  background: '#0095FF',
+                  borderRadius: '50%',
+                  border: '1.5px solid #07090E',
+                }} />
+              )}
+            </div>
+            <div
+              style={{
+                width: '34px',
+                height: '34px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #0095FF, #A78BFA)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: '12px',
+                fontWeight: '700',
+                color: 'white',
+                cursor: 'pointer',
+                boxShadow: '0 0 12px rgba(0,149,255,0.25)',
+              }}
+              onClick={() => router.push('/profile')}
+            >
+              {user?.piUsername?.slice(0, 2).toUpperCase() ?? 'PG'}
+            </div>
+          </div>
+        }
+      />
 
-      <Navigation currentPage="dashboard" />
-
-      <main className="relative z-10 mx-auto mt-6 w-full max-w-6xl space-y-5 lg:space-y-6">
+      <main className="w-full space-y-4 pt-2">
         <section className="motion-surface rounded-2xl border border-white/15 bg-white/5 p-5 backdrop-blur-xl">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -142,7 +217,7 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { label: 'Earnings', value: `${totalEarned.toFixed(2)}π`, tone: 'text-emerald-200' },
             { label: 'This Week', value: `${thisWeekEarned.toFixed(2)}π`, tone: 'text-cyan-200' },

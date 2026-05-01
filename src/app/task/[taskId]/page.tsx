@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { PLATFORM_CONFIG } from '@/lib/config/platform'
 import { usePiAuth }    from '@/hooks/use-pi-auth'
 import { useSubmission } from '@/hooks/use-submission'
-import { Navigation }   from '@/components/Navigation'
+import { PageTopbar }   from '@/components/PageTopbar'
 import { DisputeSection } from '@/components/DisputeSection'
 import { ProofUploader } from '@/components/ProofUploader'
 import { COLORS, FONTS, RADII, SHADOWS, GRADIENTS, SPACING, statusStyle } from '@/lib/design/tokens'
@@ -164,10 +164,9 @@ export default function TaskDetailPage({
         minHeight: '100vh', background: '#0f0f0f',
         fontFamily: 'system-ui, sans-serif',
       }}>
-        <Navigation currentPage="feed" />
+        <PageTopbar title="Task Detail" showBack backHref="/feed" />
         <div style={{
-          maxWidth: '680px', margin: '0 auto',
-          padding: '80px 1rem 2rem',
+          padding: '1rem 0 2rem',
         }}>
           <div style={{
             background: '#111827', borderRadius: '16px',
@@ -208,9 +207,9 @@ export default function TaskDetailPage({
       fontFamily: FONTS.sans,
       color:      COLORS.textPrimary,
     }}>
-      <Navigation currentPage="feed" />
+      <PageTopbar title="Task Detail" showBack backHref="/feed" />
 
-      <main className="page-main">
+      <main className="w-full space-y-4 pt-2">
 
         <Link href="/feed" style={{
           color: COLORS.textMuted, fontSize: '0.875rem',

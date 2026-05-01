@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import Link                             from 'next/link'
 import { toast, Toaster }               from 'sonner'
 import { usePiAuth }                    from '@/hooks/use-pi-auth'
-import { Navigation }                   from '@/components/Navigation'
+import { PageTopbar }                   from '@/components/PageTopbar'
 import { BentoGrid }                    from '@/components/BentoGrid'
 import { ConfirmDialog }                from '@/components/ConfirmDialog'
 import { COLORS, FONTS, SPACING, RADII, SHADOWS, GRADIENTS, statusStyle } from '@/lib/design/tokens'
@@ -375,7 +375,7 @@ export default function EmployerDashboardPage() {
       fontFamily: FONTS.sans,
       color:      COLORS.textPrimary,
     }}>
-      <Navigation currentPage="employer-dashboard" />
+      <PageTopbar title="Employer" />
 
       <main className="page-main">
 

@@ -182,9 +182,49 @@ export default function RootLayout({
 
       <body>
         <PiPaymentProvider>
-          <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            {children}
+          <div className="min-h-dvh bg-[#07090E] relative overflow-x-hidden">
+
+            {/* Ambient glow background */}
+            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+              <div style={{
+                position: 'absolute',
+                width: '600px',
+                height: '600px',
+                background: 'radial-gradient(circle, rgba(0,149,255,0.07) 0%, transparent 70%)',
+                top: '-150px',
+                left: '-100px',
+                animation: 'drift1 20s ease-in-out infinite alternate',
+              }} />
+              <div style={{
+                position: 'absolute',
+                width: '400px',
+                height: '400px',
+                background: 'radial-gradient(circle, rgba(167,139,250,0.05) 0%, transparent 70%)',
+                bottom: '-80px',
+                right: '-80px',
+                animation: 'drift2 25s ease-in-out infinite alternate',
+              }} />
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='48'%3E%3Cpath d='M28 2L54 16v16L28 46 2 32V16z' fill='none' stroke='rgba(255,255,255,.025)' stroke-width='.5'/%3E%3C/svg%3E")`,
+                backgroundSize: '56px 48px',
+              }} />
+            </div>
+
+            {/* Content shell */}
+            <div className="relative z-10 flex flex-col min-h-dvh">
+
+              {/* Page content — responsive container */}
+              <div className="flex-1 w-full mx-auto px-4 pb-24 sm:px-6 md:px-8 md:max-w-2xl lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl">
+                {children}
+              </div>
+
+            </div>
+
+            {/* Bottom nav — always at bottom */}
             <ConditionalNav />
+
           </div>
         </PiPaymentProvider>
       </body>

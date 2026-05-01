@@ -7,7 +7,6 @@ interface BottomNavItem {
   href: string
   label: string
   icon: string
-  pattern: RegExp
 }
 
 export function BottomNav() {
@@ -15,12 +14,17 @@ export function BottomNav() {
   const isAdminRoute = /^\/admin(\/|$)/.test(pathname)
 
   const items: BottomNavItem[] = [
-    { href: '/dashboard', label: 'Home', icon: '⊞', pattern: /^\/(dashboard)?$/ },
-    { href: '/feed', label: 'Discover', icon: '🔍', pattern: /^\/feed/ },
-    { href: '/employer', label: 'Post', icon: '➕', pattern: /^\/employer(\/|$)/ },
-    { href: '/my-tasks', label: 'Tasks', icon: '✓', pattern: /^\/my-tasks/ },
-    { href: '/profile', label: 'Profile', icon: '👤', pattern: /^\/profile/ },
+    { href: '/dashboard', label: 'Home', icon: '⊞' },
+    { href: '/feed', label: 'Discover', icon: '🔍' },
+    { href: '/employer', label: 'Post', icon: '➕' },
+    { href: '/my-tasks', label: 'Tasks', icon: '✓' },
+    { href: '/profile', label: 'Profile', icon: '👤' },
   ]
+
+  const isActive = (href: string) => {
+    if (href === '/dashboard') return pathname === '/dashboard' || pathname === '/'
+    return pathname.startsWith(href)
+  }
 
   return (
     <nav
@@ -33,13 +37,13 @@ export function BottomNav() {
     >
       <div className="mx-auto flex w-full max-w-3xl px-2">
       {items.map((item) => {
-        const isActive = item.pattern.test(pathname)
+        const active = isActive(item.href)
         return (
           <Link
             key={item.href}
             href={item.href}
             className={`flex flex-1 flex-col items-center gap-1 rounded-xl px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wide no-underline transition ${
-              isActive
+              active
                 ? isAdminRoute
                   ? 'bg-orange-300/15 text-orange-100'
                   : 'bg-cyan-300/15 text-cyan-100'
@@ -54,7 +58,7 @@ export function BottomNav() {
               stroke="currentColor"
               strokeWidth="1.6"
               className={
-                isActive
+                active
                   ? isAdminRoute
                     ? 'scale-110 drop-shadow-[0_0_8px_rgba(251,146,60,0.6)] transition'
                     : 'scale-110 drop-shadow-[0_0_8px_rgba(34,211,238,0.55)] transition'

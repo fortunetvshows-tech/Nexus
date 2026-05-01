@@ -91,6 +91,16 @@ body::before {
   50%     { opacity: 1; transform: translate(-50%, -58%) scale(1.12); }
 }
 
+@keyframes drift1 {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(50px, 30px) scale(1.1); }
+}
+
+@keyframes drift2 {
+  from { transform: translate(0, 0); }
+  to   { transform: translate(-40px, -50px) scale(1.08); }
+}
+
 /* Custom Typography Classes */
 .bebas-neue {
   font-family: 'Bebas Neue', cursive;
@@ -190,9 +200,9 @@ body::before {
 
 /* Default page container spacing (accounts for fixed nav + bottom nav) */
 .page-main {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 92px var(--page-padding) 140px;
+  width: 100%;
+  margin: 0;
+  padding: 0 0 140px;
   position: relative;
   z-index: 1;
 }

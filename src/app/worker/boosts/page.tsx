@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { usePiAuth } from '@/hooks/use-pi-auth'
-import { Navigation } from '@/components/Navigation'
+import { PageTopbar } from '@/components/PageTopbar'
 import { BoostCard } from '@/components/BoostCard'
 import { COLORS, SPACING, RADII } from '@/lib/design/tokens'
 
@@ -89,21 +89,21 @@ export default function WorkerBoostsPage() {
 
   if (!user) {
     return (
-      <>
-        <Navigation currentPage="dashboard" />
-        <main style={{ paddingTop: '80px' }}>
+      <div className="w-full text-white">
+        <PageTopbar title="Boosts" />
+        <main className="w-full space-y-4 pt-2">
           <div style={{ padding: SPACING.lg, textAlign: 'center', color: COLORS.textMuted }}>
             Please log in to boost submissions
           </div>
         </main>
-      </>
+      </div>
     )
   }
 
   return (
-    <>
-      <Navigation currentPage="dashboard" />
-      <main style={{ paddingTop: '80px', padding: SPACING.lg, maxWidth: '900px', margin: '0 auto' }}>
+    <div className="w-full text-white">
+      <PageTopbar title="Boosts" />
+      <main className="w-full space-y-4 pt-2" style={{ padding: SPACING.lg }}>
         <h1 style={{ fontSize: '1.875rem', fontWeight: '700', color: COLORS.textPrimary, marginBottom: SPACING.lg }}>
           ⚚ Boost Your Submissions
         </h1>
@@ -182,7 +182,7 @@ export default function WorkerBoostsPage() {
           </div>
         )}
       </main>
-    </>
+    </div>
   )
 }
 
