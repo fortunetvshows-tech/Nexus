@@ -86,21 +86,21 @@ export function ScreenDashboard() {
 
   return (
     <div className="fixed inset-0 flex flex-col bg-void">
+      {/* Header with Greeting - Sticky */}
+      <div className="sticky top-0 z-40 bg-void/95 backdrop-blur px-4 py-3 border-b border-line">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-lg font-bold text-t1">Welcome back!</h1>
+            <p className="text-xs text-t3">You're on a 🔥 streak</p>
+          </div>
+          <div className="text-2xl">⛏️</div>
+        </div>
+      </div>
+
       {/* Main Content - Scrollable */}
       <div className="flex-1 overflow-y-auto pb-32">
-        {/* Header with Greeting */}
-        <div className="px-4 pt-6 pb-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-t1">Welcome back!</h1>
-              <p className="text-sm text-t3">You're on a 🔥 streak</p>
-            </div>
-            <div className="text-3xl">⛏️</div>
-          </div>
-        </div>
-
         {/* Rep Ring & Streak Section */}
-        <div className="px-4 pb-6">
+        <div className="px-4 pt-6 pb-6">
           <div className="grid grid-cols-2 gap-4">
             {/* Rep Score Card with SVG Animation */}
             <Card variant="glow-blue" className="p-4 flex flex-col items-center justify-center">
